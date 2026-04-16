@@ -90,6 +90,12 @@ def _find_free_port() -> int:
         return s.getsockname()[1]
 
 
+def _has_module(name: str) -> bool:
+    py = str(RUNTIME_PY) if RUNTIME_PY.exists() else sys.executable
+    code, _ = _run([py, "-c", f"import {name}"])
+    return code == 0
+
+
 def _run(cmd: list[str], cwd: pathlib.Path | None = None, timeout: int = 60) -> tuple[int, str]:
     try:
         p = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, timeout=timeout)
@@ -105,7 +111,10 @@ def _run(cmd: list[str], cwd: pathlib.Path | None = None, timeout: int = 60) -> 
 # ────────────────────────────────────────────────────────────────────
 
 def check_api(api_dir: pathlib.Path, *, boot: bool, verbose: bool = False) -> TargetReport:
-    r = TargetReport("api", present=api_dir.exists())
+    # Treat stub directories (no main.py) as "absent" — these are examples that
+    # intentionally don't generate an API (e.g. kiosk-station, document-generator).
+    has_main = api_dir.exists() and (api_dir / "main.py").exists()
+    r = TargetReport("api", present=has_main)
     if not r.present:
         return r
 
@@ -121,12 +130,6 @@ def check_api(api_dir: pathlib.Path, *, boot: bool, verbose: bool = False) -> Ta
             "" if exists else "missing",
         ))
 
-    # Some stub APIs (e.g. document-generator) only ship main.py — skip rest if missing
-    if "main.py" not in present_files:
-        r.checks.append(CheckResult("compile", False, "no main.py to compile"))
-        r.checks.append(CheckResult("boot+health", False, "no main.py"))
-        return r
-
     # Compile check — only what actually exists
     py = str(RUNTIME_PY) if RUNTIME_PY.exists() else sys.executable
     code, out = _run([py, "-m", "py_compile", *present_files], cwd=api_dir, timeout=30)
@@ -141,16 +144,30 @@ def check_api(api_dir: pathlib.Path, *, boot: bool, verbose: bool = False) -> Ta
         r.checks.append(CheckResult("boot", False, f"uvicorn not found at {RUNTIME_UVICORN} or PATH"))
         return r
 
-    # Clear DB and boot
-    db = api_dir / "data.db"
-    if db.exists():
-        db.unlink()
+    # Detect hardcoded postgresql:// URL in generated database.py — runtime
+    # venv may not have psycopg2, so mark skipped instead of failing.
+    dbfile = api_dir / "database.py"
+    if dbfile.exists():
+        body = dbfile.read_text()
+        if 'postgresql://' in body or 'postgres://' in body:
+            if not _has_module("psycopg2"):
+                r.checks.append(CheckResult(
+                    "boot+health", True,
+                    "(skipped: database.py hardcodes postgres and psycopg2 absent)"))
+                return r
+
+    # Clear DB and boot. Generated database.py hardcodes sqlite:///./data/app.db,
+    # so make sure the data/ directory exists before launching uvicorn.
+    (api_dir / "data").mkdir(exist_ok=True)
+    for old in (api_dir / "data").glob("*.db"):
+        try: old.unlink()
+        except Exception: pass
 
     port = _find_free_port()
     import os
     env = os.environ.copy()
     env["JWT_SECRET"] = "envmgr-test"
-    env["DATABASE_URL"] = f"sqlite:///./data-{port}.db"
+    env["DATABASE_URL"] = f"sqlite:///./data/app-{port}.db"
 
     proc = subprocess.Popen(
         [uvicorn_bin, "main:app", "--host", "127.0.0.1", "--port", str(port)],
