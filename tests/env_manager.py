@@ -110,24 +110,35 @@ def check_api(api_dir: pathlib.Path, *, boot: bool, verbose: bool = False) -> Ta
         return r
 
     # File presence
+    present_files = []
     for name in ("main.py", "routes.py", "models.py", "schemas.py"):
+        exists = (api_dir / name).exists()
+        if exists:
+            present_files.append(name)
         r.checks.append(CheckResult(
             f"files/{name}",
-            (api_dir / name).exists(),
-            "" if (api_dir / name).exists() else "missing",
+            exists,
+            "" if exists else "missing",
         ))
 
-    # Compile check
+    # Some stub APIs (e.g. document-generator) only ship main.py — skip rest if missing
+    if "main.py" not in present_files:
+        r.checks.append(CheckResult("compile", False, "no main.py to compile"))
+        r.checks.append(CheckResult("boot+health", False, "no main.py"))
+        return r
+
+    # Compile check — only what actually exists
     py = str(RUNTIME_PY) if RUNTIME_PY.exists() else sys.executable
-    code, out = _run([py, "-m", "py_compile", "main.py", "routes.py", "models.py", "schemas.py"], cwd=api_dir, timeout=30)
+    code, out = _run([py, "-m", "py_compile", *present_files], cwd=api_dir, timeout=30)
     r.checks.append(CheckResult("compile", code == 0, "" if code == 0 else out[:200]))
 
     if not boot:
         r.checks.append(CheckResult("boot", True, "(skipped)"))
         return r
 
-    if not RUNTIME_UVICORN.exists():
-        r.checks.append(CheckResult("boot", False, f"uvicorn not found at {RUNTIME_UVICORN} — create /tmp/doql-runtime venv"))
+    uvicorn_bin = str(RUNTIME_UVICORN) if RUNTIME_UVICORN.exists() else shutil.which("uvicorn")
+    if not uvicorn_bin:
+        r.checks.append(CheckResult("boot", False, f"uvicorn not found at {RUNTIME_UVICORN} or PATH"))
         return r
 
     # Clear DB and boot
@@ -136,13 +147,15 @@ def check_api(api_dir: pathlib.Path, *, boot: bool, verbose: bool = False) -> Ta
         db.unlink()
 
     port = _find_free_port()
-    env_file = api_dir / "_envmgr.env"
-    env_file.write_text("JWT_SECRET=envmgr-test\n")
+    import os
+    env = os.environ.copy()
+    env["JWT_SECRET"] = "envmgr-test"
+    env["DATABASE_URL"] = f"sqlite:///./data-{port}.db"
 
     proc = subprocess.Popen(
-        [str(RUNTIME_UVICORN), "main:app", "--host", "127.0.0.1", "--port", str(port)],
+        [uvicorn_bin, "main:app", "--host", "127.0.0.1", "--port", str(port)],
         cwd=api_dir,
-        env={"JWT_SECRET": "envmgr-test", "PATH": "/usr/bin:/bin"},
+        env=env,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
     )
