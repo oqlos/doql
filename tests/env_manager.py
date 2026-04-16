@@ -192,8 +192,6 @@ def check_api(api_dir: pathlib.Path, *, boot: bool, verbose: bool = False) -> Ta
             proc.wait(timeout=3)
         except subprocess.TimeoutExpired:
             proc.kill()
-        if env_file.exists():
-            env_file.unlink()
 
     return r
 
