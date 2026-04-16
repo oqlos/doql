@@ -1,0 +1,24 @@
+APP: "Todo PWA"
+VERSION: "0.1.0"
+DOMAIN: env.DOMAIN
+
+# Tiny mobile-first PWA — perfect for demo/testing the mobile generator.
+# Intentionally minimal: one entity, no auth.
+
+ENTITY Todo:
+  id: uuid! auto
+  title: string!
+  done: bool default=false
+  priority: enum[low, normal, high] default=normal
+  due: date
+  created: datetime auto
+
+INTERFACE api:
+  type: rest
+
+INTERFACE mobile:
+  type: pwa
+  offline: true
+
+DEPLOY:
+  target: docker-compose

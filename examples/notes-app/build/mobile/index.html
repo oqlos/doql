@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0ea5e9" />
+  <title>Notes</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="stylesheet" href="./style.css" />
+  <link rel="icon" type="image/svg+xml" href="./icons/icon-192.svg" />
+</head>
+<body>
+  <header class="app-bar">
+    <h1>Notes</h1>
+    <span id="status" class="status-chip">offline</span>
+  </header>
+  <nav class="tabs" id="tabs">
+    <button data-entity="Notebook">Notebook</button><button data-entity="Note">Note</button><button data-entity="Tag">Tag</button>
+  </nav>
+  <main id="list" class="list"></main>
+  <button class="fab" id="fab-new" title="Create">+</button>
+  <dialog id="form-dialog"><form id="entity-form" method="dialog"></form></dialog>
+  <footer>
+    <small>doql mobile · v1.0.0</small>
+  </footer>
+  <script src="./app.js"></script>
+</body>
+</html>

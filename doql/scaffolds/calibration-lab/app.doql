@@ -1,0 +1,135 @@
+APP: "Calibration Lab"
+VERSION: "0.1.0"
+
+LANGUAGES: [en, pl]
+
+# ─── Data Model ───
+
+ENTITY Customer:
+  id: uuid! auto
+  name: string!
+  address: text
+  email: email
+  phone: string
+  vat_id: string
+
+ENTITY Instrument:
+  id: uuid! auto
+  customer: ref=Customer
+  serial: string! unique
+  make: string
+  model: string
+  type: string!
+  range_min: float
+  range_max: float
+  unit: string
+  next_calibration: date
+
+ENTITY ReferenceStandard:
+  id: string! unique
+  name: string!
+  parameter: string!
+  unit: string!
+  certificate_number: string!
+  issuing_authority: string!
+  calibration_date: date!
+  valid_until: date!
+  uncertainty: float!
+
+ENTITY Calibration:
+  id: uuid! auto
+  instrument: ref=Instrument
+  technician: ref=User
+  reference_standards: list
+  issue_date: date!
+  certificate_number: string! unique
+  measurements: json!
+  expanded_uncertainty: float
+  conforms: bool default=true
+  signed: bool default=false
+
+ENTITY User:
+  id: uuid! auto
+  email: string! unique
+  name: string!
+  role: enum(admin, technician, reviewer) default=technician
+
+# ─── Roles ───
+
+ROLES:
+  admin: all
+  technician: read, write Calibration Instrument
+  reviewer: read, sign Calibration
+
+# ─── Interfaces ───
+
+INTERFACE api:
+  type: rest
+  auth: jwt
+
+INTERFACE web:
+  type: spa
+  framework: react
+
+  PAGE dashboard:
+    widgets:
+      - stat: Calibration
+      - stat: Instrument
+      - chart: Calibration_by_month
+
+  PAGE intake:
+    from: Instrument
+    layout: workflow
+    steps:
+      1. scan/enter customer
+      2. add_instruments
+      3. schedule
+      4. print receipt
+
+  PAGE calibration_workflow:
+    from: Calibration
+    layout: guided
+    steps:
+      1. select instrument
+      2. select reference standard
+      3. record measurements
+      4. calculate uncertainty
+      5. review + sign
+
+  PAGE certificates:
+    from: Calibration
+    layout: crud
+
+# ─── Documents ───
+
+DOCUMENT calibration_certificate:
+  type: pdf
+  template: templates/certificate.html
+  data: Calibration
+
+# ─── Workflows ───
+
+WORKFLOW certificate_immutability:
+  trigger: event Calibration.signed
+  steps:
+    1. freeze: calibration record
+    2. record_audit
+
+WORKFLOW calibration_due_reminder:
+  trigger: schedule "0 8 * * MON"
+  steps:
+    1. find: Instrument WHERE next_calibration < today + 30 days
+    2. notify_customer
+
+# ─── Integrations ───
+
+INTEGRATION email:
+  type: smtp
+
+# ─── Deploy ───
+
+DEPLOY:
+  target: docker-compose
+  services:
+    traefik: true
+    postgres: true

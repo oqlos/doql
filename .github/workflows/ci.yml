@@ -1,0 +1,149 @@
+name: doql CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  # ─── Unit tests — parser, generators, plugins, LSP ──────────────────────
+  unit-tests:
+    name: "Unit tests (${{ matrix.python-version }})"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install doql (editable) + plugins + dev deps
+        run: |
+          pip install -e ".[dev,api,lsp]"
+          pip install -e ./plugins/doql-plugin-gxp
+          pip install -e ./plugins/doql-plugin-iso17025
+          pip install -e ./plugins/doql-plugin-fleet
+          pip install -e ./plugins/doql-plugin-erp
+      - name: Run pytest
+        run: pytest -v
+
+  # ─── End-to-end runtime smoke test ──────────────────────────────────────
+  runtime-smoke:
+    name: "Runtime deploy smoke (API + web)"
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install doql + plugins
+        run: |
+          pip install -e ".[dev,api]"
+          pip install -e ./plugins/doql-plugin-gxp
+          pip install -e ./plugins/doql-plugin-iso17025
+          pip install -e ./plugins/doql-plugin-fleet
+          pip install -e ./plugins/doql-plugin-erp
+
+      - name: Build asset-management example
+        run: doql -d examples/asset-management build --force
+
+      - name: Install API runtime deps
+        run: |
+          python -m venv /tmp/doql-runtime
+          /tmp/doql-runtime/bin/pip install -r examples/asset-management/build/api/requirements.txt
+          /tmp/doql-runtime/bin/pip install httpx
+
+      - name: Runtime smoke test (API /health + /auth + CRUD)
+        run: bash tests/runtime_deploy.sh
+
+      - name: Runtime smoke test (all examples /health)
+        run: bash tests/runtime_all_examples.sh
+
+      - name: Build generated web frontend
+        working-directory: examples/asset-management/build/web
+        run: |
+          npm ci --no-audit --no-fund || npm install --no-audit --no-fund
+          npm run build
+
+  # ─── Package build — sdist + wheel for core and plugins ─────────────────
+  packaging:
+    name: "Build wheels (core + plugins)"
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install build
+
+      - name: Build doql core
+        run: python -m build
+
+      - name: Build all plugins
+        run: |
+          for p in gxp iso17025 fleet erp; do
+            (cd plugins/doql-plugin-$p && python -m build)
+          done
+
+      - name: Verify fresh-venv install
+        run: |
+          python -m venv /tmp/verify
+          /tmp/verify/bin/pip install \
+            dist/*.whl \
+            plugins/doql-plugin-gxp/dist/*.whl \
+            plugins/doql-plugin-iso17025/dist/*.whl \
+            plugins/doql-plugin-fleet/dist/*.whl \
+            plugins/doql-plugin-erp/dist/*.whl
+          /tmp/verify/bin/doql --version
+          /tmp/verify/bin/doql init - --list-templates
+          /tmp/verify/bin/doql init /tmp/verify-proj --template saas-multi-tenant
+          cp /tmp/verify-proj/.env.example /tmp/verify-proj/.env
+          /tmp/verify/bin/doql -d /tmp/verify-proj build --force
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: doql-packages
+          path: |
+            dist/*
+            plugins/*/dist/*
+          if-no-files-found: error
+
+  # ─── Deploy the playground to GitHub Pages ──────────────────────────────
+  playground:
+    name: "Deploy playground to GitHub Pages"
+    runs-on: ubuntu-latest
+    needs: packaging
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: doql-packages
+          path: artifacts/
+      - name: Stage playground with freshly built wheel
+        run: |
+          mkdir -p pages
+          cp -r playground/* pages/
+          cp artifacts/dist/doql-*.whl pages/
+          ls -la pages/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: pages
+      - id: deploy
+        uses: actions/deploy-pages@v4

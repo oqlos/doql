@@ -113,19 +113,47 @@ const $astView = document.getElementById("ast-view");
 const $filesList = document.getElementById("files-list");
 const $modelsView = document.getElementById("models-view");
 const $schemasView = document.getElementById("schemas-view");
+const $envView = document.getElementById("env-view");
 const $doqlVersion = document.getElementById("doql-version");
 const $tabs = document.querySelectorAll(".pane-header.tabs button");
 
-// ─── Tab switching ─────────────────────────────────────────────────────
+// ─── Tab switching (with URL hash sync) ────────────────────────────────
+
+const TAB_NAMES = Array.from($tabs).map((b) => b.dataset.tab);
+
+function activateTab(name, { pushHash = true } = {}) {
+  if (!TAB_NAMES.includes(name)) return;
+  $tabs.forEach((b) => b.classList.toggle("tab-active", b.dataset.tab === name));
+  document.querySelectorAll(".tab-pane").forEach((p) => {
+    p.classList.toggle("tab-active", p.id === `tab-${name}`);
+  });
+  if (pushHash) {
+    const newHash = `#tab=${name}`;
+    if (location.hash !== newHash) {
+      history.replaceState(null, "", newHash);
+    }
+  }
+}
+
+function tabFromHash() {
+  const m = /(?:^|#|&)tab=([a-z0-9_-]+)/i.exec(location.hash || "");
+  return m && TAB_NAMES.includes(m[1]) ? m[1] : null;
+}
 
 $tabs.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    $tabs.forEach((b) => b.classList.remove("tab-active"));
-    document.querySelectorAll(".tab-pane").forEach((p) => p.classList.remove("tab-active"));
-    btn.classList.add("tab-active");
-    document.getElementById(`tab-${btn.dataset.tab}`).classList.add("tab-active");
-  });
+  btn.addEventListener("click", () => activateTab(btn.dataset.tab));
 });
+
+window.addEventListener("hashchange", () => {
+  const name = tabFromHash();
+  if (name) activateTab(name, { pushHash: false });
+});
+
+// Apply initial tab from URL (if present)
+{
+  const initial = tabFromHash();
+  if (initial) activateTab(initial, { pushHash: false });
+}
 
 // ─── Example picker ────────────────────────────────────────────────────
 
@@ -201,6 +229,8 @@ async function bootPyodide() {
               "files": [],
               "models_py": "",
               "schemas_py": "",
+              "env_vars": {},
+              "env_refs": [],
               "error": None,
           }
           try:
@@ -218,7 +248,27 @@ async function bootPyodide() {
                   "line": getattr(pe, "line", 0),
               })
 
-          issues = _parser.validate(spec, env_vars={})
+          # Default playground env: seed common hosts with localhost and
+          # auto-fill any referenced env var with 'localhost' so previews
+          # don't emit "env var not found in .env" warnings.
+          _default_env = {
+              "DOMAIN": "app.localhost",
+              "HOST": "localhost",
+              "API_HOST": "api.localhost",
+              "WEB_HOST": "web.localhost",
+              "DB_HOST": "db.localhost",
+              "REDIS_HOST": "redis.localhost",
+              "SMTP_HOST": "smtp.localhost",
+              "TRAEFIK_HOST": "traefik.localhost",
+              "LE_EMAIL": "ops@localhost",
+              "DATABASE_URL": "sqlite:///./data/app.db",
+          }
+          _env = dict(_default_env)
+          for _ref in (spec.env_refs or []):
+              _env.setdefault(_ref, "localhost")
+          result["env_vars"] = _env
+          result["env_refs"] = list(spec.env_refs or [])
+          issues = _parser.validate(spec, env_vars=_env)
           for i in issues:
               result["diagnostics"].append({
                   "severity": i.severity,
@@ -321,6 +371,7 @@ function runBuild() {
   renderDiagnostics(r.diagnostics);
   renderAst(r.spec);
   renderFiles(r.files);
+  renderEnv(r.env_vars, r.env_refs);
   $modelsView.textContent = r.models_py || "(nothing to generate)";
   $schemasView.textContent = r.schemas_py || "(nothing to generate)";
 }
@@ -354,6 +405,22 @@ function renderDiagnostics(list) {
 function renderAst(spec) {
   if (!spec) { $astView.textContent = ""; return; }
   $astView.textContent = JSON.stringify(spec, null, 2);
+}
+
+function renderEnv(envVars, envRefs) {
+  if (!envVars) { $envView.textContent = ""; return; }
+  const refs = new Set(envRefs || []);
+  const lines = [
+    "# Playground .env (auto-seeded with localhost defaults)",
+    "# Referenced by spec: " + (envRefs && envRefs.length ? envRefs.join(", ") : "(none)"),
+    "",
+  ];
+  const keys = Object.keys(envVars).sort();
+  for (const k of keys) {
+    const marker = refs.has(k) ? "  # ← referenced via env." + k : "";
+    lines.push(`${k}=${envVars[k]}${marker}`);
+  }
+  $envView.textContent = lines.join("\n");
 }
 
 function renderFiles(files) {

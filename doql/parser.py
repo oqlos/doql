@@ -32,6 +32,8 @@ class ValidationIssue:
     path: str
     message: str
     severity: str = "error"  # "error" | "warning"
+    line: int = 0   # 0-indexed, 0 = unknown
+    column: int = 0
 
 
 @dataclass
@@ -215,6 +217,7 @@ class DoqlSpec:
     roles: list[Role] = field(default_factory=list)
     deploy: Deploy = field(default_factory=Deploy)
     env_refs: list[str] = field(default_factory=list)
+    parse_errors: list[ValidationIssue] = field(default_factory=list)
 
 
 # ────────────────────────────────────────────────────────
@@ -231,22 +234,21 @@ _BLOCK_RE = re.compile(
 )
 
 
-def _split_blocks(text: str) -> list[tuple[str, str, str]]:
-    """Split .doql text into (keyword, rest_of_header, body) blocks."""
+def _split_blocks(text: str) -> list[tuple[str, str, str, int]]:
+    """Split .doql text into (keyword, rest_of_header, body, start_line) blocks."""
     matches = list(_BLOCK_RE.finditer(text))
-    blocks: list[tuple[str, str, str]] = []
+    blocks: list[tuple[str, str, str, int]] = []
     for i, m in enumerate(matches):
         keyword = m.group(1)
-        # header = rest of the first line after the keyword
         line_end = text.find("\n", m.start())
         if line_end == -1:
             line_end = len(text)
         header = text[m.end():line_end].strip()
-        # body = everything indented until the next block
         body_start = line_end + 1
         body_end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
         body = text[body_start:body_end]
-        blocks.append((keyword, header, body))
+        start_line = text[:m.start()].count("\n")
+        blocks.append((keyword, header, body, start_line))
     return blocks
 
 
@@ -405,12 +407,34 @@ def parse_file(path: pathlib.Path) -> DoqlSpec:
     """Parse a .doql file into a DoqlSpec."""
     if not path.exists():
         raise DoqlParseError(f"File not found: {path}")
+    return parse_text(path.read_text(encoding="utf-8"))
 
-    text = path.read_text(encoding="utf-8")
+
+def parse_text(text: str) -> DoqlSpec:
+    """Parse .doql source text into a DoqlSpec (in-memory, no disk I/O).
+
+    Uses error recovery: malformed blocks are skipped and recorded in
+    ``spec.parse_errors`` rather than raising.
+    """
     spec = DoqlSpec()
     spec.env_refs = _collect_env_refs(text)
 
-    for keyword, header, body in _split_blocks(text):
+    for keyword, header, body, start_line in _split_blocks(text):
+        try:
+            _apply_block(spec, keyword, header, body)
+        except Exception as e:
+            spec.parse_errors.append(ValidationIssue(
+                path=f"{keyword}",
+                message=f"Failed to parse {keyword} block: {e}",
+                severity="error",
+                line=start_line,
+            ))
+    return spec
+
+
+def _apply_block(spec: DoqlSpec, keyword: str, header: str, body: str) -> None:
+    """Apply a single parsed block to *spec*. Raises on malformed input."""
+    if True:
 
         if keyword == "APP":
             m = re.match(r':\s*"(.+)"', header)
@@ -547,12 +571,23 @@ def parse_file(path: pathlib.Path) -> DoqlSpec:
             ))
 
         elif keyword in ("ROLES", "ROLE"):
-            for rm in re.finditer(r'^\s+-\s+(\w+)', body, re.MULTILINE):
-                spec.roles.append(Role(name=rm.group(1)))
-            # inline role name
-            name = header.split(":")[0].strip()
-            if name and name not in [r.name for r in spec.roles]:
-                spec.roles.append(Role(name=name))
+            # Match role declarations at one level of indent: "  <name>:"
+            # (two spaces or tab); do NOT pick up nested list items like
+            # "- read: ..." which are permission verbs, not role names.
+            seen = {r.name for r in spec.roles}
+            for rm in re.finditer(r'^(?:  |\t)(\w+):\s*$', body, re.MULTILINE):
+                name = rm.group(1)
+                # Skip role-definition keywords (not real role names)
+                if name in {"can", "cannot", "extends", "scope", "permissions", "can_read_only"}:
+                    continue
+                if name not in seen:
+                    spec.roles.append(Role(name=name))
+                    seen.add(name)
+            # Handle inline `ROLE <name>:` form (singular)
+            if keyword == "ROLE":
+                name = header.split(":")[0].strip()
+                if name and name not in seen:
+                    spec.roles.append(Role(name=name))
 
         elif keyword == "SCENARIOS":
             for im in re.finditer(r'IMPORT:\s*(.+)', body):
@@ -578,8 +613,6 @@ def parse_file(path: pathlib.Path) -> DoqlSpec:
             if rootless_s == "true":
                 rootless = True
             spec.deploy = Deploy(target=target, rootless=rootless)
-
-    return spec
 
 
 # ────────────────────────────────────────────────────────

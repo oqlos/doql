@@ -353,12 +353,20 @@ def _gen_entity_page(ent: Entity) -> str:
     form_init = ", ".join(f"{f.name}: ''" for f in form_fields)
     inputs = "\n".join(filter(None, (_field_input(f) for f in form_fields)))
 
+    # Always include `id` in the TS interface (auto-PK on the backend when
+    # the entity has no explicit id field).
+    interface_fields = []
+    if not any(f.name == "id" for f in visible_fields):
+        interface_fields.append("id: any")
+    interface_fields.extend(f"{f.name}: any" for f in visible_fields)
+    interface_body = "; ".join(interface_fields)
+
     return textwrap.dedent(f"""\
         import React from 'react';
         import {{ api }} from '../api';
 
         interface {ent.name} {{
-          {"; ".join(f"{f.name}: any" for f in visible_fields)};
+          {interface_body};
         }}
 
         export default function {ent.name}Page() {{

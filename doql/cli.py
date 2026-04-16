@@ -26,6 +26,19 @@ class BuildContext:
 
 
 def cmd_init(args) -> int:
+    if getattr(args, "list_templates", False):
+        scaffolds_dir = pathlib.Path(__file__).parent / "scaffolds"
+        templates = sorted(p.name for p in scaffolds_dir.iterdir() if p.is_dir())
+        print("Available doql templates:")
+        for t in templates:
+            doql = scaffolds_dir / t / "app.doql"
+            first_line = ""
+            if doql.exists():
+                with doql.open() as fh:
+                    first_line = fh.readline().strip()
+            print(f"  {t:24} — {first_line}")
+        return 0
+
     template = args.template or "minimal"
     target = pathlib.Path(args.name)
     if target.exists():
@@ -538,8 +551,9 @@ def main() -> int:
     sub = p.add_subparsers(dest="cmd", required=True)
 
     s = sub.add_parser("init", help="Create new project from template")
-    s.add_argument("name", help="Project name / directory")
-    s.add_argument("--template", "-t", help="Template (minimal|asset-management|calibration-lab|iot-fleet)")
+    s.add_argument("name", help="Project name / directory (use '-' with --list to just list)")
+    s.add_argument("--template", "-t", help="Template name — use --list-templates to see all")
+    s.add_argument("--list-templates", action="store_true", help="List available templates and exit")
     s.set_defaults(func=cmd_init)
 
     s = sub.add_parser("validate", help="Validate .doql + .env")

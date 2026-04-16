@@ -1,0 +1,97 @@
+APP: "My SaaS"
+VERSION: "0.1.0"
+DOMAIN: "app.example.com"
+
+LANGUAGES: [en, pl, de]
+
+# ─── Data Model ───
+
+ENTITY Tenant:
+  id: uuid! auto
+  slug: string! unique
+  name: string!
+  plan: enum(free, pro, enterprise) default=free
+  created_at: datetime auto
+
+ENTITY User:
+  id: uuid! auto
+  tenant_id: ref=Tenant
+  email: string! unique
+  name: string
+  role: enum(admin, member) default=member
+  created_at: datetime auto
+
+ENTITY Project:
+  id: uuid! auto
+  tenant_id: ref=Tenant
+  name: string!
+  description: text
+  status: enum(active, archived) default=active
+  owner: ref=User
+  created_at: datetime auto
+
+ENTITY Task:
+  id: uuid! auto
+  tenant_id: ref=Tenant
+  project: ref=Project
+  title: string!
+  description: text
+  status: enum(todo, in_progress, done) default=todo
+  assigned_to: ref=User
+  due_date: date
+  created_at: datetime auto
+
+# ─── Roles ───
+
+ROLES:
+  admin: all
+  member: read, write own
+
+# ─── Interfaces ───
+
+INTERFACE api:
+  type: rest
+  auth: jwt
+
+INTERFACE web:
+  type: spa
+  framework: react
+
+  PAGE dashboard:
+    widgets:
+      - stat: Project
+      - stat: Task
+      - recent: Task
+
+  PAGE tenants:
+    from: Tenant
+    layout: crud
+
+  PAGE users:
+    from: User
+    layout: crud
+
+  PAGE projects:
+    from: Project
+    layout: crud
+
+  PAGE tasks:
+    from: Task
+    layout: kanban
+
+# ─── Integrations ───
+
+INTEGRATION email:
+  type: smtp
+
+INTEGRATION notifications:
+  channels: [email, slack]
+
+# ─── Deploy ───
+
+DEPLOY:
+  target: docker-compose
+  services:
+    traefik: true
+    postgres: true
+    redis: true

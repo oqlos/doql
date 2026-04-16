@@ -1,0 +1,51 @@
+{
+  "build": {
+    "beforeBuildCommand": "cd ../../web && npm run build",
+    "beforeDevCommand": "cd ../../web && npm run dev",
+    "devPath": "http://localhost:5173",
+    "distDir": "../../web/dist"
+  },
+  "package": {
+    "productName": "Notes",
+    "version": "1.0.0"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": false,
+      "shell": {
+        "open": true
+      }
+    },
+    "bundle": {
+      "active": true,
+      "identifier": "com.doql.notes",
+      "targets": "all",
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ]
+    },
+    "security": {
+      "csp": null
+    },
+    "systemTray": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true
+    },
+    "updater": {
+      "active": false,
+      "endpoints": []
+    },
+    "windows": [
+      {
+        "title": "Notes",
+        "width": 1280,
+        "height": 800,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ]
+  }
+}

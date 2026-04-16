@@ -1,0 +1,99 @@
+APP: "IoT Fleet Manager"
+VERSION: "0.1.0"
+DOMAIN: "fleet.example.com"
+
+LANGUAGES: [en]
+
+# ─── Data Model ───
+
+ENTITY Tenant:
+  id: uuid! auto
+  slug: string! unique
+  name: string!
+  plan: enum(starter, growth, enterprise) default=starter
+
+ENTITY Node:
+  id: string! unique
+  tenant_id: ref=Tenant
+  name: string
+  serial: string unique
+  hardware: string
+  firmware_version: string
+  status: enum(provisioned, online, offline, degraded, retired) default=provisioned
+  last_seen: datetime
+  location: string
+  enrolled_at: datetime auto
+
+ENTITY FirmwareBuild:
+  id: uuid! auto
+  version: string!
+  channel: enum(stable, beta, canary) default=stable
+  checksum: string!
+  signed: bool default=false
+  released_at: datetime auto
+  notes: text
+
+ENTITY Deployment:
+  id: uuid! auto
+  tenant_id: ref=Tenant
+  firmware: ref=FirmwareBuild
+  target_filter: json
+  status: enum(draft, canary, rolling, completed, rolled_back) default=draft
+  canary_pct: float default=5.0
+  rollback_on_failure_pct: float default=1.0
+  created_at: datetime auto
+
+# ─── Interfaces ───
+
+INTERFACE api:
+  type: rest
+  auth: jwt
+
+INTERFACE web:
+  type: pwa
+  framework: react
+
+  PAGE dashboard:
+    widgets:
+      - stat: Node
+      - health_map: Node
+      - chart: uptime_by_tenant
+
+  PAGE nodes:
+    from: Node
+    layout: crud
+
+  PAGE firmware:
+    from: FirmwareBuild
+    layout: crud
+
+  PAGE deployments:
+    from: Deployment
+    layout: workflow
+
+# ─── Workflows ───
+
+WORKFLOW heartbeat_check:
+  trigger: schedule "*/1 * * * *"
+  steps:
+    1. find: Node WHERE last_seen < now - 5 min AND status=online
+    2. UPDATE status=offline
+    3. alert
+
+WORKFLOW ota_canary:
+  trigger: manual
+  steps:
+    1. select firmware + target_filter
+    2. deploy to canary_pct of fleet
+    3. monitor failure rate
+    4. advance or rollback
+
+# ─── Deploy ───
+
+DEPLOY:
+  target: docker-compose
+  services:
+    traefik: true
+    postgres: true
+    redis: true
+    mqtt: true
