@@ -122,4 +122,46 @@ def export_openapi(spec: DoqlSpec, out: IO[str]) -> None:
     json.dump(openapi, out, indent=2)
 
 
-__all__ = ["generate", "export_openapi"]
+# Re-export from submodules for backward compatibility
+from .common import (
+    TYPE_MAP,
+    sa_type,
+    py_type,
+    py_default,
+    safe_name,
+    snake,
+)
+from .database import gen_database
+from .models import gen_models
+from .schemas import gen_schemas
+from .routes import gen_routes
+from .auth import gen_auth
+from .alembic import (
+    gen_alembic_ini,
+    gen_alembic_env,
+    gen_initial_migration,
+)
+from .main import gen_main, gen_requirements
+
+__all__ = [
+    "generate",
+    "export_openapi",
+    # common
+    "TYPE_MAP",
+    "sa_type",
+    "py_type",
+    "py_default",
+    "safe_name",
+    "snake",
+    # submodules
+    "gen_database",
+    "gen_models",
+    "gen_schemas",
+    "gen_routes",
+    "gen_auth",
+    "gen_alembic_ini",
+    "gen_alembic_env",
+    "gen_initial_migration",
+    "gen_main",
+    "gen_requirements",
+]

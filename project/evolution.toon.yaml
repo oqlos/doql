@@ -14,37 +14,34 @@ COMPLETED[2026-04-16]:
     - All 11 generator tests pass
     - Backward-compatible shim preserves all 17 import paths
 
-NEXT[8] (remaining high-impact items):
-  [1] !! SPLIT           doql/generators/web_gen.py
-      WHY: 649L, 0 classes, max CC=13
-      EFFORT: ~4h  IMPACT: 8437
+  ✓ SPLIT doql/generators/web_gen.py → doql/generators/web_gen/ package
+    - Created 7 focused modules (common, config, core, components, pages, router, pwa)
+    - Modularized 649L monolithic file into focused submodules
+    - All 11 generator tests pass
+    - Backward-compatible shim preserves all 20 import paths
 
-  [2] !! SPLIT-FUNC      cmd_sync  CC=29  fan=32
+NEXT[6] (remaining high-impact items):
+  [1] !! SPLIT-FUNC      cmd_sync  CC=29  fan=32
       WHY: CC=29 exceeds 15
       EFFORT: ~1h  IMPACT: 928
 
-  [3] !  SPLIT-FUNC      cmd_build  CC=17  fan=22
+  [2] !  SPLIT-FUNC      cmd_build  CC=17  fan=22
       WHY: CC=17 exceeds 15
       EFFORT: ~1h  IMPACT: 374
 
-  [4] !  SPLIT-FUNC      _extract_entity_fields  CC=15  fan=14
+  [3] !  SPLIT-FUNC      _extract_entity_fields  CC=15  fan=14
       WHY: CC=15 exceeds 15
       EFFORT: ~1h  IMPACT: 210
 
-  [5] !  SPLIT-FUNC      generate  CC=15  fan=12
+  [4] !  SPLIT-FUNC      generate  CC=15  fan=12
       WHY: CC=15 exceeds 15
       EFFORT: ~1h  IMPACT: 180
 
-  [6] !  SPLIT-FUNC      _gen_models  CC=16  fan=9  (in api_gen, now fixed)
-      WHY: CC=16 exceeds 15
-      EFFORT: ~1h  IMPACT: 144
-      STATUS: RESOLVED by api_gen split
-
-  [7] !  REFACTOR        cli.py cmd_sync dispatch
+  [5] !  REFACTOR        cli.py cmd_sync dispatch
       WHY: cmd_sync has 10+ conditional branches for selective rebuild
       EFFORT: ~2h  IMPACT: 600
 
-  [8] !  REFACTOR        cli.py cmd_build sections
+  [6] !  REFACTOR        cli.py cmd_build sections
       WHY: Sequential generator calls with repeated patterns
       EFFORT: ~2h  IMPACT: 300
 
@@ -58,9 +55,10 @@ METRICS-UPDATE (post-refactoring):
     - BEFORE: 710L, max CC=22 (_gen_schemas), CC=16 (_gen_models)
     - AFTER:  4L shim + api_gen/ package, max CC≈8 per module
 
-RISKS-UPDATE:
-  ⚠ Splitting doql/generators/web_gen.py may break 20 import paths
-    → Will use same shim pattern as api_gen (proven safe)
+  doql/generators/web_gen.py:
+    - BEFORE: 649L, max CC=13 (_gen_entity_page), CC=11 (_gen_layout)
+    - AFTER:  4L shim + web_gen/ package, max CC≈8 per module
+    - All 20 import paths preserved via shim
 
 METRICS-TARGET:
   CC̄:          4.1 → ≤2.9 (progress: ~3.5 after parser split)
