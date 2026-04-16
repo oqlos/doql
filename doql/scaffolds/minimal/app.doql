@@ -1,0 +1,35 @@
+APP: "My App"
+VERSION: "0.1.0"
+
+# ─── Data Model ───
+
+ENTITY Thing:
+  id: uuid! auto
+  name: string!
+  description: text
+  created_at: datetime auto
+
+# ─── Interfaces ───
+
+INTERFACE api:
+  type: rest
+  auth: jwt
+
+INTERFACE web:
+  type: spa
+  framework: react
+  
+  PAGE dashboard:
+    widgets:
+      - stat: Thing
+  
+  PAGE things:
+    from: Thing
+    layout: crud
+
+# ─── Deploy ───
+
+DEPLOY:
+  target: docker-compose
+  services:
+    traefik: true

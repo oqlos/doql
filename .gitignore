@@ -1,0 +1,34 @@
+# Build artifacts
+/build/
+doql.lock
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node (generated web/)
+node_modules/
+.vite/
+
+# Secrets
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Logs
+*.log
+logs/

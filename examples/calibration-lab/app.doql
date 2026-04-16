@@ -1,0 +1,216 @@
+APP: "Calibration Lab Manager"
+VERSION: "0.9.0"
+DOMAIN: "calibration-lab"
+LANGUAGES: [pl, en, de]
+
+# ─────────────────────────────────────────────────
+# ISO 17025 — laboratorium kalibracyjne
+# ─────────────────────────────────────────────────
+
+ENTITY Instrument:
+  serial: string! unique
+  manufacturer: string!
+  model: string!
+  category: enum[scale, pressure_gauge, thermometer, multimeter, torque]
+  range_min: decimal(20,6)
+  range_max: decimal(20,6)
+  unit: string!
+  uncertainty_class: string
+  owner_organization: string
+  last_calibration: date
+  next_calibration: date computed
+  certificate_valid_until: date
+  
+  COMPUTED next_calibration:
+    = last_calibration + calibration_interval
+  
+  COMPUTED calibration_interval:
+    IF category == scale → 12 months
+    IF category == pressure_gauge → 6 months
+    ELSE → 12 months
+
+ENTITY ReferenceStandard:
+  # Wzorce odniesienia (dakks/ilac traceability)
+  instrument: Instrument ref
+  traceability_chain: text!       # NIST / PTB / GUM
+  uncertainty_budget: json
+  certificate_pdf: pdf!
+  valid_until: date!
+
+ENTITY Calibration:
+  id: uuid! auto
+  instrument: Instrument ref
+  performed_by: Operator ref
+  reviewed_by: Operator ref       # 4-eyes principle
+  reference_used: ReferenceStandard ref
+  scenario: oql
+  date: datetime auto
+  measurements: json              # array {setpoint, measured, uncertainty}
+  uncertainty_calculation: json   # GUM-compliant
+  result: enum[pass, fail, out_of_tolerance]
+  certificate_pdf: pdf computed   # ISO 17025 format
+  certificate_number: string auto
+  
+  VALIDATE:
+    reviewed_by != performed_by   # 4-eyes
+  
+  AUDIT: full signed              # tamper-evident
+
+ENTITY Customer:
+  name: string!
+  address: text
+  contact_email: email
+  vat_id: string
+  active: bool default=true
+
+ENTITY CalibrationOrder:
+  customer: Customer ref
+  instruments: [Instrument]
+  received_date: date
+  due_date: date
+  priority: enum[normal, rush, urgent]
+  status: enum[received, in_progress, review, ready, shipped]
+  total_price: decimal(10,2)
+  invoice_number: string
+
+# ─────────────────────────────────────────────────
+# SCENARIUSZE KALIBRACYJNE
+# ─────────────────────────────────────────────────
+
+SCENARIOS:
+  IMPORT: scenarios/*.oql
+  
+  REGISTER scenario_scale_calibration:
+    file: scenarios/kalibracja-wagi.oql
+    applies_to: Instrument WHERE category=scale
+    requires_reference: ReferenceStandard WHERE category=scale
+  
+  REGISTER scenario_pressure_calibration:
+    file: scenarios/kalibracja-manometru.oql
+    applies_to: Instrument WHERE category=pressure_gauge
+
+# ─────────────────────────────────────────────────
+# INTERFEJSY
+# ─────────────────────────────────────────────────
+
+INTERFACE web:
+  type: spa
+  framework: react
+  theme: material
+  
+  PAGE lab_overview:
+    widgets:
+      - stat: CalibrationOrder WHERE status IN [received, in_progress]
+      - stat: CalibrationOrder WHERE due_date < today + 3 days COLOR=yellow
+      - chart: Calibration OVER 12 months GROUP BY category
+      - table: CalibrationOrder WHERE status=review LIMIT 5
+  
+  PAGE intake:
+    from: CalibrationOrder
+    layout: workflow
+    steps:
+      1. scan/enter customer
+      2. add_instruments: barcode scan OR manual
+      3. set due_date + priority
+      4. print receipt
+      5. print labels for instruments
+  
+  PAGE calibration_workflow:
+    from: Calibration
+    layout: guided
+    steps:
+      1. select instrument from order
+      2. verify reference_standard valid
+      3. run_scenario (live measurements from oqlos)
+      4. uncertainty_calculation (auto from measurements + reference)
+      5. review (by different operator)
+      6. generate_certificate (ISO 17025 template)
+      7. sign (digital)
+  
+  PAGE certificates:
+    from: Calibration
+    filter_default: result=pass
+    actions:
+      - download pdf
+      - verify signature
+      - resend to customer
+
+INTERFACE api:
+  type: rest
+  auth: jwt
+  openapi: true
+  
+  ENDPOINT GET /certificates/{number}/verify:
+    public: true                   # dostęp bez logowania
+    returns: { valid: bool, signature_ok: bool, issued: date, not_after: date }
+    description: "Publiczna weryfikacja certyfikatów"
+
+# ─────────────────────────────────────────────────
+# INTEGRACJE COMPLIANCE
+# ─────────────────────────────────────────────────
+
+INTEGRATION reports:
+  generator: weasyprint
+  templates: templates/reports/iso17025/
+  signed: true
+  signature_method: xades          # XAdES dla EU
+
+INTEGRATION storage:
+  type: s3-compatible
+  retention: 10 years              # wymóg ISO 17025
+  encryption: at-rest + in-transit
+  immutable: true                  # WORM
+
+INTEGRATION accounting:
+  provider: optima                 # dla PL
+  export_format: xml
+
+# ─────────────────────────────────────────────────
+# WORKFLOW
+# ─────────────────────────────────────────────────
+
+WORKFLOW calibration_due_reminder:
+  trigger: schedule "0 8 * * MON"
+  steps:
+    1. find: Instrument WHERE next_calibration < today + 30 days
+    2. group_by: owner_organization
+    3. FOR EACH org:
+       - notify_customer: org.contact_email TEMPLATE "calibration_due"
+
+WORKFLOW certificate_immutability:
+  trigger: event Calibration.signed
+  steps:
+    1. freeze: calibration record
+    2. hash + sign: certificate_pdf
+    3. upload: S3 with Object Lock (WORM)
+    4. audit_log: "Certificate ${number} sealed"
+
+# ─────────────────────────────────────────────────
+# ROLE (ISO 17025 compliance)
+# ─────────────────────────────────────────────────
+
+ROLES:
+  technician:
+    can: [create Calibration, perform measurements]
+    cannot: [review own calibration]
+  
+  metrologist:
+    extends: technician
+    can: [review calibrations, sign certificates]
+  
+  quality_manager:
+    can: [view audit_log, export compliance_report, manage reference_standards]
+  
+  customer:                        # self-service portal
+    can_read_only: true
+    scope: my_instruments
+    can: [view certificates, request_calibration]
+
+DEPLOY:
+  target: quadlet                  # rootless Podman — bezpieczniej dla compliance
+  immutable_logs: true
+  backup:
+    provider: restic
+    schedule: "0 2 * * *"
+    retention: 10y                 # ISO wymóg
+    encryption: gpg

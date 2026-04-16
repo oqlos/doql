@@ -1,0 +1,23 @@
+[
+  {
+    "id": "cust-001",
+    "name": "OSP Gdańsk Centrum",
+    "address": "ul. Strażacka 12, 80-001 Gdańsk",
+    "contact_email": "kontakt@osp-gdansk.pl",
+    "vat_id": "PL0987654321"
+  },
+  {
+    "id": "cust-002",
+    "name": "ZPB PolmetCzęstochowa",
+    "address": "ul. Przemysłowa 5, 42-200 Częstochowa",
+    "contact_email": "jakosc@polmet.pl",
+    "vat_id": "PL5555555555"
+  },
+  {
+    "id": "cust-003",
+    "name": "Kopalnia Soli Wieliczka",
+    "address": "ul. Daniłowicza 10, 32-020 Wieliczka",
+    "contact_email": "bhp@kopalnia-wieliczka.pl",
+    "vat_id": "PL7777777777"
+  }
+]

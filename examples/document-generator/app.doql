@@ -1,0 +1,259 @@
+APP: "Calibration Certificate Generator"
+VERSION: "0.3.0"
+DOMAIN: "document-generation"
+
+# ─────────────────────────────────────────────────
+# Przykład DOQL bez serwera aplikacji —
+# tylko generator dokumentów PDF z szablonów HTML,
+# karmiony JSON + API oqlos.
+# ─────────────────────────────────────────────────
+
+# ─── Źródła danych ───
+
+DATA customers:
+  source: json
+  file: data/customers.json
+
+DATA instruments:
+  source: sqlite
+  file: data/instruments.db
+  read_only: true
+
+DATA measurements:
+  source: api
+  url: env.OQLOS_URL + "/api/v1/executions"
+  auth: bearer
+  token: env.OQLOS_API_KEY
+  cache: 5m
+
+DATA organization:
+  source: json
+  file: data/organization.json
+  env_overrides: true         # ORG_* w .env nadpisuje pola
+
+# ─── Szablony reużywalne ───
+
+TEMPLATE letterhead:
+  type: html
+  file: templates/partials/letterhead.html
+  vars: [org_name, org_address, logo_url, iso_accreditation]
+
+TEMPLATE measurement_table:
+  type: html
+  file: templates/partials/measurement_table.html
+  vars: [measurements, uncertainty, unit]
+
+TEMPLATE signature_block:
+  type: html
+  file: templates/partials/signature_block.html
+  vars: [performed_by, reviewed_by, date]
+
+# ─── Dokumenty ───
+
+DOCUMENT calibration_certificate:
+  type: pdf
+  template: templates/cert_iso17025.html
+  data:
+    organization: DATA organization
+    instrument: DATA instruments WHERE id = $args.instrument_id
+    customer: DATA customers WHERE id = $args.customer_id
+    measurements: DATA measurements WHERE execution_id = $args.execution_id
+    performed_by: $args.operator
+    reviewed_by: $args.reviewer
+    date: today
+
+  partials:
+    - letterhead
+    - measurement_table
+    - signature_block
+
+  styling:
+    paper: A4
+    margin: 2.5cm
+    fonts:
+      - family: "Inter"
+        source: assets/fonts/Inter.ttf
+      - family: "JetBrains Mono"
+        source: assets/fonts/JetBrainsMono.ttf
+
+  metadata:
+    title: "Świadectwo wzorcowania ${instrument.serial}"
+    author: $performed_by.name
+    subject: "ISO/IEC 17025 Calibration Certificate"
+    keywords: [kalibracja, ISO 17025, ${instrument.category}]
+
+  signature:
+    enabled: true
+    method: pades             # PDF-native signature
+    key: env.SIGNING_KEY_PATH
+    reason: "ISO 17025 compliance"
+    location: $organization.city
+
+  output:
+    path: "certs/${instrument.serial}_${date}.pdf"
+    storage: local            # w tym przykładzie lokalnie
+
+  hooks:
+    on_generate:
+      - audit_log: "Cert ${id} generated for ${instrument.serial}"
+      - email_if: $customer.email IS NOT NULL
+          TEMPLATE: cert_delivery
+          ATTACH: $self
+
+DOCUMENT non_conformance_report:
+  type: pdf
+  template: templates/ncr.html
+  data:
+    instrument: DATA instruments WHERE id = $args.instrument_id
+    measurements: DATA measurements WHERE execution_id = $args.execution_id
+    deviations: $args.deviations
+  
+  output:
+    path: "ncr/${instrument.serial}_${date}.pdf"
+
+DOCUMENT qr_label:
+  type: html
+  template: templates/label.html
+  data:
+    instrument: DATA instruments WHERE id = $args.instrument_id
+    cert_url: env.APP_URL + "/verify/" + $args.cert_id
+  
+  styling:
+    paper: custom
+    width: 50mm
+    height: 30mm
+    margin: 2mm
+  
+  output:
+    path: "labels/${instrument.serial}.html"
+
+# ─── Raporty okresowe ───
+
+REPORT monthly_calibration_summary:
+  schedule: "0 6 1 * *"       # 1-go miesiąca o 6:00
+  template: templates/monthly_summary.html
+  output: pdf
+  
+  query:
+    certificates_issued:
+      from: DATA measurements
+      where: date in last_month
+      count: true
+    by_category:
+      from: DATA measurements
+      group_by: instrument.category
+    failure_rate:
+      from: DATA measurements
+      where: date in last_month
+      compute: count_where(result=fail) / count()
+  
+  recipients:
+    to: [env.QUALITY_MANAGER_EMAIL]
+    cc: [env.COMPLIANCE_EMAIL]
+
+  retention: 10 years
+
+# ─── Klient API zewnętrzny ───
+
+API_CLIENT oqlos:
+  base_url: env.OQLOS_URL
+  auth: bearer
+  token: env.OQLOS_API_KEY
+  openapi: env.OQLOS_URL + "/openapi.json"
+  retry: 3
+  timeout: 30s
+
+# ─── Minimalny interfejs webowy do generowania ───
+
+INTERFACE web:
+  type: spa
+  framework: htmx              # lekki, wystarczy do tego
+  
+  PAGE home:
+    layout: single-column
+    content:
+      - heading: "Generator świadectw kalibracji"
+      - form:
+          fields:
+            - instrument_id: select FROM DATA instruments SHOW [serial, model]
+            - execution_id:  select FROM DATA measurements FILTERED BY instrument_id
+            - customer_id:   select FROM DATA customers
+            - operator:      current_user
+            - reviewer:      select FROM users WHERE role=metrologist
+          submit: "Generuj świadectwo"
+          action: GENERATE DOCUMENT calibration_certificate
+      - preview: live           # podgląd PDF po prawej stronie
+      - download_button: after_generate
+
+  PAGE verify:
+    path: /verify/{cert_id}
+    public: true                # dostęp bez logowania
+    content:
+      - fetch: cert from storage WHERE id = $cert_id
+      - show: { issued_date, instrument, status, signature_valid }
+      - action: "Pobierz PDF" → download
+
+# ─── Proste API do wywołania z zewnątrz ───
+
+INTERFACE api:
+  type: rest
+  auth: jwt
+  
+  ENDPOINT POST /certificates:
+    body:
+      instrument_id: string!
+      execution_id: string!
+      customer_id: string
+      operator: string
+      reviewer: string
+    action: GENERATE DOCUMENT calibration_certificate
+    returns: { id: uuid, url: string, signed: bool }
+  
+  ENDPOINT GET /certificates/{id}/verify:
+    public: true
+    action: VERIFY signature OF certificate WHERE id=$id
+    returns: { valid: bool, issued: date, instrument: object }
+
+# ─── Workflow ───
+
+WORKFLOW auto_generate_on_calibration_done:
+  trigger: webhook oqlos.scenario.completed
+  condition: $payload.scenario_type == "calibration"
+  steps:
+    - GENERATE DOCUMENT calibration_certificate WITH
+        instrument_id = $payload.instrument_id
+        execution_id  = $payload.execution_id
+        operator      = $payload.operator
+    - IF $result.success:
+      - email: $payload.customer_email ATTACH $generated
+    - ELSE:
+      - GENERATE DOCUMENT non_conformance_report
+      - notify: env.QUALITY_MANAGER_EMAIL
+
+# ─── Deploy: minimal, tylko generator + statyczny web ───
+
+DEPLOY:
+  target: quadlet
+  rootless: true
+  
+  containers:
+    - name: doqgen
+      image: auto
+      volume:
+        - ./templates:/app/templates:ro
+        - ./data:/app/data:ro
+        - ./assets:/app/assets:ro
+        - certs:/app/certs
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.doqgen.rule=Host(`${DOMAIN}`)"
+        - "traefik.http.routers.doqgen.tls.certresolver=letsencrypt"
+  
+  traefik:
+    as_quadlet: true
+    le_email: env.LE_EMAIL
+  
+  backup:
+    paths: [certs/, data/]
+    schedule: daily
+    retention: 10y

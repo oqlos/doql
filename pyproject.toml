@@ -1,0 +1,67 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "doql"
+version = "0.1.0a1"
+description = "Declarative OQL — build complete applications from a single .doql file"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [
+  { name = "Softreck", email = "hello@softreck.dev" },
+]
+keywords = ["dsl", "code-generation", "oqlos", "low-code", "saas", "asset-management"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Code Generators",
+]
+dependencies = [
+  "click>=8.1",
+  "pydantic>=2.0",
+  "pyyaml>=6.0",
+  "jinja2>=3.1",
+  "rich>=13.0",
+  "httpx>=0.25",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.4",
+  "pytest-asyncio",
+  "ruff",
+  "mypy",
+]
+api = [
+  "fastapi>=0.104",
+  "sqlalchemy>=2.0",
+  "alembic>=1.13",
+]
+
+[project.scripts]
+doql = "doql.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/softreck/doql"
+Documentation = "https://doql.dev"
+Repository = "https://github.com/softreck/doql"
+Issues = "https://github.com/softreck/doql/issues"
+Changelog = "https://github.com/softreck/doql/blob/main/CHANGELOG.md"
+
+[tool.setuptools.packages.find]
+include = ["doql*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.mypy]
+python_version = "3.10"
+strict = true

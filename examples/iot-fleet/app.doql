@@ -1,0 +1,178 @@
+APP: "IoT Fleet Manager"
+VERSION: "0.5.0"
+DOMAIN: "iot-fleet"
+
+# Zarządzanie flotą 100-10000 urządzeń z oqlos-agent na każdym.
+
+ENTITY Node:
+  id: uuid! auto
+  hostname: string! unique
+  location: geo
+  tags: [string]
+  hardware_type: enum[rpi4, rpi5, jetson_nano, x86]
+  firmware_version: string
+  last_seen: datetime
+  status: enum[online, offline, updating, error] computed
+  peripherals: json                # z introspection oqlos
+  
+  COMPUTED status:
+    IF last_seen > now - 60s → "online"
+    IF last_seen < now - 5min → "offline"
+    ELSE → "warning"
+
+ENTITY Telemetry:
+  node: Node ref
+  timestamp: datetime auto
+  cpu_load: float
+  memory_used: float
+  temperature_c: float
+  data: json                       # custom metrics
+  INDEX: [node, timestamp]         # time-series
+
+ENTITY Deployment:
+  name: string!
+  scenario: oql
+  target_filter: string            # np. "tags CONTAINS 'production'"
+  schedule: cron
+  last_run: datetime
+  next_run: datetime computed
+  success_rate: float computed
+
+ENTITY FirmwareBuild:
+  version: string!
+  release_notes: text
+  image_url: url
+  signature: string
+  targets: [string]                # hardware_type supported
+  tested: bool
+
+ENTITY OTAUpdate:
+  firmware: FirmwareBuild ref
+  targets: [Node]
+  status: enum[pending, rolling, paused, completed, failed]
+  started_at: datetime
+  progress: float computed
+
+INTERFACE web:
+  type: spa
+  framework: react
+  theme: tailwind
+  
+  PAGE fleet_map:
+    layout: fullscreen
+    map: leaflet
+    markers: Node colored_by=status
+    on_click: show_popup(node_info)
+  
+  PAGE fleet_list:
+    from: Node
+    filters: [status, hardware_type, location.country, tags]
+    bulk_actions:
+      - "Run Scenario" → SELECT scenario → ENQUEUE
+      - "OTA Update" → SELECT firmware → ENQUEUE
+      - "Restart"
+      - "Export Telemetry CSV"
+  
+  PAGE node_detail:
+    from: Node
+    tabs:
+      - overview: [hostname, status, peripherals, firmware_version]
+      - live_telemetry: realtime chart (SSE from oqlos-agent)
+      - scenarios: registered_scenarios FILTER node.compatible
+      - logs: tail (SSE)
+      - terminal: web-ssh
+  
+  PAGE deployments:
+    from: Deployment
+    actions:
+      - create new
+      - run now
+      - pause schedule
+
+INTERFACE api:
+  type: rest
+  auth: api-key                    # per-node API keys
+  rate_limit: 10000/min
+  
+  ENDPOINT POST /nodes/{id}/heartbeat:
+    body: { telemetry: json }
+    returns: { pending_commands: [] }
+    auth: node_key
+  
+  ENDPOINT POST /nodes/{id}/execute:
+    body: { scenario_id: string, args: json }
+    returns: { execution_id: string }
+    roles: [operator, admin]
+  
+  ENDPOINT WEBSOCKET /nodes/{id}/stream:
+    description: "Bi-directional telemetry + commands"
+
+INTEGRATION monitoring:
+  prometheus:
+    scrape_interval: 15s
+    targets: [auto from Node]
+  grafana:
+    auto_provision_dashboards: true
+    dashboards:
+      - fleet_overview
+      - node_detail
+      - sla_compliance
+
+INTEGRATION alerting:
+  - pagerduty:
+      config: env.PAGERDUTY_*
+      rules:
+        - "Node offline > 10 min" → severity=warning
+        - "Node offline > 1 hour" → severity=critical
+        - "Temperature > 80°C" → severity=critical
+
+INTEGRATION storage:
+  telemetry: influxdb           # time-series
+  config: env.INFLUXDB_*
+  retention: 90 days
+
+INTEGRATION ota:
+  strategy: canary               # 5% → 25% → 100%
+  rollback_on: failure_rate > 1%
+  signed: true
+
+WORKFLOW heartbeat_check:
+  trigger: schedule "*/1 * * * *"
+  steps:
+    1. find: Node WHERE last_seen < now - 5 min AND status=online
+    2. FOR EACH node:
+       - UPDATE status=offline
+       - alert: pagerduty SEVERITY=warning
+
+WORKFLOW ota_canary:
+  trigger: manual
+  input: { firmware: FirmwareBuild, target_filter: string }
+  steps:
+    1. select: 5% of matching nodes (canary)
+    2. push_update: canary
+    3. wait: 1 hour
+    4. IF failure_rate < 1%:
+       - push_update: next 20%
+       - wait: 2 hours
+    5. IF still ok:
+       - push_update: remaining
+    6. ELSE:
+       - rollback
+       - alert: pagerduty SEVERITY=critical
+
+ROLES:
+  operator:
+    can: [run_scenario, view_telemetry]
+  ops:
+    can: [ota_update, node_restart, view_logs]
+  admin:
+    can: [*]
+
+DEPLOY:
+  target: kubernetes             # dla skalowania
+  helm_chart: true
+  ingress: traefik
+  service_mesh: optional
+  autoscale:
+    api: 2-10 replicas
+    worker: 1-5 replicas

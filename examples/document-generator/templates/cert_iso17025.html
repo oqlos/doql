@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ metadata.title }}</title>
+  <style>
+    @page { size: A4; margin: 2.5cm; }
+    body { font-family: 'Inter', sans-serif; font-size: 10pt; color: #1a1a1a; }
+    .header { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 1cm; }
+    .logo { width: 4cm; }
+    .org { text-align: right; font-size: 9pt; }
+    .title { text-align: center; font-size: 18pt; margin: 1.5cm 0 0.5cm; font-weight: bold; }
+    .subtitle { text-align: center; font-size: 11pt; color: #555; margin-bottom: 1.5cm; }
+    .cert-number { text-align: center; font-size: 12pt; font-weight: bold; padding: 0.3cm; background: #f0f0f0; margin-bottom: 1cm; }
+    .section { margin-bottom: 0.8cm; }
+    .section-title { font-size: 11pt; font-weight: bold; border-bottom: 1px solid #888; padding-bottom: 2mm; margin-bottom: 4mm; }
+    .grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 1cm; }
+    .field { margin-bottom: 3mm; }
+    .field .label { font-size: 8pt; text-transform: uppercase; color: #666; }
+    .field .value { font-size: 10pt; font-weight: 500; }
+    table.measurements { width: 100%; border-collapse: collapse; font-size: 9pt; }
+    table.measurements th { background: #f0f0f0; padding: 4mm; text-align: left; border: 1px solid #888; }
+    table.measurements td { padding: 3mm 4mm; border: 1px solid #888; }
+    .signatures { display: flex; justify-content: space-between; margin-top: 2cm; page-break-inside: avoid; }
+    .signature { width: 45%; border-top: 1px solid #000; padding-top: 3mm; }
+    .signature .name { font-weight: bold; }
+    .signature .role { font-size: 8pt; color: #666; }
+    .footer { position: fixed; bottom: 1cm; left: 2.5cm; right: 2.5cm; text-align: center; font-size: 8pt; color: #888; border-top: 1px solid #ccc; padding-top: 3mm; }
+    .accreditation { font-size: 8pt; color: #555; text-align: center; margin-top: 5mm; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div>
+      {% if organization.logo_url %}
+      <img src="{{ organization.logo_url }}" class="logo" alt="{{ organization.name }}">
+      {% else %}
+      <strong>{{ organization.name }}</strong>
+      {% endif %}
+    </div>
+    <div class="org">
+      <strong>{{ organization.legal_name }}</strong><br>
+      {{ organization.address.street }}<br>
+      {{ organization.address.postal_code }} {{ organization.address.city }}<br>
+      {{ organization.address.country }}<br>
+      NIP: {{ organization.vat_id }}
+    </div>
+  </div>
+
+  <h1 class="title">Świadectwo Wzorcowania</h1>
+  <p class="subtitle">Calibration Certificate</p>
+
+  <div class="cert-number">
+    Nr: {{ cert_number }} &nbsp;·&nbsp; Data: {{ date }}
+  </div>
+
+  <div class="section">
+    <div class="section-title">1. Zamawiający / Customer</div>
+    <div class="grid-2col">
+      <div>
+        <div class="field"><div class="label">Nazwa</div><div class="value">{{ customer.name }}</div></div>
+        <div class="field"><div class="label">NIP</div><div class="value">{{ customer.vat_id }}</div></div>
+      </div>
+      <div>
+        <div class="field"><div class="label">Adres</div><div class="value">{{ customer.address }}</div></div>
+        <div class="field"><div class="label">Kontakt</div><div class="value">{{ customer.contact_email }}</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">2. Wzorcowany przyrząd / Instrument</div>
+    <div class="grid-2col">
+      <div>
+        <div class="field"><div class="label">Producent</div><div class="value">{{ instrument.manufacturer }}</div></div>
+        <div class="field"><div class="label">Model</div><div class="value">{{ instrument.model }}</div></div>
+        <div class="field"><div class="label">Numer seryjny</div><div class="value">{{ instrument.serial }}</div></div>
+      </div>
+      <div>
+        <div class="field"><div class="label">Kategoria</div><div class="value">{{ instrument.category }}</div></div>
+        <div class="field"><div class="label">Zakres pomiarowy</div><div class="value">{{ instrument.range_min }} — {{ instrument.range_max }} {{ instrument.unit }}</div></div>
+        <div class="field"><div class="label">Klasa dokładności</div><div class="value">{{ instrument.uncertainty_class }}</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">3. Wyniki pomiarów / Measurement Results</div>
+    <table class="measurements">
+      <thead>
+        <tr>
+          <th>Wartość zadana</th>
+          <th>Wartość zmierzona</th>
+          <th>Odchylenie</th>
+          <th>Niepewność (k=2)</th>
+          <th>Wynik</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in measurements %}
+        <tr>
+          <td>{{ m.setpoint }} {{ instrument.unit }}</td>
+          <td>{{ m.measured }} {{ instrument.unit }}</td>
+          <td>{{ "%+.3f"|format(m.measured - m.setpoint) }} {{ instrument.unit }}</td>
+          <td>± {{ m.uncertainty }} {{ instrument.unit }}</td>
+          <td>{{ "✓" if m.in_tolerance else "✗" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">4. Warunki wzorcowania / Calibration Conditions</div>
+    <div class="grid-2col">
+      <div class="field"><div class="label">Temperatura</div><div class="value">{{ conditions.temperature }} °C</div></div>
+      <div class="field"><div class="label">Wilgotność</div><div class="value">{{ conditions.humidity }} %RH</div></div>
+      <div class="field"><div class="label">Ciśnienie atmosferyczne</div><div class="value">{{ conditions.pressure }} hPa</div></div>
+      <div class="field"><div class="label">Wzorzec odniesienia</div><div class="value">{{ reference.certificate_number }}</div></div>
+    </div>
+  </div>
+
+  <div class="signatures">
+    <div class="signature">
+      <div class="name">{{ performed_by.name }}</div>
+      <div class="role">Technik metrolog / Performed by</div>
+    </div>
+    <div class="signature">
+      <div class="name">{{ reviewed_by.name }}</div>
+      <div class="role">Metrolog odpowiedzialny / Reviewed by</div>
+    </div>
+  </div>
+
+  <div class="accreditation">
+    Akredytacja {{ organization.iso_accreditation.body }} nr {{ organization.iso_accreditation.number }} od {{ organization.iso_accreditation.since }}
+  </div>
+
+  <div class="footer">
+    Świadectwo wygenerowane przez doql · Weryfikacja: {{ verify_url }}
+  </div>
+
+</body>
+</html>

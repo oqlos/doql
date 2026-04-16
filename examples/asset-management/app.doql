@@ -1,0 +1,426 @@
+APP: "Mask Inspection Manager"
+VERSION: "1.0.0"
+DOMAIN: "asset-management"
+AUTHOR: "Your Fire Department"
+LANGUAGES: [pl, en, de]
+DEFAULT_LANGUAGE: pl
+
+# ─────────────────────────────────────────────────
+# 1. DANE
+# ─────────────────────────────────────────────────
+
+ENTITY Station:
+  id: uuid! auto
+  name: string!
+  address: text
+  manager: User ref
+
+ENTITY Operator:
+  id: uuid! auto
+  name: string!
+  personal_id: string unique
+  station: Station ref
+  qualifications: [Qualification]
+  hire_date: date
+  active: bool default=true
+
+ENTITY Qualification:
+  name: string!
+  level: enum[basic, advanced, instructor]
+  valid_until: date
+  certificate_file: pdf
+
+ENTITY Device:
+  id: uuid! auto
+  serial: string! unique
+  model: string!
+  manufacturer: string!
+  device_type: enum[scba, mask, cylinder, regulator, harness]
+  station: Station ref
+  purchase_date: date
+  warranty_until: date
+  photo: image
+  barcode: string unique        # kod kreskowy / QR
+  status: enum[ready, in_use, failed, retired, overdue] default=ready
+  last_inspection: date
+  next_inspection: date computed
+  total_uses: int default=0
+  
+  COMPUTED next_inspection:
+    = last_inspection + inspection_interval
+  
+  COMPUTED inspection_interval:
+    IF device_type == scba → 12 months
+    IF device_type == cylinder → 60 months
+    ELSE → 6 months
+  
+  COMPUTED status:
+    IF next_inspection < today → "overdue"
+    IF last_inspection IS NULL → "failed"
+    ELSE → "ready"
+  
+  INDEX: [serial, barcode, status, next_inspection]
+  AUDIT: full
+
+ENTITY Inspection:
+  id: uuid! auto
+  device: Device ref
+  operator: Operator ref
+  scenario_id: oql
+  started_at: datetime auto
+  completed_at: datetime
+  result: enum[pass, fail, incomplete, cancelled]
+  measurements: json
+  notes: text
+  report_pdf: pdf computed
+  signed_by: Operator ref
+
+ENTITY CylinderFill:
+  id: uuid! auto
+  cylinder: Device ref WHERE device_type=cylinder
+  filled_at: datetime auto
+  pressure_bar: decimal(10,1)
+  operator: Operator ref
+  quality_check: bool
+  air_quality_cert: pdf
+
+ENTITY Exercise:
+  id: uuid! auto
+  operator: Operator ref
+  date: date!
+  type: enum[training, live_exercise, annual_mandatory]
+  duration_minutes: int
+  equipment_used: [Device]
+  pass: bool
+  notes: text
+
+ENTITY Deployment:
+  id: uuid! auto
+  operator: Operator ref
+  device: Device ref
+  taken_at: datetime auto
+  returned_at: datetime
+  incident_ref: string
+  condition_on_return: enum[ok, damaged, lost]
+
+# ─────────────────────────────────────────────────
+# 2. SCENARIUSZE (importowane z oqlos)
+# ─────────────────────────────────────────────────
+
+SCENARIOS:
+  IMPORT: scenarios/*.oql
+  IMPORT: tests/ui-*.iql
+  
+  REGISTER scenario_pss7000_full:
+    file: scenarios/drager-pss7000-pelny-test.oql
+    applies_to: Device WHERE model MATCHES "PSS 7000.*"
+    interval: 12 months
+    operator_role: [operator, manager]
+    auto_generate_report: true
+  
+  REGISTER scenario_mask_leak_test:
+    file: scenarios/maskleaktest-testszczelnosci.oql
+    applies_to: Device WHERE device_type=mask
+    interval: 12 months
+  
+  REGISTER scenario_fenzy_zenith:
+    file: scenarios/pss7000-fenzy-zenith.oql
+    applies_to: Device WHERE model MATCHES ".*Fenzy.*"
+
+# ─────────────────────────────────────────────────
+# 3. INTERFEJSY
+# ─────────────────────────────────────────────────
+
+INTERFACE api:
+  type: rest
+  auth: jwt
+  rate_limit: 200/min
+  openapi: true
+  
+  ENDPOINT POST /devices/{id}/inspect:
+    body: { scenario_id: string, notes?: text }
+    returns: Inspection
+    roles: [operator, manager]
+    webhook_on_complete: env.NOTIFICATION_WEBHOOK
+  
+  ENDPOINT GET /devices/due-for-inspection:
+    returns: [Device]
+    description: "Devices with next_inspection within 14 days"
+    filter_default: next_inspection <= today + 14 days
+  
+  ENDPOINT GET /operators/{id}/readiness:
+    returns: { ready: bool, issues: [string] }
+    description: "Check if operator has valid qualifications + annual exercise"
+
+INTERFACE web:
+  type: spa
+  framework: react
+  theme: material
+  
+  PAGE dashboard:
+    widgets:
+      - stat: Device WHERE status=ready                   # "Gotowe: 142"
+      - stat: Device WHERE status=overdue COLOR=red       # "Przeterminowane: 3"
+      - stat: Inspection WHERE started_at > today - 7d    # "Inspekcje tydz: 28"
+      - chart: Inspection GROUP BY result OVER 30 days
+      - table: Device WHERE status=overdue LIMIT 10
+      - calendar: Device.next_inspection NEXT 30 days
+  
+  PAGE devices:
+    from: Device
+    layout: crud
+    list_view: table
+    filters: [status, device_type, station, model]
+    search: [serial, barcode, model]
+    bulk_actions: [export_csv, print_labels, mark_retired]
+    
+    detail_view:
+      tabs:
+        - info:   [serial, model, manufacturer, status, photo]
+        - history: Inspection WHERE device=$id ORDER BY started_at DESC
+        - deployments: Deployment WHERE device=$id ORDER BY taken_at DESC
+        - documents: [files]
+      actions:
+        - button "Start Inspection" → PAGE scan WITH device=$id
+        - button "Print Label" → PRINT barcode
+        - button "Return" → FORM Deployment.return
+  
+  PAGE scan:
+    features: [barcode_scanner, manual_entry]
+    on_scan:
+      - lookup: Device WHERE barcode=$scanned OR serial=$scanned
+      - IF NOT FOUND: show "Unknown device" + option "Register new"
+      - IF FOUND: show_options:
+          - "Start Inspection"    → run REGISTERED scenario FOR $device
+          - "Mark as Deployed"    → FORM Deployment.new
+          - "View History"        → PAGE device WITH id=$device.id
+  
+  PAGE inspections:
+    from: Inspection
+    layout: list-with-filters
+    filters: [result, operator, date_range, device.model]
+    row_click: PAGE inspection_detail
+    
+  PAGE inspection_detail:
+    from: Inspection
+    layout: detail
+    sections:
+      - info
+      - measurements: timeline
+      - report: pdf-viewer + download
+    if result=fail:
+      alert: RED "Inspection failed — device marked as not ready"
+  
+  PAGE operators:
+    from: Operator
+    layout: crud
+    search: [name, personal_id]
+    detail_view:
+      tabs:
+        - info
+        - qualifications: Qualification WHERE operator=$id
+        - exercises: Exercise WHERE operator=$id
+        - inspections_performed: Inspection WHERE operator=$id
+        - readiness: COMPUTED from /operators/{id}/readiness
+  
+  PAGE reports:
+    layout: grid
+    cards:
+      - "Monthly Inspection Summary" → GENERATE pdf template=monthly_summary
+      - "Overdue Devices"             → GENERATE pdf template=overdue_list
+      - "Operator Readiness"          → GENERATE pdf template=operator_readiness
+      - "Custom Range"                → FORM date_range → GENERATE pdf
+  
+  PAGE cylinder_filling:
+    from: CylinderFill
+    layout: workflow
+    steps:
+      1. scan cylinder → lookup Device WHERE device_type=cylinder
+      2. verify air_quality_cert valid
+      3. record fill: pressure_bar, operator
+      4. print_label
+      5. save
+  
+  PAGE settings:
+    sections:
+      - stations (admin only)
+      - users + roles (admin only)
+      - integrations
+      - scenario_library
+
+INTERFACE mobile:
+  type: pwa
+  offline: true
+  sync: background
+  installable: true
+  
+  FEATURES:
+    - barcode_scanner (zxing)
+    - camera_capture   (dla photo Device)
+    - nfc_read
+    - push_notifications
+    - offline_queue
+  
+  PAGES:
+    - quick_scan:   default view — camera active
+    - my_tasks:     Inspection WHERE next_inspection <= today + 7 days AND assigned_to=me
+    - deployments:  active Deployment WHERE operator=me
+    - recent_history: ostatnie 10 operacji
+  
+  SYNC:
+    strategy: last-write-wins
+    conflict_resolution: manual
+    cache_size: 200mb
+    sync_on: [network_available, app_resume]
+
+INTERFACE desktop:
+  type: tauri
+  features:
+    - system_tray
+    - auto_update
+    - local_hardware_access    # dostęp do Modbus/USB bez przeglądarki
+    - offline_full
+  menu:
+    - File: [New Inspection, Print Labels, Export CSV, Quit]
+    - Hardware: [Connect, Scan Devices, Calibrate]
+    - View: [Dashboard, Devices, Inspections, Reports]
+    - Help: [Documentation, About]
+
+# ─────────────────────────────────────────────────
+# 4. INTEGRACJE
+# ─────────────────────────────────────────────────
+
+INTEGRATION notifications:
+  channels:
+    - email:
+        provider: smtp
+        config: env.SMTP_*
+        templates: templates/email/
+    - slack:
+        webhook: env.SLACK_WEBHOOK
+    - push:
+        provider: fcm
+        config: env.FCM_*
+
+INTEGRATION storage:
+  type: s3-compatible
+  bucket: env.S3_BUCKET
+  config: env.S3_*
+
+INTEGRATION auth:
+  provider: internal
+  sso: [google, microsoft]
+  mfa: totp
+
+INTEGRATION reports:
+  generator: weasyprint
+  templates: templates/reports/
+  signed: true
+
+INTEGRATION barcode_printer:
+  type: zebra_zpl
+  endpoint: env.LABEL_PRINTER_URL
+  fallback: save_pdf
+
+# ─────────────────────────────────────────────────
+# 5. WORKFLOW / AUTOMATYZACJA
+# ─────────────────────────────────────────────────
+
+WORKFLOW daily_overdue_check:
+  trigger: schedule "0 8 * * *"   # codziennie 8:00
+  steps:
+    1. find: Device WHERE next_inspection < today
+    2. group_by: station
+    3. FOR EACH station:
+       - notify: station.manager.email TEMPLATE "overdue_summary"
+       - notify: slack CHANNEL station.slack_channel
+       - UPDATE Device SET status=overdue WHERE id IN found
+
+WORKFLOW inspection_fail_handling:
+  trigger: event Inspection.completed WHERE result=fail
+  steps:
+    1. UPDATE Device SET status=failed WHERE id=$inspection.device.id
+    2. notify: $inspection.device.station.manager "FAIL: ${device.serial}"
+    3. create_task: "Review failed device ${device.serial}" assigned_to=station.manager
+    4. IF device.warranty_until > today:
+       - suggest: "Contact manufacturer for warranty service"
+
+WORKFLOW annual_exercise_reminder:
+  trigger: schedule "0 9 1 1 *"   # 1 stycznia 9:00
+  steps:
+    1. find: Operator WHERE (last Exercise with type=annual_mandatory).date < today - 11 months
+    2. FOR EACH operator:
+       - notify: operator.email TEMPLATE "annual_exercise_due"
+
+WORKFLOW cylinder_filling_audit:
+  trigger: schedule "monthly"
+  steps:
+    1. count: CylinderFill GROUP BY operator, month
+    2. generate_report: template=cylinder_audit_monthly
+    3. send: $compliance_officer
+
+# ─────────────────────────────────────────────────
+# 6. ROLE
+# ─────────────────────────────────────────────────
+
+ROLES:
+  operator:
+    can:
+      - read: [Device, Inspection, Operator, Exercise, Station]
+      - execute: [inspection.run, deployment.start, deployment.return]
+      - create: [Inspection, Deployment, CylinderFill]
+    cannot:
+      - delete: *
+      - modify: [Qualification, User, Station]
+  
+  station_manager:
+    extends: operator
+    scope: station = my_station    # widzi tylko swoją stację
+    can:
+      - create: [Operator, Exercise]
+      - update: [Device, Operator]
+      - view_reports: [station]
+      - export_data: [station]
+  
+  auditor:
+    can_read_only: true
+    can: [view_audit_log, export_compliance_report]
+  
+  admin:
+    can: [*]
+
+# ─────────────────────────────────────────────────
+# 7. DEPLOY
+# ─────────────────────────────────────────────────
+
+DEPLOY:
+  target: docker-compose
+  quadlet: true
+  
+  services:
+    traefik:
+      enabled: true
+      network: web
+    tls:
+      provider: letsencrypt
+      email: env.LE_EMAIL
+    backup:
+      provider: restic
+      schedule: "0 2 * * *"
+      retention: 30d
+      destination: env.BACKUP_REPO
+    
+  environments:
+    dev:
+      domain: localhost
+      tls: false
+      seed_data: true
+    
+    staging:
+      domain: staging-scba.example.com
+    
+    prod:
+      domain: scba.example.com
+      replicas: 2
+      autoscale: false
+      monitoring: prometheus + grafana

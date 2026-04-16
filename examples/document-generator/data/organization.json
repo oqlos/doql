@@ -1,0 +1,24 @@
+{
+  "name": "Softreck Calibration Lab",
+  "legal_name": "Softreck Sp. z o.o.",
+  "address": {
+    "street": "ul. Mariacka 1",
+    "city": "Gdańsk",
+    "postal_code": "80-833",
+    "country": "Polska"
+  },
+  "vat_id": "PL1234567890",
+  "logo_url": "assets/logo.svg",
+  "iso_accreditation": {
+    "number": "AK 001",
+    "body": "PCA",
+    "since": "2024-01-15",
+    "scope": ["pressure", "temperature", "mass"]
+  },
+  "city": "Gdańsk",
+  "contact": {
+    "email": "lab@softreck.dev",
+    "phone": "+48 58 000 00 00",
+    "website": "https://lab.softreck.dev"
+  }
+}
