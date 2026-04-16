@@ -13,7 +13,7 @@ from typing import Optional
 
 from . import __version__
 from . import parser as doql_parser
-from .generators import api_gen, web_gen, mobile_gen, desktop_gen, infra_gen, document_gen, report_gen, i18n_gen, integrations_gen
+from .generators import api_gen, web_gen, mobile_gen, desktop_gen, infra_gen, document_gen, report_gen, i18n_gen, integrations_gen, workflow_gen, ci_gen
 
 
 @dataclass
@@ -182,6 +182,21 @@ def cmd_build(args) -> int:
         svc_dir = ctx.build_dir / "api" / "services"
         svc_dir.mkdir(parents=True, exist_ok=True)
         integrations_gen.generate(spec, env_vars, svc_dir)
+
+    # Workflows (WORKFLOW sections)
+    if spec.workflows:
+        print(f"🛠  Generating workflows...")
+        wf_dir = ctx.build_dir / "api" / "workflows"
+        wf_dir.mkdir(parents=True, exist_ok=True)
+        workflow_gen.generate(spec, env_vars, wf_dir)
+
+    # CI/CD (always generate into project root)
+    print(f"🛠  Generating CI...")
+    ci_gen.generate(spec, env_vars, ctx.root)
+
+    # Plugins (entry-point + .doql-plugins/)
+    from . import plugins as _plugins
+    _plugins.run_plugins(spec, env_vars, ctx.build_dir, ctx.root)
 
     _write_lockfile(spec, ctx)
     print(f"\n✅ Build complete — see {ctx.build_dir}/")

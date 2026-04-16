@@ -1,0 +1,17 @@
+{
+  "app": "Mask Inspection Manager",
+  "version": "1.0.0",
+  "entities": 8,
+  "fields_total": 62,
+  "interfaces": 4,
+  "workflows": 4,
+  "documents": 0,
+  "reports": 0,
+  "integrations": 5,
+  "roles": 9,
+  "languages": [
+    "pl",
+    "en",
+    "de"
+  ]
+}

@@ -66,13 +66,13 @@
 
 ## Faza 2 — Stabilność + DX (6 tygodni)
 
-- [ ] Generator Desktop (Tauri)
-- [ ] Workflow engine (lightweight state-machine)
-- [ ] Report generator (WeasyPrint + signed PDFs)
+- [x] Generator Desktop (Tauri) — Cargo.toml, tauri.conf.json, main.rs z system tray + menu, package.json, generowane gdy INTERFACE.type=tauri
+- [x] Workflow engine — `WorkflowEngine` + `WorkflowRun` + per-workflow `wf_<name>.py` + scheduler.py + REST routes
+- [x] Report generator (WeasyPrint + signed PDFs) — zrealizowane w Fazie 1
 - [x] `doql sync` (merge-friendly re-generation z lockfile v2 diff)
-- [ ] Plugin system
+- [x] Plugin system — `.doql-plugins/*.py` + entry-point `doql_plugins` dyskover, run_plugins() w cmd_build
+- [x] GitHub Action `doql-ci` — validate + build + API compile + npm build jobs
 - [ ] LSP / język server dla VS Code
-- [ ] GitHub Action `doql-ci`
 - [ ] Playground online (playground.doql.dev)
 
 ---
