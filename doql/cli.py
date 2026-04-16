@@ -13,7 +13,7 @@ from typing import Optional
 
 from . import __version__
 from . import parser as doql_parser
-from .generators import api_gen, web_gen, mobile_gen, desktop_gen, infra_gen, document_gen, report_gen
+from .generators import api_gen, web_gen, mobile_gen, desktop_gen, infra_gen, document_gen, report_gen, i18n_gen, integrations_gen
 
 
 @dataclass
@@ -114,10 +114,16 @@ def cmd_plan(args) -> int:
     return 0
 
 
-def cmd_build(args) -> int:
-    ctx = _build_context(args)
+def _load_spec(ctx: BuildContext):
+    """Parse spec and env, return (spec, env_vars)."""
     spec = doql_parser.parse_file(ctx.doql_file)
     env_vars = doql_parser.parse_env(ctx.env_file)
+    return spec, env_vars
+
+
+def cmd_build(args) -> int:
+    ctx = _build_context(args)
+    spec, env_vars = _load_spec(ctx)
 
     issues = doql_parser.validate(spec, env_vars)
     errors = [i for i in issues if i.severity == "error"]
@@ -163,6 +169,20 @@ def cmd_build(args) -> int:
         rpt_dir.mkdir(parents=True, exist_ok=True)
         report_gen.generate(spec, env_vars, rpt_dir)
 
+    # i18n (LANGUAGES section)
+    if spec.languages:
+        print(f"🛠  Generating i18n...")
+        i18n_dir = ctx.build_dir / "i18n"
+        i18n_dir.mkdir(parents=True, exist_ok=True)
+        i18n_gen.generate(spec, env_vars, i18n_dir)
+
+    # Integrations (INTEGRATION + API_CLIENT + WEBHOOK sections)
+    if spec.integrations or spec.api_clients or spec.webhooks:
+        print(f"🛠  Generating integrations...")
+        svc_dir = ctx.build_dir / "api" / "services"
+        svc_dir.mkdir(parents=True, exist_ok=True)
+        integrations_gen.generate(spec, env_vars, svc_dir)
+
     _write_lockfile(spec, ctx)
     print(f"\n✅ Build complete — see {ctx.build_dir}/")
     return 0
@@ -189,11 +209,96 @@ def cmd_deploy(args) -> int:
 
 
 def cmd_sync(args) -> int:
-    # Merge-friendly: re-generuje tylko pliki, które nie mają marker'a @doql:keep
+    """Selective rebuild — only regenerate sections that changed since last build."""
     ctx = _build_context(args)
-    print("🔄 Syncing (merge-friendly)...")
-    # Używa lockfile do wykrycia zmian
-    return cmd_build(args)
+    spec, env_vars = _load_spec(ctx)
+
+    old_lock = _read_lockfile(ctx)
+    new_hashes = _spec_section_hashes(spec, ctx)
+
+    if not old_lock or "sections" not in old_lock:
+        print("🔄 No previous lockfile — doing full build...")
+        return cmd_build(args)
+
+    diff = _diff_sections(old_lock["sections"], new_hashes)
+    all_changes = {**diff["added"], **diff["changed"]}
+
+    if not all_changes and not diff["removed"]:
+        print("✅ No changes detected — everything up to date.")
+        return 0
+
+    # Determine which generators to re-run
+    regen = set()
+    for key in list(all_changes.keys()) + list(diff["removed"].keys()):
+        if key.startswith("entity:") or key == "roles":
+            regen.add("api")
+            regen.add("web")
+        elif key.startswith("interface:"):
+            regen.add("web")
+        elif key.startswith("document:"):
+            regen.add("documents")
+        elif key.startswith("report:"):
+            regen.add("reports")
+        elif key.startswith("integration:"):
+            regen.add("integrations")
+        elif key == "languages":
+            regen.add("i18n")
+        elif key == "spec_file":
+            regen.update(["api", "web", "infra"])
+
+    print(f"🔄 Changes detected in: {', '.join(sorted(all_changes.keys()))}")
+    if diff["removed"]:
+        print(f"   Removed: {', '.join(sorted(diff['removed'].keys()))}")
+    print(f"   Regenerating: {', '.join(sorted(regen))}")
+
+    if "api" in regen and spec.entities:
+        print(f"🛠  Generating api...")
+        api_dir = ctx.build_dir / "api"
+        api_dir.mkdir(parents=True, exist_ok=True)
+        api_gen.generate(spec, env_vars, api_dir)
+
+    if "web" in regen:
+        for iface in spec.interfaces:
+            if iface.type in ("web", "pwa"):
+                print(f"🛠  Generating web...")
+                target_dir = ctx.build_dir / "web"
+                target_dir.mkdir(parents=True, exist_ok=True)
+                web_gen.generate(spec, env_vars, target_dir)
+                break
+
+    if "infra" in regen:
+        print(f"🛠  Generating infra...")
+        infra_dir = ctx.build_dir / "infra"
+        infra_dir.mkdir(parents=True, exist_ok=True)
+        infra_gen.generate(spec, env_vars, infra_dir)
+
+    if "documents" in regen and spec.documents:
+        print(f"🛠  Generating documents...")
+        doc_dir = ctx.build_dir / "documents"
+        doc_dir.mkdir(parents=True, exist_ok=True)
+        document_gen.generate(spec, env_vars, doc_dir, project_root=ctx.root)
+
+    if "reports" in regen and spec.reports:
+        print(f"🛠  Generating reports...")
+        rpt_dir = ctx.build_dir / "reports"
+        rpt_dir.mkdir(parents=True, exist_ok=True)
+        report_gen.generate(spec, env_vars, rpt_dir)
+
+    if "i18n" in regen and spec.languages:
+        print(f"🛠  Generating i18n...")
+        i18n_dir = ctx.build_dir / "i18n"
+        i18n_dir.mkdir(parents=True, exist_ok=True)
+        i18n_gen.generate(spec, env_vars, i18n_dir)
+
+    if "integrations" in regen and spec.integrations:
+        print(f"🛠  Generating integrations...")
+        svc_dir = ctx.build_dir / "api" / "services"
+        svc_dir.mkdir(parents=True, exist_ok=True)
+        integrations_gen.generate(spec, env_vars, svc_dir)
+
+    _write_lockfile(spec, ctx)
+    print(f"\n✅ Sync complete — {len(regen)} generators re-run.")  
+    return 0
 
 
 def cmd_export(args) -> int:
@@ -335,14 +440,71 @@ def _estimate_file_count(iface) -> int:
     return 5
 
 
-def _write_lockfile(spec, ctx: BuildContext) -> None:
-    import json, hashlib, datetime
+def _spec_section_hashes(spec, ctx: BuildContext) -> dict:
+    """Compute per-section hashes for diff detection."""
+    import hashlib
+    def _h(data: str) -> str:
+        return hashlib.sha256(data.encode()).hexdigest()[:16]
+
+    hashes = {
+        "spec_file": hashlib.sha256(ctx.doql_file.read_bytes()).hexdigest(),
+    }
+    # Entity hashes
+    for e in spec.entities:
+        key = f"entity:{e.name}"
+        fields_str = "|".join(f"{f.name}:{f.type}:{f.required}:{f.unique}:{f.ref}" for f in e.fields)
+        hashes[key] = _h(fields_str)
+    # Interface hashes
+    for i in spec.interfaces:
+        key = f"interface:{i.name}"
+        pages_str = "|".join(p.name for p in i.pages)
+        hashes[key] = _h(f"{i.type}:{pages_str}")
+    # Document hashes
+    for d in spec.documents:
+        hashes[f"document:{d.name}"] = _h(f"{d.type}:{d.template}:{d.output}")
+    # Report hashes
+    for r in spec.reports:
+        hashes[f"report:{r.name}"] = _h(f"{r.schedule}:{r.output}:{r.template}")
+    # Integration hashes
+    for ig in spec.integrations:
+        hashes[f"integration:{ig.name}"] = _h(ig.name)
+    # Roles
+    if spec.roles:
+        hashes["roles"] = _h("|".join(r.name if hasattr(r, 'name') else str(r) for r in spec.roles))
+    # Languages
+    if spec.languages:
+        hashes["languages"] = _h("|".join(spec.languages))
+    return hashes
+
+
+def _read_lockfile(ctx: BuildContext) -> dict | None:
+    import json
     lockfile = ctx.root / "doql.lock"
+    if not lockfile.exists():
+        return None
+    try:
+        return json.loads(lockfile.read_text())
+    except (json.JSONDecodeError, OSError):
+        return None
+
+
+def _diff_sections(old_hashes: dict, new_hashes: dict) -> dict:
+    """Return dict of changed/added/removed section keys."""
+    added = {k: new_hashes[k] for k in new_hashes if k not in old_hashes}
+    removed = {k: old_hashes[k] for k in old_hashes if k not in new_hashes}
+    changed = {k: new_hashes[k] for k in new_hashes if k in old_hashes and old_hashes[k] != new_hashes[k]}
+    return {"added": added, "removed": removed, "changed": changed}
+
+
+def _write_lockfile(spec, ctx: BuildContext) -> None:
+    import json, datetime
+    lockfile = ctx.root / "doql.lock"
+    hashes = _spec_section_hashes(spec, ctx)
     content = {
-        "version": "1",
+        "version": "2",
         "generated_at": datetime.datetime.utcnow().isoformat() + "Z",
-        "spec_hash": hashlib.sha256(ctx.doql_file.read_bytes()).hexdigest(),
         "doql_version": __version__,
+        "sections": hashes,
     }
     lockfile.write_text(json.dumps(content, indent=2))
 

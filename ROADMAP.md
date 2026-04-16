@@ -52,13 +52,13 @@
 - [x] Generator Web — React + Vite + TailwindCSS + React Router + Lucide icons, per-entity CRUD pages, Dashboard z licznikami, Layout z sidebar, api.ts client
 - [x] Generator REPORT — standalone render scripts + crontab + WeasyPrint/PDF + JSON fallback + recipients
 - [x] Parser: inline comment stripping, quoted value extraction w `_extract_val`
+- [x] Alembic migrations — alembic.ini + env.py + initial migration z create_table/drop_table per entity
+- [x] i18n — JSON translation files (pl/en/de) + React useTranslation hook + entity/field/page keys
+- [x] Integracje: email (SMTP), Slack (webhook), S3 storage + unified notifications.py
+- [x] Migration strategy — `doql sync` z lockfile v2 (per-section hashes), diff detection, selective regeneration
+- [x] Generator PWA — service worker (cache-first static / network-first API), manifest.webmanifest, background sync stub, SW registration
+- [x] Integracja z oqlos — API_CLIENT generator (typed REST client z retry/timeout), WEBHOOK dispatcher (HMAC signature verify, per-event handlers)
 - [ ] Parser tree-sitter (pełna gramatyka `.doql`, error recovery)
-- [ ] Alembic migrations (auto-generate from ENTITY diff)
-- [ ] Integracja z oqlos (REST + webhooks)
-- [ ] Generator PWA (offline + background sync)
-- [ ] Integracje: email, Slack, S3 storage
-- [ ] i18n (pl, en, de)
-- [ ] Migration strategy (`doql sync` z lockfile diffem)
 
 **Milestone:** pilot w firmie BHP (Gdańsk) — realna instalacja, 10+ użytkowników.
 
@@ -69,7 +69,7 @@
 - [ ] Generator Desktop (Tauri)
 - [ ] Workflow engine (lightweight state-machine)
 - [ ] Report generator (WeasyPrint + signed PDFs)
-- [ ] `doql sync` (merge-friendly re-generation)
+- [x] `doql sync` (merge-friendly re-generation z lockfile v2 diff)
 - [ ] Plugin system
 - [ ] LSP / język server dla VS Code
 - [ ] GitHub Action `doql-ci`

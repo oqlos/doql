@@ -1,0 +1,2 @@
+# Generated crontab entries for doql reports
+0 6 1 * *  cd /opt/app && python reports/generate_monthly_calibration_summary.py --send
