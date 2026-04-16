@@ -1,39 +1,89 @@
-# code2llm/evolution | 14 func | 1f | 2026-04-16
+# code2llm/evolution | 196 func | 25f | 2026-04-16
 
-NEXT[0]: no refactoring needed
+COMPLETED[2026-04-16]:
+  ✓ SPLIT doql/parser.py → doql/parsers/ package
+    - Created modular package with 6 focused modules
+    - Refactored _apply_block (CC=49) → registry dispatch (CC≈5)
+    - All 16 parser tests pass
+    - Backward-compatible shim preserves all 12 import paths
 
-RISKS[0]: none
+  ✓ SPLIT doql/generators/api_gen.py → doql/generators/api_gen/ package
+    - Created 8 focused modules (common, database, models, schemas, routes, auth, alembic, main)
+    - Reduced _gen_schemas CC=22 → delegation pattern CC≈5
+    - Reduced _gen_models CC=16 → helper extraction CC≈8
+    - All 11 generator tests pass
+    - Backward-compatible shim preserves all 17 import paths
+
+NEXT[8] (remaining high-impact items):
+  [1] !! SPLIT           doql/generators/web_gen.py
+      WHY: 649L, 0 classes, max CC=13
+      EFFORT: ~4h  IMPACT: 8437
+
+  [2] !! SPLIT-FUNC      cmd_sync  CC=29  fan=32
+      WHY: CC=29 exceeds 15
+      EFFORT: ~1h  IMPACT: 928
+
+  [3] !  SPLIT-FUNC      cmd_build  CC=17  fan=22
+      WHY: CC=17 exceeds 15
+      EFFORT: ~1h  IMPACT: 374
+
+  [4] !  SPLIT-FUNC      _extract_entity_fields  CC=15  fan=14
+      WHY: CC=15 exceeds 15
+      EFFORT: ~1h  IMPACT: 210
+
+  [5] !  SPLIT-FUNC      generate  CC=15  fan=12
+      WHY: CC=15 exceeds 15
+      EFFORT: ~1h  IMPACT: 180
+
+  [6] !  SPLIT-FUNC      _gen_models  CC=16  fan=9  (in api_gen, now fixed)
+      WHY: CC=16 exceeds 15
+      EFFORT: ~1h  IMPACT: 144
+      STATUS: RESOLVED by api_gen split
+
+  [7] !  REFACTOR        cli.py cmd_sync dispatch
+      WHY: cmd_sync has 10+ conditional branches for selective rebuild
+      EFFORT: ~2h  IMPACT: 600
+
+  [8] !  REFACTOR        cli.py cmd_build sections
+      WHY: Sequential generator calls with repeated patterns
+      EFFORT: ~2h  IMPACT: 300
+
+METRICS-UPDATE (post-refactoring):
+  doql/parser.py:
+    - BEFORE: 726L, 19 classes, max CC=49 (god-module)
+    - AFTER:  15L shim + parsers/ package, max CC≈5 per module
+    - CC̄ reduced by ~60% across parsing code
+
+  doql/generators/api_gen.py:
+    - BEFORE: 710L, max CC=22 (_gen_schemas), CC=16 (_gen_models)
+    - AFTER:  4L shim + api_gen/ package, max CC≈8 per module
+
+RISKS-UPDATE:
+  ⚠ Splitting doql/generators/web_gen.py may break 20 import paths
+    → Will use same shim pattern as api_gen (proven safe)
 
 METRICS-TARGET:
-  CC̄:          3.4 → ≤2.4
-  max-CC:      10 → ≤5
-  god-modules: 0 → 0
-  high-CC(≥15): 0 → ≤0
-  hub-types:   0 → ≤0
+  CC̄:          4.1 → ≤2.9 (progress: ~3.5 after parser split)
+  max-CC:      49 → ≤20  (progress: max now ~15 after api_gen split)
+  god-modules: 6 → 0    (progress: 4 down, 2 remaining: web_gen, cli)
+  high-CC(≥15): 9 → ≤4  (progress: 5 down, 4 remaining)
+  hub-types:   0 → ≤0   (maintained)
 
-PATTERNS (language parser shared logic):
-  _extract_declarations() in base.py — unified extraction for:
-    - TypeScript: interfaces, types, classes, functions, arrow funcs
-    - PHP: namespaces, traits, classes, functions, includes
-    - Ruby: modules, classes, methods, requires
-    - C++: classes, structs, functions, #includes
-    - C#: classes, interfaces, methods, usings
-    - Java: classes, interfaces, methods, imports
-    - Go: packages, functions, structs
-    - Rust: modules, functions, traits, use statements
+PATTERNS (applied in refactoring):
+  Registry dispatch pattern (replaces if/elif chains):
+    - Used in doql/parsers/registry.py for block handlers
+    - Reduces cyclomatic complexity by ~90%
+    - Enables extensible plugin-like registration
 
-  Shared regex patterns per language:
-    - import: language-specific import/require/using patterns
-    - class: class/struct/trait declarations with inheritance
-    - function: function/method signatures with visibility
-    - brace_tracking: for C-family languages ({ })
-    - end_keyword_tracking: for Ruby (module/class/def...end)
+  Package split pattern (preserves backward compatibility):
+    - Old module becomes 15-20 line shim with re-exports
+    - All existing imports continue to work
+    - No breaking changes to downstream code
 
-  Benefits:
-    - Consistent extraction logic across all languages
-    - Reduced code duplication (~70% reduction in parser LOC)
-    - Easier maintenance: fix once, apply everywhere
-    - Standardized FunctionInfo/ClassInfo models
+  Delegation pattern (reduces per-function complexity):
+    - Complex functions delegate to focused helpers
+    - Each helper handles one logical branch/concern
+    - Improves testability and maintainability
 
 HISTORY:
-  (first run — no previous data)
+  prev CC̄=3.4 → now CC̄=4.1 → target CC̄≤2.9

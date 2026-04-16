@@ -1,9 +1,113 @@
-# redup/duplication | 0 groups | 1f 286L | 2026-04-16
+# redup/duplication | 5 groups | 25f 7386L | 2026-04-16
 
 SUMMARY:
-  files_scanned: 1
-  total_lines:   286
-  dup_groups:    0
-  dup_fragments: 0
-  saved_lines:   0
-  scan_ms:       5374
+  files_scanned: 25
+  total_lines:   7386
+  dup_groups:    5
+  dup_fragments: 44
+  saved_lines:   1411
+  scan_ms:       3529
+
+HOTSPOTS[7] (files with most duplication):
+  plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py  dup=549L  groups=3  frags=7  (7.4%)
+  plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py  dup=495L  groups=3  frags=7  (6.7%)
+  plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py  dup=382L  groups=2  frags=5  (5.2%)
+  plugins/doql-plugin-erp/doql_plugin_erp/__init__.py  dup=317L  groups=2  frags=5  (4.3%)
+  doql/generators/mobile_gen.py  dup=148L  groups=1  frags=1  (2.0%)
+  doql/generators/integrations_gen.py  dup=113L  groups=1  frags=3  (1.5%)
+  doql/generators/workflow_gen.py  dup=105L  groups=2  frags=2  (1.4%)
+
+DUPLICATES[5] (ranked by impact):
+  [8d8164856e051e29] !! STRU  _gen_alembic_ini  L=39 N=32 saved=1209 sim=1.00
+      doql/generators/api_gen.py:468-506  (_gen_alembic_ini)
+      doql/generators/desktop_gen.py:132-137  (_gen_build_rs)
+      doql/generators/integrations_gen.py:20-55  (_gen_email_service)
+      doql/generators/integrations_gen.py:58-87  (_gen_slack_service)
+      doql/generators/integrations_gen.py:90-136  (_gen_storage_service)
+      doql/generators/mobile_gen.py:250-397  (_gen_style_css)
+      doql/generators/web_gen.py:76-89  (_gen_vite_config)
+      doql/generators/web_gen.py:92-100  (_gen_tailwind_config)
+      doql/generators/web_gen.py:103-111  (_gen_postcss_config)
+      doql/generators/web_gen.py:150-165  (_gen_main_tsx)
+      doql/generators/web_gen.py:168-173  (_gen_index_css)
+      doql/generators/web_gen.py:180-201  (_gen_api_ts)
+      doql/generators/web_gen.py:551-564  (_gen_sw_register)
+      doql/generators/workflow_gen.py:24-125  (_gen_engine)
+      plugins/doql-plugin-erp/doql_plugin_erp/__init__.py:17-96  (_odoo_client_module)
+      plugins/doql-plugin-erp/doql_plugin_erp/__init__.py:99-158  (_mapping_module)
+      plugins/doql-plugin-erp/doql_plugin_erp/__init__.py:161-226  (_sync_module)
+      plugins/doql-plugin-erp/doql_plugin_erp/__init__.py:229-281  (_webhook_module)
+      plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py:18-94  (_tenant_module)
+      plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py:97-220  (_device_registry_module)
+      plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py:223-316  (_metrics_module)
+      plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py:319-384  (_ota_module)
+      plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py:387-461  (_migration_module)
+      plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py:21-130  (_audit_log_module)
+      plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py:133-251  (_e_signature_module)
+      plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py:254-312  (_audit_middleware)
+      plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py:315-366  (_migration_audit)
+      plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py:18-103  (_traceability_module)
+      plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py:106-224  (_uncertainty_module)
+      plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py:227-354  (_certificate_module)
+      plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py:357-427  (_drift_monitor_module)
+      plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py:430-496  (_migration_module)
+  [0b19fbe92436de71] !! STRU  _readme  L=58 N=4 saved=174 sim=1.00
+      plugins/doql-plugin-erp/doql_plugin_erp/__init__.py:284-341  (_readme)
+      plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py:464-506  (_readme)
+      plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py:369-410  (_readme)
+      plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py:499-560  (_readme)
+  [661ce151e7285004]   STRU  generate  L=16 N=2 saved=16 sim=1.00
+      plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py:509-524  (generate)
+      plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py:563-578  (generate)
+  [3fd0f76e2263dc77]   EXAC  _snake  L=3 N=3 saved=6 sim=1.00
+      doql/generators/i18n_gen.py:25-27  (_snake)
+      doql/generators/web_gen.py:32-34  (_snake)
+      doql/generators/workflow_gen.py:19-21  (_snake)
+  [fae913ab8f8923d8]   STRU  did_open  L=3 N=3 saved=6 sim=1.00
+      doql/lsp_server.py:154-156  (did_open)
+      doql/lsp_server.py:160-162  (did_change)
+      doql/lsp_server.py:166-168  (did_save)
+
+REFACTOR[5] (ranked by priority):
+  [1] ◐ extract_function   → utils/_gen_alembic_ini.py
+      WHY: 32 occurrences of 39-line block across 10 files — saves 1209 lines
+      FILES: doql/generators/api_gen.py, doql/generators/desktop_gen.py, doql/generators/integrations_gen.py, doql/generators/mobile_gen.py, doql/generators/web_gen.py +5 more
+  [2] ◐ extract_module     → plugins/utils/_readme.py
+      WHY: 4 occurrences of 58-line block across 4 files — saves 174 lines
+      FILES: plugins/doql-plugin-erp/doql_plugin_erp/__init__.py, plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py, plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py, plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py
+  [3] ○ extract_function   → plugins/utils/generate.py
+      WHY: 2 occurrences of 16-line block across 2 files — saves 16 lines
+      FILES: plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py, plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py
+  [4] ○ extract_function   → doql/generators/utils/_snake.py
+      WHY: 3 occurrences of 3-line block across 3 files — saves 6 lines
+      FILES: doql/generators/i18n_gen.py, doql/generators/web_gen.py, doql/generators/workflow_gen.py
+  [5] ○ extract_function   → doql/utils/did_open.py
+      WHY: 3 occurrences of 3-line block across 1 files — saves 6 lines
+      FILES: doql/lsp_server.py
+
+QUICK_WINS[3] (low risk, high savings — do first):
+  [3] extract_function   saved=16L  → plugins/utils/generate.py
+      FILES: __init__.py, __init__.py
+  [4] extract_function   saved=6L  → doql/generators/utils/_snake.py
+      FILES: i18n_gen.py, web_gen.py, workflow_gen.py
+  [5] extract_function   saved=6L  → doql/utils/did_open.py
+      FILES: lsp_server.py
+
+DEPENDENCY_RISK[1] (duplicates spanning multiple packages):
+  _gen_alembic_ini  packages=2  files=10
+      doql/generators/api_gen.py
+      doql/generators/desktop_gen.py
+      doql/generators/integrations_gen.py
+      doql/generators/mobile_gen.py
+      +6 more
+
+EFFORT_ESTIMATE (total ≈ 130.5h):
+  hard   _gen_alembic_ini                    saved=1209L  ~7254min
+  hard   _readme                             saved=174L  ~522min
+  medium generate                            saved=16L  ~32min
+  easy   _snake                              saved=6L  ~12min
+  easy   did_open                            saved=6L  ~12min
+
+METRICS-TARGET:
+  dup_groups:  5 → 0
+  saved_lines: 1411 lines recoverable

@@ -1,30 +1,311 @@
-# doql | 3f 322L | shell:2,python:1 | 2026-04-16
-# stats: 14 func | 0 cls | 3 mod | CC̄=3.4 | critical:0 | cycles:0
-# alerts[1]: fan-out cmd_build=11
-# hotspots[5]: cmd_build fan=11; main fan=8; _write_lockfile fan=7; cmd_validate fan=6; cmd_export fan=6
-# evolution: baseline
+# doql | 30f 7929L | shell:3,python:25,typescript:1,javascript:1 | 2026-04-16
+# stats: 196 func | 0 cls | 30 mod | CC̄=4.1 | critical:9 | cycles:0
+# alerts[5]: CC _apply_block=49; fan-out _apply_block=47; fan-out cmd_sync=32; CC validate=30; CC cmd_sync=29
+# hotspots[5]: _apply_block fan=47; cmd_sync fan=32; pyodide fan=26; buildFn fan=26; debounceTimer fan=26
+# evolution: CC̄ 3.4→4.1 (regressed +0.7)
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
-M[3]:
-  doql/cli.py,286
+M[30]:
+  doql/__init__.py,7
+  doql/cli.py,611
+  doql/generators/__init__.py,5
+  doql/generators/api_gen.py,710
+  doql/generators/ci_gen.py,112
+  doql/generators/deploy.py,20
+  doql/generators/desktop_gen.py,214
+  doql/generators/docs_gen.py,24
+  doql/generators/document_gen.py,182
+  doql/generators/export_postman.py,25
+  doql/generators/export_ts_sdk.py,26
+  doql/generators/i18n_gen.py,173
+  doql/generators/infra_gen.py,321
+  doql/generators/integrations_gen.py,320
+  doql/generators/mobile_gen.py,462
+  doql/generators/report_gen.py,142
+  doql/generators/web_gen.py,649
+  doql/generators/workflow_gen.py,309
+  doql/lsp_server.py,361
+  doql/parser.py,726
+  doql/plugins.py,101
+  playground/app.js,441
+  playground/serve.sh,15
+  plugins/doql-plugin-erp/doql_plugin_erp/__init__.py,357
+  plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py,524
+  plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py,427
+  plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py,578
   project.sh,35
   tree.sh,1
+  vscode-doql/src/extension.ts,51
 D:
+  doql/parser.py:
+    e: DoqlParseError,ValidationIssue,EntityField,Entity,DataSource,Template,Document,Report,Database,ApiClient,Webhook,Page,Interface,Integration,WorkflowStep,Workflow,Role,Deploy,DoqlSpec,_split_blocks,_extract_val,_extract_list,_extract_yaml_list,_extract_pages,_extract_entity_fields,_collect_env_refs,parse_file,parse_text,_apply_block,parse_env,validate
+    DoqlParseError(Exception):  # Raised when a .doql file cannot be parsed...
+    ValidationIssue:
+    EntityField:
+    Entity:
+    DataSource:
+    Template:
+    Document:
+    Report:
+    Database:
+    ApiClient:
+    Webhook:
+    Page:
+    Interface:
+    Integration:
+    WorkflowStep:
+    Workflow:
+    Role:
+    Deploy:
+    DoqlSpec:
+    _split_blocks(text)
+    _extract_val(body;key)
+    _extract_list(body;key)
+    _extract_yaml_list(body;key)
+    _extract_pages(body)
+    _extract_entity_fields(body)
+    _collect_env_refs(text)
+    parse_file(path)
+    parse_text(text)
+    _apply_block(spec;keyword;header;body)
+    parse_env(path)
+    validate(spec;env_vars;project_root)
   doql/cli.py:
-    e: BuildContext,cmd_init,cmd_validate,cmd_plan,cmd_build,cmd_run,cmd_deploy,cmd_sync,cmd_export,cmd_docs,_build_context,_scaffold_from_template,_estimate_file_count,_write_lockfile,main
+    e: BuildContext,cmd_init,cmd_validate,cmd_plan,_load_spec,cmd_build,cmd_run,cmd_deploy,cmd_sync,cmd_export,cmd_generate,cmd_render,cmd_query,cmd_kiosk,cmd_quadlet,cmd_docs,_build_context,_scaffold_from_template,_estimate_file_count,_spec_section_hashes,_read_lockfile,_diff_sections,_write_lockfile,main
     BuildContext:
     cmd_init(args)
     cmd_validate(args)
     cmd_plan(args)
+    _load_spec(ctx)
     cmd_build(args)
     cmd_run(args)
     cmd_deploy(args)
     cmd_sync(args)
     cmd_export(args)
+    cmd_generate(args)
+    cmd_render(args)
+    cmd_query(args)
+    cmd_kiosk(args)
+    cmd_quadlet(args)
     cmd_docs(args)
     _build_context(args)
     _scaffold_from_template(template;target)
     _estimate_file_count(iface)
+    _spec_section_hashes(spec;ctx)
+    _read_lockfile(ctx)
+    _diff_sections(old_hashes;new_hashes)
     _write_lockfile(spec;ctx)
     main()
-  project.sh:
+  doql/generators/api_gen.py:
+    e: _sa_type,_py_type,_py_default,_safe_name,_snake,_gen_database,_gen_models,_gen_schemas,_gen_routes,_gen_main,_gen_auth,_gen_alembic_ini,_gen_alembic_env,_gen_initial_migration,_gen_requirements,generate,export_openapi
+    _sa_type(f)
+    _py_type(f)
+    _py_default(f)
+    _safe_name(name)
+    _snake(name)
+    _gen_database(spec;env_vars)
+    _gen_models(spec)
+    _gen_schemas(spec)
+    _gen_routes(spec)
+    _gen_main(spec)
+    _gen_auth(spec)
+    _gen_alembic_ini()
+    _gen_alembic_env()
+    _gen_initial_migration(spec)
+    _gen_requirements(has_auth)
+    generate(spec;env_vars;out)
+    export_openapi(spec;out)
+  doql/generators/integrations_gen.py:
+    e: _gen_email_service,_gen_slack_service,_gen_storage_service,_gen_notifications,_gen_api_client,_gen_webhook_dispatcher,generate
+    _gen_email_service()
+    _gen_slack_service()
+    _gen_storage_service()
+    _gen_notifications(integrations)
+    _gen_api_client(client)
+    _gen_webhook_dispatcher(webhooks)
+    generate(spec;env_vars;out)
+  doql/lsp_server.py:
+    e: _parse_doc,_find_line_col,_diagnostics_for,_word_at,did_open,did_change,did_save,completion,hover,definition,document_symbols,main
+    _parse_doc(source)
+    _find_line_col(source;needle)
+    _diagnostics_for(source;uri)
+    _word_at(source;position)
+    did_open(ls;params)
+    did_change(ls;params)
+    did_save(ls;params)
+    completion(ls;params)
+    hover(ls;params)
+    definition(ls;params)
+    document_symbols(ls;params)
+    main()
+  playground/app.js:
+    e: TAB_NAMES,activateTab,tabFromHash,name,initial,key,updateStats,lines,chars,pyodide,buildFn,debounceTimer,bootPyodide,version,scheduleBuild,runBuild,r,renderFatal,renderDiagnostics,loc,renderAst,renderEnv,refs,keys,marker,renderFiles,escapeHtml
+    TAB_NAMES()
+    activateTab()
+    tabFromHash()
+    name()
+    initial()
+    key()
+    updateStats()
+    lines()
+    chars()
+    pyodide()
+    buildFn()
+    debounceTimer()
+    bootPyodide()
+    version()
+    scheduleBuild()
+    runBuild()
+    r()
+    renderFatal()
+    renderDiagnostics()
+    loc()
+    renderAst()
+    renderEnv()
+    refs()
+    keys()
+    marker()
+    renderFiles()
+    escapeHtml()
+  doql/generators/web_gen.py:
+    e: _snake,_kebab,_gen_package_json,_gen_vite_config,_gen_tailwind_config,_gen_postcss_config,_gen_tsconfig,_gen_index_html,_gen_main_tsx,_gen_index_css,_gen_api_ts,_gen_layout,_gen_dashboard,_field_input,_gen_entity_page,_gen_app,_gen_manifest,_gen_service_worker,_gen_sw_register,generate
+    _snake(name)
+    _kebab(name)
+    _gen_package_json(spec)
+    _gen_vite_config()
+    _gen_tailwind_config()
+    _gen_postcss_config()
+    _gen_tsconfig()
+    _gen_index_html(spec)
+    _gen_main_tsx()
+    _gen_index_css()
+    _gen_api_ts()
+    _gen_layout(spec;pages;entities)
+    _gen_dashboard(spec)
+    _field_input(f)
+    _gen_entity_page(ent)
+    _gen_app(spec)
+    _gen_manifest(spec)
+    _gen_service_worker(spec)
+    _gen_sw_register()
+    generate(spec;env_vars;out)
+  doql/generators/workflow_gen.py:
+    e: _snake,_gen_engine,_gen_workflow_module,_gen_scheduler,_gen_init,_gen_routes,generate
+    _snake(name)
+    _gen_engine()
+    _gen_workflow_module(wf;spec)
+    _gen_scheduler(spec)
+    _gen_init(spec)
+    _gen_routes(spec)
+    generate(spec;env_vars;out)
+  doql/generators/report_gen.py:
+    e: _gen_report_script,generate
+    _gen_report_script(rpt;spec)
+    generate(spec;env_vars;out)
+  doql/generators/infra_gen.py:
+    e: _slug,_gen_docker_compose,_gen_quadlet,_gen_kiosk,generate
+    _slug(name)
+    _gen_docker_compose(spec;env_vars;out)
+    _gen_quadlet(spec;env_vars;out)
+    _gen_kiosk(spec;env_vars;out)
+    generate(spec;env_vars;out)
+  doql/plugins.py:
+    e: Plugin,_discover_entry_points,_discover_local,discover_plugins,run_plugins
+    Plugin:
+    _discover_entry_points()
+    _discover_local(project_root)
+    discover_plugins(project_root)
+    run_plugins(spec;env_vars;build_dir;project_root)
+  doql/generators/desktop_gen.py:
+    e: _make_solid_png,_snake,_gen_cargo_toml,_gen_tauri_conf,_gen_main_rs,_gen_build_rs,_gen_package_json,generate
+    _make_solid_png(width;height;rgb)
+    _snake(name)
+    _gen_cargo_toml(spec)
+    _gen_tauri_conf(spec)
+    _gen_main_rs(spec)
+    _gen_build_rs()
+    _gen_package_json(spec)
+    generate(spec;env_vars;out)
+  doql/generators/document_gen.py:
+    e: _find_template,_gen_render_script,_gen_preview_html,generate
+    _find_template(spec;name)
+    _gen_render_script(doc;spec)
+    _gen_preview_html(doc;spec;project_root)
+    generate(spec;env_vars;out;project_root)
+  doql/generators/i18n_gen.py:
+    e: _snake,_humanize,_gen_translations,generate
+    _snake(name)
+    _humanize(name)
+    _gen_translations(spec;lang)
+    generate(spec;env_vars;out)
+  doql/generators/mobile_gen.py:
+    e: _slug,_gen_manifest,_gen_service_worker,_gen_index_html,_gen_app_js,_gen_style_css,_gen_icons,generate
+    _slug(name)
+    _gen_manifest(spec)
+    _gen_service_worker(spec)
+    _gen_index_html(spec)
+    _gen_app_js(spec)
+    _gen_style_css()
+    _gen_icons(out;spec)
+    generate(spec;env_vars;out)
+  doql/generators/docs_gen.py:
+    e: generate
+    generate(spec;out)
+  plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py:
+    e: _traceability_module,_uncertainty_module,_certificate_module,_drift_monitor_module,_migration_module,_readme,generate
+    _traceability_module()
+    _uncertainty_module()
+    _certificate_module()
+    _drift_monitor_module()
+    _migration_module()
+    _readme(spec)
+    generate(spec;env_vars;out;project_root)
+  plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py:
+    e: _tenant_module,_device_registry_module,_metrics_module,_ota_module,_migration_module,_readme,generate
+    _tenant_module()
+    _device_registry_module()
+    _metrics_module()
+    _ota_module()
+    _migration_module()
+    _readme(spec)
+    generate(spec;env_vars;out;project_root)
+  plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py:
+    e: _audit_log_module,_e_signature_module,_audit_middleware,_migration_audit,_readme,generate
+    _audit_log_module()
+    _e_signature_module()
+    _audit_middleware()
+    _migration_audit()
+    _readme(spec)
+    generate(spec;env_vars;out;project_root)
+  plugins/doql-plugin-erp/doql_plugin_erp/__init__.py:
+    e: _odoo_client_module,_mapping_module,_sync_module,_webhook_module,_readme,generate
+    _odoo_client_module()
+    _mapping_module()
+    _sync_module()
+    _webhook_module()
+    _readme(spec)
+    generate(spec;env_vars;out;project_root)
+  vscode-doql/src/extension.ts:
+    i: path,vscode
+    e: activate,config,serverPath,deactivate
+    activate()
+    config()
+    serverPath()
+    deactivate()
+  doql/generators/export_postman.py:
+    e: run
+    run(spec;out)
+  doql/generators/export_ts_sdk.py:
+    e: run
+    run(spec;out)
+  doql/generators/deploy.py:
+    e: run
+    run(ctx;target_env)
+  doql/generators/ci_gen.py:
+    e: _gen_github_action,generate
+    _gen_github_action(spec)
+    generate(spec;env_vars;out)
   tree.sh:
+  project.sh:
+  playground/serve.sh:
+  doql/__init__.py:
+  doql/generators/__init__.py:

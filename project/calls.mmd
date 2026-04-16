@@ -1,26 +1,274 @@
 flowchart LR
     subgraph doql__cli
-        doql__cli__cmd_validate["cmd_validate"]
-        doql__cli__cmd_plan["cmd_plan"]
-        doql__cli__cmd_deploy["cmd_deploy"]
+        doql__cli__cmd_build["cmd_build"]
+        doql__cli___read_lockfile["_read_lockfile"]
+        doql__cli__cmd_export["cmd_export"]
+        doql__cli___build_context["_build_context"]
+        doql__cli__cmd_query["cmd_query"]
+        doql__cli___spec_section_hashes["_spec_section_hashes"]
         doql__cli__cmd_docs["cmd_docs"]
         doql__cli___write_lockfile["_write_lockfile"]
-        doql__cli__cmd_export["cmd_export"]
-        doql__cli__cmd_build["cmd_build"]
-        doql__cli___scaffold_from_template["_scaffold_from_template"]
-        doql__cli___build_context["_build_context"]
-        doql__cli__cmd_run["cmd_run"]
+        doql__cli__cmd_deploy["cmd_deploy"]
+        doql__cli__cmd_validate["cmd_validate"]
+        doql__cli___diff_sections["_diff_sections"]
+        doql__cli___load_spec["_load_spec"]
         doql__cli__cmd_sync["cmd_sync"]
+        doql__cli__cmd_quadlet["cmd_quadlet"]
+        doql__cli___scaffold_from_template["_scaffold_from_template"]
         doql__cli__cmd_init["cmd_init"]
+        doql__cli__cmd_run["cmd_run"]
+        doql__cli__cmd_generate["cmd_generate"]
+        doql__cli__cmd_render["cmd_render"]
+        doql__cli__cmd_plan["cmd_plan"]
     end
+    subgraph doql__generators
+        doql__generators__web_gen___gen_app["_gen_app"]
+        doql__generators__api_gen___gen_models["_gen_models"]
+        doql__generators__api_gen___gen_routes["_gen_routes"]
+        doql__generators__i18n_gen___snake["_snake"]
+        doql__generators__infra_gen__generate["generate"]
+        doql__generators__document_gen___gen_preview_html["_gen_preview_html"]
+        doql__generators__api_gen___snake["_snake"]
+        doql__generators__web_gen___gen_dashboard["_gen_dashboard"]
+        doql__generators__desktop_gen___gen_cargo_toml["_gen_cargo_toml"]
+        doql__generators__workflow_gen___gen_init["_gen_init"]
+        doql__generators__desktop_gen___gen_package_json["_gen_package_json"]
+        doql__generators__workflow_gen__generate["generate"]
+        doql__generators__web_gen___gen_entity_page["_gen_entity_page"]
+        doql__generators__mobile_gen___gen_manifest["_gen_manifest"]
+        doql__generators__document_gen___gen_render_script["_gen_render_script"]
+        doql__generators__web_gen___gen_package_json["_gen_package_json"]
+        doql__generators__mobile_gen__generate["generate"]
+        doql__generators__infra_gen___slug["_slug"]
+        doql__generators__infra_gen___gen_kiosk["_gen_kiosk"]
+        doql__generators__ci_gen__generate["generate"]
+        doql__generators__workflow_gen___gen_scheduler["_gen_scheduler"]
+        doql__generators__web_gen___kebab["_kebab"]
+        doql__generators__export_postman__run["run"]
+        doql__generators__desktop_gen___gen_tauri_conf["_gen_tauri_conf"]
+        doql__generators__workflow_gen___gen_workflow_module["_gen_workflow_module"]
+        doql__generators__infra_gen___gen_quadlet["_gen_quadlet"]
+        doql__generators__desktop_gen___snake["_snake"]
+        doql__generators__api_gen__export_openapi["export_openapi"]
+        doql__generators__report_gen___gen_report_script["_gen_report_script"]
+        doql__generators__i18n_gen___gen_translations["_gen_translations"]
+        doql__generators__export_ts_sdk__run["run"]
+        doql__generators__mobile_gen___gen_service_worker["_gen_service_worker"]
+        doql__generators__document_gen__generate["generate"]
+        doql__generators__workflow_gen___snake["_snake"]
+        doql__generators__mobile_gen___slug["_slug"]
+        doql__generators__i18n_gen__generate["generate"]
+        doql__generators__web_gen___gen_layout["_gen_layout"]
+        doql__generators__workflow_gen___gen_engine["_gen_engine"]
+        doql__generators__infra_gen___gen_docker_compose["_gen_docker_compose"]
+        doql__generators__web_gen___gen_service_worker["_gen_service_worker"]
+        doql__generators__mobile_gen___gen_icons["_gen_icons"]
+        doql__generators__ci_gen___gen_github_action["_gen_github_action"]
+        doql__generators__web_gen___snake["_snake"]
+        doql__generators__i18n_gen___humanize["_humanize"]
+        doql__generators__deploy__run["run"]
+        doql__generators__report_gen__generate["generate"]
+        doql__generators__docs_gen__generate["generate"]
+    end
+    subgraph doql__lsp_server
+        doql__lsp_server___diagnostics_for["_diagnostics_for"]
+        doql__lsp_server__hover["hover"]
+        doql__lsp_server___find_line_col["_find_line_col"]
+        doql__lsp_server__completion["completion"]
+        doql__lsp_server__did_change["did_change"]
+        doql__lsp_server__did_save["did_save"]
+        doql__lsp_server__document_symbols["document_symbols"]
+        doql__lsp_server__did_open["did_open"]
+        doql__lsp_server___parse_doc["_parse_doc"]
+        doql__lsp_server__definition["definition"]
+        doql__lsp_server___word_at["_word_at"]
+    end
+    subgraph doql__parser
+        doql__parser___apply_block["_apply_block"]
+        doql__parser___extract_list["_extract_list"]
+        doql__parser___collect_env_refs["_collect_env_refs"]
+        doql__parser___extract_entity_fields["_extract_entity_fields"]
+        doql__parser__parse_text["parse_text"]
+        doql__parser___split_blocks["_split_blocks"]
+        doql__parser___extract_val["_extract_val"]
+        doql__parser__parse_file["parse_file"]
+        doql__parser___extract_pages["_extract_pages"]
+    end
+    subgraph doql__plugins
+        doql__plugins__run_plugins["run_plugins"]
+        doql__plugins___discover_entry_points["_discover_entry_points"]
+        doql__plugins___discover_local["_discover_local"]
+        doql__plugins__discover_plugins["discover_plugins"]
+    end
+    subgraph playground__app
+        playground__app__renderAst["renderAst"]
+        playground__app__renderFatal["renderFatal"]
+        playground__app__activateTab["activateTab"]
+        playground__app__renderEnv["renderEnv"]
+        playground__app__escapeHtml["escapeHtml"]
+        playground__app__scheduleBuild["scheduleBuild"]
+        playground__app__renderFiles["renderFiles"]
+        playground__app__key["key"]
+        playground__app__keys["keys"]
+        playground__app__renderDiagnostics["renderDiagnostics"]
+        playground__app__r["r"]
+        playground__app__updateStats["updateStats"]
+        playground__app__name["name"]
+        playground__app__buildFn["buildFn"]
+        playground__app__runBuild["runBuild"]
+        playground__app__initial["initial"]
+    end
+    subgraph plugins__doql_plugin_erp
+        plugins__doql_plugin_erp__doql_plugin_erp___mapping_module["_mapping_module"]
+        plugins__doql_plugin_erp__doql_plugin_erp__generate["generate"]
+        plugins__doql_plugin_erp__doql_plugin_erp___odoo_client_module["_odoo_client_module"]
+        plugins__doql_plugin_erp__doql_plugin_erp___readme["_readme"]
+        plugins__doql_plugin_erp__doql_plugin_erp___sync_module["_sync_module"]
+        plugins__doql_plugin_erp__doql_plugin_erp___webhook_module["_webhook_module"]
+    end
+    subgraph plugins__doql_plugin_fleet
+        plugins__doql_plugin_fleet__doql_plugin_fleet___readme["_readme"]
+        plugins__doql_plugin_fleet__doql_plugin_fleet__generate["generate"]
+        plugins__doql_plugin_fleet__doql_plugin_fleet___metrics_module["_metrics_module"]
+        plugins__doql_plugin_fleet__doql_plugin_fleet___migration_module["_migration_module"]
+        plugins__doql_plugin_fleet__doql_plugin_fleet___tenant_module["_tenant_module"]
+        plugins__doql_plugin_fleet__doql_plugin_fleet___ota_module["_ota_module"]
+        plugins__doql_plugin_fleet__doql_plugin_fleet___device_registry_module["_device_registry_module"]
+    end
+    subgraph plugins__doql_plugin_gxp
+        plugins__doql_plugin_gxp__doql_plugin_gxp___audit_log_module["_audit_log_module"]
+        plugins__doql_plugin_gxp__doql_plugin_gxp__generate["generate"]
+        plugins__doql_plugin_gxp__doql_plugin_gxp___migration_audit["_migration_audit"]
+        plugins__doql_plugin_gxp__doql_plugin_gxp___e_signature_module["_e_signature_module"]
+        plugins__doql_plugin_gxp__doql_plugin_gxp___audit_middleware["_audit_middleware"]
+        plugins__doql_plugin_gxp__doql_plugin_gxp___readme["_readme"]
+    end
+    subgraph plugins__doql_plugin_iso17025
+        plugins__doql_plugin_iso17025__doql_plugin_iso17025___drift_monitor_module["_drift_monitor_module"]
+        plugins__doql_plugin_iso17025__doql_plugin_iso17025___certificate_module["_certificate_module"]
+        plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate["generate"]
+        plugins__doql_plugin_iso17025__doql_plugin_iso17025___readme["_readme"]
+        plugins__doql_plugin_iso17025__doql_plugin_iso17025___traceability_module["_traceability_module"]
+        plugins__doql_plugin_iso17025__doql_plugin_iso17025___uncertainty_module["_uncertainty_module"]
+        plugins__doql_plugin_iso17025__doql_plugin_iso17025___migration_module["_migration_module"]
+    end
+    plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate --> plugins__doql_plugin_iso17025__doql_plugin_iso17025___traceability_module
+    plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate --> plugins__doql_plugin_iso17025__doql_plugin_iso17025___uncertainty_module
+    plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate --> plugins__doql_plugin_iso17025__doql_plugin_iso17025___certificate_module
+    plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate --> plugins__doql_plugin_iso17025__doql_plugin_iso17025___drift_monitor_module
+    plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate --> plugins__doql_plugin_iso17025__doql_plugin_iso17025___migration_module
+    plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate --> plugins__doql_plugin_iso17025__doql_plugin_iso17025___readme
+    plugins__doql_plugin_fleet__doql_plugin_fleet__generate --> plugins__doql_plugin_fleet__doql_plugin_fleet___tenant_module
+    plugins__doql_plugin_fleet__doql_plugin_fleet__generate --> plugins__doql_plugin_fleet__doql_plugin_fleet___device_registry_module
+    plugins__doql_plugin_fleet__doql_plugin_fleet__generate --> plugins__doql_plugin_fleet__doql_plugin_fleet___metrics_module
+    plugins__doql_plugin_fleet__doql_plugin_fleet__generate --> plugins__doql_plugin_fleet__doql_plugin_fleet___ota_module
+    plugins__doql_plugin_fleet__doql_plugin_fleet__generate --> plugins__doql_plugin_fleet__doql_plugin_fleet___migration_module
+    plugins__doql_plugin_fleet__doql_plugin_fleet__generate --> plugins__doql_plugin_fleet__doql_plugin_fleet___readme
+    plugins__doql_plugin_gxp__doql_plugin_gxp__generate --> plugins__doql_plugin_gxp__doql_plugin_gxp___audit_log_module
+    plugins__doql_plugin_gxp__doql_plugin_gxp__generate --> plugins__doql_plugin_gxp__doql_plugin_gxp___e_signature_module
+    plugins__doql_plugin_gxp__doql_plugin_gxp__generate --> plugins__doql_plugin_gxp__doql_plugin_gxp___audit_middleware
+    plugins__doql_plugin_gxp__doql_plugin_gxp__generate --> plugins__doql_plugin_gxp__doql_plugin_gxp___migration_audit
+    plugins__doql_plugin_gxp__doql_plugin_gxp__generate --> plugins__doql_plugin_gxp__doql_plugin_gxp___readme
+    plugins__doql_plugin_erp__doql_plugin_erp__generate --> plugins__doql_plugin_erp__doql_plugin_erp___odoo_client_module
+    plugins__doql_plugin_erp__doql_plugin_erp__generate --> plugins__doql_plugin_erp__doql_plugin_erp___mapping_module
+    plugins__doql_plugin_erp__doql_plugin_erp__generate --> plugins__doql_plugin_erp__doql_plugin_erp___sync_module
+    plugins__doql_plugin_erp__doql_plugin_erp__generate --> plugins__doql_plugin_erp__doql_plugin_erp___webhook_module
+    plugins__doql_plugin_erp__doql_plugin_erp__generate --> plugins__doql_plugin_erp__doql_plugin_erp___readme
+    playground__app__name --> playground__app__activateTab
+    playground__app__initial --> playground__app__activateTab
+    playground__app__key --> playground__app__updateStats
+    playground__app__key --> playground__app__scheduleBuild
+    playground__app__runBuild --> playground__app__buildFn
+    playground__app__runBuild --> playground__app__renderFatal
+    playground__app__runBuild --> playground__app__renderDiagnostics
+    playground__app__runBuild --> playground__app__renderAst
+    playground__app__runBuild --> playground__app__renderFiles
+    playground__app__runBuild --> playground__app__renderEnv
+    playground__app__r --> playground__app__renderFatal
+    playground__app__renderFatal --> playground__app__escapeHtml
+    playground__app__renderDiagnostics --> playground__app__escapeHtml
+    playground__app__renderEnv --> playground__app__keys
+    playground__app__renderFiles --> playground__app__escapeHtml
+    doql__lsp_server___diagnostics_for --> doql__lsp_server___parse_doc
+    doql__lsp_server__did_open --> doql__lsp_server___diagnostics_for
+    doql__lsp_server__did_change --> doql__lsp_server___diagnostics_for
+    doql__lsp_server__did_save --> doql__lsp_server___diagnostics_for
+    doql__lsp_server__completion --> doql__lsp_server___parse_doc
+    doql__lsp_server__hover --> doql__lsp_server___word_at
+    doql__lsp_server__hover --> doql__lsp_server___parse_doc
+    doql__lsp_server__definition --> doql__lsp_server___word_at
+    doql__lsp_server__document_symbols --> doql__lsp_server___parse_doc
+    doql__lsp_server__document_symbols --> doql__lsp_server___find_line_col
+    doql__generators__infra_gen___gen_docker_compose --> doql__generators__infra_gen___slug
+    doql__generators__infra_gen___gen_quadlet --> doql__generators__infra_gen___slug
+    doql__generators__infra_gen___gen_kiosk --> doql__generators__infra_gen___slug
+    doql__generators__infra_gen__generate --> doql__generators__infra_gen___gen_docker_compose
+    doql__generators__infra_gen__generate --> doql__generators__infra_gen___gen_quadlet
+    doql__generators__infra_gen__generate --> doql__generators__infra_gen___gen_kiosk
+    doql__generators__ci_gen__generate --> doql__generators__ci_gen___gen_github_action
+    doql__generators__desktop_gen___gen_cargo_toml --> doql__generators__desktop_gen___snake
+    doql__generators__desktop_gen___gen_tauri_conf --> doql__generators__desktop_gen___snake
+    doql__generators__desktop_gen___gen_package_json --> doql__generators__desktop_gen___snake
+    doql__generators__document_gen__generate --> doql__generators__document_gen___gen_render_script
+    doql__generators__document_gen__generate --> doql__generators__document_gen___gen_preview_html
+    doql__generators__workflow_gen___gen_workflow_module --> doql__generators__workflow_gen___snake
+    doql__generators__workflow_gen___gen_scheduler --> doql__generators__workflow_gen___snake
+    doql__generators__workflow_gen___gen_init --> doql__generators__workflow_gen___snake
+    doql__generators__workflow_gen__generate --> doql__generators__workflow_gen___gen_init
+    doql__generators__workflow_gen__generate --> doql__generators__workflow_gen___gen_engine
+    doql__generators__i18n_gen___humanize --> doql__generators__i18n_gen___snake
+    doql__generators__i18n_gen___gen_translations --> doql__generators__i18n_gen___snake
+    doql__generators__i18n_gen___gen_translations --> doql__generators__i18n_gen___humanize
+    doql__generators__i18n_gen__generate --> doql__generators__i18n_gen___gen_translations
+    doql__generators__mobile_gen___gen_manifest --> doql__generators__mobile_gen___slug
+    doql__generators__mobile_gen___gen_service_worker --> doql__generators__mobile_gen___slug
+    doql__generators__mobile_gen__generate --> doql__generators__mobile_gen___gen_icons
+    doql__generators__api_gen___gen_models --> doql__generators__api_gen___snake
+    doql__generators__api_gen___gen_routes --> doql__generators__api_gen___snake
+    doql__generators__api_gen__export_openapi --> doql__generators__api_gen___snake
+    doql__generators__web_gen___kebab --> doql__generators__web_gen___snake
+    doql__generators__web_gen___gen_package_json --> doql__generators__web_gen___kebab
+    doql__generators__web_gen___gen_layout --> doql__generators__web_gen___kebab
+    doql__generators__web_gen___gen_dashboard --> doql__generators__web_gen___kebab
+    doql__generators__web_gen___gen_entity_page --> doql__generators__web_gen___kebab
+    doql__generators__web_gen___gen_app --> doql__generators__web_gen___kebab
+    doql__generators__web_gen___gen_service_worker --> doql__generators__web_gen___snake
+    doql__generators__report_gen__generate --> doql__generators__report_gen___gen_report_script
     doql__cli__cmd_init --> doql__cli___scaffold_from_template
     doql__cli__cmd_validate --> doql__cli___build_context
     doql__cli__cmd_plan --> doql__cli___build_context
     doql__cli__cmd_build --> doql__cli___build_context
+    doql__cli__cmd_build --> doql__cli___load_spec
+    doql__cli__cmd_build --> doql__generators__ci_gen__generate
     doql__cli__cmd_build --> doql__cli___write_lockfile
     doql__cli__cmd_run --> doql__cli___build_context
     doql__cli__cmd_deploy --> doql__cli___build_context
+    doql__cli__cmd_deploy --> doql__generators__deploy__run
     doql__cli__cmd_sync --> doql__cli___build_context
-    doql__cli__cmd_sync --> doql__cli__cmd_build
+    doql__cli__cmd_sync --> doql__cli___load_spec
+    doql__cli__cmd_sync --> doql__cli___read_lockfile
+    doql__cli__cmd_sync --> doql__cli___spec_section_hashes
+    doql__cli__cmd_sync --> doql__cli___diff_sections
+    doql__cli__cmd_sync --> doql__cli___write_lockfile
     doql__cli__cmd_export --> doql__cli___build_context
+    doql__cli__cmd_export --> doql__generators__api_gen__export_openapi
+    doql__cli__cmd_export --> doql__generators__export_postman__run
+    doql__cli__cmd_export --> doql__generators__export_ts_sdk__run
+    doql__cli__cmd_generate --> doql__cli___build_context
+    doql__cli__cmd_render --> doql__cli___build_context
+    doql__cli__cmd_query --> doql__cli___build_context
+    doql__cli__cmd_quadlet --> doql__cli___build_context
     doql__cli__cmd_docs --> doql__cli___build_context
+    doql__cli__cmd_docs --> doql__generators__docs_gen__generate
+    doql__cli___write_lockfile --> doql__cli___spec_section_hashes
+    doql__plugins__discover_plugins --> doql__plugins___discover_entry_points
+    doql__plugins__discover_plugins --> doql__plugins___discover_local
+    doql__plugins__run_plugins --> doql__plugins__discover_plugins
+    doql__parser___extract_list --> doql__parser___extract_val
+    doql__parser___extract_pages --> doql__parser___extract_val
+    doql__parser__parse_file --> doql__parser__parse_text
+    doql__parser__parse_text --> doql__parser___collect_env_refs
+    doql__parser__parse_text --> doql__parser___split_blocks
+    doql__parser__parse_text --> doql__parser___apply_block
+    doql__parser___apply_block --> doql__parser___extract_entity_fields
+    doql__parser___apply_block --> doql__parser___extract_val

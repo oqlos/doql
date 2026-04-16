@@ -1,0 +1,154 @@
+"""Extraction utilities for parsing .doql block bodies."""
+from __future__ import annotations
+
+import re
+from typing import Optional
+
+from .models import EntityField, Page
+
+
+def extract_val(body: str, key: str) -> Optional[str]:
+    """Extract 'key: value' from an indented block body."""
+    m = re.search(rf'^\s+{re.escape(key)}:[ \t]*(.+)', body, re.MULTILINE)
+    if not m:
+        return None
+    raw = m.group(1).strip()
+    # Handle quoted strings — extract content inside first pair of quotes
+    qm = re.match(r'^"([^"]*)"', raw) or re.match(r"^'([^']*)'", raw)
+    if qm:
+        return qm.group(1)
+    # Strip inline comment for unquoted values
+    if "  #" in raw:
+        raw = raw[:raw.index("  #")]
+    elif "\t#" in raw:
+        raw = raw[:raw.index("\t#")]
+    return raw.strip()
+
+
+def extract_list(body: str, key: str) -> list[str]:
+    """Extract 'key: [a, b, c]' or 'key: value' from body."""
+    raw = extract_val(body, key)
+    if not raw:
+        return []
+    raw = raw.strip("[]")
+    return [v.strip().strip('"').strip("'") for v in raw.split(",") if v.strip()]
+
+
+def extract_yaml_list(body: str, key: str) -> list[str]:
+    """Extract YAML-style list items under a key: header."""
+    m = re.search(rf'^\s+{re.escape(key)}:[ \t]*$', body, re.MULTILINE)
+    if not m:
+        return []
+    start = m.end()
+    items: list[str] = []
+    for line in body[start:].splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if stripped.startswith("- "):
+            items.append(stripped[2:].strip())
+        else:
+            break
+    return items
+
+
+def extract_pages(body: str) -> list[Page]:
+    """Extract PAGE definitions from INTERFACE body.
+
+    Supports two formats:
+      1. ``PAGE name:``  (web/mobile/desktop)
+      2. ``PAGES:`` followed by ``- name:``  (kiosk)
+    """
+    pages: list[Page] = []
+
+    # Format 1: PAGE keyword
+    for m in re.finditer(r'^\s+PAGE\s+(\w+):', body, re.MULTILINE):
+        name = m.group(1)
+        page_start = m.end()
+        next_page = re.search(r'^\s+PAGE\s+\w+:', body[page_start:], re.MULTILINE)
+        next_top = re.search(r'^[A-Z]', body[page_start:], re.MULTILINE)
+        end = len(body)
+        if next_page:
+            end = min(end, page_start + next_page.start())
+        if next_top:
+            end = min(end, page_start + next_top.start())
+        sub = body[page_start:end]
+        layout = extract_val(sub, "layout")
+        path = extract_val(sub, "path")
+        public_s = extract_val(sub, "public")
+        pages.append(Page(
+            name=name,
+            layout=layout,
+            path=path,
+            public=public_s == "true" if public_s else False,
+        ))
+
+    # Format 2: PAGES: with YAML list items (- name:)
+    if not pages:
+        pages_m = re.search(r'^(\s+)PAGES:[ \t]*$', body, re.MULTILINE)
+        if pages_m:
+            pages_indent = len(pages_m.group(1))
+            pages_body = body[pages_m.end():]
+            # Only match items at exactly pages_indent+4 spaces (or first-found indent)
+            first_item = re.search(r'^(\s+)-\s+(\w+):', pages_body, re.MULTILINE)
+            if first_item:
+                item_indent = first_item.group(1)
+                # Find all items at exactly this indent level
+                item_re = re.compile(rf'^{re.escape(item_indent)}-\s+(\w+):', re.MULTILINE)
+                matches = list(item_re.finditer(pages_body))
+                for idx, item_m in enumerate(matches):
+                    name = item_m.group(1)
+                    item_start = item_m.end()
+                    end = matches[idx + 1].start() if idx + 1 < len(matches) else len(pages_body)
+                    sub = pages_body[item_start:end]
+                    layout = extract_val(sub, "layout")
+                    path = extract_val(sub, "path")
+                    public_s = extract_val(sub, "public")
+                    pages.append(Page(
+                        name=name,
+                        layout=layout,
+                        path=path,
+                        public=public_s == "true" if public_s else False,
+                    ))
+
+    return pages
+
+
+def extract_entity_fields(body: str) -> list[EntityField]:
+    """Extract field definitions from ENTITY body."""
+    fields: list[EntityField] = []
+    for line in body.splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or line.startswith("COMPUTED") or line.startswith("INDEX") or line.startswith("AUDIT"):
+            continue
+        if ":" not in line:
+            continue
+        # skip sub-blocks like IF/ELSE
+        if line.startswith("IF ") or line.startswith("ELSE"):
+            continue
+        parts = line.split(":", 1)
+        fname = parts[0].strip()
+        ftype_raw = parts[1].strip() if len(parts) > 1 else "string"
+        if not fname or not fname[0].islower():
+            continue
+        required = "!" in ftype_raw
+        unique = "unique" in ftype_raw.lower()
+        auto = "auto" in ftype_raw.lower()
+        computed = "computed" in ftype_raw.lower()
+        ref_m = re.search(r'(\w+)\s+ref', ftype_raw)
+        ref = ref_m.group(1) if ref_m else None
+        default_m = re.search(r'default=(\S+)', ftype_raw)
+        default = default_m.group(1) if default_m else None
+        # clean type
+        base_type = re.split(r'[!\s]', ftype_raw)[0]
+        fields.append(EntityField(
+            name=fname, type=base_type, required=required,
+            unique=unique, computed=computed, ref=ref,
+            default=default, auto=auto,
+        ))
+    return fields
+
+
+def collect_env_refs(text: str) -> list[str]:
+    """Find all env.VAR_NAME references in the text."""
+    return sorted(set(re.findall(r'env\.([A-Z_][A-Z0-9_]*)', text)))

@@ -265,7 +265,7 @@ def check_mobile(mob_dir: pathlib.Path) -> TargetReport:
     return r
 
 
-def check_desktop(desk_dir: pathlib.Path) -> TargetReport:
+def check_desktop(desk_dir: pathlib.Path, *, cargo_check: bool = False) -> TargetReport:
     r = TargetReport("desktop", present=desk_dir.exists() and (desk_dir / "package.json").exists())
     if not r.present:
         return r
@@ -279,9 +279,12 @@ def check_desktop(desk_dir: pathlib.Path) -> TargetReport:
     tconf = src_tauri / "tauri.conf.json"
     try:
         data = json.loads(tconf.read_text())
-        ok = bool(data.get("package", {}).get("productName"))
-        r.checks.append(CheckResult("tauri.conf.json", ok,
-                                    f"productName={data.get('package', {}).get('productName')}"))
+        # Tauri v2: productName at top level. v1: under "package".
+        product = data.get("productName") or data.get("package", {}).get("productName")
+        schema = data.get("$schema", "")
+        version = "v2" if "/config/2" in schema or "productName" in data else "v1"
+        r.checks.append(CheckResult("tauri.conf.json", bool(product),
+                                    f"{version} productName={product}"))
     except Exception as e:
         r.checks.append(CheckResult("tauri.conf.json", False, str(e)[:200]))
 
@@ -295,6 +298,19 @@ def check_desktop(desk_dir: pathlib.Path) -> TargetReport:
         r.checks.append(CheckResult("main.rs/tauri_init",
                                     "tauri::Builder" in body,
                                     "" if "tauri::Builder" in body else "no tauri::Builder"))
+
+    # Optional: full `cargo check` — slow first time (~60s with cold cache),
+    # < 1 s with warm cache. Skipped by default; opt-in via --cargo-check.
+    if cargo_check and shutil.which("cargo"):
+        cargo_toml = src_tauri / "Cargo.toml"
+        code, out = _run(["cargo", "check", "--manifest-path", str(cargo_toml)], timeout=600)
+        ok = code == 0
+        # Capture last meaningful line (cargo prints "Finished" / "error[...]")
+        tail = " | ".join(l.strip() for l in out.splitlines() if l.strip())[-300:]
+        r.checks.append(CheckResult("cargo check", ok, tail if not ok else "compiles"))
+    elif cargo_check:
+        r.checks.append(CheckResult("cargo check", False, "cargo not in PATH"))
+
     return r
 
 
@@ -331,7 +347,7 @@ def check_infra(infra_dir: pathlib.Path) -> TargetReport:
 # Example runner
 # ────────────────────────────────────────────────────────────────────
 
-def process_example(doql_dir: pathlib.Path, *, boot: bool, verbose: bool = False) -> ExampleReport:
+def process_example(doql_dir: pathlib.Path, *, boot: bool, cargo_check: bool = False, verbose: bool = False) -> ExampleReport:
     name = doql_dir.name
     doql_file = doql_dir / "app.doql"
     rep = ExampleReport(name=name, doql_file=doql_file, build_ok=False, build_output="")
@@ -351,7 +367,7 @@ def process_example(doql_dir: pathlib.Path, *, boot: bool, verbose: bool = False
     rep.targets["api"] = check_api(build / "api", boot=boot, verbose=verbose)
     rep.targets["web"] = check_web(build / "web")
     rep.targets["mobile"] = check_mobile(build / "mobile")
-    rep.targets["desktop"] = check_desktop(build / "desktop")
+    rep.targets["desktop"] = check_desktop(build / "desktop", cargo_check=cargo_check)
     rep.targets["infra"] = check_infra(build / "infra")
     return rep
 
@@ -413,6 +429,7 @@ def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description="doql environment manager")
     p.add_argument("examples", nargs="*", help="Example names to test (default: all)")
     p.add_argument("--skip-api", action="store_true", help="Skip booting API + health check")
+    p.add_argument("--cargo-check", action="store_true", help="Run `cargo check` for desktop targets (slow first time)")
     p.add_argument("--json", action="store_true", help="Emit JSON report")
     p.add_argument("--verbose", "-v", action="store_true")
     args = p.parse_args(argv)
@@ -436,7 +453,7 @@ def main(argv: list[str] | None = None) -> int:
     reports: list[ExampleReport] = []
     for d in targets:
         print(f"  · {d.name} …", file=sys.stderr)
-        reports.append(process_example(d, boot=not args.skip_api, verbose=args.verbose))
+        reports.append(process_example(d, boot=not args.skip_api, cargo_check=args.cargo_check, verbose=args.verbose))
 
     if args.json:
         print(render_json(reports))

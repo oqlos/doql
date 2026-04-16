@@ -1,7 +1,7 @@
 <!-- code2docs:start --># doql
 
-![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.10-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-14-green)
-> **14** functions | **1** classes | **3** files | CC̄ = 3.4
+![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.10-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-196-green)
+> **196** functions | **21** classes | **30** files | CC̄ = 4.1
 
 > Auto-generated project documentation from source code analysis.
 
@@ -30,6 +30,7 @@ pip install -e .
 ```bash
 pip install doql[dev]    # development tools
 pip install doql[api]    # api features
+pip install doql[lsp]    # lsp features
 ```
 
 ## Quick Start
@@ -147,33 +148,150 @@ Content outside the markers is preserved when regenerating. Enable this with `sy
 
 ```
 doql/
-├── tree├── project    ├── cli```
+├── tree├── project        ├── doql_plugin_erp/    ├── serve        ├── doql_plugin_fleet/        ├── doql_plugin_gxp/        ├── extension        ├── doql_plugin_iso17025/├── doql/    ├── app    ├── lsp_server        ├── docs_gen        ├── infra_gen        ├── integrations_gen        ├── ci_gen        ├── export_postman        ├── desktop_gen    ├── generators/        ├── document_gen        ├── export_ts_sdk        ├── workflow_gen        ├── deploy        ├── i18n_gen        ├── mobile_gen        ├── api_gen        ├── web_gen        ├── report_gen    ├── cli    ├── plugins    ├── parser```
 
 ## API Overview
 
 ### Classes
 
 - **`BuildContext`** — —
+- **`Plugin`** — —
+- **`DoqlParseError`** — Raised when a .doql file cannot be parsed.
+- **`ValidationIssue`** — —
+- **`EntityField`** — —
+- **`Entity`** — —
+- **`DataSource`** — —
+- **`Template`** — —
+- **`Document`** — —
+- **`Report`** — —
+- **`Database`** — —
+- **`ApiClient`** — —
+- **`Webhook`** — —
+- **`Page`** — —
+- **`Interface`** — —
+- **`Integration`** — —
+- **`WorkflowStep`** — —
+- **`Workflow`** — —
+- **`Role`** — —
+- **`Deploy`** — —
+- **`DoqlSpec`** — —
 
 ### Functions
 
+- `generate(spec, env_vars, out, project_root)` — Entry point called by doql's plugin runner.
+- `generate(spec, env_vars, out, project_root)` — Entry point called by doql's plugin runner.
+- `generate(spec, env_vars, out, project_root)` — Entry point called by doql's plugin runner.
+- `activate()` — —
+- `config()` — —
+- `serverPath()` — —
+- `deactivate()` — —
+- `generate(spec, env_vars, out, project_root)` — Entry point called by doql's plugin runner.
+- `TAB_NAMES()` — —
+- `activateTab()` — —
+- `tabFromHash()` — —
+- `name()` — —
+- `initial()` — —
+- `key()` — —
+- `updateStats()` — —
+- `lines()` — —
+- `chars()` — —
+- `pyodide()` — —
+- `buildFn()` — —
+- `debounceTimer()` — —
+- `bootPyodide()` — —
+- `version()` — —
+- `scheduleBuild()` — —
+- `runBuild()` — —
+- `r()` — —
+- `renderFatal()` — —
+- `renderDiagnostics()` — —
+- `loc()` — —
+- `renderAst()` — —
+- `renderEnv()` — —
+- `refs()` — —
+- `keys()` — —
+- `marker()` — —
+- `renderFiles()` — —
+- `escapeHtml()` — —
+- `did_open(ls, params)` — —
+- `did_change(ls, params)` — —
+- `did_save(ls, params)` — —
+- `completion(ls, params)` — —
+- `hover(ls, params)` — —
+- `definition(ls, params)` — —
+- `document_symbols(ls, params)` — —
+- `main()` — —
+- `generate(spec, out)` — Generate documentation files into *out* directory.
+- `generate(spec, env_vars, out)` — Generate infra layer files into *out* directory.
+- `generate(spec, env_vars, out)` — Generate integration service modules.
+- `generate(spec, env_vars, out)` — Generate CI configuration files.
+- `run(spec, out)` — Write Postman collection JSON to the given stream.
+- `generate(spec, env_vars, out)` — Generate desktop (Tauri) layer files into *out* directory.
+- `generate(spec, env_vars, out, project_root)` — Generate document rendering pipeline into *out* directory.
+- `run(spec, out)` — Write TypeScript SDK to the given stream.
+- `generate(spec, env_vars, out)` — Generate workflow engine modules.
+- `run(ctx, target_env)` — Deploy the built application.
+- `generate(spec, env_vars, out)` — Generate i18n translation files.
+- `generate(spec, env_vars, out)` — Generate mobile PWA into *out* directory.
+- `generate(spec, env_vars, out)` — Generate API layer files into *out* directory.
+- `export_openapi(spec, out)` — Write OpenAPI 3.1 JSON to the given stream.
+- `generate(spec, env_vars, out)` — Generate React + Vite + TailwindCSS frontend into *out* directory.
+- `generate(spec, env_vars, out)` — Generate report scripts into *out* directory.
 - `cmd_init(args)` — —
 - `cmd_validate(args)` — —
 - `cmd_plan(args)` — —
 - `cmd_build(args)` — —
 - `cmd_run(args)` — —
 - `cmd_deploy(args)` — —
-- `cmd_sync(args)` — —
+- `cmd_sync(args)` — Selective rebuild — only regenerate sections that changed since last build.
 - `cmd_export(args)` — —
+- `cmd_generate(args)` — —
+- `cmd_render(args)` — —
+- `cmd_query(args)` — —
+- `cmd_kiosk(args)` — —
+- `cmd_quadlet(args)` — —
 - `cmd_docs(args)` — —
 - `main()` — —
+- `discover_plugins(project_root)` — Discover all plugins — entry-point + local.
+- `run_plugins(spec, env_vars, build_dir, project_root)` — Run all discovered plugins. Returns count of plugins executed.
+- `parse_file(path)` — Parse a .doql file into a DoqlSpec.
+- `parse_text(text)` — Parse .doql source text into a DoqlSpec (in-memory, no disk I/O).
+- `parse_env(path)` — Parse a .env file into a dict. Missing file → empty dict.
+- `validate(spec, env_vars, project_root)` — Validate a parsed DoqlSpec against env vars and internal consistency.
 
 
 ## Project Structure
 
-📄 `doql.cli` (14 functions, 1 classes)
+📦 `doql`
+📄 `doql.cli` (23 functions, 1 classes)
+📦 `doql.generators`
+📄 `doql.generators.api_gen` (17 functions)
+📄 `doql.generators.ci_gen` (2 functions)
+📄 `doql.generators.deploy` (1 functions)
+📄 `doql.generators.desktop_gen` (8 functions)
+📄 `doql.generators.docs_gen` (1 functions)
+📄 `doql.generators.document_gen` (4 functions)
+📄 `doql.generators.export_postman` (1 functions)
+📄 `doql.generators.export_ts_sdk` (1 functions)
+📄 `doql.generators.i18n_gen` (4 functions)
+📄 `doql.generators.infra_gen` (5 functions)
+📄 `doql.generators.integrations_gen` (7 functions)
+📄 `doql.generators.mobile_gen` (8 functions)
+📄 `doql.generators.report_gen` (2 functions)
+📄 `doql.generators.web_gen` (20 functions)
+📄 `doql.generators.workflow_gen` (7 functions)
+📄 `doql.lsp_server` (12 functions)
+📄 `doql.parser` (12 functions, 19 classes)
+📄 `doql.plugins` (4 functions, 1 classes)
+📄 `playground.app` (27 functions)
+📄 `playground.serve`
+📦 `plugins.doql-plugin-erp.doql_plugin_erp` (6 functions)
+📦 `plugins.doql-plugin-fleet.doql_plugin_fleet` (7 functions)
+📦 `plugins.doql-plugin-gxp.doql_plugin_gxp` (6 functions)
+📦 `plugins.doql-plugin-iso17025.doql_plugin_iso17025` (7 functions)
 📄 `project`
 📄 `tree`
+📄 `vscode-doql.src.extension` (4 functions)
 
 ## Requirements
 

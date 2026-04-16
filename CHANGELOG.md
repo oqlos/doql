@@ -4,6 +4,29 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+### Added (sesja 8 — full-stack examples + env manager)
+- **Mobile PWA generator** (`doql/generators/mobile_gen.py`) — replaces the
+  earlier stub. Now emits a self-contained installable PWA: `manifest.json`,
+  `service-worker.js` (cache-first shell, network-first API), entity-aware
+  CRUD `app.js`, mobile-first `style.css`, and SVG icons.
+- **Tauri v2 desktop generator** — `desktop_gen.py` upgraded from Tauri 1.5
+  (which required deprecated `webkit2gtk-4.0` + `libsoup-2.4`) to Tauri 2.x
+  (uses `webkit2gtk-4.1` + `libsoup-3.0` available on Ubuntu 24.04+).
+  Generates a placeholder RGBA `icons/icon.png` so `tauri dev` compiles
+  out-of-the-box; bundling disabled by default.
+- **New examples**:
+  - `examples/notes-app/` — full-stack demo (API + web + mobile + desktop)
+  - `examples/todo-pwa/` — minimal mobile-first PWA demo
+- **Environment manager** (`tests/env_manager.py`) — discovers every
+  `examples/*/app.doql`, runs `doql build`, and verifies all 5 generated
+  layers per example: API (compile + uvicorn boot + `/health` + OpenAPI),
+  web (package.json/vite/tsconfig/.tsx), mobile (manifest+SW+icons),
+  desktop (tauri.conf.json v1/v2, Cargo.toml, optional `cargo check`),
+  infra (compose+Dockerfile). Outputs both human-readable table and
+  `--json`. CLI flags: `--skip-api`, `--cargo-check`, `--verbose`.
+- **Playground**: `.env` tab showing seeded localhost defaults + spec
+  references; URL hash sync (`#tab=ast` deep-links).
+
 ### Added (Faza 3 — Ecosystem, sesja 6)
 - **`doql-plugin-iso17025`** — ISO/IEC 17025:2017: traceability chain, GUM
   uncertainty budgets (u_c = √Σ(cᵢ·uᵢ)²), calibration certificates, drift

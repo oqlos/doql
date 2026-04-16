@@ -1,7 +1,10 @@
 # Build artifacts
 /build/
 doql.lock
-
+.fingerprint
+target
+doql/examples/notes-app
+notes-app
 # Python
 __pycache__/
 *.py[cod]
