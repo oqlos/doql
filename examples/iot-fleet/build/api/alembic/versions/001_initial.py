@@ -20,6 +20,7 @@ def upgrade():
     )
     op.create_table(
         "telemetrys",
+        sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("node", sa.String(255), nullable=True),
         sa.Column("timestamp", sa.DateTime, nullable=True),
         sa.Column("cpu_load", sa.Float, nullable=True),
@@ -29,6 +30,7 @@ def upgrade():
     )
     op.create_table(
         "deployments",
+        sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("name", sa.String(255)),
         sa.Column("scenario", sa.String(255), nullable=True),
         sa.Column("target_filter", sa.String(255), nullable=True),
@@ -37,6 +39,7 @@ def upgrade():
     )
     op.create_table(
         "firmware_builds",
+        sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("version", sa.String(255)),
         sa.Column("release_notes", sa.Text, nullable=True),
         sa.Column("image_url", sa.String(255), nullable=True),
@@ -46,6 +49,7 @@ def upgrade():
     )
     op.create_table(
         "ota_updates",
+        sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("firmware", sa.String(255), nullable=True),
         sa.Column("targets", sa.String(255), nullable=True),
         sa.Column("status", sa.String(255), nullable=True),

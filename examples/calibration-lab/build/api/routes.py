@@ -22,7 +22,10 @@ def get_instrument(item_id: str, db: Session = Depends(get_db)):
 
 @router.post("/instruments", response_model=schemas.InstrumentResponse, status_code=201)
 def create_instrument(data: schemas.InstrumentCreate, db: Session = Depends(get_db)):
-    obj = models.Instrument(**data.model_dump())
+    import uuid as _uuid
+    payload = data.model_dump()
+    payload.setdefault('id', str(_uuid.uuid4()))
+    obj = models.Instrument(**payload)
     db.add(obj)
     db.commit()
     db.refresh(obj)
@@ -62,7 +65,10 @@ def get_reference_standard(item_id: str, db: Session = Depends(get_db)):
 
 @router.post("/reference_standards", response_model=schemas.ReferenceStandardResponse, status_code=201)
 def create_reference_standard(data: schemas.ReferenceStandardCreate, db: Session = Depends(get_db)):
-    obj = models.ReferenceStandard(**data.model_dump())
+    import uuid as _uuid
+    payload = data.model_dump()
+    payload.setdefault('id', str(_uuid.uuid4()))
+    obj = models.ReferenceStandard(**payload)
     db.add(obj)
     db.commit()
     db.refresh(obj)
@@ -102,7 +108,10 @@ def get_calibration(item_id: str, db: Session = Depends(get_db)):
 
 @router.post("/calibrations", response_model=schemas.CalibrationResponse, status_code=201)
 def create_calibration(data: schemas.CalibrationCreate, db: Session = Depends(get_db)):
-    obj = models.Calibration(**data.model_dump())
+    import uuid as _uuid
+    payload = data.model_dump()
+    payload.setdefault('id', str(_uuid.uuid4()))
+    obj = models.Calibration(**payload)
     db.add(obj)
     db.commit()
     db.refresh(obj)
@@ -142,7 +151,10 @@ def get_customer(item_id: str, db: Session = Depends(get_db)):
 
 @router.post("/customers", response_model=schemas.CustomerResponse, status_code=201)
 def create_customer(data: schemas.CustomerCreate, db: Session = Depends(get_db)):
-    obj = models.Customer(**data.model_dump())
+    import uuid as _uuid
+    payload = data.model_dump()
+    payload.setdefault('id', str(_uuid.uuid4()))
+    obj = models.Customer(**payload)
     db.add(obj)
     db.commit()
     db.refresh(obj)
@@ -182,7 +194,10 @@ def get_calibration_order(item_id: str, db: Session = Depends(get_db)):
 
 @router.post("/calibration_orders", response_model=schemas.CalibrationOrderResponse, status_code=201)
 def create_calibration_order(data: schemas.CalibrationOrderCreate, db: Session = Depends(get_db)):
-    obj = models.CalibrationOrder(**data.model_dump())
+    import uuid as _uuid
+    payload = data.model_dump()
+    payload.setdefault('id', str(_uuid.uuid4()))
+    obj = models.CalibrationOrder(**payload)
     db.add(obj)
     db.commit()
     db.refresh(obj)

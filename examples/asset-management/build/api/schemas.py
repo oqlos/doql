@@ -8,14 +8,14 @@ from pydantic import BaseModel
 class StationCreate(BaseModel):
     name: str
     address: Optional[str] = None
-    manager: str = None
+    manager: Optional[str] = None
 
 class StationResponse(BaseModel):
     model_config = {'from_attributes': True}
-    id: str = None
+    id: Optional[str] = None
     name: str
     address: Optional[str] = None
-    manager: str = None
+    manager: Optional[str] = None
 
 class StationUpdate(BaseModel):
     name: Optional[str] = None
@@ -26,17 +26,17 @@ class StationUpdate(BaseModel):
 class OperatorCreate(BaseModel):
     name: str
     personal_id: Optional[str] = None
-    station: str = None
+    station: Optional[str] = None
     qualifications: Optional[str] = None
     hire_date: Optional[date] = None
     active: Optional[bool] = True
 
 class OperatorResponse(BaseModel):
     model_config = {'from_attributes': True}
-    id: str = None
+    id: Optional[str] = None
     name: str
     personal_id: Optional[str] = None
-    station: str = None
+    station: Optional[str] = None
     qualifications: Optional[str] = None
     hire_date: Optional[date] = None
     active: Optional[bool] = None
@@ -58,6 +58,7 @@ class QualificationCreate(BaseModel):
 
 class QualificationResponse(BaseModel):
     model_config = {'from_attributes': True}
+    id: Optional[str] = None
     name: str
     level: Optional[str] = None
     valid_until: Optional[date] = None
@@ -75,7 +76,7 @@ class DeviceCreate(BaseModel):
     model: str
     manufacturer: str
     device_type: Optional[str] = None
-    station: str = None
+    station: Optional[str] = None
     purchase_date: Optional[date] = None
     warranty_until: Optional[date] = None
     photo: Optional[str] = None
@@ -86,12 +87,12 @@ class DeviceCreate(BaseModel):
 
 class DeviceResponse(BaseModel):
     model_config = {'from_attributes': True}
-    id: str = None
+    id: Optional[str] = None
     serial: str
     model: str
     manufacturer: str
     device_type: Optional[str] = None
-    station: str = None
+    station: Optional[str] = None
     purchase_date: Optional[date] = None
     warranty_until: Optional[date] = None
     photo: Optional[str] = None
@@ -116,27 +117,27 @@ class DeviceUpdate(BaseModel):
 
 
 class InspectionCreate(BaseModel):
-    device: str = None
-    operator: str = None
+    device: Optional[str] = None
+    operator: Optional[str] = None
     scenario_id: Optional[str] = None
     completed_at: Optional[datetime] = None
     result: Optional[str] = None
     measurements: Optional[dict] = None
     notes: Optional[str] = None
-    signed_by: str = None
+    signed_by: Optional[str] = None
 
 class InspectionResponse(BaseModel):
     model_config = {'from_attributes': True}
-    id: str = None
-    device: str = None
-    operator: str = None
+    id: Optional[str] = None
+    device: Optional[str] = None
+    operator: Optional[str] = None
     scenario_id: Optional[str] = None
-    started_at: datetime = None
+    started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
     result: Optional[str] = None
     measurements: Optional[dict] = None
     notes: Optional[str] = None
-    signed_by: str = None
+    signed_by: Optional[str] = None
 
 class InspectionUpdate(BaseModel):
     device: Optional[str] = None
@@ -150,19 +151,19 @@ class InspectionUpdate(BaseModel):
 
 
 class CylinderFillCreate(BaseModel):
-    cylinder: str = None
+    cylinder: Optional[str] = None
     pressure_bar: Optional[str] = None
-    operator: str = None
+    operator: Optional[str] = None
     quality_check: Optional[bool] = None
     air_quality_cert: Optional[str] = None
 
 class CylinderFillResponse(BaseModel):
     model_config = {'from_attributes': True}
-    id: str = None
-    cylinder: str = None
-    filled_at: datetime = None
+    id: Optional[str] = None
+    cylinder: Optional[str] = None
+    filled_at: Optional[datetime] = None
     pressure_bar: Optional[str] = None
-    operator: str = None
+    operator: Optional[str] = None
     quality_check: Optional[bool] = None
     air_quality_cert: Optional[str] = None
 
@@ -175,7 +176,7 @@ class CylinderFillUpdate(BaseModel):
 
 
 class ExerciseCreate(BaseModel):
-    operator: str = None
+    operator: Optional[str] = None
     date: date
     type_: Optional[str] = None
     duration_minutes: Optional[int] = None
@@ -185,8 +186,8 @@ class ExerciseCreate(BaseModel):
 
 class ExerciseResponse(BaseModel):
     model_config = {'from_attributes': True}
-    id: str = None
-    operator: str = None
+    id: Optional[str] = None
+    operator: Optional[str] = None
     date: date
     type_: Optional[str] = None
     duration_minutes: Optional[int] = None
@@ -205,18 +206,18 @@ class ExerciseUpdate(BaseModel):
 
 
 class DeploymentCreate(BaseModel):
-    operator: str = None
-    device: str = None
+    operator: Optional[str] = None
+    device: Optional[str] = None
     returned_at: Optional[datetime] = None
     incident_ref: Optional[str] = None
     condition_on_return: Optional[str] = None
 
 class DeploymentResponse(BaseModel):
     model_config = {'from_attributes': True}
-    id: str = None
-    operator: str = None
-    device: str = None
-    taken_at: datetime = None
+    id: Optional[str] = None
+    operator: Optional[str] = None
+    device: Optional[str] = None
+    taken_at: Optional[datetime] = None
     returned_at: Optional[datetime] = None
     incident_ref: Optional[str] = None
     condition_on_return: Optional[str] = None

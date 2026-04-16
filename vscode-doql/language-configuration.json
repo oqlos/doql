@@ -1,0 +1,28 @@
+{
+  "comments": {
+    "lineComment": "#"
+  },
+  "brackets": [
+    ["{", "}"],
+    ["[", "]"],
+    ["(", ")"]
+  ],
+  "autoClosingPairs": [
+    ["{", "}"],
+    ["[", "]"],
+    ["(", ")"],
+    ["\"", "\""],
+    ["'", "'"]
+  ],
+  "surroundingPairs": [
+    ["{", "}"],
+    ["[", "]"],
+    ["(", ")"],
+    ["\"", "\""],
+    ["'", "'"]
+  ],
+  "indentationRules": {
+    "increaseIndentPattern": "^(\\s*)(ENTITY|INTERFACE|WORKFLOW|PAGE|DOCUMENT|REPORT|DATA|TEMPLATE|DATABASE|API_CLIENT|WEBHOOK|INTEGRATION|DEPLOY|ROLES|ROLE|SCENARIOS|TESTS)\\b.*:\\s*$",
+    "decreaseIndentPattern": "^\\s*$"
+  }
+}

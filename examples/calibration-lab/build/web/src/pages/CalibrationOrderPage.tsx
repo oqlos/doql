@@ -2,7 +2,7 @@ import React from 'react';
 import { api } from '../api';
 
 interface CalibrationOrder {
-  customer: any; instruments: any; received_date: any; due_date: any; priority: any; status: any; total_price: any; invoice_number: any;
+  id: any; customer: any; instruments: any; received_date: any; due_date: any; priority: any; status: any; total_price: any; invoice_number: any;
 }
 
 export default function CalibrationOrderPage() {

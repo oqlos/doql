@@ -20,6 +20,7 @@ class Node(Base):
 class Telemetry(Base):
     __tablename__ = "telemetrys"
 
+    id = Column(String(36), primary_key=True)
     node = Column(String(255), ForeignKey("nodes.id"), nullable=True)
     timestamp = Column(DateTime, nullable=True)
     cpu_load = Column(Float, nullable=True)
@@ -31,6 +32,7 @@ class Telemetry(Base):
 class Deployment(Base):
     __tablename__ = "deployments"
 
+    id = Column(String(36), primary_key=True)
     name = Column(String(255))
     scenario = Column(String(255), nullable=True)
     target_filter = Column(String(255), nullable=True)
@@ -41,6 +43,7 @@ class Deployment(Base):
 class FirmwareBuild(Base):
     __tablename__ = "firmware_builds"
 
+    id = Column(String(36), primary_key=True)
     version = Column(String(255))
     release_notes = Column(Text, nullable=True)
     image_url = Column(String(255), nullable=True)
@@ -52,6 +55,7 @@ class FirmwareBuild(Base):
 class OTAUpdate(Base):
     __tablename__ = "ota_updates"
 
+    id = Column(String(36), primary_key=True)
     firmware = Column(String(255), ForeignKey("firmware_builds.id"), nullable=True)
     targets = Column(String(255), nullable=True)
     status = Column(String(255), nullable=True)

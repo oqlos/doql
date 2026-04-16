@@ -4,6 +4,59 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+### Added (Faza 3 — Ecosystem, sesja 6)
+- **`doql-plugin-iso17025`** — ISO/IEC 17025:2017: traceability chain, GUM
+  uncertainty budgets (u_c = √Σ(cᵢ·uᵢ)²), calibration certificates, drift
+  monitor (linear regression vs CMC).
+- **`doql-plugin-fleet`** — multi-tenant fleet manager: `Tenant` model +
+  `TenantMiddleware` (X-Tenant-Id / subdomain / JWT), device registry
+  (`/enroll`, `/heartbeat`, `/health`), `MetricSample` time-series,
+  OTA canary rollout with state machine.
+- **`doql-plugin-erp`** — Odoo XML-RPC client, mapping DSL, bidirectional
+  sync with conflict policies, inbound webhook handlers (HMAC-verified).
+- **Marketplace scaffolds** — `saas-multi-tenant`, `calibration-lab`,
+  `iot-fleet`; new CLI flag `doql init --list-templates`.
+
+### Added (Faza 2 — sesja 7)
+- **Test suite** — 38 pytest tests covering parser, generators, plugins,
+  LSP + GUM numerics; `tests/runtime_deploy.sh` end-to-end runtime smoke;
+  `tests/runtime_all_examples.sh` multi-example /health probe;
+  `tests/playground_e2e.py` headless Playwright verification.
+- **Packaging** — `pyproject.toml` `package-data` ships `scaffolds/**/*`
+  with the wheel; 5 wheels build cleanly (doql + 4 plugins). Fresh-venv
+  install verified.
+- **CI** — `.github/workflows/ci.yml` with matrix unit-tests (3.10–3.13),
+  runtime-smoke job (API + all examples + web build), packaging job
+  (sdist + wheel + fresh-venv verification + artifact upload), and a
+  playground deploy job (GitHub Pages, main-only).
+- **Playground** — `playground/` static HTML+Pyodide app runs the real
+  `doql` wheel client-side. Live editor → parser + validator + generator
+  diagnostics + generated `models.py` / `schemas.py` preview. No backend,
+  no telemetry, ~65 kB wheel served once per session. Deploys to
+  GitHub Pages / Netlify / S3.
+
+### Fixed (runtime bugs found during deploy verification, sesja 7)
+- API generator: auto-inject `id` primary key when an entity has no `id`
+  field (was: `sqlalchemy.exc.ArgumentError: could not assemble any
+  primary key columns`).
+- API generator: `_py_type` wraps all non-required / auto fields in
+  `Optional[…]` (was: `ResponseValidationError: Input should be a valid
+  string` for nullable columns under Pydantic v2 strict mode).
+- API generator: CRUD routes auto-generate UUID `id` on POST.
+- API generator: `id: Optional[str]` injected into response schema for
+  auto-PK entities so clients see the generated id.
+- API generator: drop FK constraint when the referenced entity is not in
+  the spec (was: `NoReferencedTableError` at app startup).
+- API generator: pin `bcrypt>=4.0,<4.1` in `requirements.txt` (passlib
+  1.7.x is broken on bcrypt 4.1+ due to removed `__about__` attribute).
+- Parser `ROLES`: match `^  name:` not `- word` (was: nested permission
+  verbs like `read`, `execute` were extracted as role names).
+- Auth generator: use `role.name` instead of stringifying the whole
+  `Role` dataclass into the `ROLES = [...]` allowlist.
+- Web generator: prepend `id: any` to the TS entity interface when the
+  entity has no explicit id field (TSX was `TS2339: Property 'id' does
+  not exist`).
+
 ### W toku (Faza 1 — MVP)
 - Parser `.doql` v0.2 (pokrywający nowe sekcje DATA, DOCUMENT, TEMPLATE, kiosk)
 - Generator dla `DOCUMENT` — Jinja2 + WeasyPrint pipeline

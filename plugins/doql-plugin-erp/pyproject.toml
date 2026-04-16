@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "doql-plugin-erp"
+version = "0.1.0"
+description = "ERP integration for doql — Odoo XML-RPC client + bidirectional sync adapters"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [
+  { name = "Softreck", email = "hello@softreck.dev" },
+]
+keywords = ["doql", "erp", "odoo", "integration"]
+dependencies = [
+  "doql>=0.1.0a1",
+]
+
+[project.entry-points."doql_plugins"]
+erp = "doql_plugin_erp:generate"
+
+[tool.setuptools.packages.find]
+include = ["doql_plugin_erp*"]

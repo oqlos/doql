@@ -16,7 +16,7 @@ class NodeCreate(BaseModel):
 
 class NodeResponse(BaseModel):
     model_config = {'from_attributes': True}
-    id: str = None
+    id: Optional[str] = None
     hostname: str
     location: Optional[str] = None
     tags: Optional[str] = None
@@ -36,7 +36,7 @@ class NodeUpdate(BaseModel):
 
 
 class TelemetryCreate(BaseModel):
-    node: str = None
+    node: Optional[str] = None
     cpu_load: Optional[float] = None
     memory_used: Optional[float] = None
     temperature_c: Optional[float] = None
@@ -44,8 +44,9 @@ class TelemetryCreate(BaseModel):
 
 class TelemetryResponse(BaseModel):
     model_config = {'from_attributes': True}
-    node: str = None
-    timestamp: datetime = None
+    id: Optional[str] = None
+    node: Optional[str] = None
+    timestamp: Optional[datetime] = None
     cpu_load: Optional[float] = None
     memory_used: Optional[float] = None
     temperature_c: Optional[float] = None
@@ -68,6 +69,7 @@ class DeploymentCreate(BaseModel):
 
 class DeploymentResponse(BaseModel):
     model_config = {'from_attributes': True}
+    id: Optional[str] = None
     name: str
     scenario: Optional[str] = None
     target_filter: Optional[str] = None
@@ -92,6 +94,7 @@ class FirmwareBuildCreate(BaseModel):
 
 class FirmwareBuildResponse(BaseModel):
     model_config = {'from_attributes': True}
+    id: Optional[str] = None
     version: str
     release_notes: Optional[str] = None
     image_url: Optional[str] = None
@@ -109,14 +112,15 @@ class FirmwareBuildUpdate(BaseModel):
 
 
 class OTAUpdateCreate(BaseModel):
-    firmware: str = None
+    firmware: Optional[str] = None
     targets: Optional[str] = None
     status: Optional[str] = None
     started_at: Optional[datetime] = None
 
 class OTAUpdateResponse(BaseModel):
     model_config = {'from_attributes': True}
-    firmware: str = None
+    id: Optional[str] = None
+    firmware: Optional[str] = None
     targets: Optional[str] = None
     status: Optional[str] = None
     started_at: Optional[datetime] = None

@@ -22,7 +22,10 @@ def get_station(item_id: str, db: Session = Depends(get_db)):
 
 @router.post("/stations", response_model=schemas.StationResponse, status_code=201)
 def create_station(data: schemas.StationCreate, db: Session = Depends(get_db)):
-    obj = models.Station(**data.model_dump())
+    import uuid as _uuid
+    payload = data.model_dump()
+    payload.setdefault('id', str(_uuid.uuid4()))
+    obj = models.Station(**payload)
     db.add(obj)
     db.commit()
     db.refresh(obj)
@@ -62,7 +65,10 @@ def get_operator(item_id: str, db: Session = Depends(get_db)):
 
 @router.post("/operators", response_model=schemas.OperatorResponse, status_code=201)
 def create_operator(data: schemas.OperatorCreate, db: Session = Depends(get_db)):
-    obj = models.Operator(**data.model_dump())
+    import uuid as _uuid
+    payload = data.model_dump()
+    payload.setdefault('id', str(_uuid.uuid4()))
+    obj = models.Operator(**payload)
     db.add(obj)
     db.commit()
     db.refresh(obj)
@@ -102,7 +108,10 @@ def get_qualification(item_id: str, db: Session = Depends(get_db)):
 
 @router.post("/qualifications", response_model=schemas.QualificationResponse, status_code=201)
 def create_qualification(data: schemas.QualificationCreate, db: Session = Depends(get_db)):
-    obj = models.Qualification(**data.model_dump())
+    import uuid as _uuid
+    payload = data.model_dump()
+    payload.setdefault('id', str(_uuid.uuid4()))
+    obj = models.Qualification(**payload)
     db.add(obj)
     db.commit()
     db.refresh(obj)
@@ -142,7 +151,10 @@ def get_device(item_id: str, db: Session = Depends(get_db)):
 
 @router.post("/devices", response_model=schemas.DeviceResponse, status_code=201)
 def create_device(data: schemas.DeviceCreate, db: Session = Depends(get_db)):
-    obj = models.Device(**data.model_dump())
+    import uuid as _uuid
+    payload = data.model_dump()
+    payload.setdefault('id', str(_uuid.uuid4()))
+    obj = models.Device(**payload)
     db.add(obj)
     db.commit()
     db.refresh(obj)
@@ -182,7 +194,10 @@ def get_inspection(item_id: str, db: Session = Depends(get_db)):
 
 @router.post("/inspections", response_model=schemas.InspectionResponse, status_code=201)
 def create_inspection(data: schemas.InspectionCreate, db: Session = Depends(get_db)):
-    obj = models.Inspection(**data.model_dump())
+    import uuid as _uuid
+    payload = data.model_dump()
+    payload.setdefault('id', str(_uuid.uuid4()))
+    obj = models.Inspection(**payload)
     db.add(obj)
     db.commit()
     db.refresh(obj)
@@ -222,7 +237,10 @@ def get_cylinder_fill(item_id: str, db: Session = Depends(get_db)):
 
 @router.post("/cylinder_fills", response_model=schemas.CylinderFillResponse, status_code=201)
 def create_cylinder_fill(data: schemas.CylinderFillCreate, db: Session = Depends(get_db)):
-    obj = models.CylinderFill(**data.model_dump())
+    import uuid as _uuid
+    payload = data.model_dump()
+    payload.setdefault('id', str(_uuid.uuid4()))
+    obj = models.CylinderFill(**payload)
     db.add(obj)
     db.commit()
     db.refresh(obj)
@@ -262,7 +280,10 @@ def get_exercise(item_id: str, db: Session = Depends(get_db)):
 
 @router.post("/exercises", response_model=schemas.ExerciseResponse, status_code=201)
 def create_exercise(data: schemas.ExerciseCreate, db: Session = Depends(get_db)):
-    obj = models.Exercise(**data.model_dump())
+    import uuid as _uuid
+    payload = data.model_dump()
+    payload.setdefault('id', str(_uuid.uuid4()))
+    obj = models.Exercise(**payload)
     db.add(obj)
     db.commit()
     db.refresh(obj)
@@ -302,7 +323,10 @@ def get_deployment(item_id: str, db: Session = Depends(get_db)):
 
 @router.post("/deployments", response_model=schemas.DeploymentResponse, status_code=201)
 def create_deployment(data: schemas.DeploymentCreate, db: Session = Depends(get_db)):
-    obj = models.Deployment(**data.model_dump())
+    import uuid as _uuid
+    payload = data.model_dump()
+    payload.setdefault('id', str(_uuid.uuid4()))
+    obj = models.Deployment(**payload)
     db.add(obj)
     db.commit()
     db.refresh(obj)

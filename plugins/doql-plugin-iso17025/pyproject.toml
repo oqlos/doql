@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "doql-plugin-iso17025"
+version = "0.1.0"
+description = "ISO/IEC 17025:2017 compliance for doql — calibration certificates, traceability, uncertainty budgets"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [
+  { name = "Softreck", email = "hello@softreck.dev" },
+]
+keywords = ["doql", "iso17025", "calibration", "metrology", "compliance"]
+dependencies = [
+  "doql>=0.1.0a1",
+]
+
+[project.entry-points."doql_plugins"]
+iso17025 = "doql_plugin_iso17025:generate"
+
+[tool.setuptools.packages.find]
+include = ["doql_plugin_iso17025*"]

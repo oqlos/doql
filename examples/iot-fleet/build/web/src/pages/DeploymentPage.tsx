@@ -2,7 +2,7 @@ import React from 'react';
 import { api } from '../api';
 
 interface Deployment {
-  name: any; scenario: any; target_filter: any; schedule: any; last_run: any;
+  id: any; name: any; scenario: any; target_filter: any; schedule: any; last_run: any;
 }
 
 export default function DeploymentPage() {

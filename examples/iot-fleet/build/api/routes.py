@@ -22,7 +22,10 @@ def get_node(item_id: str, db: Session = Depends(get_db)):
 
 @router.post("/nodes", response_model=schemas.NodeResponse, status_code=201)
 def create_node(data: schemas.NodeCreate, db: Session = Depends(get_db)):
-    obj = models.Node(**data.model_dump())
+    import uuid as _uuid
+    payload = data.model_dump()
+    payload.setdefault('id', str(_uuid.uuid4()))
+    obj = models.Node(**payload)
     db.add(obj)
     db.commit()
     db.refresh(obj)
@@ -62,7 +65,10 @@ def get_telemetry(item_id: str, db: Session = Depends(get_db)):
 
 @router.post("/telemetrys", response_model=schemas.TelemetryResponse, status_code=201)
 def create_telemetry(data: schemas.TelemetryCreate, db: Session = Depends(get_db)):
-    obj = models.Telemetry(**data.model_dump())
+    import uuid as _uuid
+    payload = data.model_dump()
+    payload.setdefault('id', str(_uuid.uuid4()))
+    obj = models.Telemetry(**payload)
     db.add(obj)
     db.commit()
     db.refresh(obj)
@@ -102,7 +108,10 @@ def get_deployment(item_id: str, db: Session = Depends(get_db)):
 
 @router.post("/deployments", response_model=schemas.DeploymentResponse, status_code=201)
 def create_deployment(data: schemas.DeploymentCreate, db: Session = Depends(get_db)):
-    obj = models.Deployment(**data.model_dump())
+    import uuid as _uuid
+    payload = data.model_dump()
+    payload.setdefault('id', str(_uuid.uuid4()))
+    obj = models.Deployment(**payload)
     db.add(obj)
     db.commit()
     db.refresh(obj)
@@ -142,7 +151,10 @@ def get_firmware_build(item_id: str, db: Session = Depends(get_db)):
 
 @router.post("/firmware_builds", response_model=schemas.FirmwareBuildResponse, status_code=201)
 def create_firmware_build(data: schemas.FirmwareBuildCreate, db: Session = Depends(get_db)):
-    obj = models.FirmwareBuild(**data.model_dump())
+    import uuid as _uuid
+    payload = data.model_dump()
+    payload.setdefault('id', str(_uuid.uuid4()))
+    obj = models.FirmwareBuild(**payload)
     db.add(obj)
     db.commit()
     db.refresh(obj)
@@ -182,7 +194,10 @@ def get_ota_update(item_id: str, db: Session = Depends(get_db)):
 
 @router.post("/ota_updates", response_model=schemas.OTAUpdateResponse, status_code=201)
 def create_ota_update(data: schemas.OTAUpdateCreate, db: Session = Depends(get_db)):
-    obj = models.OTAUpdate(**data.model_dump())
+    import uuid as _uuid
+    payload = data.model_dump()
+    payload.setdefault('id', str(_uuid.uuid4()))
+    obj = models.OTAUpdate(**payload)
     db.add(obj)
     db.commit()
     db.refresh(obj)

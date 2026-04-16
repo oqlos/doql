@@ -26,6 +26,7 @@ def upgrade():
     )
     op.create_table(
         "qualifications",
+        sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("name", sa.String(255)),
         sa.Column("level", sa.String(255), nullable=True),
         sa.Column("valid_until", sa.Date, nullable=True),

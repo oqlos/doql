@@ -20,6 +20,7 @@ class InstrumentCreate(BaseModel):
 
 class InstrumentResponse(BaseModel):
     model_config = {'from_attributes': True}
+    id: Optional[str] = None
     serial: str
     manufacturer: str
     model: str
@@ -47,7 +48,7 @@ class InstrumentUpdate(BaseModel):
 
 
 class ReferenceStandardCreate(BaseModel):
-    instrument: str = None
+    instrument: Optional[str] = None
     traceability_chain: str
     uncertainty_budget: Optional[dict] = None
     certificate_pdf: str
@@ -55,7 +56,8 @@ class ReferenceStandardCreate(BaseModel):
 
 class ReferenceStandardResponse(BaseModel):
     model_config = {'from_attributes': True}
-    instrument: str = None
+    id: Optional[str] = None
+    instrument: Optional[str] = None
     traceability_chain: str
     uncertainty_budget: Optional[dict] = None
     certificate_pdf: str
@@ -70,10 +72,10 @@ class ReferenceStandardUpdate(BaseModel):
 
 
 class CalibrationCreate(BaseModel):
-    instrument: str = None
-    performed_by: str = None
-    reviewed_by: str = None
-    reference_used: str = None
+    instrument: Optional[str] = None
+    performed_by: Optional[str] = None
+    reviewed_by: Optional[str] = None
+    reference_used: Optional[str] = None
     scenario: Optional[str] = None
     measurements: Optional[dict] = None
     uncertainty_calculation: Optional[dict] = None
@@ -81,17 +83,17 @@ class CalibrationCreate(BaseModel):
 
 class CalibrationResponse(BaseModel):
     model_config = {'from_attributes': True}
-    id: str = None
-    instrument: str = None
-    performed_by: str = None
-    reviewed_by: str = None
-    reference_used: str = None
+    id: Optional[str] = None
+    instrument: Optional[str] = None
+    performed_by: Optional[str] = None
+    reviewed_by: Optional[str] = None
+    reference_used: Optional[str] = None
     scenario: Optional[str] = None
-    date: datetime = None
+    date: Optional[datetime] = None
     measurements: Optional[dict] = None
     uncertainty_calculation: Optional[dict] = None
     result: Optional[str] = None
-    certificate_number: str = None
+    certificate_number: Optional[str] = None
 
 class CalibrationUpdate(BaseModel):
     instrument: Optional[str] = None
@@ -113,6 +115,7 @@ class CustomerCreate(BaseModel):
 
 class CustomerResponse(BaseModel):
     model_config = {'from_attributes': True}
+    id: Optional[str] = None
     name: str
     address: Optional[str] = None
     contact_email: Optional[str] = None
@@ -128,7 +131,7 @@ class CustomerUpdate(BaseModel):
 
 
 class CalibrationOrderCreate(BaseModel):
-    customer: str = None
+    customer: Optional[str] = None
     instruments: Optional[str] = None
     received_date: Optional[date] = None
     due_date: Optional[date] = None
@@ -139,7 +142,8 @@ class CalibrationOrderCreate(BaseModel):
 
 class CalibrationOrderResponse(BaseModel):
     model_config = {'from_attributes': True}
-    customer: str = None
+    id: Optional[str] = None
+    customer: Optional[str] = None
     instruments: Optional[str] = None
     received_date: Optional[date] = None
     due_date: Optional[date] = None

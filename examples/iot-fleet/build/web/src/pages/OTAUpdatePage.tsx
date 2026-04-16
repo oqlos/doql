@@ -2,7 +2,7 @@ import React from 'react';
 import { api } from '../api';
 
 interface OTAUpdate {
-  firmware: any; targets: any; status: any; started_at: any;
+  id: any; firmware: any; targets: any; status: any; started_at: any;
 }
 
 export default function OTAUpdatePage() {

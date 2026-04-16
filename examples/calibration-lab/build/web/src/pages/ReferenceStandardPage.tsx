@@ -2,7 +2,7 @@ import React from 'react';
 import { api } from '../api';
 
 interface ReferenceStandard {
-  instrument: any; traceability_chain: any; uncertainty_budget: any; certificate_pdf: any; valid_until: any;
+  id: any; instrument: any; traceability_chain: any; uncertainty_budget: any; certificate_pdf: any; valid_until: any;
 }
 
 export default function ReferenceStandardPage() {

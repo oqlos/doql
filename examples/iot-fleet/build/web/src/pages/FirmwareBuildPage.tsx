@@ -2,7 +2,7 @@ import React from 'react';
 import { api } from '../api';
 
 interface FirmwareBuild {
-  version: any; release_notes: any; image_url: any; signature: any; targets: any; tested: any;
+  id: any; version: any; release_notes: any; image_url: any; signature: any; targets: any; tested: any;
 }
 
 export default function FirmwareBuildPage() {

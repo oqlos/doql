@@ -44,9 +44,14 @@ api = [
   "sqlalchemy>=2.0",
   "alembic>=1.13",
 ]
+lsp = [
+  "pygls>=1.3",
+  "lsprotocol>=2023.0.1",
+]
 
 [project.scripts]
 doql = "doql.cli:main"
+doql-lsp = "doql.lsp_server:main"
 
 [project.urls]
 Homepage = "https://github.com/softreck/doql"
@@ -58,6 +63,14 @@ Changelog = "https://github.com/softreck/doql/blob/main/CHANGELOG.md"
 [tool.setuptools.packages.find]
 include = ["doql*"]
 
+[tool.setuptools.package-data]
+# Ship scaffold templates (app.doql, .env.example, …) with the wheel so
+# `doql init --template <name>` works after `pip install doql`.
+doql = [
+  "scaffolds/**/*",
+  "scaffolds/**/.*",
+]
+
 [tool.ruff]
 line-length = 100
 target-version = "py310"
@@ -65,3 +78,11 @@ target-version = "py310"
 [tool.mypy]
 python_version = "3.10"
 strict = true
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+# `tests/runtime_smoke.py` is a script, not a pytest module — it connects to
+# a running server on :8766. Exclude it from collection.
+python_files = ["test_*.py"]
+addopts = "-ra --tb=short"

@@ -2,7 +2,7 @@ import React from 'react';
 import { api } from '../api';
 
 interface Qualification {
-  name: any; level: any; valid_until: any; certificate_file: any;
+  id: any; name: any; level: any; valid_until: any; certificate_file: any;
 }
 
 export default function QualificationPage() {

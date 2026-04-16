@@ -2,7 +2,7 @@ import React from 'react';
 import { api } from '../api';
 
 interface Telemetry {
-  node: any; timestamp: any; cpu_load: any; memory_used: any; temperature_c: any; data: any;
+  id: any; node: any; timestamp: any; cpu_load: any; memory_used: any; temperature_c: any; data: any;
 }
 
 export default function TelemetryPage() {

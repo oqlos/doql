@@ -1,0 +1,65 @@
+{
+  "name": "vscode-doql",
+  "displayName": "doql — Declarative OQL",
+  "description": "Language support for .doql files: syntax highlighting, diagnostics, hover, go-to-definition, completions.",
+  "version": "0.1.0",
+  "publisher": "softreck",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Snippets"
+  ],
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onLanguage:doql"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "doql",
+        "aliases": ["doql", "DOQL"],
+        "extensions": [".doql"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "doql",
+        "scopeName": "source.doql",
+        "path": "./syntaxes/doql.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "title": "doql",
+      "properties": {
+        "doql.serverPath": {
+          "type": "string",
+          "default": "doql-lsp",
+          "description": "Path to the doql-lsp executable."
+        },
+        "doql.trace.server": {
+          "type": "string",
+          "enum": ["off", "messages", "verbose"],
+          "default": "off",
+          "description": "Trace LSP communication between client and server."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.0"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.0"
+  }
+}

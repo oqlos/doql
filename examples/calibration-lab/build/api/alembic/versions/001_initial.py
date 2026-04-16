@@ -9,6 +9,7 @@ import sqlalchemy as sa
 def upgrade():
     op.create_table(
         "instruments",
+        sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("serial", sa.String(255), unique=True),
         sa.Column("manufacturer", sa.String(255)),
         sa.Column("model", sa.String(255)),
@@ -23,6 +24,7 @@ def upgrade():
     )
     op.create_table(
         "reference_standards",
+        sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("instrument", sa.String(255), nullable=True),
         sa.Column("traceability_chain", sa.Text),
         sa.Column("uncertainty_budget", sa.JSON, nullable=True),
@@ -45,6 +47,7 @@ def upgrade():
     )
     op.create_table(
         "customers",
+        sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("name", sa.String(255)),
         sa.Column("address", sa.Text, nullable=True),
         sa.Column("contact_email", sa.String(255), nullable=True),
@@ -53,6 +56,7 @@ def upgrade():
     )
     op.create_table(
         "calibration_orders",
+        sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("customer", sa.String(255), nullable=True),
         sa.Column("instruments", sa.String(255), nullable=True),
         sa.Column("received_date", sa.Date, nullable=True),

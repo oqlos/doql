@@ -7,6 +7,7 @@ from database import Base
 class Instrument(Base):
     __tablename__ = "instruments"
 
+    id = Column(String(36), primary_key=True)
     serial = Column(String(255), unique=True)
     manufacturer = Column(String(255))
     model = Column(String(255))
@@ -23,6 +24,7 @@ class Instrument(Base):
 class ReferenceStandard(Base):
     __tablename__ = "reference_standards"
 
+    id = Column(String(36), primary_key=True)
     instrument = Column(String(255), ForeignKey("instruments.id"), nullable=True)
     traceability_chain = Column(Text)
     uncertainty_budget = Column(JSON, nullable=True)
@@ -35,8 +37,8 @@ class Calibration(Base):
 
     id = Column(String(36), primary_key=True)
     instrument = Column(String(255), ForeignKey("instruments.id"), nullable=True)
-    performed_by = Column(String(255), ForeignKey("operators.id"), nullable=True)
-    reviewed_by = Column(String(255), ForeignKey("operators.id"), nullable=True)
+    performed_by = Column(String(255), nullable=True)
+    reviewed_by = Column(String(255), nullable=True)
     reference_used = Column(String(255), ForeignKey("reference_standards.id"), nullable=True)
     scenario = Column(String(255), nullable=True)
     date = Column(DateTime, nullable=True)
@@ -49,6 +51,7 @@ class Calibration(Base):
 class Customer(Base):
     __tablename__ = "customers"
 
+    id = Column(String(36), primary_key=True)
     name = Column(String(255))
     address = Column(Text, nullable=True)
     contact_email = Column(String(255), nullable=True)
@@ -59,6 +62,7 @@ class Customer(Base):
 class CalibrationOrder(Base):
     __tablename__ = "calibration_orders"
 
+    id = Column(String(36), primary_key=True)
     customer = Column(String(255), ForeignKey("customers.id"), nullable=True)
     instruments = Column(String(255), nullable=True)
     received_date = Column(Date, nullable=True)

@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "doql-plugin-fleet"
+version = "0.1.0"
+description = "Multi-tenant fleet manager for doql — tenant isolation, device inventory, health metrics"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [
+  { name = "Softreck", email = "hello@softreck.dev" },
+]
+keywords = ["doql", "multi-tenant", "saas", "fleet", "iot"]
+dependencies = [
+  "doql>=0.1.0a1",
+]
+
+[project.entry-points."doql_plugins"]
+fleet = "doql_plugin_fleet:generate"
+
+[tool.setuptools.packages.find]
+include = ["doql_plugin_fleet*"]

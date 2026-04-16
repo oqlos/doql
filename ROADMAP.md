@@ -72,18 +72,22 @@
 - [x] `doql sync` (merge-friendly re-generation z lockfile v2 diff)
 - [x] Plugin system — `.doql-plugins/*.py` + entry-point `doql_plugins` dyskover, run_plugins() w cmd_build
 - [x] GitHub Action `doql-ci` — validate + build + API compile + npm build jobs
-- [ ] LSP / język server dla VS Code
-- [ ] Playground online (playground.doql.dev)
+- [x] LSP / język server dla VS Code — `doql-lsp` (pygls 2.x), diagnostics/hover/goto-def/completions/symbols + VS Code extension scaffold (`vscode-doql/`)
+- [x] Parser error recovery — `parse_text()` z per-block try/except, `spec.parse_errors`, line tracking w `ValidationIssue(line, column)`
+- [x] Test suite (pytest) — 38 passing + 2 skipped: parser/generators/plugins/LSP + runtime smoke (`tests/runtime_deploy.sh` + `tests/runtime_all_examples.sh`) + Playwright e2e (`tests/playground_e2e.py`)
+- [x] Pakietowanie — doql + 4 plugins jako sdist + wheel (`dist/*.whl`, scaffolds included via package-data)
+- [x] GitHub Actions CI — matrix 3.10–3.13 unit-tests + runtime-smoke + packaging + artifact upload (`.github/workflows/ci.yml`)
+- [x] Playground online — `playground/` static HTML+Pyodide app, loads doql wheel in-browser, live parser+validator+generator diagnostics, deployable to GitHub Pages / Netlify / S3; Playwright e2e verified
 
 ---
 
 ## Faza 3 — Ecosystem (3 miesiące)
 
-- [ ] **doql-plugin-gxp** — 21 CFR Part 11 + audit log + e-signatures
-- [ ] **doql-plugin-iso17025** — certyfikaty + traceability + uncertainty
-- [ ] **doql-plugin-fleet** — multi-tenant fleet manager
-- [ ] **doql-plugin-erp** — Odoo integration
-- [ ] Marketplace `.doql` templates
+- [x] **doql-plugin-gxp** — 21 CFR Part 11 + audit log (SHA-256 chain) + e-signatures (`plugins/doql-plugin-gxp/`)
+- [x] **doql-plugin-iso17025** — calibration certificates + traceability chain + GUM uncertainty budgets + drift monitor (`plugins/doql-plugin-iso17025/`)
+- [x] **doql-plugin-fleet** — multi-tenant fleet manager: Tenant+TenantMiddleware, device registry, metrics ingest, OTA canary rollout (`plugins/doql-plugin-fleet/`)
+- [x] **doql-plugin-erp** — Odoo XML-RPC client + mapping DSL + bidirectional sync + inbound webhooks (`plugins/doql-plugin-erp/`)
+- [x] Marketplace `.doql` templates — `minimal`, `saas-multi-tenant`, `calibration-lab`, `iot-fleet` + `doql init --list-templates`
 - [ ] Certyfikacja deweloperów (`Doql Certified Developer`)
 
 ---

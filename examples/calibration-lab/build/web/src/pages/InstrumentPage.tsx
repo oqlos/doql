@@ -2,7 +2,7 @@ import React from 'react';
 import { api } from '../api';
 
 interface Instrument {
-  serial: any; manufacturer: any; model: any; category: any; range_min: any; range_max: any; unit: any; uncertainty_class: any; owner_organization: any; last_calibration: any; certificate_valid_until: any;
+  id: any; serial: any; manufacturer: any; model: any; category: any; range_min: any; range_max: any; unit: any; uncertainty_class: any; owner_organization: any; last_calibration: any; certificate_valid_until: any;
 }
 
 export default function InstrumentPage() {

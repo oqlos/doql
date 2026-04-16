@@ -10,7 +10,7 @@ class Station(Base):
     id = Column(String(36), primary_key=True)
     name = Column(String(255))
     address = Column(Text, nullable=True)
-    manager = Column(String(255), ForeignKey("users.id"), nullable=True)
+    manager = Column(String(255), nullable=True)
 
 
 class Operator(Base):
@@ -28,6 +28,7 @@ class Operator(Base):
 class Qualification(Base):
     __tablename__ = "qualifications"
 
+    id = Column(String(36), primary_key=True)
     name = Column(String(255))
     level = Column(String(255), nullable=True)
     valid_until = Column(Date, nullable=True)

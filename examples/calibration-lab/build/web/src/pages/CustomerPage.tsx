@@ -2,7 +2,7 @@ import React from 'react';
 import { api } from '../api';
 
 interface Customer {
-  name: any; address: any; contact_email: any; vat_id: any; active: any;
+  id: any; name: any; address: any; contact_email: any; vat_id: any; active: any;
 }
 
 export default function CustomerPage() {
