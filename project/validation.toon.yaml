@@ -1,0 +1,20 @@
+# vallm batch | 48f | 5✓ 0⚠ 1✗ | 2026-04-16
+
+SUMMARY:
+  scanned: 48  passed: 5 (10.4%)  warnings: 0  errors: 1  unsupported: 42
+
+ERRORS[1]{path,score}:
+  doql/cli.py,0.86
+    issues[6]{rule,severity,message,line}:
+      python.import.relative.resolvable,error,Relative import 'generators' not found,15
+      python.import.relative.resolvable,error,Relative import 'generators' not found,146
+      python.import.relative.resolvable,error,Relative import 'generators' not found,180
+      python.import.relative.resolvable,error,Relative import 'generators' not found,163
+      python.import.relative.resolvable,error,Relative import 'generators' not found,166
+      python.import.relative.resolvable,error,Relative import 'generators' not found,169
+
+UNSUPPORTED[4]{bucket,count}:
+  *.md,20
+  *.txt,1
+  *.example,4
+  other,17

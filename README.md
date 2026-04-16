@@ -1,234 +1,162 @@
-# doql — Declarative OQL
+# Rodzina OQL — paczka kompletna
 
-> **Z jednego pliku `.doql` zbuduj: aplikację (API + Web + Mobile + Desktop), dokument (PDF/HTML), kiosk, integrację z API, bazę danych, workflow — albo wszystko naraz.**
-
-`doql` to warstwa deklaratywna nad ekosystemem [oqlos](https://github.com/softreck/oqlos). Opisuje **co ma powstać**, nie *jak to zakodować*. Generator czyta deklarację, importuje dane z JSON/SQLite/API i produkuje kompletne artefakty.
-
----
-
-## Rodzina OQL — jednoznaczna semantyka
-
-Trzy języki, trzy role — zobacz pełny [`GLOSSARY.md`](./GLOSSARY.md).
-
-| Język | Paradygmat | Pytanie | Przykład użycia |
-|-------|-----------|---------|-----------------|
-| **OQL** (`.oql`) | imperatywny | *jak wykonać zadanie?* | sekwencja testowa hardware, kalibracja |
-| **DOQL** (`.doql`) | deklaratywny | *co ma powstać?* | SaaS, dokumenty, kiosk, integracja |
-| **IQL** (`.iql`) | deklaratywny | *jak wygląda interakcja?* | session recording, testy UI, webhooks |
+**Data wydania:** 2026-04-16  
+**Zawartość:** repo `doql/` + repo `articles/` + ten README
 
 ---
 
-## Co doql potrafi zbudować
+## Co jest w tej paczce
 
-`doql` nie jest tylko generatorem aplikacji SaaS — jest generatorem artefaktów. Artefakt to wszystko, co `doql build` produkuje.
+### `doql/` — nowy projekt: generator deklaratywny
+Kompletny projekt **doql** — warstwa deklaratywna nad `oqlos`, która z jednego pliku `.doql` generuje aplikacje, dokumenty, kioski, integracje API. Licencja Apache 2.0 (open core).
 
-| Artefakt | Przykład z życia |
-|----------|------------------|
-| **Pełna aplikacja SaaS** | Klon Drägerware dla BHP — [`asset-management`](./examples/asset-management) |
-| **Lab zgodny z ISO 17025** | Walidacja, audit trail, 4-eyes — [`calibration-lab`](./examples/calibration-lab) |
-| **Flota urządzeń IoT** | 1000+ nodes z OTA canary — [`iot-fleet`](./examples/iot-fleet) |
-| **Generator dokumentów PDF** | Świadectwa kalibracji ISO 17025 — [`document-generator`](./examples/document-generator) |
-| **Stanowisko kiosk** | Terminal operatora na tablecie — [`kiosk-station`](./examples/kiosk-station) |
+**Kluczowe dokumenty:**
+- `README.md` — wprowadzenie, quick start, link do wszystkich sekcji
+- `SPEC.md` — pełna specyfikacja języka v0.2 (16 sekcji, wszystkie typy artefaktów)
+- `GLOSSARY.md` — **jednoznaczna semantyka OQL / DOQL / IQL** (niezbędne, jeśli komunikujesz projekt publicznie)
+- `OQLOS-REQUIREMENTS.md` — lista zmian w oqlos (8 wymagań: 5 krytycznych, 3 dodane przy v0.2)
+- `ROADMAP.md` — fazy 0-3 rozwoju, ~8 tygodni do produkcji
+- `CHANGELOG.md` — historia wersji v0.1 i v0.2
 
-Każdy z tych przykładów to **jeden plik `.doql`** (~200-500 linii deklaracji) + `.env` + szablony. Nie tysiące linii boilerplate.
+**Pięć przykładów (gotowych `.doql`):**
+- `examples/asset-management/` — klon Drägerware, pełen SaaS dla BHP
+- `examples/calibration-lab/` — laboratorium ISO 17025 z 4-eyes i WORM
+- `examples/iot-fleet/` — flota RPi z OTA canary i Prometheus
+- `examples/document-generator/` — **nowy w v0.2** — tylko generator PDF bez backendu
+- `examples/kiosk-station/` — **nowy w v0.2** — stanowisko operatora na tablecie
+
+**Infrastruktura projektu:**
+- `pyproject.toml` — pakowanie Python
+- `doql/cli.py` — szkielet CLI z komendami init/validate/plan/build/run/deploy/sync/export/generate/render/query/kiosk/quadlet/docs
+- `doql/scaffolds/minimal/` — szablon dla `doql init` 
+- `LICENSE` (Apache 2.0)
+- `.gitignore` 
+
+### `articles/` — artykuły WordPress
+Sześć artykułów markdown z YAML front-matter gotowych do publikacji (kompatybilne z `wp-cli` i WordPress REST API). Każdy artykuł to jeden projekt / jedna nowość.
+
+**Lista:**
+1. `01-oqlos-status-2026-q2.md` — status oqlos po refaktorze (CC̄ 3,7→3,2)
+2. `02-testql-status-2026-q2.md` — TestQL, porównanie z Playwright
+3. `03-saas-www-status-2026-q2.md` — SaaS oqlos.com, 5 bugów P0, diagnoza landingu
+4. `04-doql-ogloszenie.md` — ogłoszenie doql v0.1 (SaaS generator)
+5. `05-wizja-ekosystemu-oqlos.md` — wizja całej rodziny (4 warstwy, strategia open-core)
+6. `06-doql-v02-dokumenty-kiosk.md` — doql v0.2 (dokumenty, kiosk, semantyka)
+
+Każdy 800-1800 słów, po polsku, gotowy do kopiuj-wklej do WordPressa.
 
 ---
 
-## Minimalne przykłady dla każdego scenariusza
+## Jak to odpalić
 
-### Tylko generator PDF (bez serwera)
-
-```doql
-APP: "CV Generator"
-
-DATA me:
-  source: json
-  file: me.json
-
-DOCUMENT cv:
-  type: pdf
-  template: templates/cv.html
-  data: DATA me
-  output: "cv_${date}.pdf"
-```
+### Instalacja doql (po sklonowaniu do repo)
 
 ```bash
-doql generate cv
-# → plik cv_2026-04-16.pdf
+cd doql/
+pip install -e .
+doql --version
 ```
 
-### Tylko kiosk
-
-```doql
-APP: "Lab Kiosk"
-
-INTERFACE kiosk:
-  target: tablet
-  auth: { mode: pin }
-  PAGES: [home, scan, inspect]
-  hardware: { barcode_scanner: usb-hid }
-
-DEPLOY: kiosk-appliance on raspberry-pi
-```
-
-### Tylko klient API z cron
-
-```doql
-APP: "Stripe Sync"
-
-API_CLIENT stripe:
-  base_url: https://api.stripe.com/v1
-  auth: bearer
-  token: env.STRIPE_SECRET
-
-DATA customers:
-  source: sqlite
-  file: data/customers.db
-
-WORKFLOW sync:
-  schedule: hourly
-  steps:
-    - fetch: stripe.list_customers
-    - upsert: DATA customers
-```
-
-### Pełen SaaS
-
-(zobacz [`examples/asset-management/app.doql`](./examples/asset-management/app.doql) — 250 linii, kompletna aplikacja)
-
----
-
-## Źródła danych — reuzywalne, wszędzie
-
-`doql` traktuje dane jako first-class citizen. Zdefiniowane raz, używane w API, dokumentach, interfejsach, workflow.
-
-```doql
-DATA devices:
-  source: json | sqlite | api | csv | excel | env
-  file: data/devices.json
-  schema: schemas/device.json
-```
-
-Potem używasz:
-
-- W modelu: `ENTITY Device: from: DATA devices`
-- W dokumencie: `DOCUMENT cert: data: { instrument: DATA devices WHERE id=$id }`
-- W UI: `PAGE devices: layout: crud FROM DATA devices`
-- W workflow: `WORKFLOW alert: query: DATA devices WHERE status=overdue`
-
-Jedno źródło prawdy, wiele konsumentów.
-
----
-
-## Deploy: Docker Compose, Quadlet, Kiosk Appliance
-
-### Docker Compose + Traefik (domyślne)
-
-```doql
-DEPLOY:
-  target: docker-compose
-  traefik:
-    tls: letsencrypt
-    le_email: env.LE_EMAIL
-```
-
-### Podman Quadlet (rootless systemd)
-
-```doql
-DEPLOY:
-  target: quadlet
-  rootless: true
-  containers:
-    - name: api
-      image: auto
-      labels: ["traefik.http.routers.api.rule=Host(`api.${DOMAIN}`)"]
-  traefik:
-    as_quadlet: true    # Traefik też jako Quadlet container
-```
-
-Generator produkuje `*.container` files gotowe do `~/.config/containers/systemd/`.
-
-### Kiosk Appliance
-
-```doql
-DEPLOY:
-  target: kiosk-appliance
-  os: raspberry-pi-os
-  boot_to_app: true
-  auto_login: kiosk_user
-  watchdog: systemd
-  ota_enabled: true
-```
-
-Generator produkuje obraz `.img` lub skrypt instalacyjny — tablet startuje prosto do aplikacji bez dostępu do systemu.
-
----
-
-## Szybki start
+### Szybki test — generator PDF
 
 ```bash
-# Instalacja
-pip install doql
-
-# Z szablonu
 doql init --template document-generator my-lab
 cd my-lab
-
-# Sekrety
-cp .env.example .env && $EDITOR .env
-
-# Waliduj
+cp .env.example .env
 doql validate
-
-# Zbuduj
-doql build
-
-# Uruchom lokalnie
-doql run
-
-# Albo pojedynczy artefakt
-doql generate calibration_certificate --instrument-id INST-001
+doql plan
 ```
 
----
+### Publikacja artykułów
 
-## Polecenia CLI
+Opcja A — ręcznie do WP (najprostsze):
+1. Skopiuj treść pliku `.md` bez front-matter
+2. Wklej w edytorze WordPress (tryb Markdown jeśli masz plugin)
+3. Tytuł, slug, kategorie, tagi z YAML front-matter
 
-| Komenda | Co robi |
-|---------|---------|
-| `doql init [--template X]` | Scaffold projektu |
-| `doql validate` | Walidacja `.doql` + `.env` + referencji |
-| `doql plan` | Dry-run: co zostanie wygenerowane |
-| `doql build` | Generuje wszystko |
-| `doql run` | Dev mode (hot reload) |
-| `doql deploy [--env X]` | Produkcja (docker/quadlet/kiosk) |
-| `doql generate <artifact>` | Pojedynczy dokument/raport |
-| `doql render <template>` | Renderuje szablon z danymi |
-| `doql query <data>` | Zapytanie do DATA source → JSON |
-| `doql sync` | Re-generowanie (merge-friendly) |
-| `doql export [--format X]` | OpenAPI / Postman / TS SDK |
-| `doql docs` | Dokumentacja mkdocs |
-| `doql kiosk --install` | Instalacja kiosk na urządzeniu |
-| `doql quadlet --install` | Instalacja Quadlet do systemd |
+Opcja B — `wp-cli`:
+```bash
+for file in articles/*.md; do
+  # yq wyciąga pola z front-matter, sed wycina YAML z body
+  title=$(yq -r '.title' "$file")
+  slug=$(yq -r '.slug' "$file")
+  body=$(sed '/^---$/,/^---$/d' "$file")
+  wp post create --post_title="$title" --post_name="$slug" \
+    --post_content="$body" --post_status=publish
+done
+```
 
----
-
-## Dokumenty w projekcie
-
-- **[`SPEC.md`](./SPEC.md)** — pełna specyfikacja języka v0.2
-- **[`GLOSSARY.md`](./GLOSSARY.md)** — jednoznaczna semantyka OQL/DOQL/IQL
-- **[`OQLOS-REQUIREMENTS.md`](./OQLOS-REQUIREMENTS.md)** — co dodać do oqlos, żeby to działało w pełni
-- **[`ROADMAP.md`](./ROADMAP.md)** — fazy 0-3 rozwoju
-- **[`CHANGELOG.md`](./CHANGELOG.md)** — historia wersji
+Opcja C — GitHub Action z WP REST API (plik `.github/workflows/publish.yml` — nie dołączony, łatwo dopisać).
 
 ---
 
-## Status
+## Architektura — jak się to wszystko łączy
 
-**Alpha** — specyfikacja i przykłady są stabilne, generator w fazie implementacji. Śledź `CHANGELOG.md`.
+```
+┌─────────────────────────────────────────────┐
+│   doql file (.doql)                         │
+│   deklaracja CO ma powstać                  │
+└──────────────┬──────────────────────────────┘
+               │  doql build
+               ▼
+   ┌───────────┴───────────┬──────────────┬─────────────┐
+   ▼                       ▼              ▼             ▼
+ ┌────┐   ┌────┐   ┌──────────┐   ┌────────┐   ┌──────────┐
+ │API │   │Web │   │ Mobile/  │   │Kiosk   │   │Documents │
+ │    │   │    │   │ Desktop  │   │        │   │PDF/HTML  │
+ └─┬──┘   └────┘   └──────────┘   └────────┘   └──────────┘
+   │
+   │ wywołuje scenariusze .oql
+   ▼
+ ┌────────────────────────────────────┐
+ │ oqlos runtime (interpretuje .oql)  │
+ └──────────────┬─────────────────────┘
+                │ Modbus / MQTT / USB / GPIO
+                ▼
+         ┌────────────┐
+         │  Hardware  │
+         └────────────┘
+```
+
+Testy aplikacji (`.iql`) → testql → Playwright-alternative z integracją hardware.
+
+---
+
+## Co dalej
+
+**Tydzień 1 (najpilniejsze):**
+- Naprawić 5 bugów P0 w www (szczegóły w artykule 03)
+- Uzupełnić `en.json` i dodać `de.json` (targi w Niemczech)
+- Dokończyć parser `.doql` v0.2
+
+**Tydzień 2-4:**
+- Publikować artykuły 01-06 w sekwencji
+- Zaimplementować 3 krytyczne wymagania oqlos dla doql
+- Pierwszy pilot klient dla doql (rozmowy wstępne toczą się)
+
+**Miesiąc 2-3:**
+- Faza 1 doql MVP — pełny generator
+- Wdrożenie pilotażowe (lab kalibracyjny w Gdańsku)
+- Przygotowanie prezentacji na targi w Niemczech
+
+**Q3-Q4:**
+- Marketplace szablonów `.doql` 
+- Premium plugins (GxP, ISO 17025, Fleet)
+- Walidacja drugiego segmentu ICP (pharma / medtech)
 
 ---
 
 ## Licencja
 
-Apache 2.0 (open core). Premium plugins (`doql-plugin-gxp`, `doql-plugin-iso17025`, `doql-plugin-fleet`) na licencji komercyjnej.
+- **doql** i wszystkie jego przykłady — Apache 2.0
+- **articles** — CC BY 4.0 (można cytować i tłumaczyć z atrybucją)
+
+Premium plugins doql (komercyjne) — osobne warunki, patrz `doql/LICENSE`.
+
+---
+
+## Kontakt
+
+- Repo główne: github.com/softreck/oqlos
+- Repo doql: github.com/softreck/doql
+- Email: hello@softreck.dev

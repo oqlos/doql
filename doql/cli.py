@@ -11,6 +11,7 @@ import sys
 from dataclasses import dataclass
 from typing import Optional
 
+from . import __version__
 from . import parser as doql_parser
 from .generators import api_gen, web_gen, mobile_gen, desktop_gen, infra_gen
 
@@ -48,7 +49,7 @@ def cmd_validate(args) -> int:
     try:
         spec = doql_parser.parse_file(ctx.doql_file)
         env_vars = doql_parser.parse_env(ctx.env_file)
-        issues = doql_parser.validate(spec, env_vars)
+        issues = doql_parser.validate(spec, env_vars, project_root=ctx.root)
     except doql_parser.DoqlParseError as e:
         print(f"❌ Parse error: {e}", file=sys.stderr)
         return 1
@@ -57,10 +58,13 @@ def cmd_validate(args) -> int:
         print("✅ Everything looks good.")
         return 0
 
+    errors = sum(1 for i in issues if i.severity == "error")
+    warnings = sum(1 for i in issues if i.severity == "warning")
     for issue in issues:
         level = "❌" if issue.severity == "error" else "⚠️ "
         print(f"{level} {issue.path}: {issue.message}")
-    return 1 if any(i.severity == "error" for i in issues) else 0
+    print(f"\n  {errors} error(s), {warnings} warning(s)")
+    return 1 if errors > 0 else 0
 
 
 def cmd_plan(args) -> int:
@@ -68,13 +72,36 @@ def cmd_plan(args) -> int:
     spec = doql_parser.parse_file(ctx.doql_file)
 
     print(f"📋 Plan for {spec.app_name} (v{spec.version}):\n")
+    print(f"  Domain:         {spec.domain or '(not set)'}")
+    print(f"  Languages:      {spec.languages or ['(default)']}")
     print(f"  Entities:       {len(spec.entities)}")
+    for e in spec.entities:
+        print(f"    • {e.name} ({len(e.fields)} fields)")
+    print(f"  DATA sources:   {len(spec.data_sources)}")
+    for d in spec.data_sources:
+        print(f"    • {d.name} ({d.source}{' → ' + d.file if d.file else ''})")
+    print(f"  Templates:      {len(spec.templates)}")
+    print(f"  Documents:      {len(spec.documents)}")
+    for d in spec.documents:
+        print(f"    • {d.name} ({d.type})")
+    print(f"  Reports:        {len(spec.reports)}")
+    print(f"  Databases:      {len(spec.databases)}")
+    print(f"  API clients:    {len(spec.api_clients)}")
+    for a in spec.api_clients:
+        print(f"    • {a.name} ({a.base_url or '?'})")
+    print(f"  Webhooks:       {len(spec.webhooks)}")
     print(f"  Scenarios:      {len(spec.scenarios)}")
     print(f"  Interfaces:     {[i.name for i in spec.interfaces]}")
+    for i in spec.interfaces:
+        pages = [p.name for p in i.pages]
+        print(f"    • {i.name} ({i.type}) pages={pages}")
     print(f"  Integrations:   {[i.name for i in spec.integrations]}")
     print(f"  Workflows:      {len(spec.workflows)}")
+    for w in spec.workflows:
+        print(f"    • {w.name} (trigger={w.trigger or w.schedule or '?'})")
     print(f"  Roles:          {[r.name for r in spec.roles]}")
     print(f"  Deploy target:  {spec.deploy.target}")
+    print(f"  Env references: {len(spec.env_refs)} vars")
 
     print("\n  Files to generate:")
     total = 0
@@ -174,6 +201,80 @@ def cmd_export(args) -> int:
     return 0
 
 
+def cmd_generate(args) -> int:
+    ctx = _build_context(args)
+    spec = doql_parser.parse_file(ctx.doql_file)
+    artifact = args.artifact
+
+    # Find matching DOCUMENT in spec
+    doc = next((d for d in spec.documents if d.name == artifact), None)
+    if not doc:
+        print(f"❌ Unknown artifact '{artifact}'. Available: {[d.name for d in spec.documents]}", file=sys.stderr)
+        return 1
+
+    print(f"📄 Generating {artifact} ({doc.type})...")
+    # TODO: Faza 1 — Jinja2 + WeasyPrint pipeline
+    print(f"   Template: {doc.template or '(none)'}")
+    print(f"   Output: {doc.output or f'{artifact}.{doc.type}'}")
+    print(f"⚠️  Generator not yet implemented — stub only.")
+    return 0
+
+
+def cmd_render(args) -> int:
+    ctx = _build_context(args)
+    template_path = pathlib.Path(args.template)
+    if not template_path.exists():
+        template_path = ctx.root / args.template
+    if not template_path.exists():
+        print(f"❌ Template not found: {args.template}", file=sys.stderr)
+        return 1
+
+    print(f"🎨 Rendering {template_path.name}...")
+    # TODO: Faza 1 — Jinja2 render with DATA sources
+    print(f"⚠️  Renderer not yet implemented — stub only.")
+    return 0
+
+
+def cmd_query(args) -> int:
+    ctx = _build_context(args)
+    spec = doql_parser.parse_file(ctx.doql_file)
+    data_name = args.data
+
+    ds = next((d for d in spec.data_sources if d.name == data_name), None)
+    if not ds:
+        print(f"❌ Unknown DATA source '{data_name}'. Available: {[d.name for d in spec.data_sources]}", file=sys.stderr)
+        return 1
+
+    print(f"🔎 Querying DATA {data_name} (source: {ds.source})...")
+    # TODO: Faza 1 — load JSON/SQLite/API and output as JSON
+    print(f"⚠️  Query engine not yet implemented — stub only.")
+    return 0
+
+
+def cmd_kiosk(args) -> int:
+    if args.install:
+        print("🖥️  Installing kiosk appliance...")
+        print("   Target: Raspberry Pi OS Lite 64-bit")
+        # TODO: Faza 2 — Openbox autostart, chromium --kiosk, udev rules, systemd
+        print("⚠️  Kiosk installer not yet implemented — stub only.")
+        return 0
+    print("ℹ️  Use --install to set up kiosk on this device.")
+    return 0
+
+
+def cmd_quadlet(args) -> int:
+    ctx = _build_context(args)
+    if args.install:
+        print("🐳 Installing Quadlet containers to systemd...")
+        quadlet_dir = pathlib.Path.home() / ".config" / "containers" / "systemd"
+        print(f"   Target: {quadlet_dir}")
+        # TODO: Faza 1 — copy .container files, systemctl --user daemon-reload
+        print("⚠️  Quadlet installer not yet implemented — stub only.")
+        return 0
+    print("ℹ️  Use --install to deploy Quadlet containers to systemd.")
+    return 0
+
+
 def cmd_docs(args) -> int:
     ctx = _build_context(args)
     spec = doql_parser.parse_file(ctx.doql_file)
@@ -232,7 +333,6 @@ def _write_lockfile(spec, ctx: BuildContext) -> None:
     lockfile.write_text(json.dumps(content, indent=2))
 
 
-__version__ = "0.1.0"
 
 
 # ────────────────────────────────────────────────────────
@@ -274,6 +374,26 @@ def main() -> int:
     s = sub.add_parser("export", help="Export OpenAPI / Postman / TS SDK")
     s.add_argument("--format", required=True, choices=["openapi", "postman", "typescript-sdk"])
     s.set_defaults(func=cmd_export)
+
+    s = sub.add_parser("generate", help="Generate a single document/artifact")
+    s.add_argument("artifact", help="Artifact name (must match DOCUMENT in .doql)")
+    s.set_defaults(func=cmd_generate)
+
+    s = sub.add_parser("render", help="Render a template with data")
+    s.add_argument("template", help="Template file path")
+    s.set_defaults(func=cmd_render)
+
+    s = sub.add_parser("query", help="Query a DATA source → JSON")
+    s.add_argument("data", help="DATA source name")
+    s.set_defaults(func=cmd_query)
+
+    s = sub.add_parser("kiosk", help="Kiosk appliance management")
+    s.add_argument("--install", action="store_true", help="Install kiosk on this device")
+    s.set_defaults(func=cmd_kiosk)
+
+    s = sub.add_parser("quadlet", help="Podman Quadlet management")
+    s.add_argument("--install", action="store_true", help="Install Quadlet to systemd")
+    s.set_defaults(func=cmd_quadlet)
 
     s = sub.add_parser("docs", help="Generate documentation site")
     s.set_defaults(func=cmd_docs)

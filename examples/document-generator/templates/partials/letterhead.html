@@ -1,0 +1,9 @@
+<!-- doql TEMPLATE: letterhead -->
+<div class="letterhead">
+  <img src="{{ logo_url }}" alt="{{ org_name }}" class="logo" />
+  <div class="org-info">
+    <h2>{{ org_name }}</h2>
+    <p>{{ org_address }}</p>
+    {% if iso_accreditation %}<p class="accreditation">{{ iso_accreditation }}</p>{% endif %}
+  </div>
+</div>

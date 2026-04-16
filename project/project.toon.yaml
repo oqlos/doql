@@ -1,0 +1,19 @@
+# doql | 14 func | 1f | 322L | shell | 2026-04-16
+
+HEALTH:
+  CC̄=3.4  critical=1 (limit:10)  dup=0  cycles=0
+
+ALERTS[1]:
+  !   high_fan_out     cmd_build = 11 (limit:10)
+
+MODULES[3] (top by size):
+  M[doql/cli.py] 286L C:1 F:14 CC↑10 D:0 (python)
+  M[project.sh] 35L C:0 F:0 CC↑0 D:0 (shell)
+  M[tree.sh] 1L C:0 F:0 CC↑0 D:0 (shell)
+  LANGS: shell:2/python:1
+
+HOTSPOTS[1]:
+  ★ cmd_build fan=11  // Orchestrates 11 calls
+
+EVOLUTION:
+  2026-04-16 CC̄=3.4 crit=1 322L // Automated analysis

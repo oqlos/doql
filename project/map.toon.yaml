@@ -1,0 +1,30 @@
+# doql | 3f 322L | shell:2,python:1 | 2026-04-16
+# stats: 14 func | 0 cls | 3 mod | CC̄=3.4 | critical:0 | cycles:0
+# alerts[1]: fan-out cmd_build=11
+# hotspots[5]: cmd_build fan=11; main fan=8; _write_lockfile fan=7; cmd_validate fan=6; cmd_export fan=6
+# evolution: baseline
+# Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
+M[3]:
+  doql/cli.py,286
+  project.sh,35
+  tree.sh,1
+D:
+  doql/cli.py:
+    e: BuildContext,cmd_init,cmd_validate,cmd_plan,cmd_build,cmd_run,cmd_deploy,cmd_sync,cmd_export,cmd_docs,_build_context,_scaffold_from_template,_estimate_file_count,_write_lockfile,main
+    BuildContext:
+    cmd_init(args)
+    cmd_validate(args)
+    cmd_plan(args)
+    cmd_build(args)
+    cmd_run(args)
+    cmd_deploy(args)
+    cmd_sync(args)
+    cmd_export(args)
+    cmd_docs(args)
+    _build_context(args)
+    _scaffold_from_template(template;target)
+    _estimate_file_count(iface)
+    _write_lockfile(spec;ctx)
+    main()
+  project.sh:
+  tree.sh:

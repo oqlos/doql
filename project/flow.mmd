@@ -1,0 +1,23 @@
+flowchart TD
+
+    %% Entry points (blue)
+    classDef entry fill:#4dabf7,stroke:#1971c2,color:#fff
+
+    subgraph CLI
+        doql__cli__cmd_init["cmd_init"]
+        doql__cli__cmd_validate["cmd_validate"]
+        doql__cli__cmd_plan["cmd_plan"]
+        doql__cli__cmd_build["cmd_build"]
+        doql__cli__cmd_run["cmd_run"]
+        doql__cli__cmd_deploy["cmd_deploy"]
+        doql__cli__cmd_sync["cmd_sync"]
+        doql__cli__cmd_export["cmd_export"]
+        doql__cli__cmd_docs["cmd_docs"]
+        doql__cli___build_context["_build_context"]
+        doql__cli___scaffold_from_template["_scaffold_from_template"]
+        doql__cli___estimate_file_count["_estimate_file_count"]
+        doql__cli___write_lockfile["_write_lockfile"]
+        doql__cli__main["main"]
+    end
+
+    class doql__cli__cmd_init,doql__cli__cmd_validate,doql__cli__cmd_plan,doql__cli__cmd_build,doql__cli__cmd_run,doql__cli__cmd_deploy,doql__cli__cmd_sync,doql__cli__cmd_export,doql__cli__cmd_docs,doql__cli___build_context entry

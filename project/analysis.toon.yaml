@@ -1,0 +1,33 @@
+# code2llm | 3f 322L | shell:2,python:1 | 2026-04-16
+# CC̄=3.4 | critical:0/14 | dups:0 | cycles:0
+
+HEALTH[0]: ok
+
+REFACTOR[0]: none needed
+
+PIPELINES[9]:
+  [1] Src [cmd_init]: cmd_init → _scaffold_from_template
+      PURITY: 100% pure
+  [2] Src [cmd_validate]: cmd_validate → _build_context
+      PURITY: 100% pure
+  [3] Src [cmd_plan]: cmd_plan → _build_context
+      PURITY: 100% pure
+  [4] Src [cmd_run]: cmd_run → _build_context
+      PURITY: 100% pure
+  [5] Src [cmd_deploy]: cmd_deploy → _build_context
+      PURITY: 100% pure
+
+LAYERS:
+  doql/                           CC̄=3.4    ←in:0  →out:0
+  │ cli                        286L  1C   14m  CC=10     ←0
+  │
+  ./                              CC̄=0.0    ←in:0  →out:0
+  │ project.sh                  35L  0C    0m  CC=0.0    ←0
+  │ tree.sh                      1L  0C    0m  CC=0.0    ←0
+  │
+
+COUPLING: no cross-package imports detected
+
+EXTERNAL:
+  validation: run `vallm batch .` → validation.toon
+  duplication: run `redup scan .` → duplication.toon

@@ -1,0 +1,23 @@
+<!-- doql TEMPLATE: measurement_table -->
+<table class="measurements">
+  <thead>
+    <tr>
+      <th>Point</th>
+      <th>Nominal</th>
+      <th>Measured</th>
+      <th>Uncertainty ({{ unit }})</th>
+      <th>Pass/Fail</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for m in measurements %}
+    <tr>
+      <td>{{ m.point }}</td>
+      <td>{{ m.nominal }}</td>
+      <td>{{ m.measured }}</td>
+      <td>± {{ uncertainty }}</td>
+      <td class="{{ 'pass' if m.pass else 'fail' }}">{{ 'PASS' if m.pass else 'FAIL' }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
