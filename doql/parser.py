@@ -253,7 +253,19 @@ def _split_blocks(text: str) -> list[tuple[str, str, str]]:
 def _extract_val(body: str, key: str) -> Optional[str]:
     """Extract 'key: value' from an indented block body."""
     m = re.search(rf'^\s+{re.escape(key)}:[ \t]*(.+)', body, re.MULTILINE)
-    return m.group(1).strip().strip('"').strip("'") if m else None
+    if not m:
+        return None
+    raw = m.group(1).strip()
+    # Handle quoted strings — extract content inside first pair of quotes
+    qm = re.match(r'^"([^"]*)"', raw) or re.match(r"^'([^']*)'", raw)
+    if qm:
+        return qm.group(1)
+    # Strip inline comment for unquoted values
+    if "  #" in raw:
+        raw = raw[:raw.index("  #")]
+    elif "\t#" in raw:
+        raw = raw[:raw.index("\t#")]
+    return raw.strip()
 
 
 def _extract_list(body: str, key: str) -> list[str]:

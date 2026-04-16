@@ -16,15 +16,25 @@
 **Cel:** pokazać, że z `.doql` da się wygenerować coś działającego end-to-end.
 
 - [x] Spec języka (v0.1)
+- [x] Spec języka (v0.2) — DATA, DOCUMENT, TEMPLATE, REPORT, DATABASE, API_CLIENT, WEBHOOK, INTERFACE kiosk, DEPLOY quadlet/kiosk
 - [x] Trzy przykładowe `.doql` (asset-management, calibration-lab, iot-fleet)
-- [ ] Parser `.doql` (tree-sitter grammar + Python binding)
-- [ ] Parser `.env` + walidator referencji
-- [ ] Generator API (FastAPI) — minimalny CRUD z 1-2 entity
-- [ ] Generator Web (React + MUI) — dashboard + 1 strona CRUD
-- [ ] Generator Infra (docker-compose + Traefik)
-- [ ] CLI: `init`, `validate`, `plan`, `build`, `run`
+- [x] Dwa dodatkowe przykłady v0.2 (document-generator, kiosk-station)
+- [x] Parser `.doql` (regex block-based, wszystkie 16 sekcji SPEC v0.2)
+- [x] Parser `.env` + walidator referencji env.*, cross-ref entity/template/document/data
+- [x] Generator API (FastAPI) — stub (generuje README + scaffold)
+- [x] Generator Web (React) — stub (generuje README + scaffold)
+- [x] Generator Infra (docker-compose + Quadlet + kiosk) — stub
+- [x] CLI: `init`, `validate`, `plan`, `build`, `run`, `deploy`, `sync`, `export`, `generate`, `render`, `query`, `kiosk`, `quadlet`, `docs`
+- [x] `pyproject.toml` + `pip install -e .` → `doql --version` działa
+- [x] Scaffolds: `doql/scaffolds/minimal/` z `app.doql` + `.env.example`
+- [x] Artykuły WordPress (6 szt.) w `articles/`
+- [x] GLOSSARY.md — semantyka OQL/DOQL/IQL
+- [ ] Parser tree-sitter (pełna gramatyka, LSP-ready) — odłożone do Faza 1
+- [ ] Generatory produkujące prawdziwy kod (nie stuby) — odłożone do Faza 1
 
-**Deliverable:** `doql init --template asset-management demo && cd demo && doql build && doql run` → działająca aplikacja na `localhost:8080`.
+**Deliverable:** `doql init --template minimal demo && cd demo && doql build` → generuje scaffold. ✅
+`doql plan` na każdym z 5 przykładów → poprawny plan. ✅
+`doql validate` → sprawdza env.*, pliki DATA, szablony, cross-referencje. ✅
 
 ---
 
@@ -32,15 +42,23 @@
 
 **Cel:** jedna realna aplikacja wdrożona na produkcji.
 
-- [ ] Pełny generator API (wszystkie typy entity, relacje, COMPUTED, VALIDATE)
+- [x] Lockfile (`doql.lock`) — generowany przy `doql build`
+- [x] Generator API — FastAPI routes + SQLAlchemy models + Pydantic schemas + CRUD endpoints (all ENTITY types, refs, computed, keyword escaping)
+- [x] Generator DOCUMENT — Jinja2 render scripts + HTML preview per DOCUMENT + WeasyPrint PDF support
+- [x] Generator Infra — real docker-compose.yml + Traefik + Dockerfile + .env.docker
+- [x] Generator Infra — Podman Quadlet .container files + Traefik quadlet + .env
+- [x] Generator Infra — Kiosk appliance installer (Openbox + Chromium --kiosk + systemd service)
+- [x] Auth JWT + RBAC — auth.py z login/register/me, bcrypt+jose, role-based `require_role()`, auto-generated gdy ROLES zdefiniowane
+- [x] Generator Web — React + Vite + TailwindCSS + React Router + Lucide icons, per-entity CRUD pages, Dashboard z licznikami, Layout z sidebar, api.ts client
+- [x] Generator REPORT — standalone render scripts + crontab + WeasyPrint/PDF + JSON fallback + recipients
+- [x] Parser: inline comment stripping, quoted value extraction w `_extract_val`
+- [ ] Parser tree-sitter (pełna gramatyka `.doql`, error recovery)
+- [ ] Alembic migrations (auto-generate from ENTITY diff)
 - [ ] Integracja z oqlos (REST + webhooks)
-- [ ] Auth JWT + RBAC (podstawowe role)
-- [ ] Generator Web: wszystkie widgety z spec (dashboard, crud, scan, workflow)
 - [ ] Generator PWA (offline + background sync)
 - [ ] Integracje: email, Slack, S3 storage
 - [ ] i18n (pl, en, de)
-- [ ] Deploy: docker-compose + Quadlet + Let's Encrypt
-- [ ] Lockfile + migration strategy
+- [ ] Migration strategy (`doql sync` z lockfile diffem)
 
 **Milestone:** pilot w firmie BHP (Gdańsk) — realna instalacja, 10+ użytkowników.
 

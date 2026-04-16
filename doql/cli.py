@@ -13,7 +13,7 @@ from typing import Optional
 
 from . import __version__
 from . import parser as doql_parser
-from .generators import api_gen, web_gen, mobile_gen, desktop_gen, infra_gen
+from .generators import api_gen, web_gen, mobile_gen, desktop_gen, infra_gen, document_gen, report_gen
 
 
 @dataclass
@@ -148,6 +148,20 @@ def cmd_build(args) -> int:
         print(f"🛠  Generating {name}...")
         target_dir.mkdir(parents=True, exist_ok=True)
         fn(spec, env_vars, target_dir)
+
+    # Documents (DOCUMENT + TEMPLATE sections)
+    if spec.documents:
+        print(f"🛠  Generating documents...")
+        doc_dir = ctx.build_dir / "documents"
+        doc_dir.mkdir(parents=True, exist_ok=True)
+        document_gen.generate(spec, env_vars, doc_dir, project_root=ctx.root)
+
+    # Reports (REPORT sections)
+    if spec.reports:
+        print(f"🛠  Generating reports...")
+        rpt_dir = ctx.build_dir / "reports"
+        rpt_dir.mkdir(parents=True, exist_ok=True)
+        report_gen.generate(spec, env_vars, rpt_dir)
 
     _write_lockfile(spec, ctx)
     print(f"\n✅ Build complete — see {ctx.build_dir}/")
