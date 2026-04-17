@@ -2,22 +2,76 @@
 
 Fleet management for 100–10 000 IoT nodes running oqlos-agent.
 
-| Target | Tech | Start |
-|--------|------|-------|
-| API | FastAPI + InfluxDB + PostgreSQL | `cd build/api && uvicorn main:app --port 8103` |
-| Web | React + Tailwind + Leaflet | `cd build/web && npm install && npm run dev` |
+## Formaty
 
-## Quick start
+- `app.doql` — oryginalny format DOQL
+- `app.doql.less` — wariant LESS ze zmiennymi dla multi-platform/multi-env
+
+---
+
+## Szybki start
 
 ```bash
-cp .env.example .env
-doql validate
-doql build --force
+# 1. Skopiuj ten katalog
+cp -r doql/examples/iot-fleet my-fleet
+cd my-fleet
 
-cd build/infra && docker compose -f docker-compose.localhost.yml up -d --build
-# → http://iot-fleet.localhost/        (API)
-# → http://iot-fleet.localhost/docs    (Swagger)
+# 2. Skonfiguruj sekrety
+cp .env.example .env
+$EDITOR .env    # wpisz bazy danych
+
+# 3. Waliduj deklarację
+doql validate
+
+# 4. Zobacz plan generowania
+doql plan
+
+# 5. Wygeneruj cały kod
+doql build
+# → build/api/        FastAPI backend
+# → build/web/        React SPA + Leaflet map
+# → build/infra/      docker-compose.yml
+
+# 6. Uruchom wybrany target (patrz sekcja niżej)
+
+# 7. Deploy na produkcję
+doql deploy --env prod
 ```
+
+---
+
+## Uruchamianie aplikacji
+
+### API (FastAPI)
+
+```bash
+cd build/api
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
+```
+
+Dokumentacja API: http://localhost:8000/docs
+
+### Web (React + Vite)
+
+```bash
+cd build/web
+npm install
+npm run dev  # dev mode na http://localhost:5173
+# lub
+npm run build && npm run preview  # production build
+```
+
+### Docker Compose
+
+```bash
+cd build/infra
+docker-compose up
+```
+
+**Uwaga:** `doql run` próbuje uruchomić pełny stack Docker — może się nie udać jeśli port 8000 jest już zajęty.
+
+---
 
 ## Entities
 
@@ -34,8 +88,3 @@ cd build/infra && docker compose -f docker-compose.localhost.yml up -d --build
 - **Canary OTA** — 5% → 25% → 100% with automatic rollback
 - **WebSocket streaming** — bidirectional telemetry + commands
 - **Leaflet map** — fleet map colored by node status
-
-## Formats
-
-- `app.doql` — original DOQL format
-- `app.doql.less` — LESS variant with variables for multi-platform/multi-env

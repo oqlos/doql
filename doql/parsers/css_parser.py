@@ -21,6 +21,7 @@ from .models import DoqlSpec, DoqlParseError
 from .extractors import collect_env_refs
 from .css_utils import CssBlock, ParsedSelector, _strip_comments, _strip_quotes, _parse_list
 from .css_transformers import _resolve_less_vars, _sass_to_css
+from .css_tokenizer import _tokenise_css, _parse_declarations
 from .css_mappers import (
     _map_entity, _map_data_source, _map_template, _map_document,
     _map_report, _map_interface, _map_integration, _map_workflow,
@@ -32,77 +33,6 @@ __all__ = [
     'CssBlock', 'ParsedSelector',
     'parse_css_file', 'parse_css_text',
 ]
-
-
-def _tokenise_css(text: str) -> list[CssBlock]:
-    """Parse CSS-like text into flat CssBlock list."""
-    blocks: list[CssBlock] = []
-    text = _strip_comments(text)
-
-    depth = 0
-    current_selector = ''
-    current_body = ''
-    line_num = 0
-
-    i = 0
-    while i < len(text):
-        ch = text[i]
-
-        if ch == '{':
-            if depth == 0:
-                # Find selector start: go backwards from i
-                sel_start = i - 1
-                while sel_start >= 0 and text[sel_start] not in ('}', ';'):
-                    sel_start -= 1
-                current_selector = text[sel_start + 1:i].strip()
-                current_body = ''
-                line_num = text[:i].count('\n')
-            depth += 1
-            if depth > 1:
-                current_body += ch
-            i += 1
-            continue
-
-        if ch == '}':
-            depth -= 1
-            if depth == 0:
-                block = CssBlock(
-                    selector=current_selector,
-                    declarations=_parse_declarations(current_body),
-                    children=_tokenise_css(current_body) if '{' in current_body else [],
-                    line=line_num,
-                )
-                blocks.append(block)
-                current_selector = ''
-                current_body = ''
-            elif depth > 0:
-                current_body += ch
-            i += 1
-            continue
-
-        if depth > 0:
-            current_body += ch
-        i += 1
-
-    return blocks
-
-
-def _parse_declarations(body: str) -> dict[str, str]:
-    """Extract property: value pairs from a CSS block body (top-level only)."""
-    decls: dict[str, str] = {}
-    depth = 0
-    for line in body.splitlines():
-        depth += line.count('{') - line.count('}')
-        if depth != 0:
-            continue
-        line = line.strip()
-        if not line or line.startswith('/*') or '{' in line or '}' in line:
-            continue
-        import re
-        m = re.match(r'^([\w\-]+)\s*:\s*(.+?)\s*;?\s*$', line)
-        if m:
-            decls[m.group(1)] = m.group(2).rstrip(';').strip()
-    return decls
 
 
 def _parse_selector(selector: str) -> ParsedSelector:

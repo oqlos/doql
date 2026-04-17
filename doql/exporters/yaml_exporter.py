@@ -8,22 +8,7 @@ from typing import IO, Any
 import yaml
 
 from ..parsers.models import DoqlSpec
-
-
-def _clean(obj: Any) -> Any:
-    """Remove None/empty values and internal fields from a dataclass dict."""
-    if isinstance(obj, dict):
-        return {
-            k: _clean(v)
-            for k, v in obj.items()
-            if v is not None
-            and v != []
-            and v != {}
-            and k not in ("parse_errors",)
-        }
-    if isinstance(obj, list):
-        return [_clean(i) for i in obj]
-    return obj
+from ..utils.clean import _clean
 
 
 def spec_to_dict(spec: DoqlSpec) -> dict[str, Any]:

@@ -48,26 +48,18 @@ if TYPE_CHECKING:
     from ...parsers import DoqlSpec
 
 
-def generate(spec: DoqlSpec, env_vars: dict[str, str], out: pathlib.Path) -> None:
-    """Generate React + Vite + TailwindCSS frontend into *out* directory."""
-    web_iface = next((i for i in spec.interfaces if i.name == "web"), None)
-    if not web_iface and not spec.entities:
-        (out / "README.md").write_text(
-            f"# {spec.app_name} — Web\n\nNo web interface or entities defined.\n",
-            encoding="utf-8",
-        )
-        print(f"    → web/ (no web interface, skipped)")
-        return
-
+def _setup_web_directories(out: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path, pathlib.Path]:
+    """Create web source directory structure."""
     src = out / "src"
     components = src / "components"
     pages = src / "pages"
     for d in [src, components, pages]:
         d.mkdir(parents=True, exist_ok=True)
+    return src, components, pages
 
-    web_pages = web_iface.pages if web_iface else []
 
-    # Config files
+def _write_config_files(out: pathlib.Path, spec: DoqlSpec) -> None:
+    """Write web configuration files."""
     files = {
         "package.json":      _gen_package_json(spec),
         "vite.config.ts":    _gen_vite_config(),
@@ -80,29 +72,36 @@ def generate(spec: DoqlSpec, env_vars: dict[str, str], out: pathlib.Path) -> Non
         (out / name).write_text(content, encoding="utf-8")
         print(f"    → web/{name}")
 
-    # Source files
+
+def _write_core_files(src: pathlib.Path, spec: DoqlSpec) -> None:
+    """Write core source files."""
     (src / "main.tsx").write_text(_gen_main_tsx(), encoding="utf-8")
     (src / "index.css").write_text(_gen_index_css(), encoding="utf-8")
     (src / "api.ts").write_text(_gen_api_ts(), encoding="utf-8")
     (src / "App.tsx").write_text(_gen_app(spec), encoding="utf-8")
     print(f"    → web/src/main.tsx, App.tsx, api.ts, index.css")
 
-    # Layout
+
+def _write_component_files(components: pathlib.Path, spec: DoqlSpec, web_pages: list) -> None:
+    """Write component files."""
     (components / "Layout.tsx").write_text(
         _gen_layout(spec, web_pages, spec.entities), encoding="utf-8",
     )
     print(f"    → web/src/components/Layout.tsx")
 
-    # Dashboard
+
+def _write_page_files(pages: pathlib.Path, spec: DoqlSpec) -> None:
+    """Write page files (dashboard and entity pages)."""
     (pages / "Dashboard.tsx").write_text(_gen_dashboard(spec), encoding="utf-8")
     print(f"    → web/src/pages/Dashboard.tsx")
 
-    # Entity pages
     for ent in spec.entities:
         (pages / f"{ent.name}Page.tsx").write_text(_gen_entity_page(ent), encoding="utf-8")
         print(f"    → web/src/pages/{ent.name}Page.tsx")
 
-    # PWA support
+
+def _write_pwa_files(out: pathlib.Path, src: pathlib.Path, spec: DoqlSpec) -> None:
+    """Write PWA support files if PWA interface is present."""
     is_pwa = any(i.type == "pwa" for i in spec.interfaces)
     if is_pwa:
         public = out / "public"
@@ -111,8 +110,11 @@ def generate(spec: DoqlSpec, env_vars: dict[str, str], out: pathlib.Path) -> Non
         (public / "sw.js").write_text(_gen_service_worker(spec), encoding="utf-8")
         (src / "sw-register.ts").write_text(_gen_sw_register(), encoding="utf-8")
         print(f"    → web/public/manifest.webmanifest, sw.js, src/sw-register.ts")
+    return is_pwa
 
-    # README
+
+def _write_readme(out: pathlib.Path, spec: DoqlSpec, is_pwa: bool) -> None:
+    """Write README.md with project documentation."""
     pwa_note = "\n\n## PWA\n\nThis app includes a service worker for offline support and background sync.\n" if is_pwa else ""
     (out / "README.md").write_text(
         f"# {spec.app_name} — Web\n\n"
@@ -127,6 +129,28 @@ def generate(spec: DoqlSpec, env_vars: dict[str, str], out: pathlib.Path) -> Non
         encoding="utf-8",
     )
     print(f"    → web/README.md")
+
+
+def generate(spec: DoqlSpec, env_vars: dict[str, str], out: pathlib.Path) -> None:
+    """Generate React + Vite + TailwindCSS frontend into *out* directory."""
+    web_iface = next((i for i in spec.interfaces if i.name == "web"), None)
+    if not web_iface and not spec.entities:
+        (out / "README.md").write_text(
+            f"# {spec.app_name} — Web\n\nNo web interface or entities defined.\n",
+            encoding="utf-8",
+        )
+        print(f"    → web/ (no web interface, skipped)")
+        return
+
+    src, components, pages = _setup_web_directories(out)
+    web_pages = web_iface.pages if web_iface else []
+
+    _write_config_files(out, spec)
+    _write_core_files(src, spec)
+    _write_component_files(components, spec, web_pages)
+    _write_page_files(pages, spec)
+    is_pwa = _write_pwa_files(out, src, spec)
+    _write_readme(out, spec, is_pwa)
 
 
 # Re-export from submodules for backward compatibility

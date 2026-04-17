@@ -52,16 +52,9 @@ def extract_yaml_list(body: str, key: str) -> list[str]:
     return items
 
 
-def extract_pages(body: str) -> list[Page]:
-    """Extract PAGE definitions from INTERFACE body.
-
-    Supports two formats:
-      1. ``PAGE name:``  (web/mobile/desktop)
-      2. ``PAGES:`` followed by ``- name:``  (kiosk)
-    """
+def _extract_page_from_format1(body: str) -> list[Page]:
+    """Extract pages using PAGE keyword format."""
     pages: list[Page] = []
-
-    # Format 1: PAGE keyword
     for m in re.finditer(r'^\s+PAGE\s+(\w+):', body, re.MULTILINE):
         name = m.group(1)
         page_start = m.end()
@@ -82,34 +75,55 @@ def extract_pages(body: str) -> list[Page]:
             path=path,
             public=public_s == "true" if public_s else False,
         ))
+    return pages
 
-    # Format 2: PAGES: with YAML list items (- name:)
+
+def _extract_page_from_format2(body: str) -> list[Page]:
+    """Extract pages using PAGES: YAML list format."""
+    pages: list[Page] = []
+    pages_m = re.search(r'^(\s+)PAGES:[ \t]*$', body, re.MULTILINE)
+    if not pages_m:
+        return pages
+
+    pages_indent = len(pages_m.group(1))
+    pages_body = body[pages_m.end():]
+    first_item = re.search(r'^(\s+)-\s+(\w+):', pages_body, re.MULTILINE)
+    if not first_item:
+        return pages
+
+    item_indent = first_item.group(1)
+    item_re = re.compile(rf'^{re.escape(item_indent)}-\s+(\w+):', re.MULTILINE)
+    matches = list(item_re.finditer(pages_body))
+    for idx, item_m in enumerate(matches):
+        name = item_m.group(1)
+        item_start = item_m.end()
+        end = matches[idx + 1].start() if idx + 1 < len(matches) else len(pages_body)
+        sub = pages_body[item_start:end]
+        layout = extract_val(sub, "layout")
+        path = extract_val(sub, "path")
+        public_s = extract_val(sub, "public")
+        pages.append(Page(
+            name=name,
+            layout=layout,
+            path=path,
+            public=public_s == "true" if public_s else False,
+        ))
+    return pages
+
+
+def extract_pages(body: str) -> list[Page]:
+    """Extract PAGE definitions from INTERFACE body.
+
+    Supports two formats:
+      1. ``PAGE name:``  (web/mobile/desktop)
+      2. ``PAGES:`` followed by ``- name:``  (kiosk)
+    """
+    # Try format 1 first (PAGE keyword)
+    pages = _extract_page_from_format1(body)
+    
+    # Fall back to format 2 (PAGES: YAML list)
     if not pages:
-        pages_m = re.search(r'^(\s+)PAGES:[ \t]*$', body, re.MULTILINE)
-        if pages_m:
-            pages_indent = len(pages_m.group(1))
-            pages_body = body[pages_m.end():]
-            # Only match items at exactly pages_indent+4 spaces (or first-found indent)
-            first_item = re.search(r'^(\s+)-\s+(\w+):', pages_body, re.MULTILINE)
-            if first_item:
-                item_indent = first_item.group(1)
-                # Find all items at exactly this indent level
-                item_re = re.compile(rf'^{re.escape(item_indent)}-\s+(\w+):', re.MULTILINE)
-                matches = list(item_re.finditer(pages_body))
-                for idx, item_m in enumerate(matches):
-                    name = item_m.group(1)
-                    item_start = item_m.end()
-                    end = matches[idx + 1].start() if idx + 1 < len(matches) else len(pages_body)
-                    sub = pages_body[item_start:end]
-                    layout = extract_val(sub, "layout")
-                    path = extract_val(sub, "path")
-                    public_s = extract_val(sub, "public")
-                    pages.append(Page(
-                        name=name,
-                        layout=layout,
-                        path=path,
-                        public=public_s == "true" if public_s else False,
-                    ))
+        pages = _extract_page_from_format2(body)
 
     return pages
 

@@ -1,8 +1,8 @@
 {
   "name": "vscode-doql",
   "displayName": "doql — Declarative OQL",
-  "description": "Language support for .doql files: syntax highlighting, diagnostics, hover, go-to-definition, completions.",
-  "version": "0.1.0",
+  "description": "Language support for .doql, .doql.css, .doql.less, .doql.sass files: syntax highlighting, diagnostics, hover, go-to-definition, completions.",
+  "version": "0.2.0",
   "publisher": "softreck",
   "engines": {
     "vscode": "^1.85.0"
@@ -14,7 +14,10 @@
   ],
   "main": "./out/extension.js",
   "activationEvents": [
-    "onLanguage:doql"
+    "onLanguage:doql",
+    "onLanguage:doql-css",
+    "onLanguage:doql-less",
+    "onLanguage:doql-sass"
   ],
   "contributes": {
     "languages": [
@@ -23,6 +26,24 @@
         "aliases": ["doql", "DOQL"],
         "extensions": [".doql"],
         "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "doql-css",
+        "aliases": ["doql CSS"],
+        "extensions": [".doql.css"],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "doql-less",
+        "aliases": ["doql LESS"],
+        "extensions": [".doql.less"],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "doql-sass",
+        "aliases": ["doql SASS"],
+        "extensions": [".doql.sass"],
+        "configuration": "./language-configuration.json"
       }
     ],
     "grammars": [
@@ -30,6 +51,21 @@
         "language": "doql",
         "scopeName": "source.doql",
         "path": "./syntaxes/doql.tmLanguage.json"
+      },
+      {
+        "language": "doql-css",
+        "scopeName": "source.doql.css",
+        "path": "./syntaxes/doql-css.tmLanguage.json"
+      },
+      {
+        "language": "doql-less",
+        "scopeName": "source.doql.less",
+        "path": "./syntaxes/doql-css.tmLanguage.json"
+      },
+      {
+        "language": "doql-sass",
+        "scopeName": "source.doql.sass",
+        "path": "./syntaxes/doql-css.tmLanguage.json"
       }
     ],
     "configuration": {

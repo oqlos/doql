@@ -40,24 +40,70 @@ doql plan
 # 5. Wygeneruj cały kod
 doql build
 # → build/api/        FastAPI app
-# → build/web/        React SPA  
+# → build/web/        React SPA
 # → build/mobile/     PWA
 # → build/desktop/    Tauri project
 # → build/infra/      docker-compose.yml + Traefik + Quadlet
 
-# 6. Uruchom lokalnie (dev)
-doql run
+# 6. Uruchom wybrany target (patrz sekcja niżej)
 
 # 7. Deploy na produkcję
 doql deploy --env prod
 ```
 
-Po ~3 minutach (czas generowania + pierwszy `docker compose up`):
+---
 
-- **Web:** https://scba.example.com
-- **API + docs:** https://scba.example.com/api/docs
-- **Mobile PWA:** instalowalne z przeglądarki mobilnej
-- **Desktop:** `./build/desktop/release/scba-manager.{exe,dmg,AppImage}`
+## Uruchamianie aplikacji
+
+### Desktop (Tauri)
+
+Do pracy offline przy stanowisku testowym:
+
+```bash
+cd build/desktop
+npm install  # tylko przy pierwszym uruchomieniu
+npm run dev
+```
+
+**Wymagania:**
+- Rust toolchain: <https://rustup.rs>
+- Node 20+
+- System libraries (Linux):
+  ```bash
+  sudo apt install -y \
+      libwebkit2gtk-4.1-dev libsoup-3.0-dev \
+      libgtk-3-dev libayatana-appindicator3-dev \
+      librsvg2-dev libssl-dev pkg-config build-essential
+  ```
+
+### Web (React + Vite)
+
+```bash
+cd build/web
+npm install
+npm run dev  # dev mode na http://localhost:5173
+# lub
+npm run build && npm run preview  # production build
+```
+
+### API (FastAPI)
+
+```bash
+cd build/api
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
+```
+
+Dokumentacja API: http://localhost:8000/docs
+
+### Pełny stack (Docker Compose)
+
+```bash
+cd build/infra
+docker-compose up
+```
+
+**Uwaga:** `doql run` próbuje uruchomić pełny stack Docker — może się nie udać jeśli port 8000 jest już zajęty.
 
 ---
 

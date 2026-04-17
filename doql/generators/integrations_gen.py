@@ -276,19 +276,16 @@ def _gen_webhook_dispatcher(webhooks: list) -> str:
     return '\n'.join(lines)
 
 
-def generate(spec: DoqlSpec, env_vars: dict[str, str], out: pathlib.Path) -> None:
-    """Generate integration service modules."""
-    integrations = [i.name.lower() for i in spec.integrations]
-    has_content = integrations or spec.api_clients or spec.webhooks
-    if not has_content:
-        return
-
+def _setup_services_dir(out: pathlib.Path) -> pathlib.Path:
+    """Create services directory and __init__.py."""
     services_dir = out
     services_dir.mkdir(parents=True, exist_ok=True)
     (services_dir / "__init__.py").write_text("", encoding="utf-8")
+    return services_dir
 
-    generated = []
 
+def _generate_integration_services(integrations: list[str], services_dir: pathlib.Path, generated: list[str]) -> None:
+    """Generate integration service files (email, slack, storage, notifications)."""
     if any(i in integrations for i in ("notifications", "email")):
         (services_dir / "email_service.py").write_text(_gen_email_service(), encoding="utf-8")
         generated.append("email_service.py")
@@ -305,16 +302,35 @@ def generate(spec: DoqlSpec, env_vars: dict[str, str], out: pathlib.Path) -> Non
         (services_dir / "notifications.py").write_text(_gen_notifications(integrations), encoding="utf-8")
         generated.append("notifications.py")
 
-    # API clients
+
+def _generate_api_clients(spec: DoqlSpec, services_dir: pathlib.Path, generated: list[str]) -> None:
+    """Generate API client files."""
     for client in spec.api_clients:
         fname = f"client_{client.name}.py"
         (services_dir / fname).write_text(_gen_api_client(client), encoding="utf-8")
         generated.append(fname)
 
-    # Webhooks
+
+def _generate_webhooks(spec: DoqlSpec, services_dir: pathlib.Path, generated: list[str]) -> None:
+    """Generate webhook dispatcher file."""
     if spec.webhooks:
         (services_dir / "webhooks.py").write_text(_gen_webhook_dispatcher(spec.webhooks), encoding="utf-8")
         generated.append("webhooks.py")
+
+
+def generate(spec: DoqlSpec, env_vars: dict[str, str], out: pathlib.Path) -> None:
+    """Generate integration service modules."""
+    integrations = [i.name.lower() for i in spec.integrations]
+    has_content = integrations or spec.api_clients or spec.webhooks
+    if not has_content:
+        return
+
+    services_dir = _setup_services_dir(out)
+    generated = []
+
+    _generate_integration_services(integrations, services_dir, generated)
+    _generate_api_clients(spec, services_dir, generated)
+    _generate_webhooks(spec, services_dir, generated)
 
     for f in generated:
         print(f"    → services/{f}")

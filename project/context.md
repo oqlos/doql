@@ -4,17 +4,17 @@
 
 - **Project**: /home/tom/github/oqlos/doql
 - **Primary Language**: python
-- **Languages**: python: 84, shell: 3, javascript: 3, typescript: 1
+- **Languages**: python: 89, shell: 3, javascript: 3, typescript: 1
 - **Analysis Mode**: static
-- **Total Functions**: 356
+- **Total Functions**: 391
 - **Total Classes**: 23
-- **Modules**: 91
-- **Entry Points**: 121
+- **Modules**: 96
+- **Entry Points**: 133
 
 ## Architecture by Module
 
 ### doql.exporters.css_exporter
-- **Functions**: 24
+- **Functions**: 28
 - **File**: `css_exporter.py`
 
 ### doql.parsers.registry
@@ -22,28 +22,36 @@
 - **File**: `registry.py`
 
 ### doql.importers.yaml_importer
-- **Functions**: 20
+- **Functions**: 22
 - **File**: `yaml_importer.py`
+
+### doql.exporters.markdown_exporter
+- **Functions**: 19
+- **File**: `markdown_exporter.py`
+
+### doql.parsers.extractors
+- **Functions**: 14
+- **File**: `extractors.py`
+
+### playground.pyodide-bridge
+- **Functions**: 13
+- **File**: `pyodide-bridge.js`
 
 ### doql.lsp_server
 - **Functions**: 13
 - **File**: `lsp_server.py`
 
-### doql.parsers.extractors
-- **Functions**: 12
-- **File**: `extractors.py`
-
 ### doql.parsers.css_mappers
 - **Functions**: 12
 - **File**: `css_mappers.py`
 
+### doql.generators.integrations_gen
+- **Functions**: 11
+- **File**: `integrations_gen.py`
+
 ### playground.renderers
 - **Functions**: 10
 - **File**: `renderers.js`
-
-### playground.pyodide-bridge
-- **Functions**: 10
-- **File**: `pyodide-bridge.js`
 
 ### doql.cli.sync
 - **Functions**: 10
@@ -57,13 +65,13 @@
 - **Functions**: 9
 - **File**: `app.js`
 
-### doql.exporters.markdown_exporter
-- **Functions**: 9
-- **File**: `markdown_exporter.py`
-
 ### doql.parsers.validators
 - **Functions**: 9
 - **File**: `validators.py`
+
+### doql.generators.web_gen
+- **Functions**: 8
+- **File**: `__init__.py`
 
 ### doql.generators.mobile_gen
 - **Functions**: 8
@@ -72,14 +80,6 @@
 ### doql.parsers.css_parser
 - **Functions**: 8
 - **File**: `css_parser.py`
-
-### plugins.doql-plugin-fleet.doql_plugin_fleet
-- **Functions**: 7
-- **File**: `__init__.py`
-
-### doql.generators.integrations_gen
-- **Functions**: 7
-- **File**: `integrations_gen.py`
 
 ### doql.generators.desktop_gen
 - **Functions**: 7
@@ -97,27 +97,12 @@
 
 Main execution flows into the system:
 
-### doql.generators.web_gen.generate
-> Generate React + Vite + TailwindCSS frontend into *out* directory.
-- **Calls**: next, files.items, None.write_text, None.write_text, None.write_text, None.write_text, print, None.write_text
-
 ### doql.cli.sync.cmd_sync
 > Selective rebuild — only regenerate sections that changed since last build.
 
 This command compares the current spec state with the previous lockfile
 a
 - **Calls**: BuildContext, doql.cli.context.load_spec, doql.cli.lockfile.read_lockfile, doql.cli.lockfile.spec_section_hashes, doql.cli.lockfile.diff_sections, doql.cli.sync.determine_regeneration_set, print, print
-
-### doql.generators.api_gen.generate
-> Generate API layer files into *out* directory.
-- **Calls**: bool, files.items, alembic_dir.mkdir, None.write_text, None.write_text, None.write_text, print, readme.write_text
-
-### playground.pyodide-bridge.bootPyodide
-- **Calls**: playground.pyodide-bridge.loadPyodide, playground.pyodide-bridge.loadPackage, playground.pyodide-bridge.first, playground.pyodide-bridge.runPythonAsync, playground.pyodide-bridge.install, playground.pyodide-bridge.getattr, playground.pyodide-bridge.print, playground.pyodide-bridge.runPython
-
-### doql.generators.integrations_gen.generate
-> Generate integration service modules.
-- **Calls**: services_dir.mkdir, None.write_text, any, any, i.name.lower, None.write_text, generated.append, None.write_text
 
 ### doql.generators.desktop_gen.generate
 > Generate desktop (Tauri) layer files into *out* directory.
@@ -220,6 +205,19 @@ The artifact name must match a DOCUMENT defined in the .doql file.
 > Map CSS block to Workflow definition.
 - **Calls**: sel.attributes.get, next, Workflow, spec.workflows.append, doql.parsers.css_parser._parse_selector, WorkflowStep, wf.steps.append, block.declarations.get
 
+### doql.importers.yaml_importer._build_data_source
+- **Calls**: DataSource, data.get, data.get, data.get, data.get, data.get, data.get, data.get
+
+### doql.importers.yaml_importer._build_document
+- **Calls**: Document, data.get, data.get, data.get, data.get, data.get, data.get, data.get
+
+### doql.importers.yaml_importer._build_interface
+- **Calls**: Interface, doql.importers.yaml_importer._build_page, data.get, data.get, data.get, data.get, data.get, data.get
+
+### doql.generators.web_gen.generate
+> Generate React + Vite + TailwindCSS frontend into *out* directory.
+- **Calls**: next, doql.generators.web_gen._setup_web_directories, doql.generators.web_gen._write_config_files, doql.generators.web_gen._write_core_files, doql.generators.web_gen._write_component_files, doql.generators.web_gen._write_page_files, doql.generators.web_gen._write_pwa_files, doql.generators.web_gen._write_readme
+
 ### doql.parsers.parse_env
 > Parse a .env file into a dict. Missing file → empty dict.
 - **Calls**: None.splitlines, path.exists, line.strip, path.read_text, line.startswith, line.partition, None.strip, key.strip
@@ -228,12 +226,7 @@ The artifact name must match a DOCUMENT defined in the .doql file.
 
 Key execution flows identified:
 
-### Flow 1: generate
-```
-generate [doql.generators.web_gen]
-```
-
-### Flow 2: cmd_sync
+### Flow 1: cmd_sync
 ```
 cmd_sync [doql.cli.sync]
   └─ →> load_spec
@@ -243,51 +236,56 @@ cmd_sync [doql.cli.sync]
       └─ →> _h
 ```
 
-### Flow 3: bootPyodide
+### Flow 2: generate
 ```
-bootPyodide [playground.pyodide-bridge]
+generate [doql.generators.desktop_gen]
 ```
 
-### Flow 4: cmd_init
+### Flow 3: cmd_init
 ```
 cmd_init [doql.cli.commands.init]
   └─ →> scaffold_from_template
 ```
 
-### Flow 5: document_symbols
+### Flow 4: document_symbols
 ```
 document_symbols [doql.lsp_server]
   └─> _parse_doc
   └─> _find_line_col
 ```
 
-### Flow 6: cmd_export
+### Flow 5: cmd_export
 ```
 cmd_export [doql.cli.commands.export]
   └─ →> detect_doql_file
 ```
 
-### Flow 7: hover
+### Flow 6: hover
 ```
 hover [doql.lsp_server]
   └─> _word_at
   └─> _parse_doc
 ```
 
-### Flow 8: cmd_deploy
+### Flow 7: cmd_deploy
 ```
 cmd_deploy [doql.cli.commands.deploy]
 ```
 
-### Flow 9: validate
+### Flow 8: validate
 ```
 validate [doql.parsers.validators]
 ```
 
-### Flow 10: definition
+### Flow 9: definition
 ```
 definition [doql.lsp_server]
   └─> _word_at
+```
+
+### Flow 10: cmd_validate
+```
+cmd_validate [doql.cli.commands.validate]
 ```
 
 ## Key Classes
@@ -400,6 +398,14 @@ Examples:
 > Detect format from file extension.
 - **Output to**: path.name.lower, name.endswith, name.endswith
 
+### doql.parsers.extractors._extract_page_from_format1
+> Extract pages using PAGE keyword format.
+- **Output to**: re.finditer, m.group, m.end, re.search, re.search
+
+### doql.parsers.extractors._extract_page_from_format2
+> Extract pages using PAGES: YAML list format.
+- **Output to**: re.search, len, re.search, first_item.group, re.compile
+
 ### doql.parsers.extractors._parse_field_flags
 > Parse field flags from type string.
 - **Output to**: ftype_raw.lower, ftype_raw.lower, ftype_raw.lower
@@ -437,18 +443,6 @@ Uses error recovery: malformed bl
 ### doql.parsers.parse_env
 > Parse a .env file into a dict. Missing file → empty dict.
 - **Output to**: None.splitlines, path.exists, line.strip, path.read_text, line.startswith
-
-### doql.parsers.css_utils._parse_list
-> Parse '[a, b, c]' or 'a, b, c' into a list.
-- **Output to**: None.strip, None.strip, val.strip, val.split, v.strip
-
-### doql.parsers.css_utils._parse_selector
-> Parse a CSS-like selector into structured form.
-
-Examples:
-    "app" → type="app"
-    'entity[name="
-- **Output to**: None.split, ParsedSelector, re.match, re.finditer, selector.strip
 
 ### doql.parsers.validators._validate_app_name
 > Validate APP name is set.
@@ -491,14 +485,7 @@ Examples:
 Functions exposed as public API (no underscore prefix):
 
 - `doql.cli.main.create_parser` - 50 calls
-- `doql.exporters.markdown_exporter.export_markdown` - 47 calls
-- `doql.importers.yaml_importer.import_yaml` - 43 calls
-- `doql.generators.web_gen.generate` - 43 calls
 - `doql.cli.sync.cmd_sync` - 40 calls
-- `doql.parsers.extractors.extract_pages` - 36 calls
-- `doql.generators.api_gen.generate` - 27 calls
-- `playground.pyodide-bridge.bootPyodide` - 26 calls
-- `doql.generators.integrations_gen.generate` - 24 calls
 - `doql.generators.desktop_gen.generate` - 23 calls
 - `doql.generators.api_gen.alembic.gen_initial_migration` - 23 calls
 - `doql.cli.commands.init.cmd_init` - 22 calls
@@ -511,6 +498,7 @@ Functions exposed as public API (no underscore prefix):
 - `doql.cli.commands.deploy.cmd_deploy` - 17 calls
 - `doql.generators.workflow_gen.generate` - 16 calls
 - `doql.parsers.validators.validate` - 16 calls
+- `doql.importers.yaml_importer.import_yaml` - 15 calls
 - `doql.lsp_server.definition` - 15 calls
 - `doql.cli.commands.validate.cmd_validate` - 15 calls
 - `doql.parsers.blocks.split_blocks` - 15 calls
@@ -524,12 +512,18 @@ Functions exposed as public API (no underscore prefix):
 - `doql.cli.commands.generate.cmd_generate` - 11 calls
 - `doql.generators.document_gen.generate` - 11 calls
 - `doql.generators.api_gen.models.gen_models` - 11 calls
+- `doql.exporters.markdown_exporter.export_markdown` - 10 calls
+- `doql.generators.web_gen.generate` - 10 calls
 - `doql.parsers.extractors.extract_val` - 10 calls
 - `doql.parsers.parse_env` - 10 calls
 - `plugins.doql-plugin-fleet.doql_plugin_fleet.generate` - 9 calls
 - `doql.cli.commands.render.cmd_render` - 9 calls
 - `doql.cli.commands.query.cmd_query` - 9 calls
 - `plugins.doql-plugin-gxp.doql_plugin_gxp.generate` - 8 calls
+- `plugins.doql-plugin-erp.doql_plugin_erp.generate` - 8 calls
+- `playground.pyodide-bridge.executeBuild` - 8 calls
+- `doql.parsers.extractors.extract_yaml_list` - 8 calls
+- `doql.plugins.run_plugins` - 8 calls
 
 ## System Interactions
 
@@ -537,28 +531,19 @@ How components interact:
 
 ```mermaid
 graph TD
-    generate --> next
-    generate --> items
-    generate --> write_text
     cmd_sync --> BuildContext
     cmd_sync --> load_spec
     cmd_sync --> read_lockfile
     cmd_sync --> spec_section_hashes
     cmd_sync --> diff_sections
-    generate --> bool
-    generate --> mkdir
-    bootPyodide --> loadPyodide
-    bootPyodide --> loadPackage
-    bootPyodide --> first
-    bootPyodide --> runPythonAsync
-    bootPyodide --> install
-    generate --> any
-    generate --> lower
+    generate --> next
+    generate --> write_text
     cmd_init --> getattr
     cmd_init --> Path
     cmd_init --> exists
     cmd_init --> print
     cmd_init --> scaffold_from_templa
+    generate --> mkdir
     document_symbols --> feature
     document_symbols --> get_text_document
     document_symbols --> _parse_doc
@@ -567,6 +552,15 @@ graph TD
     cmd_export --> resolve
     cmd_export --> getattr
     cmd_export --> parse_file
+    cmd_export --> detect_doql_file
+    hover --> feature
+    hover --> get_text_document
+    hover --> _word_at
+    hover --> _parse_doc
+    hover --> Hover
+    cmd_deploy --> BuildContext
+    cmd_deploy --> print
+    cmd_deploy --> run
 ```
 
 ## Reverse Engineering Guidelines

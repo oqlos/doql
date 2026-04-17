@@ -74,10 +74,15 @@
 - [x] GitHub Action `doql-ci` — validate + build + API compile + npm build jobs
 - [x] LSP / język server dla VS Code — `doql-lsp` (pygls 2.x), diagnostics/hover/goto-def/completions/symbols + VS Code extension scaffold (`vscode-doql/`)
 - [x] Parser error recovery — `parse_text()` z per-block try/except, `spec.parse_errors`, line tracking w `ValidationIssue(line, column)`
-- [x] Test suite (pytest) — 38 passing + 2 skipped: parser/generators/plugins/LSP + runtime smoke (`tests/runtime_deploy.sh` + `tests/runtime_all_examples.sh`) + Playwright e2e (`tests/playground_e2e.py`)
+- [x] Test suite (pytest) — 99 passing + 2 skipped: parser/generators/plugins/LSP/CSS-parser/exporters + runtime smoke (`tests/runtime_deploy.sh` + `tests/runtime_all_examples.sh`) + Playwright e2e (`tests/playground_e2e.py`)
 - [x] Pakietowanie — doql + 4 plugins jako sdist + wheel (`dist/*.whl`, scaffolds included via package-data)
 - [x] GitHub Actions CI — matrix 3.10–3.13 unit-tests + runtime-smoke + packaging + artifact upload (`.github/workflows/ci.yml`)
 - [x] Playground online — `playground/` static HTML+Pyodide app, loads doql wheel in-browser, live parser+validator+generator diagnostics, deployable to GitHub Pages / Netlify / S3; Playwright e2e verified
+- [x] Parser CSS-like — `.doql.css` / `.doql.less` / `.doql.sass` alternatywna składnia (9 modułów: css_parser, css_utils, css_mappers, css_transformers)
+- [x] Eksportery — YAML, Markdown, CSS/LESS/SASS (`doql export --format yaml/markdown/css/less/sass`)
+- [x] Importer YAML — `doql import spec.yaml` → `.doql`
+- [x] Auto-detekcja formatu — `detect_doql_file()` preferuje `.doql.less` > `.doql.sass` > `.doql.css` > `.doql`
+- [x] 10 przykładów — 5 nowych: notes-app, todo-pwa, blog-cms, crm-contacts, e-commerce-shop (każdy z wersją CSS-like)
 
 ---
 

@@ -14,10 +14,12 @@ from ..parsers.models import (
 
 
 def _get(d: dict, key: str, default=None):
+    """Retrieve *key* from *d*, returning *default* if missing."""
     return d.get(key, default)
 
 
 def _build_entity_field(data: dict) -> EntityField:
+    """Build an EntityField from a raw YAML dict."""
     return EntityField(
         name=data["name"],
         type=data.get("type", "string"),
@@ -31,6 +33,7 @@ def _build_entity_field(data: dict) -> EntityField:
 
 
 def _build_entity(data: dict) -> Entity:
+    """Build an Entity (with nested fields) from a raw YAML dict."""
     fields = [_build_entity_field(f) for f in data.get("fields", [])]
     return Entity(
         name=data["name"],
@@ -41,6 +44,7 @@ def _build_entity(data: dict) -> Entity:
 
 
 def _build_data_source(data: dict) -> DataSource:
+    """Build a DataSource from a raw YAML dict."""
     return DataSource(
         name=data["name"],
         source=data.get("source", "json"),
@@ -56,6 +60,7 @@ def _build_data_source(data: dict) -> DataSource:
 
 
 def _build_template(data: dict) -> Template:
+    """Build a Template from a raw YAML dict."""
     return Template(
         name=data["name"],
         type=data.get("type", "html"),
@@ -67,6 +72,7 @@ def _build_template(data: dict) -> Template:
 
 
 def _build_document(data: dict) -> Document:
+    """Build a Document from a raw YAML dict."""
     return Document(
         name=data["name"],
         type=data.get("type", "pdf"),
@@ -82,6 +88,7 @@ def _build_document(data: dict) -> Document:
 
 
 def _build_report(data: dict) -> Report:
+    """Build a Report from a raw YAML dict."""
     return Report(
         name=data["name"],
         schedule=data.get("schedule"),
@@ -94,6 +101,7 @@ def _build_report(data: dict) -> Report:
 
 
 def _build_database(data: dict) -> Database:
+    """Build a Database from a raw YAML dict."""
     return Database(
         name=data["name"],
         type=data.get("type", "sqlite"),
@@ -105,6 +113,7 @@ def _build_database(data: dict) -> Database:
 
 
 def _build_api_client(data: dict) -> ApiClient:
+    """Build an ApiClient from a raw YAML dict."""
     return ApiClient(
         name=data["name"],
         base_url=data.get("base_url"),
@@ -118,6 +127,7 @@ def _build_api_client(data: dict) -> ApiClient:
 
 
 def _build_webhook(data: dict) -> Webhook:
+    """Build a Webhook from a raw YAML dict."""
     return Webhook(
         name=data["name"],
         source=data.get("source"),
@@ -128,6 +138,7 @@ def _build_webhook(data: dict) -> Webhook:
 
 
 def _build_page(data: dict) -> Page:
+    """Build a Page from a raw YAML dict."""
     return Page(
         name=data["name"],
         layout=data.get("layout"),
@@ -138,6 +149,7 @@ def _build_page(data: dict) -> Page:
 
 
 def _build_interface(data: dict) -> Interface:
+    """Build an Interface (with nested pages) from a raw YAML dict."""
     pages = [_build_page(p) for p in data.get("pages", [])]
     return Interface(
         name=data["name"],
@@ -153,6 +165,7 @@ def _build_interface(data: dict) -> Interface:
 
 
 def _build_integration(data: dict) -> Integration:
+    """Build an Integration from a raw YAML dict."""
     return Integration(
         name=data["name"],
         type=data.get("type", "email"),
@@ -161,6 +174,7 @@ def _build_integration(data: dict) -> Integration:
 
 
 def _build_workflow_step(data: dict) -> WorkflowStep:
+    """Build a single WorkflowStep from a raw YAML dict."""
     return WorkflowStep(
         action=data["action"],
         target=data.get("target"),
@@ -169,6 +183,7 @@ def _build_workflow_step(data: dict) -> WorkflowStep:
 
 
 def _build_workflow(data: dict) -> Workflow:
+    """Build a Workflow (with nested steps) from a raw YAML dict."""
     steps = [_build_workflow_step(s) for s in data.get("steps", [])]
     return Workflow(
         name=data["name"],
@@ -180,6 +195,7 @@ def _build_workflow(data: dict) -> Workflow:
 
 
 def _build_role(data: dict) -> Role:
+    """Build a Role from a raw YAML dict."""
     return Role(
         name=data["name"],
         permissions=data.get("permissions", []),
@@ -187,6 +203,7 @@ def _build_role(data: dict) -> Role:
 
 
 def _build_deploy(data: dict) -> Deploy:
+    """Build a Deploy config from a raw YAML dict."""
     return Deploy(
         target=data.get("target", "docker-compose"),
         rootless=data.get("rootless", False),
@@ -195,41 +212,43 @@ def _build_deploy(data: dict) -> Deploy:
     )
 
 
-def import_yaml(data: dict[str, Any]) -> DoqlSpec:
-    """Build a DoqlSpec from a YAML-style dictionary."""
-    spec = DoqlSpec()
+def _import_metadata(data: dict[str, Any], spec: DoqlSpec) -> None:
+    """Import top-level metadata into spec."""
     spec.app_name = data.get("app_name", "Untitled")
     spec.version = data.get("version", "0.1.0")
     spec.domain = data.get("domain")
     spec.languages = data.get("languages", [])
+    spec.env_refs = data.get("env_refs", [])
 
-    for item in data.get("entities", []):
-        spec.entities.append(_build_entity(item))
-    for item in data.get("data_sources", []):
-        spec.data_sources.append(_build_data_source(item))
-    for item in data.get("templates", []):
-        spec.templates.append(_build_template(item))
-    for item in data.get("documents", []):
-        spec.documents.append(_build_document(item))
-    for item in data.get("reports", []):
-        spec.reports.append(_build_report(item))
-    for item in data.get("databases", []):
-        spec.databases.append(_build_database(item))
-    for item in data.get("api_clients", []):
-        spec.api_clients.append(_build_api_client(item))
-    for item in data.get("webhooks", []):
-        spec.webhooks.append(_build_webhook(item))
-    for item in data.get("interfaces", []):
-        spec.interfaces.append(_build_interface(item))
-    for item in data.get("integrations", []):
-        spec.integrations.append(_build_integration(item))
-    for item in data.get("workflows", []):
-        spec.workflows.append(_build_workflow(item))
-    for item in data.get("roles", []):
-        spec.roles.append(_build_role(item))
+
+def _import_collection(data: dict, spec: DoqlSpec, key: str, builder) -> None:
+    """Generic helper to import a collection of items into spec."""
+    for item in data.get(key, []):
+        getattr(spec, key).append(builder(item))
+
+
+def import_yaml(data: dict[str, Any]) -> DoqlSpec:
+    """Build a DoqlSpec from a YAML-style dictionary."""
+    spec = DoqlSpec()
+    _import_metadata(data, spec)
+
+    # Import collections
+    _import_collection(data, spec, "entities", _build_entity)
+    _import_collection(data, spec, "data_sources", _build_data_source)
+    _import_collection(data, spec, "templates", _build_template)
+    _import_collection(data, spec, "documents", _build_document)
+    _import_collection(data, spec, "reports", _build_report)
+    _import_collection(data, spec, "databases", _build_database)
+    _import_collection(data, spec, "api_clients", _build_api_client)
+    _import_collection(data, spec, "webhooks", _build_webhook)
+    _import_collection(data, spec, "interfaces", _build_interface)
+    _import_collection(data, spec, "integrations", _build_integration)
+    _import_collection(data, spec, "workflows", _build_workflow)
+    _import_collection(data, spec, "roles", _build_role)
+
+    # Handle deploy separately (single object, not list)
     if "deploy" in data and data["deploy"]:
         spec.deploy = _build_deploy(data["deploy"])
-    spec.env_refs = data.get("env_refs", [])
 
     return spec
 

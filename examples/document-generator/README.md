@@ -11,6 +11,86 @@ Przykład doql pokazujący, że **z jednego pliku `.doql` można zbudować gener
 
 ---
 
+## Szybki start
+
+```bash
+# 1. Skopiuj ten katalog
+cp -r doql/examples/document-generator my-generator
+cd my-generator
+
+# 2. Skonfiguruj sekrety
+cp .env.example .env
+$EDITOR .env    # wpisz JWT_SECRET, SIGNING_KEY_PATH, OQLOS_URL
+
+# 3. Uzupełnij dane
+$EDITOR data/organization.json
+$EDITOR data/customers.json
+# (instruments.db możesz wygenerować przez seed SQL)
+
+# 4. Waliduj deklarację
+doql validate
+
+# 5. Zobacz plan generowania
+doql plan
+
+# 6. Wygeneruj cały kod
+doql build
+# → build/web/        htmx UI
+# → build/api/        FastAPI endpoint dla webhooks
+# → build/documents/  Generatory PDF
+# → build/infra/      Quadlet containers
+
+# 7. Uruchom wybrany target (patrz sekcja niżej)
+
+# 8. Deploy na produkcję
+doql deploy --env prod
+```
+
+---
+
+## Uruchamianie aplikacji
+
+### API (FastAPI)
+
+```bash
+cd build/api
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
+```
+
+Dokumentacja API: http://localhost:8000/docs
+
+### Web (htmx)
+
+```bash
+cd build/web
+python3 -m http.server 8080
+```
+
+Otwórz http://localhost:8080 — formularz + podgląd live PDF
+
+### Generowanie pojedynczego dokumentu (CLI)
+
+```bash
+doql generate calibration_certificate \
+    --instrument-id "INST-001" \
+    --execution-id "exec-abc" \
+    --customer-id "cust-001" \
+    --operator "Jan Kowalski" \
+    --reviewer "Anna Nowak"
+
+# → plik: certs/INST-001_2026-04-16.pdf
+```
+
+### Quadlet (Podman)
+
+```bash
+cd build/infra
+podman-compose up
+```
+
+---
+
 ## Co ten przykład pokazuje
 
 1. **Dane z wielu źródeł jednocześnie** — JSON (klienci, organizacja), SQLite (katalog przyrządów), API oqlos (pomiary live), ENV (sekrety i override'y).

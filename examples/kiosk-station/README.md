@@ -9,6 +9,73 @@ Stanowisko operatora w trybie kiosk na tablecie / Raspberry Pi z 10-calowym ekra
 
 ---
 
+## Szybki start
+
+```bash
+# 1. Skopiuj ten katalog
+cp -r doql/examples/kiosk-station my-kiosk
+cd my-kiosk
+
+# 2. Skonfiguruj sekrety
+cp .env.example .env
+$EDITOR .env    # wpisz OQLOS_URL, bazy danych
+
+# 3. Waliduj deklarację
+doql validate
+
+# 4. Zobacz plan generowania
+doql plan
+
+# 5. Wygeneruj cały kod
+doql build
+# → build/api/        Backend FastAPI
+# → build/infra/      Skrypty instalacyjne, systemd service
+# → build/workflows/  Workflows offline sync i auto-logout
+
+# 6. Zainstaluj na urządzeniu (patrz sekcja niżej)
+
+# 7. Deploy na produkcję
+doql deploy --env prod
+```
+
+---
+
+## Uruchamianie aplikacji
+
+### Lokalnie (dev mode)
+
+```bash
+cd build/api
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
+```
+
+Dokumentacja API: http://localhost:8000/docs
+
+### Na Raspberry Pi (kiosk mode)
+
+```bash
+# Skopiuj skrypty na urządzenie
+scp -r build/infra pi@kiosk-01.local:/tmp/
+
+# Zainstaluj kiosk
+ssh pi@kiosk-01.local "sudo /tmp/infra/install-kiosk.sh"
+
+# Reboot aby uruchomić kiosk
+ssh pi@kiosk-01.local "sudo reboot"
+```
+
+Po rebootie urządzenie startuje prosto do aplikacji w trybie kiosk (Chromium).
+
+### Docker Compose
+
+```bash
+cd build/infra
+docker-compose up
+```
+
+---
+
 ## Dlaczego kiosk, a nie zwykła PWA
 
 **PWA na tablecie** = operator może wyjść z aplikacji, otworzyć Facebooka, zablokować się w ustawieniach, zainstalować TikToka. W warsztacie z 15 operatorami zmianowymi — nie da się tego utrzymać.

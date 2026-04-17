@@ -32,18 +32,8 @@ if TYPE_CHECKING:
     from ...parsers.models import DoqlSpec
 
 
-def generate(spec: DoqlSpec, env_vars: dict[str, str], out: pathlib.Path) -> None:
-    """Generate API layer files into *out* directory."""
-    if not spec.entities:
-        readme = out / "README.md"
-        readme.write_text(
-            f"# {spec.app_name} — API\n\nNo entities defined — skipping code generation.\n",
-            encoding="utf-8",
-        )
-        print(f"    → api/ (no entities, skipped)")
-        return
-
-    has_auth = bool(spec.roles)
+def _write_api_files(out: pathlib.Path, spec: DoqlSpec, env_vars: dict[str, str], has_auth: bool) -> None:
+    """Write API layer files."""
     files = {
         "main.py":          gen_main(spec),
         "database.py":      gen_database(spec, env_vars),
@@ -59,7 +49,9 @@ def generate(spec: DoqlSpec, env_vars: dict[str, str], out: pathlib.Path) -> Non
         (out / name).write_text(content, encoding="utf-8")
         print(f"    → api/{name}")
 
-    # Alembic migrations
+
+def _write_alembic_files(out: pathlib.Path, spec: DoqlSpec) -> None:
+    """Write Alembic migration files."""
     alembic_dir = out / "alembic" / "versions"
     alembic_dir.mkdir(parents=True, exist_ok=True)
     (out / "alembic.ini").write_text(gen_alembic_ini(), encoding="utf-8")
@@ -67,7 +59,9 @@ def generate(spec: DoqlSpec, env_vars: dict[str, str], out: pathlib.Path) -> Non
     (alembic_dir / "001_initial.py").write_text(gen_initial_migration(spec), encoding="utf-8")
     print(f"    → api/alembic.ini, alembic/env.py, alembic/versions/001_initial.py")
 
-    # README
+
+def _write_api_readme(out: pathlib.Path, spec: DoqlSpec) -> None:
+    """Write API README.md."""
     readme = out / "README.md"
     readme.write_text(
         f"# {spec.app_name} — API\n\n"
@@ -90,6 +84,23 @@ def generate(spec: DoqlSpec, env_vars: dict[str, str], out: pathlib.Path) -> Non
         encoding="utf-8",
     )
     print(f"    → api/README.md")
+
+
+def generate(spec: DoqlSpec, env_vars: dict[str, str], out: pathlib.Path) -> None:
+    """Generate API layer files into *out* directory."""
+    if not spec.entities:
+        readme = out / "README.md"
+        readme.write_text(
+            f"# {spec.app_name} — API\n\nNo entities defined — skipping code generation.\n",
+            encoding="utf-8",
+        )
+        print(f"    → api/ (no entities, skipped)")
+        return
+
+    has_auth = bool(spec.roles)
+    _write_api_files(out, spec, env_vars, has_auth)
+    _write_alembic_files(out, spec)
+    _write_api_readme(out, spec)
 
 
 def export_openapi(spec: DoqlSpec, out: IO[str]) -> None:

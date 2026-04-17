@@ -1,10 +1,12 @@
-# doql Language Specification v0.2
+# doql Language Specification v0.2.1
 
-> **Status:** Draft · **Last updated:** 2026-04-16 · **Wersja poprzednia:** v0.1
+> **Status:** Draft · **Last updated:** 2026-04-17 · **Wersja poprzednia:** v0.2
 
 `doql` (Declarative OQL) to język deklaratywny opisujący to, **co ma powstać** z danej deklaracji. Nie tylko aplikacje SaaS — także dokumenty, raporty PDF, szablony, bazy danych SQLite, klienty API, stanowiska kiosk.
 
 **Zasada nadrzędna:** `doql` opisuje **artefakty** (rzeczy, które powstają). Generator je tworzy. `.env` dostarcza sekrety. `.json`/`.sqlite`/API dostarczają dane.
+
+**Formaty plików:** `.doql` (classic), `.doql.css`, `.doql.less`, `.doql.sass` — wszystkie parsują się do tego samego `DoqlSpec`.
 
 ---
 
@@ -599,7 +601,10 @@ WORKFLOW sync:
 
 ```
 my-app/
-├── app.doql                  # główna deklaracja
+├── app.doql                  # główna deklaracja (classic)
+├── app.doql.css              # alternatywa: format CSS
+├── app.doql.less             # alternatywa: format LESS (ze zmiennymi @)
+├── app.doql.sass             # alternatywa: format SASS (ze zmiennymi $)
 ├── .env                      # sekrety
 ├── .env.example
 ├── data/                     # źródła danych (JSON, SQLite, CSV)
@@ -618,9 +623,128 @@ my-app/
 └── doql.lock
 ```
 
+Priorytet autodetekcji: `.doql.less` > `.doql.sass` > `.doql.css` > `.doql`
+
 ---
 
-## 16. Zmiany względem v0.1
+## 16. Alternatywna składnia CSS-like
+
+Oprócz klasycznego formatu indentacyjnego, doql wspiera trzy formaty CSS-like. Wszystkie parsują się do identycznego `DoqlSpec`.
+
+### 16.1 Format `.doql.css`
+
+```css
+app {
+  name:    "My App";
+  version: "1.0.0";
+  domain:  "my-domain";
+}
+
+entity[name="Device"] {
+  id:     uuid! auto;
+  serial: string! unique;
+  model:  string!;
+  status: enum[active, retired] default=active;
+}
+
+interface[name="web"] {
+  type:      spa;
+  framework: react;
+}
+
+deploy {
+  target: docker-compose;
+}
+```
+
+### 16.2 Format `.doql.less` (ze zmiennymi `@`)
+
+```less
+@app-name:    "Calibration Lab";
+@app-version: "0.9.0";
+@db-backend:  postgresql;
+
+app {
+  name:    @app-name;
+  version: @app-version;
+}
+
+entity[name="Instrument"] {
+  serial:       string! unique;
+  manufacturer: string!;
+}
+```
+
+Zmienne `@var` są rozwijane w czasie parsowania — wynikowy `DoqlSpec` nie zawiera zmiennych.
+
+### 16.3 Format `.doql.sass` (ze zmiennymi `$`, indent-based)
+
+```sass
+$primary: "#2563eb"
+$app-name: "Notes App"
+
+app
+  name:    $app-name
+  version: "1.0.0"
+
+entity[name="Note"]
+  id:      uuid! auto
+  title:   string!
+  content: text
+```
+
+### 16.4 Konwersja między formatami
+
+```bash
+# Classic → LESS
+doql export --format less -o spec.doql.less
+
+# LESS → YAML (exchange format)
+doql export --format yaml -o spec.yaml
+
+# YAML → Classic
+doql import spec.yaml -o app.doql
+```
+
+### 16.5 Selektory CSS
+
+| Selektor | Znaczenie |
+|----------|-----------|
+| `app` | Sekcja APP |
+| `entity[name="X"]` | ENTITY X |
+| `interface[name="web"]` | INTERFACE web |
+| `data[name="X"]` | DATA X |
+| `workflow[name="X"]` | WORKFLOW X |
+| `deploy` | DEPLOY |
+| `roles role[name="X"]` | ROLE X |
+
+---
+
+## 17. Eksport i import
+
+### Formaty eksportu (`doql export`)
+
+| Format | Flaga | Opis |
+|--------|-------|------|
+| OpenAPI 3.1 | `--format openapi` | JSON schema z ENTITY + API endpoints |
+| Postman | `--format postman` | Kolekcja Postman v2.1 |
+| TypeScript SDK | `--format typescript-sdk` | Wygenerowany klient TS |
+| YAML | `--format yaml` | Serializacja DoqlSpec do YAML |
+| Markdown | `--format markdown` | Dokumentacja specyfikacji |
+| CSS | `--format css` | Format `.doql.css` |
+| LESS | `--format less` | Format `.doql.less` ze zmiennymi |
+| SASS | `--format sass` | Format `.doql.sass` ze zmiennymi |
+
+### Import (`doql import`)
+
+```bash
+doql import spec.yaml           # YAML → .doql (stdout)
+doql import spec.yaml -o app.doql  # YAML → plik
+```
+
+---
+
+## 18. Zmiany względem v0.1
 
 **Dodane w v0.2:**
 - Sekcja 1 (Artefakty) — jawny katalog typów artefaktów
@@ -634,6 +758,11 @@ my-app/
 - Sekcja 10 (INTERFACE kiosk) — tryb kiosk
 - Sekcja 12.2 (Quadlet) — rozszerzony
 - Sekcja 12.3 (kiosk-appliance) — nowy target deploy
+
+**Dodane w v0.2.1:**
+- Sekcja 16 (Alternatywna składnia CSS-like) — `.doql.css`, `.doql.less`, `.doql.sass`
+- Sekcja 17 (Eksport i import) — 8 formatów eksportu, import z YAML
+- Zaktualizowana konwencja katalogów — pliki CSS-like + priorytet autodetekcji
 
 **Bez zmian od v0.1:**
 - Składnia `ENTITY`

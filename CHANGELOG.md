@@ -4,6 +4,40 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+### Added (sesja 10 — CSS-like format + export/import + examples)
+- **CSS-like parser** — full parser for `.doql.css`, `.doql.less`, `.doql.sass`
+  formats (9 modules: `css_parser`, `css_utils`, `css_mappers`,
+  `css_transformers`). All formats produce identical `DoqlSpec`.
+- **LESS variables** (`@var`) and **SASS variables** (`$var`) are resolved
+  during parsing; result is variable-free `DoqlSpec`.
+- **Auto-detection** — `detect_doql_file()` priority:
+  `.doql.less` > `.doql.sass` > `.doql.css` > `.doql`
+- **Exporters** — `doql/exporters/`: `yaml_exporter.py`, `markdown_exporter.py`,
+  `css_exporter.py` (supports CSS, LESS, SASS output).
+- **Importer** — `doql/importers/yaml_importer.py`: YAML → `DoqlSpec`.
+- **CLI `import` command** — `doql import spec.yaml -o app.doql`.
+- **CLI `export` formats** expanded: `yaml`, `markdown`, `css`, `less`, `sass`
+  (in addition to existing `openapi`, `postman`, `typescript-sdk`).
+- **5 new examples**: `blog-cms` (SASS), `crm-contacts` (LESS),
+  `e-commerce-shop` (CSS), `notes-app` (SASS), `todo-pwa` (CSS).
+  Each example has both classic `.doql` and CSS-like format.
+- **Test suite expanded** to **99 tests** (from 38): 13 CSS parser tests,
+  28 exporter tests, plus parametrized example validation.
+
+### Fixed (sesja 10)
+- **Validator**: absolute DATA file paths (e.g. `/var/lib/kiosk/...`) now
+  produce warnings instead of errors — they are deployment targets.
+- **Validator**: env wildcard patterns (`env.SMTP_*`) no longer produce
+  false-positive warnings. Prefix matching implemented for trailing `_` refs.
+- **validate command**: now uses `detect_doql_file()` instead of hardcoded
+  `"app.doql"` — correctly finds CSS-like format files.
+- **asset-management example**: added missing `User` entity (referenced by
+  `Station.manager`).
+- **calibration-lab example**: added missing `Operator` entity (referenced by
+  `Calibration.performed_by` / `reviewed_by`).
+- **SPEC.md updated** to v0.2.1 — added sections 16 (CSS-like syntax),
+  17 (Export/Import).
+
 ### Added (sesja 8 — full-stack examples + env manager)
 - **Mobile PWA generator** (`doql/generators/mobile_gen.py`) — replaces the
   earlier stub. Now emits a self-contained installable PWA: `manifest.json`,
@@ -41,8 +75,8 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
   `iot-fleet`; new CLI flag `doql init --list-templates`.
 
 ### Added (Faza 2 — sesja 7)
-- **Test suite** — 38 pytest tests covering parser, generators, plugins,
-  LSP + GUM numerics; `tests/runtime_deploy.sh` end-to-end runtime smoke;
+- **Test suite** — 99 pytest tests covering parser, CSS parser, exporters,
+  generators, plugins, LSP + GUM numerics; `tests/runtime_deploy.sh` end-to-end runtime smoke;
   `tests/runtime_all_examples.sh` multi-example /health probe;
   `tests/playground_e2e.py` headless Playwright verification.
 - **Packaging** — `pyproject.toml` `package-data` ships `scaffolds/**/*`
@@ -80,12 +114,10 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
   entity has no explicit id field (TSX was `TS2339: Property 'id' does
   not exist`).
 
-### W toku (Faza 1 — MVP)
-- Parser `.doql` v0.2 (pokrywający nowe sekcje DATA, DOCUMENT, TEMPLATE, kiosk)
-- Generator dla `DOCUMENT` — Jinja2 + WeasyPrint pipeline
-- Generator dla `INTERFACE kiosk` — Electron/Tauri + RPi image builder
+### W toku
+- Parser tree-sitter (pełna gramatyka `.doql`, error recovery)
+- Rozszerzenie VS Code o `.doql.css` / `.doql.less` / `.doql.sass`
 - Pilot w realnej firmie
-- LSP dla VS Code
 
 ## [0.0.1] - 2026-04-17
 
