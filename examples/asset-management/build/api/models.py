@@ -61,6 +61,17 @@ class Device(Base):
     status = Column(String(255), nullable=True)
     last_inspection = Column(Date, nullable=True)
     total_uses = Column(Integer, nullable=True, default=0)
+    formula = Column(String(255), nullable=True)
+    when_device_type = Column(String(255), nullable=True)
+    result = Column(String(255), nullable=True)
+    when_device_type = Column(String(255), nullable=True)
+    result = Column(String(255), nullable=True)
+    result = Column(String(255), nullable=True)
+    when = Column(String(255), nullable=True)
+    result = Column(String(255), nullable=True)
+    when = Column(String(255), nullable=True)
+    result = Column(String(255), nullable=True)
+    result = Column(String(255), nullable=True)
 
 
 class Inspection(Base):

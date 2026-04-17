@@ -56,6 +56,13 @@
   "entity.cart_item.field.product": "Product",
   "entity.cart_item.field.quantity": "Quantity",
   "entity.cart_item.field.created": "Created",
+  "page.home.title": "Home",
+  "page.catalog.title": "Catalog",
+  "page.product-detail.title": "Product-Detail",
+  "page.cart.title": "Cart",
+  "page.checkout.title": "Checkout",
+  "page.orders.title": "Orders",
+  "page.admin-products.title": "Admin-Products",
   "workflow.order_confirmation.name": "Order Confirmation",
   "workflow.low_stock_alert.name": "Low Stock Alert"
 }

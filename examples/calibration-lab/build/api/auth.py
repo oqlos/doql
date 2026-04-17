@@ -25,7 +25,7 @@ SECRET_KEY = os.getenv("JWT_SECRET", "change-me-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 8  # 8 hours
 
-ROLES = ["technician", "metrologist", "quality_manager", "user"]
+ROLES = ["technician", "metrologist", "quality_manager", "customer", "user"]
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")

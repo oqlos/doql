@@ -65,6 +65,12 @@
   "entity.activity.field.completed": "Completed",
   "entity.activity.field.assigned_to": "Assigned To",
   "entity.activity.field.created": "Created",
+  "page.dashboard.title": "Dashboard",
+  "page.contacts.title": "Contacts",
+  "page.contact-detail.title": "Contact-Detail",
+  "page.companies.title": "Companies",
+  "page.deals.title": "Deals",
+  "page.activities.title": "Activities",
   "workflow.deal_stage_notification.name": "Deal Stage Notification",
   "workflow.overdue_activity_reminder.name": "Overdue Activity Reminder"
 }

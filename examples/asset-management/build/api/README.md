@@ -16,7 +16,7 @@ uvicorn main:app --reload
 - **Station** (4 fields)
 - **Operator** (7 fields)
 - **Qualification** (4 fields)
-- **Device** (14 fields)
+- **Device** (25 fields)
 - **Inspection** (11 fields)
 - **CylinderFill** (7 fields)
 - **Exercise** (8 fields)

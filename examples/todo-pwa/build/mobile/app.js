@@ -23,7 +23,7 @@
       },
       {
         "name": "priority",
-        "type": "enum[low,",
+        "type": "enum[low, normal, high]",
         "required": false
       },
       {

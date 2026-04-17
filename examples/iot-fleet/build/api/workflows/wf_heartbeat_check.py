@@ -3,6 +3,15 @@ from workflows.engine import WorkflowRun, Step, engine
 
 # Trigger: schedule "*/1 * * * *"
 
+def step_find(ctx: dict):
+    """Action: find"""
+    # TODO: implement find
+    pass
+
+def step_foreach_node(ctx: dict):
+    """Action: foreach node"""
+    # TODO: implement foreach node
+    pass
 
 
 def create(context: dict) -> WorkflowRun:
@@ -10,7 +19,14 @@ def create(context: dict) -> WorkflowRun:
         workflow_name="heartbeat_check",
         context=context,
         steps=[
-
+    Step(
+        name="find",
+        action=lambda ctx: step_find(ctx),
+    ),
+    Step(
+        name="foreach node",
+        action=lambda ctx: step_foreach_node(ctx),
+    ),
         ],
     )
 

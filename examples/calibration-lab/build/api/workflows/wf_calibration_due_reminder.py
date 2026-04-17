@@ -3,6 +3,20 @@ from workflows.engine import WorkflowRun, Step, engine
 
 # Trigger: schedule "0 8 * * MON"
 
+def step_find(ctx: dict):
+    """Action: find"""
+    # TODO: implement find
+    pass
+
+def step_group_by(ctx: dict):
+    """Action: group_by"""
+    # TODO: implement group_by
+    pass
+
+def step_foreach_org(ctx: dict):
+    """Action: foreach org"""
+    # TODO: implement foreach org
+    pass
 
 
 def create(context: dict) -> WorkflowRun:
@@ -10,7 +24,18 @@ def create(context: dict) -> WorkflowRun:
         workflow_name="calibration_due_reminder",
         context=context,
         steps=[
-
+    Step(
+        name="find",
+        action=lambda ctx: step_find(ctx),
+    ),
+    Step(
+        name="group_by",
+        action=lambda ctx: step_group_by(ctx),
+    ),
+    Step(
+        name="foreach org",
+        action=lambda ctx: step_foreach_org(ctx),
+    ),
         ],
     )
 

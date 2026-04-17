@@ -2,8 +2,21 @@
 from workflows.engine import WorkflowRun, Step, engine
 
 # Trigger: webhook oqlos.scenario.completed
-# Condition: $payload.scenario_type == "calibration"
 
+def step_generate_document_calibration_certificate(ctx: dict):
+    """Action: GENERATE DOCUMENT calibration_certificate"""
+    # TODO: implement GENERATE DOCUMENT calibration_certificate
+    pass
+
+def step_email(ctx: dict):
+    """Action: email"""
+    # TODO: implement email
+    pass
+
+def step_generate_document_non_conformance_report(ctx: dict):
+    """Action: GENERATE DOCUMENT non_conformance_report"""
+    # TODO: implement GENERATE DOCUMENT non_conformance_report
+    pass
 
 
 def create(context: dict) -> WorkflowRun:
@@ -11,7 +24,18 @@ def create(context: dict) -> WorkflowRun:
         workflow_name="auto_generate_on_calibration_done",
         context=context,
         steps=[
-
+    Step(
+        name="GENERATE DOCUMENT calibration_certificate",
+        action=lambda ctx: step_generate_document_calibration_certificate(ctx),
+    ),
+    Step(
+        name="email",
+        action=lambda ctx: step_email(ctx),
+    ),
+    Step(
+        name="GENERATE DOCUMENT non_conformance_report",
+        action=lambda ctx: step_generate_document_non_conformance_report(ctx),
+    ),
         ],
     )
 

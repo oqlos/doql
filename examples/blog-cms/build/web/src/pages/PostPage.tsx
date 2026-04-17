@@ -2,13 +2,13 @@ import React from 'react';
 import { api } from '../api';
 
 interface Post {
-  id: any; title: any; slug: any; content: any; excerpt: any; author: any; category: any; tags: any; status: any; featured_image: any; published_at: any; created: any; updated: any;
+  id: any; title: any; slug: any; content: any; excerpt: any; author: any; category: any; tags: any; featured_image: any; published_at: any; created: any; updated: any;
 }
 
 export default function PostPage() {
   const [items, setItems] = React.useState<Post[]>([]);
   const [showForm, setShowForm] = React.useState(false);
-  const [form, setForm] = React.useState<any>({ title: '', slug: '', content: '', excerpt: '', author: '', category: '', tags: '', status: '', featured_image: '', published_at: '' });
+  const [form, setForm] = React.useState<any>({ title: '', slug: '', content: '', excerpt: '', author: '', category: '', tags: '', featured_image: '', published_at: '' });
 
   const load = () => api.list<Post>('posts').then(setItems).catch(console.error);
   React.useEffect(() => { load(); }, []);
@@ -16,7 +16,7 @@ export default function PostPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await api.create('posts', form);
-    setForm({ title: '', slug: '', content: '', excerpt: '', author: '', category: '', tags: '', status: '', featured_image: '', published_at: '' });
+    setForm({ title: '', slug: '', content: '', excerpt: '', author: '', category: '', tags: '', featured_image: '', published_at: '' });
     setShowForm(false);
     load();
   };
@@ -45,7 +45,6 @@ export default function PostPage() {
   <input name="author" placeholder="author" type="text" value={form.author || ""} onChange={e => setForm({...form, author: e.target.value})} className="border rounded px-3 py-2 text-sm" />
   <input name="category" placeholder="category" type="text" value={form.category || ""} onChange={e => setForm({...form, category: e.target.value})} className="border rounded px-3 py-2 text-sm" />
   <input name="tags" placeholder="tags" type="text" value={form.tags || ""} onChange={e => setForm({...form, tags: e.target.value})} className="border rounded px-3 py-2 text-sm" />
-  <input name="status" placeholder="status" type="text" value={form.status || ""} onChange={e => setForm({...form, status: e.target.value})} className="border rounded px-3 py-2 text-sm" />
   <input name="featured_image" placeholder="featured_image" type="text" value={form.featured_image || ""} onChange={e => setForm({...form, featured_image: e.target.value})} className="border rounded px-3 py-2 text-sm" />
   <input name="published_at" placeholder="published_at" type="datetime-local" value={form.published_at || ""} onChange={e => setForm({...form, published_at: e.target.value})} className="border rounded px-3 py-2 text-sm" />
           <button type="submit" className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm">Save</button>

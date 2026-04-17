@@ -2,7 +2,6 @@
 from workflows.engine import WorkflowRun, Step, engine
 
 # Trigger: product.updated
-# Condition: product.stock < 5
 
 
 

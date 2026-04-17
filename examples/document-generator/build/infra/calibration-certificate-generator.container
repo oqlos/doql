@@ -8,7 +8,7 @@ Image=localhost/calibration-certificate-generator:latest
 PublishPort=8000:8000
 EnvironmentFile=%h/.config/containers/calibration-certificate-generator.env
 Volume=calibration-certificate-generator-data:/app/data:Z
-Rootfs=true
+
 
 [Service]
 Restart=always

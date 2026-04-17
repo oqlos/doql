@@ -2,7 +2,6 @@
 from workflows.engine import WorkflowRun, Step, engine
 
 # Trigger: post.updated
-# Condition: post.status = published
 
 
 

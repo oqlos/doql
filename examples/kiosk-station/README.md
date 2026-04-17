@@ -224,9 +224,9 @@ Ponieważ kiosk jest trudny do automatycznego testowania (touch, USB scanner, PI
 
 **Testy jednostkowe** — komponenty React/Vue jak zwykle, Vitest / Jest.
 
-**Testy UI** — `.iql` ze zdarzeniami semantycznymi:
+**Testy UI** — `.testql.toon.yaml` ze zdarzeniami semantycznymi:
 
-```iql
+```testql
 SESSION: "Pełny flow inspekcji w kiosk"
 
 NAVIGATE "/welcome"

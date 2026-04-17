@@ -2,13 +2,13 @@ import React from 'react';
 import { api } from '../api';
 
 interface Author {
-  id: any; name: any; email: any; bio: any; avatar: any; role: any; created: any;
+  id: any; name: any; email: any; bio: any; avatar: any; created: any;
 }
 
 export default function AuthorPage() {
   const [items, setItems] = React.useState<Author[]>([]);
   const [showForm, setShowForm] = React.useState(false);
-  const [form, setForm] = React.useState<any>({ name: '', email: '', bio: '', avatar: '', role: '' });
+  const [form, setForm] = React.useState<any>({ name: '', email: '', bio: '', avatar: '' });
 
   const load = () => api.list<Author>('authors').then(setItems).catch(console.error);
   React.useEffect(() => { load(); }, []);
@@ -16,7 +16,7 @@ export default function AuthorPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await api.create('authors', form);
-    setForm({ name: '', email: '', bio: '', avatar: '', role: '' });
+    setForm({ name: '', email: '', bio: '', avatar: '' });
     setShowForm(false);
     load();
   };
@@ -42,18 +42,17 @@ export default function AuthorPage() {
   <input name="email" placeholder="email" type="text" value={form.email || ""} onChange={e => setForm({...form, email: e.target.value})} className="border rounded px-3 py-2 text-sm" />
   <input name="bio" placeholder="bio" type="text" value={form.bio || ""} onChange={e => setForm({...form, bio: e.target.value})} className="border rounded px-3 py-2 text-sm" />
   <input name="avatar" placeholder="avatar" type="text" value={form.avatar || ""} onChange={e => setForm({...form, avatar: e.target.value})} className="border rounded px-3 py-2 text-sm" />
-  <input name="role" placeholder="role" type="text" value={form.role || ""} onChange={e => setForm({...form, role: e.target.value})} className="border rounded px-3 py-2 text-sm" />
           <button type="submit" className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm">Save</button>
         </form>
       )}
 
       <div className="bg-white rounded-xl border overflow-x-auto">
         <table className="w-full">
-          <thead className="border-b"><tr><th className="text-left p-2 text-xs text-gray-500 uppercase">id</th> <th className="text-left p-2 text-xs text-gray-500 uppercase">name</th> <th className="text-left p-2 text-xs text-gray-500 uppercase">email</th> <th className="text-left p-2 text-xs text-gray-500 uppercase">bio</th> <th className="text-left p-2 text-xs text-gray-500 uppercase">avatar</th> <th className="text-left p-2 text-xs text-gray-500 uppercase">role</th> <th className="text-left p-2 text-xs text-gray-500 uppercase">created</th><th></th></tr></thead>
+          <thead className="border-b"><tr><th className="text-left p-2 text-xs text-gray-500 uppercase">id</th> <th className="text-left p-2 text-xs text-gray-500 uppercase">name</th> <th className="text-left p-2 text-xs text-gray-500 uppercase">email</th> <th className="text-left p-2 text-xs text-gray-500 uppercase">bio</th> <th className="text-left p-2 text-xs text-gray-500 uppercase">avatar</th> <th className="text-left p-2 text-xs text-gray-500 uppercase">created</th><th></th></tr></thead>
           <tbody>
             {items.map((item) => (
               <tr key={item.id} className="border-b last:border-0 hover:bg-gray-50">
-                <td className="p-2 text-sm">{String(item.id ?? "")}</td> <td className="p-2 text-sm">{String(item.name ?? "")}</td> <td className="p-2 text-sm">{String(item.email ?? "")}</td> <td className="p-2 text-sm">{String(item.bio ?? "")}</td> <td className="p-2 text-sm">{String(item.avatar ?? "")}</td> <td className="p-2 text-sm">{String(item.role ?? "")}</td> <td className="p-2 text-sm">{String(item.created ?? "")}</td>
+                <td className="p-2 text-sm">{String(item.id ?? "")}</td> <td className="p-2 text-sm">{String(item.name ?? "")}</td> <td className="p-2 text-sm">{String(item.email ?? "")}</td> <td className="p-2 text-sm">{String(item.bio ?? "")}</td> <td className="p-2 text-sm">{String(item.avatar ?? "")}</td> <td className="p-2 text-sm">{String(item.created ?? "")}</td>
                 <td className="p-2">
                   <button onClick={() => handleDelete(item.id)} className="text-red-500 text-xs hover:underline">Delete</button>
                 </td>

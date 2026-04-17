@@ -1,248 +1,69 @@
-# DOQL Examples Test Report
+========================================
+   RAPORT TESTÓW DOQL EXAMPLES
+========================================
 
-**Date:** 2026-04-17  
-**Total Examples:** 9  
-**Test Status:** ✅ All examples validated and built successfully
+## Testowane przykłady (10 projektów)
 
-## Summary
+### .doql.css format
+1. asset-management     ✅ BUILD OK | ✅ API OK :8001 | ⚠️ 1 warning
+2. e-commerce-shop      ✅ BUILD OK | ✅ API OK :8002 | ✅ Clean
+3. kiosk-station        ✅ BUILD OK | ⚠️ No API (workflows only) | ⚠️ 2 warnings
+4. todo-pwa            ✅ BUILD OK | ✅ API OK :8003 | ⚠️ 1 warning
 
-All 9 example projects in the doql repository have been tested. Each example was validated and built successfully. Some examples have minor warnings related to configuration paths or optional features.
+### .doql / .doql.less / .doql.sass format
+5. blog-cms            ✅ BUILD OK | ✅ API OK :8005 | ✅ Clean
+6. crm-contacts        ✅ BUILD OK | ✅ API OK :8006 | ✅ Clean
+7. iot-fleet           ✅ BUILD OK | ✅ API OK :8007 | ✅ Clean (fixed DB string)
+8. calibration-lab     ✅ BUILD OK | ✅ API OK :8008 | ✅ Clean
+9. document-generator  ✅ BUILD OK | ⚠️ No API (workflows only) | ✅ Clean
+10. notes-app          ✅ BUILD OK | ✅ API OK :8010 | ⚠️ 2 warnings
 
-| Example | Format | Validation | Build | Artifacts Generated |
-|---------|--------|------------|-------|---------------------|
-| asset-management | .doql.css | ✅ Clean | ✅ Success | API, Web, Mobile, Desktop, Infra, i18n, Integrations, Workflows, CI |
-| blog-cms | .doql.sass | ✅ Clean | ✅ Success | API, Web, Infra, i18n, Integrations, Workflows, CI |
-| calibration-lab | .doql.less | ✅ Clean | ✅ Success | API, Web, Infra (Quadlet), i18n, Integrations, Workflows, CI |
-| crm-contacts | .doql.less | ✅ Clean | ✅ Success | API, Web, Infra, i18n, Integrations, Workflows, CI |
-| document-generator | .doql.less | ✅ Clean | ✅ Success | Documents, Reports, Infra (Quadlet), Integrations, Workflows, CI |
-| e-commerce-shop | .doql.css | ✅ Clean | ✅ Success | API, Web, Infra, i18n, Integrations, Workflows, CI |
-| iot-fleet | .doql.less | ✅ Clean | ✅ Success | API, Web, Infra, Integrations, Workflows, CI |
-| kiosk-station | .doql.css | ⚠️ 2 warnings | ✅ Success | Infra, Integrations, Workflows, CI |
-| todo-pwa | .doql.css | ⚠️ 1 warning | ✅ Success | API, Mobile, Infra, CI |
+## Uruchomione usługi API (FastAPI/Uvicorn)
 
----
+| Port | Projekt             | Status | Endpoint dokumentacji   |
+|------|---------------------|--------|-------------------------|
+| 8001 | asset-management    | ✅     | http://localhost:8001/docs |
+| 8002 | e-commerce-shop     | ✅     | http://localhost:8002/docs |
+| 8003 | todo-pwa           | ✅     | http://localhost:8003/docs |
+| 8005 | blog-cms           | ✅     | http://localhost:8005/docs |
+| 8006 | crm-contacts       | ✅     | http://localhost:8006/docs |
+| 8007 | iot-fleet          | ✅     | http://localhost:8007/docs |
+| 8008 | calibration-lab    | ✅     | http://localhost:8008/docs |
+| 8010 | notes-app          | ✅     | http://localhost:8010/docs |
 
-## Detailed Results
+## Usługi bez API (workflows only)
 
-### 1. asset-management
+| Projekt             | Dlaczego bez API?                      |
+|---------------------|----------------------------------------|
+| kiosk-station       | Kiosk appliance - generuje workflows   |
+| document-generator  | Doc gen service - generuje workflows   |
 
-**Format:** `.doql.css`  
-**Description:** ISO 17025 asset management system for calibration labs  
-**Validation:** ✅ Clean  
-**Build:** ✅ Success  
+## Web frontend (Vite)
 
-**Generated Artifacts:**
-- **API:** FastAPI backend with SQLAlchemy, Alembic migrations, JWT auth
-- **Web:** React + Vite + TailwindCSS frontend with PWA support
-- **Mobile:** Progressive Web App with service worker
-- **Desktop:** Tauri-based desktop application
-- **Infra:** Docker Compose configuration
-- **i18n:** Polish, English, German translations (114 keys each)
-- **Integrations:** Email, Slack, Storage, Notifications services
-- **Workflows:** Daily overdue check, inspection fail handling, annual exercise reminder, cylinder filling audit
-- **CI:** GitHub Actions workflow
-- **Plugins:** ERP, GXP, Fleet (via entry points)
+| Projekt             | Port | Status |
+|---------------------|------|--------|
+| asset-management    | 5173 | ✅ Running |
+| e-commerce-shop     | 5173 | ✅ Running |
 
-**Entities (10):** User, Station, Operator, Qualification, Device, Inspection, CylinderFill, Exercise, Deployment
+## Podsumowanie
 
----
+✅ **Walidacja**: 10/10 projektów przeszło walidację
+✅ **Build**: 10/10 projektów zbudowało się poprawnie
+✅ **API**: 8/10 projektów z pełnym API działa (zmienione na SQLite)
+⚠️  **Workflows only**: 2 projekty generują tylko workflows (expected)
+✅ **Web**: 2 projekty z web frontend działają na Vite
 
-### 2. blog-cms
+## Problemy napotkane i rozwiązane
 
-**Format:** `.doql.sass`  
-**Description:** Simple blog/content management system  
-**Validation:** ✅ Clean  
-**Build:** ✅ Success  
+1. **PostgreSQL → SQLite**: Wszystkie projekty domyślnie używają PostgreSQL,
+   zmienione na SQLite do testów lokalnych przez `sed`
+   
+2. **IoT-fleet syntax error**: Brak zamknięcia cudzysłowu w database.py
+   po pierwszej próbie sed - naprawione ręcznie
 
-**Generated Artifacts:**
-- **API:** FastAPI backend with SQLAlchemy, Alembic migrations, JWT auth
-- **Web:** React + Vite + TailwindCSS frontend
-- **Infra:** Docker Compose configuration
-- **i18n:** English, Polish translations (69 keys each)
-- **Integrations:** Email, Storage, Notifications services
-- **Workflows:** Publish notification, comment moderation
-- **CI:** GitHub Actions workflow
-- **Plugins:** ERP, GXP, Fleet (via entry points)
+3. **Kiosk-station brak main.py**: Ten projekt generuje tylko workflows,
+   nie pełne API (zgodnie z designem - kiosk to appliance)
 
-**Entities (6):** Post, Author, Category, Comment, MediaFile
+========================================
 
----
-
-### 3. calibration-lab
-
-**Format:** `.doql.less`  
-**Description:** Calibration laboratory management system  
-**Validation:** ✅ Clean  
-**Build:** ✅ Success  
-
-**Generated Artifacts:**
-- **API:** FastAPI backend with SQLAlchemy, Alembic migrations, JWT auth
-- **Web:** React + Vite + TailwindCSS frontend
-- **Infra:** Podman Quadlet containers (manager + Traefik)
-- **i18n:** Polish, English, German translations (80 keys each)
-- **Integrations:** Storage, Notifications services
-- **Workflows:** Calibration due reminder, certificate immutability
-- **CI:** GitHub Actions workflow
-- **Plugins:** ERP, GXP, Fleet (via entry points)
-
-**Entities (7):** Operator, Instrument, ReferenceStandard, Calibration, Customer, CalibrationOrder
-
----
-
-### 4. crm-contacts
-
-**Format:** `.doql.less`  
-**Description:** CRM system for contact and deal management  
-**Validation:** ✅ Clean  
-**Build:** ✅ Success  
-
-**Generated Artifacts:**
-- **API:** FastAPI backend with SQLAlchemy, Alembic migrations, JWT auth
-- **Web:** React + Vite + TailwindCSS frontend
-- **Infra:** Docker Compose configuration
-- **i18n:** English, Polish, German translations (68 keys each)
-- **Integrations:** Email, Notifications services
-- **Workflows:** Deal stage notification, overdue activity reminder
-- **CI:** GitHub Actions workflow
-- **Plugins:** ERP, GXP, Fleet (via entry points)
-
-**Entities (5):** Contact, Company, Deal, Activity
-
----
-
-### 5. document-generator
-
-**Format:** `.doql.less`  
-**Description:** Document generation service for calibration certificates and reports  
-**Validation:** ✅ Clean  
-**Build:** ✅ Success  
-
-**Generated Artifacts:**
-- **Documents:** Calibration certificate renderer, Non-conformance report renderer, QR label renderer
-- **Reports:** Monthly calibration summary report generator with crontab
-- **Infra:** Podman Quadlet containers (generator + Traefik)
-- **Integrations:** OqlOS client service
-- **Workflows:** Auto-generate on calibration done
-- **CI:** GitHub Actions workflow
-- **Plugins:** ERP, GXP, Fleet (via entry points)
-
-**Note:** No API generated (no entities defined) - this is a document generation service
-
----
-
-### 6. e-commerce-shop
-
-**Format:** `.doql.css`  
-**Description:** E-commerce shop with product and order management  
-**Validation:** ✅ Clean  
-**Build:** ✅ Success  
-
-**Generated Artifacts:**
-- **API:** FastAPI backend with SQLAlchemy, Alembic migrations, JWT auth
-- **Web:** React + Vite + TailwindCSS frontend
-- **Infra:** Docker Compose configuration
-- **i18n:** English, Polish translations (59 keys each)
-- **Integrations:** Email, Notifications services
-- **Workflows:** Order confirmation, Low stock alert
-- **CI:** GitHub Actions workflow
-- **Plugins:** ERP, GXP, Fleet (via entry points)
-
-**Entities (4):** Product, Customer, Order, CartItem
-
----
-
-### 7. iot-fleet
-
-**Format:** `.doql.less`  
-**Description:** IoT fleet management for device monitoring and OTA updates  
-**Validation:** ✅ Clean  
-**Build:** ✅ Success  
-
-**Generated Artifacts:**
-- **API:** FastAPI backend with SQLAlchemy, Alembic migrations, JWT auth
-- **Web:** React + Vite + TailwindCSS frontend
-- **Infra:** Docker Compose configuration
-- **Integrations:** Storage, Notifications services
-- **Workflows:** Heartbeat check, OTA canary deployment
-- **CI:** GitHub Actions workflow
-- **Plugins:** ERP, GXP, Fleet (via entry points)
-
-**Entities (6):** Node, Telemetry, Deployment, FirmwareBuild, OTAUpdate
-
----
-
-### 8. kiosk-station
-
-**Format:** `.doql.css`  
-**Description:** Kiosk station appliance with offline sync capabilities  
-**Validation:** ⚠️ 2 warnings  
-**Build:** ✅ Success  
-
-**Warnings:**
-- `DATA operators: Absolute path (skipped local check): /var/lib/kiosk/operators.db`
-- `DATA devices: Absolute path (skipped local check): /var/lib/kiosk/devices.db`
-
-**Generated Artifacts:**
-- **Infra:** Install script, systemd service
-- **Integrations:** OqlOS client service
-- **Workflows:** Offline sync, Auto-logout on idle
-- **CI:** GitHub Actions workflow
-- **Plugins:** ERP, GXP, Fleet (via entry points)
-
-**Note:** Minimal kiosk-focused example without full web/API stack
-
----
-
-### 9. todo-pwa
-
-**Format:** `.doql.css`  
-**Description:** Simple Progressive Web App for todo list management  
-**Validation:** ⚠️ 1 warning  
-**Build:** ✅ Success  
-
-**Warnings:**
-- `INTERFACE mobile: No pages defined (will generate empty shell)`
-
-**Generated Artifacts:**
-- **API:** FastAPI backend with SQLAlchemy, Alembic migrations
-- **Mobile:** PWA with service worker
-- **Infra:** Docker Compose configuration
-- **CI:** GitHub Actions workflow
-- **Plugins:** ERP, GXP, Fleet (via entry points)
-
-**Note:** Minimal example focusing on PWA capabilities
-
----
-
-## Common Patterns
-
-### All Examples Include:
-- `.env` and `.env.example` files for configuration
-- `doql.lock` file for dependency locking
-- GitHub Actions CI workflow
-- Plugin integration (ERP, GXP, Fleet via entry points)
-
-### Format Support:
-- **CSS (`.doql.css`)**: asset-management, e-commerce-shop, kiosk-station, todo-pwa
-- **LESS (`.doql.less`)**: calibration-lab, crm-contacts, document-generator, iot-fleet
-- **SASS (`.doql.sass`)**: blog-cms
-
-### Typical Stack:
-- **Backend:** FastAPI + SQLAlchemy + Alembic
-- **Frontend:** React + Vite + TailwindCSS
-- **Deployment:** Docker Compose or Podman Quadlet
-- **CI:** GitHub Actions
-
-## Test Methodology
-
-1. **Validation:** Ran `doql validate` in each example directory
-2. **Build:** Ran `doql build` in each example directory
-3. **Verification:** Checked generated artifacts in `build/` directories
-
-All tests were performed using the doql CLI from the virtual environment at `/home/tom/github/oqlos/doql/venv`.
-
-## Notes
-
-- All examples show a warning about failed plugin 'iso17025' (No module named '_shared') - this is expected as it's an optional plugin not installed in the test environment
-- The kiosk-station example uses absolute paths for data sources (appropriate for kiosk deployment)
-- The todo-pwa example has no mobile interface pages defined (minimal example)
+Testy wykonano: $(date)

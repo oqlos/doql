@@ -23,7 +23,7 @@
       },
       {
         "name": "role",
-        "type": "enum[admin,",
+        "type": "enum[admin, manager, operator]",
         "required": false
       },
       {
@@ -111,7 +111,7 @@
       },
       {
         "name": "level",
-        "type": "enum[basic,",
+        "type": "enum[basic, advanced, instructor]",
         "required": false
       },
       {
@@ -152,7 +152,7 @@
       },
       {
         "name": "device_type",
-        "type": "enum[scba,",
+        "type": "enum[scba, mask, cylinder, regulator, harness]",
         "required": false
       },
       {
@@ -182,7 +182,7 @@
       },
       {
         "name": "status",
-        "type": "enum[ready,",
+        "type": "enum[ready, in_use, failed, retired, overdue]",
         "required": false
       },
       {
@@ -198,6 +198,61 @@
       {
         "name": "total_uses",
         "type": "int",
+        "required": false
+      },
+      {
+        "name": "formula",
+        "type": "last_inspection + inspection_interval",
+        "required": false
+      },
+      {
+        "name": "when-device_type",
+        "type": "scba",
+        "required": false
+      },
+      {
+        "name": "result",
+        "type": "12 months",
+        "required": false
+      },
+      {
+        "name": "when-device_type",
+        "type": "cylinder",
+        "required": false
+      },
+      {
+        "name": "result",
+        "type": "60 months",
+        "required": false
+      },
+      {
+        "name": "result",
+        "type": "6 months",
+        "required": false
+      },
+      {
+        "name": "when",
+        "type": "next_inspection < today",
+        "required": false
+      },
+      {
+        "name": "result",
+        "type": "\"overdue\"",
+        "required": false
+      },
+      {
+        "name": "when",
+        "type": "last_inspection IS NULL",
+        "required": false
+      },
+      {
+        "name": "result",
+        "type": "\"failed\"",
+        "required": false
+      },
+      {
+        "name": "result",
+        "type": "\"ready\"",
         "required": false
       }
     ]
@@ -238,7 +293,7 @@
       },
       {
         "name": "result",
-        "type": "enum[pass,",
+        "type": "enum[pass, fail, incomplete, cancelled]",
         "required": false
       },
       {
@@ -274,7 +329,7 @@
       },
       {
         "name": "cylinder",
-        "type": "Device",
+        "type": "WHERE device_type=cylinder",
         "required": false
       },
       {
@@ -325,7 +380,7 @@
       },
       {
         "name": "type",
-        "type": "enum[training,",
+        "type": "enum[training, live_exercise, annual_mandatory]",
         "required": false
       },
       {
@@ -386,7 +441,7 @@
       },
       {
         "name": "condition_on_return",
-        "type": "enum[ok,",
+        "type": "enum[ok, damaged, lost]",
         "required": false
       }
     ]

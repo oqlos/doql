@@ -58,11 +58,6 @@
         "required": false
       },
       {
-        "name": "tags",
-        "type": "[string]",
-        "required": false
-      },
-      {
         "name": "created",
         "type": "datetime",
         "required": false

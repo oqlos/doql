@@ -58,7 +58,7 @@ WEBHOOK ...
 
 # — Scenariusze i testy z rodziny oqlos
 SCENARIOS: IMPORT *.oql
-TESTS: IMPORT *.iql
+TESTS: IMPORT *.testql.toon.yaml
 
 # — Interfejsy użytkownika
 INTERFACE web | mobile | desktop | kiosk | api
@@ -677,7 +677,7 @@ my-app/
 │   ├── report.mjml
 │   └── email/
 ├── scenarios/                # .oql (oqlos)
-├── tests/                    # .iql (testql)
+├── tests/                    # .testql.toon.yaml (testql)
 ├── schemas/                  # JSON Schema do walidacji DATA
 ├── assets/                   # logo, fonts, idle slideshow
 ├── build/                    # wygenerowane (gitignore)

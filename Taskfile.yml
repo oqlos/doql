@@ -37,3 +37,15 @@ tasks:
     cmds:
     - docker compose ps
     - docker compose exec app echo "Health check passed"
+  all:
+    desc: Run install, lint, test
+    cmds:
+    - taskfile run install
+    - taskfile run lint
+    - taskfile run test
+  help:
+    desc: Show available tasks
+    cmds:
+    - echo "doql — available tasks:"
+    - echo ""
+    - taskfile list

@@ -305,7 +305,7 @@ Każdy example zawiera zarówno wersję `.doql` jak i wersję CSS-like (`.doql.c
          └────────────┘
 ```
 
-Testy aplikacji (`.iql`) → testql → Playwright-alternative z integracją hardware.
+Testy aplikacji (`.testql.toon.yaml`) → testql → Playwright-alternative z integracją hardware.
 
 ---
 

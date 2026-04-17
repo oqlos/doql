@@ -15,7 +15,6 @@ class Post(Base):
     author = Column(String(255))
     category = Column(String(255), nullable=True)
     tags = Column(JSON, nullable=True)
-    status = Column(String(255), nullable=True)
     featured_image = Column(String(255), nullable=True)
     published_at = Column(DateTime, nullable=True)
     created = Column(DateTime, nullable=True)
@@ -30,7 +29,6 @@ class Author(Base):
     email = Column(String(255), unique=True)
     bio = Column(Text, nullable=True)
     avatar = Column(String(255), nullable=True)
-    role = Column(String(255), nullable=True)
     created = Column(DateTime, nullable=True)
 
 

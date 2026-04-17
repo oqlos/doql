@@ -13,7 +13,6 @@ class PostCreate(BaseModel):
     author: str
     category: Optional[str] = None
     tags: Optional[dict] = None
-    status: Optional[str] = "draft"
     featured_image: Optional[str] = None
     published_at: Optional[datetime] = None
 
@@ -27,7 +26,6 @@ class PostResponse(BaseModel):
     author: str
     category: Optional[str] = None
     tags: Optional[dict] = None
-    status: Optional[str] = None
     featured_image: Optional[str] = None
     published_at: Optional[datetime] = None
     created: Optional[datetime] = None
@@ -41,7 +39,6 @@ class PostUpdate(BaseModel):
     author: Optional[str] = None
     category: Optional[str] = None
     tags: Optional[dict] = None
-    status: Optional[str] = None
     featured_image: Optional[str] = None
     published_at: Optional[datetime] = None
 
@@ -51,7 +48,6 @@ class AuthorCreate(BaseModel):
     email: str
     bio: Optional[str] = None
     avatar: Optional[str] = None
-    role: Optional[str] = "writer"
 
 class AuthorResponse(BaseModel):
     model_config = {'from_attributes': True}
@@ -60,7 +56,6 @@ class AuthorResponse(BaseModel):
     email: str
     bio: Optional[str] = None
     avatar: Optional[str] = None
-    role: Optional[str] = None
     created: Optional[datetime] = None
 
 class AuthorUpdate(BaseModel):
@@ -68,7 +63,6 @@ class AuthorUpdate(BaseModel):
     email: Optional[str] = None
     bio: Optional[str] = None
     avatar: Optional[str] = None
-    role: Optional[str] = None
 
 
 class CategoryCreate(BaseModel):

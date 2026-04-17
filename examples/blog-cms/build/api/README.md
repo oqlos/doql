@@ -12,8 +12,8 @@ uvicorn main:app --reload
 
 ## Entities
 
-- **Post** (13 fields)
-- **Author** (7 fields)
+- **Post** (12 fields)
+- **Author** (6 fields)
 - **Category** (6 fields)
 - **Comment** (8 fields)
 - **MediaFile** (8 fields)

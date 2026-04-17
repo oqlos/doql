@@ -17,7 +17,6 @@ def upgrade():
         sa.Column("author", sa.String(255)),
         sa.Column("category", sa.String(255), nullable=True),
         sa.Column("tags", sa.JSON, nullable=True),
-        sa.Column("status", sa.String(255), nullable=True),
         sa.Column("featured_image", sa.String(255), nullable=True),
         sa.Column("published_at", sa.DateTime, nullable=True),
         sa.Column("created", sa.DateTime, nullable=True),
@@ -30,7 +29,6 @@ def upgrade():
         sa.Column("email", sa.String(255), unique=True),
         sa.Column("bio", sa.Text, nullable=True),
         sa.Column("avatar", sa.String(255), nullable=True),
-        sa.Column("role", sa.String(255), nullable=True),
         sa.Column("created", sa.DateTime, nullable=True),
     )
     op.create_table(

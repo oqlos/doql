@@ -105,6 +105,17 @@ class DeviceCreate(BaseModel):
     status: Optional[str] = "ready"
     last_inspection: Optional[date] = None
     total_uses: Optional[int] = 0
+    formula: Optional[str] = None
+    when_device_type: Optional[str] = None
+    result: Optional[str] = None
+    when_device_type: Optional[str] = None
+    result: Optional[str] = None
+    result: Optional[str] = None
+    when: Optional[str] = None
+    result: Optional[str] = None
+    when: Optional[str] = None
+    result: Optional[str] = None
+    result: Optional[str] = None
 
 class DeviceResponse(BaseModel):
     model_config = {'from_attributes': True}
@@ -121,6 +132,17 @@ class DeviceResponse(BaseModel):
     status: Optional[str] = None
     last_inspection: Optional[date] = None
     total_uses: Optional[int] = None
+    formula: Optional[str] = None
+    when_device_type: Optional[str] = None
+    result: Optional[str] = None
+    when_device_type: Optional[str] = None
+    result: Optional[str] = None
+    result: Optional[str] = None
+    when: Optional[str] = None
+    result: Optional[str] = None
+    when: Optional[str] = None
+    result: Optional[str] = None
+    result: Optional[str] = None
 
 class DeviceUpdate(BaseModel):
     serial: Optional[str] = None
@@ -135,6 +157,17 @@ class DeviceUpdate(BaseModel):
     status: Optional[str] = None
     last_inspection: Optional[date] = None
     total_uses: Optional[int] = None
+    formula: Optional[str] = None
+    when_device_type: Optional[str] = None
+    result: Optional[str] = None
+    when_device_type: Optional[str] = None
+    result: Optional[str] = None
+    result: Optional[str] = None
+    when: Optional[str] = None
+    result: Optional[str] = None
+    when: Optional[str] = None
+    result: Optional[str] = None
+    result: Optional[str] = None
 
 
 class InspectionCreate(BaseModel):

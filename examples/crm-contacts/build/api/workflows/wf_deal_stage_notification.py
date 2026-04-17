@@ -2,7 +2,6 @@
 from workflows.engine import WorkflowRun, Step, engine
 
 # Trigger: deal.updated
-# Condition: deal.stage changed
 
 
 

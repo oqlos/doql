@@ -190,3 +190,15 @@ environment[name="local"] {
   runtime: docker;
   env_file: ".env";
 }
+
+workflow[name="all"] {
+  trigger: "manual";
+  step-1: run cmd=taskfile run install;
+  step-2: run cmd=taskfile run lint;
+  step-3: run cmd=taskfile run test;
+}
+
+workflow[name="help"] {
+  trigger: "manual";
+  step-1: run cmd=taskfile list;
+}

@@ -2,7 +2,6 @@
 from workflows.engine import WorkflowRun, Step, engine
 
 # Trigger: event network.online
-# Condition: queue_size > 0
 
 
 
