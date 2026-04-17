@@ -1,0 +1,72 @@
+// LESS format — define @variables here as needed
+
+app {
+  name: "Inspection Kiosk Station";
+  version: "0.2.0";
+  domain: kiosk;
+}
+
+data[name="operators"] {
+  source: "sqlite";
+  file: "/var/lib/kiosk/operators.db";
+}
+
+data[name="operators"] {
+  source: "json";
+}
+
+data[name="devices"] {
+  source: "sqlite";
+  file: "/var/lib/kiosk/devices.db";
+}
+
+data[name="devices"] {
+  source: "json";
+}
+
+data[name="scenarios"] {
+  source: "api";
+  url: env.OQLOS_URL + "/api/v1/scenarios";
+  auth: "bearer";
+  token: env.OQLOS_API_KEY;
+  cache: "1h";
+}
+
+interface[type="kiosk"] {
+
+}
+interface[type="kiosk"] page[name="welcome"] {
+  layout: "center";
+}
+interface[type="kiosk"] page[name="login"] {
+  layout: "center";
+}
+interface[type="kiosk"] page[name="home"] {
+  layout: "grid cols=2";
+}
+interface[type="kiosk"] page[name="scan"] {
+  layout: "fullscreen";
+}
+interface[type="kiosk"] page[name="device_detail"] {
+  layout: "split";
+}
+interface[type="kiosk"] page[name="start_inspection"] {
+  layout: "guided_flow";
+}
+interface[type="kiosk"] page[name="my_tasks"] {
+  layout: "list";
+}
+interface[type="kiosk"] page[name="help"] {
+  layout: "list";
+}
+interface[type="kiosk"] page[name="idle_screen"] {
+  from: "assets/idle/";
+}
+
+workflow[name="offline_sync"] {
+  trigger: "event network.online";
+}
+
+workflow[name="auto_logout_on_idle"] {
+  trigger: "event kiosk.idle > 180s AND session.active";
+}

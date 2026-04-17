@@ -1,0 +1,139 @@
+app {
+  name: "Blog CMS";
+  version: "0.1.0";
+  domain: env.DOMAIN;
+  languages: en, pl;
+}
+
+entity[name="Post"] {
+  id: uuid! auto;
+  title: string!;
+  slug: string! unique;
+  content: text!;
+  excerpt: text;
+  author: ref(Author)!;
+  category: ref(Category);
+  tags: json;
+  featured_image: string;
+  published_at: datetime;
+  created: datetime auto;
+  updated: datetime auto;
+}
+
+entity[name="Author"] {
+  id: uuid! auto;
+  name: string!;
+  email: string! unique;
+  bio: text;
+  avatar: string;
+  created: datetime auto;
+}
+
+entity[name="Category"] {
+  id: uuid! auto;
+  name: string! unique;
+  slug: string! unique;
+  description: text;
+  parent: ref(Category);
+  sort_order: int default=0;
+}
+
+entity[name="Comment"] {
+  id: uuid! auto;
+  post: ref(Post)!;
+  author_name: string!;
+  author_email: string!;
+  content: text!;
+  approved: bool default=false;
+  parent: ref(Comment);
+  created: datetime auto;
+}
+
+entity[name="MediaFile"] {
+  id: uuid! auto;
+  filename: string!;
+  mime_type: string!;
+  size: int!;
+  url: string!;
+  alt_text: string;
+  uploaded_by: ref(Author);
+  created: datetime auto;
+}
+
+database[name="main"] {
+  type: "postgres";
+  url: env.DATABASE_URL;
+}
+
+interface[type="api"] {
+  type: rest;
+}
+
+interface[type="web"] {
+  type: spa;
+  framework: react;
+  pwa: true;
+}
+interface[type="web"] page[name="home"] {
+  layout: "blog";
+}
+interface[type="web"] page[name="post"] {
+  layout: "article";
+}
+interface[type="web"] page[name="category"] {
+  layout: "grid";
+}
+interface[type="web"] page[name="admin-posts"] {
+  layout: "table";
+}
+interface[type="web"] page[name="admin-editor"] {
+  layout: "editor";
+}
+interface[type="web"] page[name="admin-media"] {
+  layout: "grid";
+}
+interface[type="web"] page[name="admin-comments"] {
+  layout: "table";
+}
+
+integration[name="storage"] {
+  type: "s3";
+  type: s3;
+  bucket: env.S3_BUCKET;
+  region: env.S3_REGION;
+}
+
+integration[name="email"] {
+  type: "email";
+  type: email;
+  host: env.SMTP_HOST;
+  from: env.SMTP_FROM;
+}
+
+workflow[name="publish_notification"] {
+  trigger: "post.updated";
+}
+
+workflow[name="comment_moderation"] {
+  trigger: "comment.created";
+}
+
+role[name="admin"] {
+
+}
+
+role[name="editor"] {
+
+}
+
+role[name="writer"] {
+
+}
+
+role[name="public"] {
+
+}
+
+deploy {
+  target: docker-compose;
+}

@@ -1,0 +1,128 @@
+// LESS format — define @variables here as needed
+
+app {
+  name: "E-Commerce Shop";
+  version: "0.1.0";
+  domain: env.DOMAIN;
+  languages: en, pl;
+}
+
+entity[name="Product"] {
+  id: uuid! auto;
+  name: string!;
+  slug: string! unique;
+  description: text;
+  price: decimal!;
+  currency: enum[USD, EUR, PLN] default=EUR;
+  stock: int default=0;
+  category: string;
+  images: json;
+  active: bool default=true;
+  created: datetime auto;
+  updated: datetime auto;
+}
+
+entity[name="Customer"] {
+  id: uuid! auto;
+  email: string! unique;
+  name: string!;
+  phone: string;
+  address: json;
+  created: datetime auto;
+}
+
+entity[name="Order"] {
+  id: uuid! auto;
+  customer: ref(Customer)!;
+  status: enum[pending, paid, shipped, delivered, cancelled] default=pending;
+  items: json!;
+  total: decimal!;
+  currency: enum[USD, EUR, PLN];
+  shipping_address: json;
+  payment_method: string;
+  paid_at: datetime;
+  shipped_at: datetime;
+  created: datetime auto;
+}
+
+entity[name="CartItem"] {
+  id: uuid! auto;
+  session_id: string!;
+  product: ref(Product)!;
+  quantity: int default=1;
+  created: datetime auto;
+}
+
+database[name="main"] {
+  type: "postgres";
+  url: env.DATABASE_URL;
+}
+
+interface[type="api"] {
+  type: rest;
+}
+
+interface[type="web"] {
+  type: spa;
+  framework: react;
+}
+interface[type="web"] page[name="home"] {
+  layout: "grid";
+}
+interface[type="web"] page[name="catalog"] {
+  layout: "grid";
+}
+interface[type="web"] page[name="product-detail"] {
+  layout: "detail";
+}
+interface[type="web"] page[name="cart"] {
+  layout: "form";
+}
+interface[type="web"] page[name="checkout"] {
+  layout: "form";
+}
+interface[type="web"] page[name="orders"] {
+  layout: "table";
+}
+interface[type="web"] page[name="admin-products"] {
+  layout: "table";
+}
+
+integration[name="email"] {
+  type: "email";
+  type: email;
+  host: env.SMTP_HOST;
+  port: env.SMTP_PORT;
+  from: env.SMTP_FROM;
+}
+
+integration[name="payment"] {
+  type: "webhook";
+  type: webhook;
+  provider: stripe;
+  secret: env.STRIPE_SECRET;
+}
+
+workflow[name="order_confirmation"] {
+  trigger: "order.created";
+}
+
+workflow[name="low_stock_alert"] {
+  trigger: "product.updated";
+}
+
+role[name="admin"] {
+
+}
+
+role[name="customer"] {
+
+}
+
+role[name="guest"] {
+
+}
+
+deploy {
+  target: docker-compose;
+}

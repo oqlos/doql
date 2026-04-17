@@ -1,0 +1,133 @@
+app {
+  name: "IoT Fleet Manager";
+  version: "0.5.0";
+  domain: iot-fleet;
+}
+
+entity[name="Node"] {
+  id: uuid! auto;
+  hostname: string! unique;
+  location: geo;
+  tags: [string];
+  hardware_type: enum["rpi4", "rpi5", "jetson_nano", "x86"];
+  firmware_version: string;
+  last_seen: datetime;
+  status: enum[online, offline, updating, error] computed;
+  peripherals: json;
+}
+
+entity[name="Telemetry"] {
+  node: Node ref=Node;
+  timestamp: datetime auto;
+  cpu_load: float;
+  memory_used: float;
+  temperature_c: float;
+  data: json;
+}
+
+entity[name="Deployment"] {
+  name: string!;
+  scenario: oql;
+  target_filter: string;
+  schedule: cron;
+  last_run: datetime;
+  next_run: datetime computed;
+  success_rate: float computed;
+}
+
+entity[name="FirmwareBuild"] {
+  version: string!;
+  release_notes: text;
+  image_url: url;
+  signature: string;
+  targets: [string];
+  tested: bool;
+}
+
+entity[name="OTAUpdate"] {
+  firmware: FirmwareBuild ref=FirmwareBuild;
+  targets: [Node];
+  status: enum[pending, rolling, paused, completed, failed];
+  started_at: datetime;
+  progress: float computed;
+}
+
+interface[type="web"] {
+  framework: react;
+}
+interface[type="web"] page[name="fleet_map"] {
+  layout: "fullscreen";
+}
+interface[type="web"] page[name="fleet_list"] {
+  from: "Node";
+}
+interface[type="web"] page[name="node_detail"] {
+  from: "Node";
+}
+interface[type="web"] page[name="deployments"] {
+  from: "Deployment";
+}
+
+interface[type="api"] {
+  auth-method: api-key;
+}
+
+integration[name="monitoring"] {
+  type: "";
+}
+
+integration[name="alerting"] {
+  type: "";
+}
+
+integration[name="storage"] {
+  type: "";
+  telemetry: influxdb;
+  config: env.INFLUXDB_*;
+  retention: 90days;
+}
+
+integration[name="ota"] {
+  type: "";
+  strategy: canary;
+  rollback-on: failure_rate > 1%;
+  signed: true;
+}
+
+workflow[name="heartbeat_check"] {
+  trigger: "schedule "*/1 * * * *"";
+  step-1: find action=find query="Node WHERE last_seen < now - 5min AND status=online";
+  step-2: foreach node action=foreach node do=[update_status_offline, alert_pagerduty_warning];
+}
+
+workflow[name="ota_canary"] {
+  trigger: "manual";
+  step-1: select action=select sample=5% label=canary;
+  step-2: push_update canary action=push_update target=canary;
+  step-3: wait action=wait duration=1h;
+  step-4: push_update next 20% action=push_update target=next 20%;
+  step-5: push_update remaining action=push_update target=remaining;
+  step-6: rollback action=rollback alert=pagerduty severity=critical;
+}
+
+role[name="operator"] {
+  permit: run_scenario;
+  permit: view_telemetry;
+}
+
+role[name="ops"] {
+  permit: ota_update;
+  permit: node_restart;
+  permit: view_logs;
+}
+
+role[name="admin"] {
+  permit: *;
+}
+
+deploy {
+  target: kubernetes;
+  helm-chart: true;
+  ingress: traefik;
+  service-mesh: optional;
+}

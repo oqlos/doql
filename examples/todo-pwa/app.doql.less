@@ -1,0 +1,28 @@
+// LESS format — define @variables here as needed
+
+app {
+  name: "Todo PWA";
+  version: "0.1.0";
+  domain: env.DOMAIN;
+}
+
+entity[name="Todo"] {
+  id: uuid! auto;
+  title: string!;
+  done: bool default=false;
+  priority: enum[low, normal, high] default=normal;
+  due: date;
+  created: datetime auto;
+}
+
+interface[type="api"] {
+  type: rest;
+}
+
+interface[type="mobile"] {
+  type: pwa;
+}
+
+deploy {
+  target: docker-compose;
+}
