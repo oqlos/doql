@@ -26,7 +26,6 @@ class NoteCreate(BaseModel):
     title: str
     body: Optional[str] = None
     pinned: Optional[bool] = False
-    tags: Optional[str] = None
 
 class NoteResponse(BaseModel):
     model_config = {'from_attributes': True}
@@ -35,7 +34,6 @@ class NoteResponse(BaseModel):
     title: str
     body: Optional[str] = None
     pinned: Optional[bool] = None
-    tags: Optional[str] = None
     created: Optional[datetime] = None
     updated: Optional[datetime] = None
 
@@ -44,7 +42,6 @@ class NoteUpdate(BaseModel):
     title: Optional[str] = None
     body: Optional[str] = None
     pinned: Optional[bool] = None
-    tags: Optional[str] = None
 
 
 class TagCreate(BaseModel):

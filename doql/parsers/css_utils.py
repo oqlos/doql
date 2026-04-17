@@ -27,8 +27,12 @@ class ParsedSelector:
 
 
 def _strip_comments(text: str) -> str:
-    """Remove /* ... */ and // line comments."""
-    text = re.sub(r'/\*.*?\*/', '', text, flags=re.DOTALL)
+    """Remove /* ... */ and // line comments.
+
+    Uses a lookbehind so ``/*`` preceded by a non-whitespace character
+    (e.g. ``scenarios/*.oql``) is NOT treated as a comment opener.
+    """
+    text = re.sub(r'(?<![^\s])/\*.*?\*/', '', text, flags=re.DOTALL)
     text = re.sub(r'//[^\n]*', '', text)
     return text
 

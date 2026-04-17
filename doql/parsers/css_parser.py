@@ -25,7 +25,7 @@ from .css_tokenizer import _tokenise_css, _parse_declarations
 from .css_mappers import (
     _map_entity, _map_data_source, _map_template, _map_document,
     _map_report, _map_interface, _map_integration, _map_workflow,
-    _map_role, _map_deploy, _map_database,
+    _map_role, _map_deploy, _map_database, _map_environment,
 )
 
 # Re-export for backward compatibility
@@ -92,6 +92,7 @@ def _apply_css_block(spec: DoqlSpec, sel: ParsedSelector, block: CssBlock) -> No
         'role': _map_role,
         'deploy': _map_deploy,
         'database': _map_database,
+        'environment': _map_environment,
     }
 
     if t == 'app':

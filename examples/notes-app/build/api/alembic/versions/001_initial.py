@@ -21,7 +21,6 @@ def upgrade():
         sa.Column("title", sa.String(255)),
         sa.Column("body", sa.Text, nullable=True),
         sa.Column("pinned", sa.Boolean, nullable=True),
-        sa.Column("tags", sa.String(255), nullable=True),
         sa.Column("created", sa.DateTime, nullable=True),
         sa.Column("updated", sa.DateTime, nullable=True),
     )

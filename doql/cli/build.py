@@ -4,13 +4,14 @@ This module handles complete rebuilds by running all applicable generators.
 """
 from __future__ import annotations
 
+import shutil
 import sys
-import argparse
+import tempfile
 
 from .. import parser as doql_parser
 from ..generators import api_gen, web_gen, mobile_gen, desktop_gen, infra_gen, document_gen, report_gen, i18n_gen, integrations_gen, workflow_gen, ci_gen
 from .. import plugins as _plugins
-from .context import BuildContext, load_spec
+from .context import BuildContext, build_context, load_spec
 from .lockfile import write_lockfile
 
 
@@ -29,7 +30,7 @@ def should_generate_interface(name: str, spec) -> bool:
     return any(i.name == name for i in spec.interfaces)
 
 
-def run_core_generators(spec, env_vars, ctx: BuildContext) -> None:
+def run_core_generators(spec, env_vars, ctx: BuildContext, no_overwrite: bool = False) -> None:
     """Run core interface generators (api, web, mobile, desktop, infra)."""
     generators = {
         "api": api_gen.generate,
@@ -124,12 +125,7 @@ def cmd_build(args: argparse.Namespace) -> int:
     This command runs all applicable generators to create a complete build.
     Validation is performed first unless --force is specified.
     """
-    ctx = BuildContext(
-        root=__import__('pathlib').Path(getattr(args, "dir", None) or ".").resolve(),
-        doql_file=__import__('pathlib').Path(getattr(args, "dir", None) or ".").resolve() / (getattr(args, "file", None) or "app.doql"),
-        env_file=__import__('pathlib').Path(getattr(args, "dir", None) or ".").resolve() / ".env",
-        build_dir=__import__('pathlib').Path(getattr(args, "dir", None) or ".").resolve() / "build",
-    )
+    ctx = build_context(args)
     
     spec, env_vars = load_spec(ctx)
     
@@ -142,6 +138,19 @@ def cmd_build(args: argparse.Namespace) -> int:
             print(f"   {e.path}: {e.message}", file=sys.stderr)
         return 1
     
+    no_overwrite = getattr(args, "no_overwrite", False)
+    real_build_dir = ctx.build_dir
+
+    if no_overwrite:
+        tmp = tempfile.mkdtemp(prefix="doql-build-")
+        import pathlib
+        ctx = BuildContext(
+            root=ctx.root,
+            doql_file=ctx.doql_file,
+            env_file=ctx.env_file,
+            build_dir=pathlib.Path(tmp),
+        )
+
     ctx.build_dir.mkdir(parents=True, exist_ok=True)
     
     # Run all generators in order
@@ -154,6 +163,36 @@ def cmd_build(args: argparse.Namespace) -> int:
     run_ci_generator(spec, env_vars, ctx)
     run_plugins(spec, env_vars, ctx)
     
+    if no_overwrite:
+        skipped = _merge_no_overwrite(ctx.build_dir, real_build_dir)
+        shutil.rmtree(ctx.build_dir)
+        import pathlib
+        ctx = BuildContext(
+            root=ctx.root,
+            doql_file=ctx.doql_file,
+            env_file=ctx.env_file,
+            build_dir=real_build_dir,
+        )
+        if skipped:
+            print(f"⏭️  Skipped {skipped} existing file(s) (--no-overwrite)")
+
     write_lockfile(spec, ctx)
-    print(f"\n✅ Build complete — see {ctx.build_dir}/")
+    print(f"\n✅ Build complete — see {real_build_dir}/")
     return 0
+
+
+def _merge_no_overwrite(src, dst) -> int:
+    """Copy files from *src* to *dst*, skipping existing files. Returns skip count."""
+    skipped = 0
+    dst.mkdir(parents=True, exist_ok=True)
+    for item in src.rglob("*"):
+        if item.is_dir():
+            continue
+        rel = item.relative_to(src)
+        target = dst / rel
+        if target.exists():
+            skipped += 1
+            continue
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(item, target)
+    return skipped

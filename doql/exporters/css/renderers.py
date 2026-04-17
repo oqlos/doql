@@ -4,7 +4,7 @@ from __future__ import annotations
 from ...parsers.models import (
     DoqlSpec, Entity, DataSource, Template, Document,
     Report, Database, ApiClient, Webhook, Interface,
-    Integration, Workflow, Role, Deploy,
+    Integration, Workflow, Role, Deploy, Environment,
 )
 from .helpers import _indent, _prop, _field_line
 
@@ -169,11 +169,13 @@ def _render_webhook(wh: Webhook) -> list[str]:
 
 
 def _render_interface(iface: Interface) -> list[str]:
-    selector = f'interface[name="{iface.name}"]'
+    selector = f'interface[type="{iface.name}"]'
     lines = [f'{selector} {{\n']
-    props = [_prop("type", iface.type)]
+    props = []
+    if iface.type != iface.name:
+        props.append(_prop("type", iface.type, quote_str=False))
     if iface.framework:
-        props.append(_prop("framework", iface.framework))
+        props.append(_prop("framework", iface.framework, quote_str=False))
     if iface.pwa:
         props.append(_prop("pwa", True))
     if iface.auth:
@@ -188,10 +190,12 @@ def _render_interface(iface: Interface) -> list[str]:
     lines.append("}\n")
     # Pages as nested blocks
     for p in iface.pages:
-        lines.append(f'{selector} > page[name="{p.name}"] {{\n')
+        lines.append(f'{selector} page[name="{p.name}"] {{\n')
         pprops = []
         if p.layout:
             pprops.append(_prop("layout", p.layout))
+        if hasattr(p, 'from_entity') and p.from_entity:
+            pprops.append(_prop("from", p.from_entity))
         if p.path:
             pprops.append(_prop("path", p.path))
         if p.public:
@@ -252,6 +256,24 @@ def _render_deploy(deploy: Deploy) -> list[str]:
     for k, v in deploy.config.items():
         if k in ("target", "rootless"):
             continue
+        props.append(_prop(k, v, quote_str=False))
+    for k, v in deploy.directives.items():
+        props.append(f"@{k}: {v};")
+    lines.append(_indent(props))
+    lines.append("}\n")
+    return lines
+
+
+def _render_environment(env: Environment) -> list[str]:
+    lines = [f'environment[name="{env.name}"] {{\n']
+    props = [_prop("runtime", env.runtime, quote_str=False)]
+    if env.env_file:
+        props.append(_prop("env_file", env.env_file))
+    if env.ssh_host:
+        props.append(_prop("ssh_host", env.ssh_host, quote_str=False))
+    if env.replicas > 1:
+        props.append(_prop("replicas", env.replicas))
+    for k, v in env.config.items():
         props.append(_prop(k, v, quote_str=False))
     lines.append(_indent(props))
     lines.append("}\n")

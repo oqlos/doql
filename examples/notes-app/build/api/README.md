@@ -13,7 +13,7 @@ uvicorn main:app --reload
 ## Entities
 
 - **Notebook** (4 fields)
-- **Note** (8 fields)
+- **Note** (7 fields)
 - **Tag** (3 fields)
 
 ## Endpoints

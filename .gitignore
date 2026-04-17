@@ -1,4 +1,5 @@
 # Build artifacts
+.doql
 .env.example
 vscode-doql/.env.example
 /build/

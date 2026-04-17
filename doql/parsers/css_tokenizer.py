@@ -74,7 +74,7 @@ def _parse_declarations(body: str) -> dict[str, str]:
         line = line.strip()
         if not line or line.startswith('/*') or '{' in line or '}' in line:
             continue
-        m = re.match(r'^([\w\-]+)\s*:\s*(.+?)\s*;?\s*$', line)
+        m = re.match(r'^(@?[\w\-]+)\s*:\s*(.+?)\s*;?\s*$', line)
         if m:
             decls[m.group(1)] = m.group(2).rstrip(';').strip()
     return decls

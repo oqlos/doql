@@ -203,7 +203,7 @@ class TestCssExporter:
         buf = io.StringIO()
         export_css(sample_spec, buf)
         css = buf.getvalue()
-        assert 'interface[name="web"]' in css
+        assert 'interface[type="web"]' in css
         assert 'page[name="home"]' in css
         assert "public: true;" in css
 

@@ -180,6 +180,17 @@ class Deploy:
     rootless: bool = False
     containers: list[dict[str, Any]] = field(default_factory=list)
     config: dict[str, Any] = field(default_factory=dict)
+    directives: dict[str, str] = field(default_factory=dict)
+
+
+@dataclass
+class Environment:
+    name: str
+    runtime: str = "docker-compose"
+    ssh_host: Optional[str] = None
+    env_file: Optional[str] = None
+    replicas: int = 1
+    config: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -203,5 +214,6 @@ class DoqlSpec:
     workflows: list[Workflow] = field(default_factory=list)
     roles: list[Role] = field(default_factory=list)
     deploy: Deploy = field(default_factory=Deploy)
+    environments: list[Environment] = field(default_factory=list)
     env_refs: list[str] = field(default_factory=list)
     parse_errors: list[ValidationIssue] = field(default_factory=list)

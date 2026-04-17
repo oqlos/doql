@@ -69,7 +69,12 @@ def py_default(f: EntityField) -> str:
 
 
 def safe_name(name: str) -> str:
-    """Escape Python reserved keywords by appending underscore."""
+    """Return a valid Python identifier from *name*.
+
+    - Replaces hyphens with underscores (e.g. ``when-device_type`` → ``when_device_type``)
+    - Appends underscore for Python reserved keywords (e.g. ``pass`` → ``pass_``)
+    """
+    name = name.replace("-", "_")
     return f"{name}_" if name in _PY_KEYWORDS else name
 
 

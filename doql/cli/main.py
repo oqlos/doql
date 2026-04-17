@@ -10,12 +10,11 @@ import sys
 
 from .. import __version__
 from .commands import (
-    cmd_init, cmd_validate, cmd_plan, cmd_run, cmd_deploy,
+    cmd_adopt, cmd_build, cmd_doctor, cmd_publish, cmd_init, cmd_validate, cmd_plan,
+    cmd_run, cmd_sync, cmd_deploy,
     cmd_export, cmd_import, cmd_generate, cmd_render, cmd_query,
     cmd_kiosk, cmd_quadlet, cmd_docs,
 )
-from .build import cmd_build
-from .sync import cmd_sync
 
 
 def create_parser() -> argparse.ArgumentParser:
@@ -48,12 +47,18 @@ def create_parser() -> argparse.ArgumentParser:
     # build
     s = sub.add_parser("build", help="Generate all code")
     s.add_argument("--force", action="store_true")
+    s.add_argument("--no-overwrite", action="store_true",
+                   help="Skip files that already exist (merge-friendly)")
     s.set_defaults(func=cmd_build)
     
     # run
     s = sub.add_parser("run", help="Run locally (dev mode)")
     s.add_argument("--target", "-t", choices=["api", "web", "mobile", "desktop"],
                    help="Run a specific target (default: full stack via docker-compose)")
+    s.add_argument("-f", "--file", dest="file",
+                   help="Doql file — build on-the-fly into .doql/ and run")
+    s.add_argument("--port", "-p", type=int,
+                   help="Port override (default: api=8000, web=5173, mobile=8091)")
     s.set_defaults(func=cmd_run)
     
     # deploy
@@ -110,7 +115,26 @@ def create_parser() -> argparse.ArgumentParser:
     # docs
     s = sub.add_parser("docs", help="Generate documentation site")
     s.set_defaults(func=cmd_docs)
-    
+
+    # adopt
+    s = sub.add_parser("adopt", help="Reverse-engineer existing project → app.doql.css")
+    s.add_argument("target", help="Project directory to scan")
+    s.add_argument("-o", "--output", help="Output filename (default: app.doql.css)")
+    s.add_argument("--force", action="store_true", help="Overwrite existing file")
+    s.set_defaults(func=cmd_adopt)
+
+    # doctor
+    s = sub.add_parser("doctor", help="Project health check & diagnostics")
+    s.add_argument("--env", help="Run remote diagnostics for named environment")
+    s.set_defaults(func=cmd_doctor)
+
+    # publish
+    s = sub.add_parser("publish", help="Publish artifacts (PyPI, npm, Docker, GitHub)")
+    s.add_argument("--target", "-t",
+                   help="Comma-separated targets: pypi,npm,docker,github (default: all)")
+    s.add_argument("--dry-run", action="store_true", help="Simulate without publishing")
+    s.set_defaults(func=cmd_publish)
+
     return p
 
 

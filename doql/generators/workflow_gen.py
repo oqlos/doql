@@ -120,11 +120,22 @@ def _gen_engine() -> str:
     ''')
 
 
+def _step_fn_name(action: str) -> str:
+    """Create a valid Python function name from a workflow step action."""
+    import re
+    name = action.replace(".", "_").replace(" ", "_")
+    # Remove any characters that aren't valid in Python identifiers
+    name = re.sub(r'[^a-zA-Z0-9_]', '_', name)
+    # Collapse multiple underscores
+    name = re.sub(r'_+', '_', name).strip('_')
+    return _snake(name)
+
+
 def _gen_workflow_module(wf: Workflow, spec: DoqlSpec) -> str:
     """Generate a workflow implementation module."""
     steps_code = []
     for i, step in enumerate(wf.steps):
-        step_name = _snake(step.action.replace(".", "_").replace(" ", "_"))
+        step_name = _step_fn_name(step.action)
         steps_code.append(
             f'    Step(\n'
             f'        name="{step.action}",\n'
@@ -134,7 +145,7 @@ def _gen_workflow_module(wf: Workflow, spec: DoqlSpec) -> str:
 
     step_functions = []
     for step in wf.steps:
-        step_name = _snake(step.action.replace(".", "_").replace(" ", "_"))
+        step_name = _step_fn_name(step.action)
         target_comment = f"  # target: {step.target}" if step.target else ""
         step_functions.append(
             f'def step_{step_name}(ctx: dict):{target_comment}\n'

@@ -148,40 +148,71 @@ def _map_report(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") -> N
 
 
 def _map_interface(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") -> None:
-    """Map CSS block to Interface definition."""
+    """Map CSS block to Interface definition.
+
+    Handles both top-level ``interface[type="api"] { … }`` blocks and
+    compound selectors like ``interface[type="web"] page[name="dash"] { … }``.
+    """
     from .models import Interface, Page
     from .css_utils import _parse_selector
-    itype = sel.attributes.get('type', '')
+    itype = sel.attributes.get('type') or sel.attributes.get('name', '')
     if not itype:
         return
 
-    # Find or create interface
-    existing = next((i for i in spec.interfaces if i.type == itype), None)
+    # Find or create interface (lookup by name = selector attribute value)
+    existing = next((i for i in spec.interfaces if i.name == itype), None)
     if existing is None:
-        iface = Interface(
-            name=itype,
-            type=block.declarations.get('type', itype),
-        )
-        iface.framework = block.declarations.get('framework')
-        iface.theme = block.declarations.get('theme')
-        iface.auth = block.declarations.get('auth')
+        iface = Interface(name=itype, type=itype)
         spec.interfaces.append(iface)
     else:
         iface = existing
 
-    # Check children for pages
+    # Compound selector → route the sub-element
+    # Strip CSS child combinator '>' from chain before inspection
+    chain = [p for p in sel.chain[1:] if p != '>']
+    if chain:
+        sub = _parse_selector(chain[0])
+        if sub.type == 'page':
+            _add_interface_page(iface, sub, block)
+        # endpoint, feature, widget, menu, sync, card – informational
+        return
+
+    # Top-level interface block → apply / back-fill properties
+    declared_type = block.declarations.get('type')
+    if declared_type:
+        iface.type = declared_type
+    for key in ('framework', 'theme', 'auth'):
+        val = block.declarations.get(key)
+        if val and not getattr(iface, key, None):
+            setattr(iface, key, val)
+    if block.declarations.get('pwa', '').lower() == 'true':
+        iface.pwa = True
+
+    # Nested children (rare – if tokenizer ever nests them)
     for child in block.children:
         child_sel = _parse_selector(child.selector)
         if child_sel.type == 'page':
-            page_name = child_sel.attributes.get('name', '')
-            page = Page(name=page_name)
-            if 'layout' in child.declarations:
-                page.layout = child.declarations['layout']
-            if 'from' in child.declarations:
-                page.from_entity = child.declarations['from']
-            iface.pages.append(page)
-        elif child_sel.type == 'endpoint':
-            pass  # Endpoints are informational in current spec
+            _add_interface_page(iface, child_sel, child)
+
+
+def _add_interface_page(
+    iface: "Interface", sel: "ParsedSelector", block: "CssBlock"
+) -> None:
+    """Create or update a Page on *iface*."""
+    from .models import Page
+    page_name = sel.attributes.get('name', '')
+    if not page_name:
+        return
+    existing = next((p for p in iface.pages if p.name == page_name), None)
+    if existing is None:
+        page = Page(name=page_name)
+        iface.pages.append(page)
+    else:
+        page = existing
+    if 'layout' in block.declarations:
+        page.layout = block.declarations['layout']
+    if 'from' in block.declarations:
+        page.from_entity = block.declarations['from']
 
 
 def _map_integration(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") -> None:
@@ -245,7 +276,11 @@ def _map_deploy(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") -> N
     deploy = Deploy(
         target=block.declarations.get('target', ''),
     )
-    deploy.config = dict(block.declarations)
+    for key, val in block.declarations.items():
+        if key.startswith('@'):
+            deploy.directives[key[1:]] = val
+        else:
+            deploy.config[key] = val
     spec.deploy = deploy
 
 
@@ -259,3 +294,26 @@ def _map_database(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") ->
         url=block.declarations.get('url', ''),
     )
     spec.databases.append(db)
+
+
+def _map_environment(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") -> None:
+    """Map CSS block to Environment definition."""
+    from .models import Environment
+    name = sel.attributes.get('name', '')
+    if not name:
+        return
+    env = Environment(
+        name=name,
+        runtime=block.declarations.get('runtime', 'docker-compose'),
+    )
+    env.env_file = block.declarations.get('env_file')
+    env.ssh_host = block.declarations.get('ssh_host')
+    replicas = block.declarations.get('replicas')
+    if replicas and replicas.isdigit():
+        env.replicas = int(replicas)
+    # Store remaining declarations as config
+    skip = {'runtime', 'env_file', 'ssh_host', 'replicas'}
+    for k, v in block.declarations.items():
+        if k not in skip:
+            env.config[k] = v
+    spec.environments.append(env)

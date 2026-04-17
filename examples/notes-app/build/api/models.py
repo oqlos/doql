@@ -21,7 +21,6 @@ class Note(Base):
     title = Column(String(255))
     body = Column(Text, nullable=True)
     pinned = Column(Boolean, nullable=True, default=False)
-    tags = Column(String(255), nullable=True)
     created = Column(DateTime, nullable=True)
     updated = Column(DateTime, nullable=True)
 
