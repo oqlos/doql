@@ -17,7 +17,7 @@ entity[name="Node"] {
 }
 
 entity[name="Telemetry"] {
-  node: Node ref=Node;
+  node: Node ref;
   timestamp: datetime auto;
   cpu_load: float;
   memory_used: float;
@@ -45,7 +45,7 @@ entity[name="FirmwareBuild"] {
 }
 
 entity[name="OTAUpdate"] {
-  firmware: FirmwareBuild ref=FirmwareBuild;
+  firmware: FirmwareBuild ref;
   targets: [Node];
   status: enum[pending, rolling, paused, completed, failed];
   started_at: datetime;

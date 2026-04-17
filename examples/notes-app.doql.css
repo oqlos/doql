@@ -1,0 +1,70 @@
+app {
+  name: "Notes";
+  version: "1.0.0";
+  domain: env.DOMAIN;
+}
+
+entity[name="Notebook"] {
+  id: uuid! auto;
+  name: string!;
+  color: string default=sky;
+  created: datetime auto;
+}
+
+entity[name="Note"] {
+  id: uuid! auto;
+  notebook: Notebook ref;
+  title: string!;
+  body: text;
+  pinned: bool default=false;
+  created: datetime auto;
+  updated: datetime auto;
+}
+
+entity[name="Tag"] {
+  id: uuid! auto;
+  name: string! unique;
+  color: string default=slate;
+}
+
+interface[type="api"] {
+  type: rest;
+  auth-method: $auth;
+}
+
+interface[type="web"] {
+  type: spa;
+  framework: $framework;
+}
+interface[type="web"] page[name="home"] {
+  layout: "sidebar";
+}
+interface[type="web"] page[name="note_editor"] {
+  layout: "fullscreen";
+}
+
+interface[type="mobile"] {
+  type: pwa;
+}
+
+interface[type="desktop"] {
+  type: tauri;
+}
+
+role[name="user"] {
+  permit: create Note;
+  permit: read Note own;
+  permit: update Note own;
+  permit: delete Note own;
+  permit: create Notebook;
+  permit: read Notebook own;
+}
+
+role[name="admin"] {
+  permit: *;
+}
+
+deploy {
+  target: docker-compose;
+  ingress: traefik;
+}

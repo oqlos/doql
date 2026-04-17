@@ -29,7 +29,7 @@ entity[name="Instrument"] {
 }
 
 entity[name="ReferenceStandard"] {
-  instrument: Instrument ref=Instrument;
+  instrument: Instrument ref;
   traceability_chain: text!;
   uncertainty_budget: json;
   certificate_pdf: pdf!;
@@ -38,10 +38,10 @@ entity[name="ReferenceStandard"] {
 
 entity[name="Calibration"] {
   id: uuid! auto;
-  instrument: Instrument ref=Instrument;
-  performed_by: Operator ref=Operator;
-  reviewed_by: Operator ref=Operator;
-  reference_used: ReferenceStandard ref=ReferenceStandard;
+  instrument: Instrument ref;
+  performed_by: Operator ref;
+  reviewed_by: Operator ref;
+  reference_used: ReferenceStandard ref;
   scenario: oql;
   date: datetime auto;
   measurements: json;
@@ -60,7 +60,7 @@ entity[name="Customer"] {
 }
 
 entity[name="CalibrationOrder"] {
-  customer: Customer ref=Customer;
+  customer: Customer ref;
   instruments: [Instrument];
   received_date: date;
   due_date: date;
