@@ -4,6 +4,40 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+### Refactored (sesja 11 — static-analysis-driven refactoring)
+- **css_exporter split** — 423-line monolith `css_exporter.py` → package
+  `doql/exporters/css/` (`helpers.py`, `renderers.py`, `format_convert.py`,
+  `__init__.py`). Old module kept as backward-compat re-export shim.
+- **markdown_exporter split** — 225-line `markdown_exporter.py` → package
+  `doql/exporters/markdown/` (`sections.py`, `writers.py`, `__init__.py`).
+  Old module kept as backward-compat shim.
+- **css_parser extract** — `_tokenise_css` and `_parse_declarations`
+  extracted to `doql/parsers/css_tokenizer.py` (was inline in 213-line
+  `css_parser.py`).
+- **Shared `_clean`** — recursive dict cleaner extracted from
+  `yaml_exporter.py` to `doql/utils/clean.py`.
+- **`_createBuildFunction` split** — 110-line Python string template
+  extracted from `playground/pyodide-bridge.js` to standalone
+  `playground/doql_build.py` with 6 named helpers (`_collect_parse_errors`,
+  `_build_env`, `_validate`, `_spec_summary`, `_try_generate`, `build`).
+  JS now fetches the `.py` file at boot time.
+- **yaml_importer docstrings** — added docstrings to all 17 builder
+  functions in `doql/importers/yaml_importer.py`.
+
+### Fixed (sesja 11)
+- **`gen_auth` indentation bug** — multi-line `user_model_def` interpolated
+  inside `textwrap.dedent(f'...')` broke line alignment; `auth.py` started
+  with unexpected indent for specs without a `User` entity
+  (e.g. calibration-lab). Fixed via `textwrap.indent` pre-alignment.
+
+#### Metrics (before → after)
+| Metric | Before | After | Target |
+|--------|--------|-------|--------|
+| CC avg | 3.20 | 3.11 | < 2.5 |
+| God modules (>300L) | 7 | 5 | 0 |
+| Fan-out ≥ 8 | 20 | 9 | < 10 |
+| Import cycles | 2 | 0 | 0 |
+
 ### Added (sesja 10 — CSS-like format + export/import + examples)
 - **CSS-like parser** — full parser for `.doql.css`, `.doql.less`, `.doql.sass`
   formats (9 modules: `css_parser`, `css_utils`, `css_mappers`,

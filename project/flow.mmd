@@ -25,28 +25,28 @@ flowchart TD
     subgraph Core
         doql__usage["usage"]
         plugins__doql_plugin_iso17025__doql_plugin_iso17025__traceability__generate["generate"]
-        plugins__doql_plugin_gxp__doql_plugin_gxp__generate["generate"]
-        plugins__doql_plugin_fleet__doql_plugin_fleet__generate["generate"]
         plugins__doql_plugin_erp__doql_plugin_erp___odoo_client_module["_odoo_client_module"]
         plugins__doql_plugin_erp__doql_plugin_erp__generate["generate"]
-        plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate["generate"]
+        plugins__doql_plugin_gxp__doql_plugin_gxp__generate["generate"]
         plugins__doql_plugin_iso17025__doql_plugin_iso17025__certificate__generate["generate"]
         plugins__doql_plugin_iso17025__doql_plugin_iso17025__migration__generate["generate"]
-        plugins__doql_plugin_iso17025__doql_plugin_iso17025__uncertainty__generate["generate"]
+        plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate["generate"]
         plugins__doql_plugin_iso17025__doql_plugin_iso17025__drift_monitor__generate["generate"]
+        plugins__doql_plugin_iso17025__doql_plugin_iso17025__uncertainty__generate["generate"]
         playground__renderers__renderFatal["renderFatal"]
         playground__renderers__renderDiagnostics["renderDiagnostics"]
         playground__renderers__loc["loc"]
         playground__renderers__renderAst["renderAst"]
+        playground__renderers__renderEnv["renderEnv"]
         ...["+107 more"]
     end
 
     subgraph Exporters
-        doql__exporters__markdown_exporter__export_markdown_file["export_markdown_file"]
-        doql__exporters__css_exporter___render_api_client["_render_api_client"]
+        doql__exporters__markdown__export_markdown_file["export_markdown_file"]
+        doql__exporters__css__renderers___render_api_client["_render_api_client"]
         doql__generators__export_postman__run["run"]
         doql__generators__export_ts_sdk__run["run"]
         doql__generators__api_gen__export_openapi["export_openapi"]
     end
 
-    class doql__usage,plugins__doql_plugin_iso17025__doql_plugin_iso17025__traceability__generate,plugins__doql_plugin_gxp__doql_plugin_gxp__generate,plugins__doql_plugin_fleet__doql_plugin_fleet__generate,plugins__doql_plugin_erp__doql_plugin_erp___odoo_client_module,plugins__doql_plugin_erp__doql_plugin_erp__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__certificate__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__migration__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__uncertainty__generate entry
+    class doql__usage,plugins__doql_plugin_iso17025__doql_plugin_iso17025__traceability__generate,plugins__doql_plugin_erp__doql_plugin_erp___odoo_client_module,plugins__doql_plugin_erp__doql_plugin_erp__generate,plugins__doql_plugin_gxp__doql_plugin_gxp__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__certificate__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__migration__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__drift_monitor__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__uncertainty__generate entry

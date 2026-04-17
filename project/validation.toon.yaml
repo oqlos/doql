@@ -1,7 +1,7 @@
-# vallm batch | 217f | 126✓ 10⚠ 1✗ | 2026-04-17
+# vallm batch | 227f | 135✓ 10⚠ 1✗ | 2026-04-17
 
 SUMMARY:
-  scanned: 217  passed: 126 (58.1%)  warnings: 10  errors: 1  unsupported: 89
+  scanned: 227  passed: 135 (59.5%)  warnings: 10  errors: 1  unsupported: 90
 
 WARNINGS[10]{path,score}:
   vscode-doql/src/extension.ts,0.78
@@ -47,7 +47,7 @@ ERRORS[1]{path,score}:
       python.import.resolvable,error,Module '_shared.readme' not found,23
 
 UNSUPPORTED[4]{bucket,count}:
-  *.md,39
+  *.md,40
   *.txt,1
   *.yml,3
   other,46

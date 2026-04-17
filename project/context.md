@@ -4,18 +4,14 @@
 
 - **Project**: /home/tom/github/oqlos/doql
 - **Primary Language**: python
-- **Languages**: python: 89, shell: 3, javascript: 3, typescript: 1
+- **Languages**: python: 98, shell: 3, javascript: 3, typescript: 1
 - **Analysis Mode**: static
 - **Total Functions**: 391
 - **Total Classes**: 23
-- **Modules**: 96
+- **Modules**: 105
 - **Entry Points**: 133
 
 ## Architecture by Module
-
-### doql.exporters.css_exporter
-- **Functions**: 28
-- **File**: `css_exporter.py`
 
 ### doql.parsers.registry
 - **Functions**: 24
@@ -25,9 +21,9 @@
 - **Functions**: 22
 - **File**: `yaml_importer.py`
 
-### doql.exporters.markdown_exporter
-- **Functions**: 19
-- **File**: `markdown_exporter.py`
+### doql.exporters.css.renderers
+- **Functions**: 14
+- **File**: `renderers.py`
 
 ### doql.parsers.extractors
 - **Functions**: 14
@@ -61,9 +57,17 @@
 - **Functions**: 10
 - **File**: `plan.py`
 
+### doql.exporters.markdown.writers
+- **Functions**: 10
+- **File**: `writers.py`
+
 ### playground.app
 - **Functions**: 9
 - **File**: `app.js`
+
+### doql.exporters.css
+- **Functions**: 9
+- **File**: `__init__.py`
 
 ### doql.parsers.validators
 - **Functions**: 9
@@ -77,9 +81,9 @@
 - **Functions**: 8
 - **File**: `mobile_gen.py`
 
-### doql.parsers.css_parser
-- **Functions**: 8
-- **File**: `css_parser.py`
+### doql.exporters.markdown.sections
+- **Functions**: 7
+- **File**: `sections.py`
 
 ### doql.generators.desktop_gen
 - **Functions**: 7
@@ -88,10 +92,6 @@
 ### doql.generators.api_gen.routes
 - **Functions**: 7
 - **File**: `routes.py`
-
-### doql.parsers.css_transformers
-- **Functions**: 7
-- **File**: `css_transformers.py`
 
 ## Key Entry Points
 
@@ -206,12 +206,15 @@ The artifact name must match a DOCUMENT defined in the .doql file.
 - **Calls**: sel.attributes.get, next, Workflow, spec.workflows.append, doql.parsers.css_parser._parse_selector, WorkflowStep, wf.steps.append, block.declarations.get
 
 ### doql.importers.yaml_importer._build_data_source
+> Build a DataSource from a raw YAML dict.
 - **Calls**: DataSource, data.get, data.get, data.get, data.get, data.get, data.get, data.get
 
 ### doql.importers.yaml_importer._build_document
+> Build a Document from a raw YAML dict.
 - **Calls**: Document, data.get, data.get, data.get, data.get, data.get, data.get, data.get
 
 ### doql.importers.yaml_importer._build_interface
+> Build an Interface (with nested pages) from a raw YAML dict.
 - **Calls**: Interface, doql.importers.yaml_importer._build_page, data.get, data.get, data.get, data.get, data.get, data.get
 
 ### doql.generators.web_gen.generate
@@ -374,7 +377,7 @@ Returns:
     0 if validation passes, 1 if there are err
 - **Output to**: None.resolve, getattr, print, sum, sum
 
-### doql.parsers.css_parser._parse_declarations
+### doql.parsers.css_tokenizer._parse_declarations
 > Extract property: value pairs from a CSS block body (top-level only).
 - **Output to**: body.splitlines, line.strip, re.match, line.count, line.count
 
@@ -392,11 +395,15 @@ Examples:
 
 ### doql.parsers.css_parser.parse_css_text
 > Parse CSS-like DOQL source text into a DoqlSpec.
-- **Output to**: doql.parsers.css_utils._strip_comments, doql.parsers.css_parser._tokenise_css, doql.parsers.css_parser._map_to_spec, doql.parsers.extractors.collect_env_refs, doql.parsers.css_transformers._resolve_less_vars
+- **Output to**: doql.parsers.css_utils._strip_comments, doql.parsers.css_tokenizer._tokenise_css, doql.parsers.css_parser._map_to_spec, doql.parsers.extractors.collect_env_refs, doql.parsers.css_transformers._resolve_less_vars
 
 ### doql.parsers.css_parser._detect_format
 > Detect format from file extension.
 - **Output to**: path.name.lower, name.endswith, name.endswith
+
+### doql.parsers.css_transformers._convert_indent_to_braces
+> Convert indent-based SASS blocks to brace-delimited CSS.
+- **Output to**: line.rstrip, doql.parsers.css_transformers._is_selector_line, indent_stack.pop, result_lines.append, len
 
 ### doql.parsers.extractors._extract_page_from_format1
 > Extract pages using PAGE keyword format.
@@ -421,10 +428,6 @@ Examples:
 ### doql.parsers.extractors._parse_field_type
 > Extract clean base type from type string.
 - **Output to**: re.split
-
-### doql.parsers.css_transformers._convert_indent_to_braces
-> Convert indent-based SASS blocks to brace-delimited CSS.
-- **Output to**: line.rstrip, doql.parsers.css_transformers._is_selector_line, indent_stack.pop, result_lines.append, len
 
 ### doql.parsers._is_css_format
 > Check if a path uses one of the CSS-like DOQL formats.
@@ -473,12 +476,12 @@ Uses error recovery: malformed bl
 ### recursion__clean
 - **Type**: recursion
 - **Confidence**: 0.90
-- **Functions**: doql.exporters.yaml_exporter._clean
+- **Functions**: doql.utils.clean._clean
 
 ### recursion__tokenise_css
 - **Type**: recursion
 - **Confidence**: 0.90
-- **Functions**: doql.parsers.css_parser._tokenise_css
+- **Functions**: doql.parsers.css_tokenizer._tokenise_css
 
 ## Public API Surface
 
@@ -490,8 +493,8 @@ Functions exposed as public API (no underscore prefix):
 - `doql.generators.api_gen.alembic.gen_initial_migration` - 23 calls
 - `doql.cli.commands.init.cmd_init` - 22 calls
 - `doql.generators.mobile_gen.generate` - 21 calls
-- `doql.cli.lockfile.spec_section_hashes` - 19 calls
 - `doql.lsp_server.document_symbols` - 19 calls
+- `doql.cli.lockfile.spec_section_hashes` - 19 calls
 - `doql.cli.commands.export.cmd_export` - 19 calls
 - `doql.cli.sync.determine_regeneration_set` - 18 calls
 - `doql.lsp_server.hover` - 17 calls
@@ -512,15 +515,15 @@ Functions exposed as public API (no underscore prefix):
 - `doql.cli.commands.generate.cmd_generate` - 11 calls
 - `doql.generators.document_gen.generate` - 11 calls
 - `doql.generators.api_gen.models.gen_models` - 11 calls
-- `doql.exporters.markdown_exporter.export_markdown` - 10 calls
+- `doql.exporters.markdown.export_markdown` - 10 calls
 - `doql.generators.web_gen.generate` - 10 calls
 - `doql.parsers.extractors.extract_val` - 10 calls
 - `doql.parsers.parse_env` - 10 calls
 - `plugins.doql-plugin-fleet.doql_plugin_fleet.generate` - 9 calls
 - `doql.cli.commands.render.cmd_render` - 9 calls
 - `doql.cli.commands.query.cmd_query` - 9 calls
-- `plugins.doql-plugin-gxp.doql_plugin_gxp.generate` - 8 calls
 - `plugins.doql-plugin-erp.doql_plugin_erp.generate` - 8 calls
+- `plugins.doql-plugin-gxp.doql_plugin_gxp.generate` - 8 calls
 - `playground.pyodide-bridge.executeBuild` - 8 calls
 - `doql.parsers.extractors.extract_yaml_list` - 8 calls
 - `doql.plugins.run_plugins` - 8 calls

@@ -107,123 +107,15 @@ async function _installDoql() {
 }
 
 /**
- * Build the Python build function.
- * @returns {Function} The build function
+ * Fetch the Python build template and create the build function.
+ * @returns {Promise<Function>} The build function
  */
-function _createBuildFunction() {
-  return pyodide.runPython(`
-    import json
-    from doql import parser as _parser
-
-    def build(source: str):
-        """Parse + validate, return diagnostics + rendered files as JSON-safe dict."""
-        result = {
-            "ok": False,
-            "spec": None,
-            "diagnostics": [],
-            "files": [],
-            "models_py": "",
-            "schemas_py": "",
-            "env_vars": {},
-            "env_refs": [],
-            "error": None,
-        }
-        try:
-            spec = _parser.parse_text(source)
-        except Exception as e:
-            result["error"] = f"{type(e).__name__}: {e}"
-            return json.dumps(result)
-
-        # Parse errors collected by recovery
-        for pe in (spec.parse_errors or []):
-            result["diagnostics"].append({
-                "severity": "error",
-                "path": getattr(pe, "path", ""),
-                "message": getattr(pe, "message", str(pe)),
-                "line": getattr(pe, "line", 0),
-            })
-
-        # Default playground env
-        _default_env = {
-            "DOMAIN": "app.localhost",
-            "HOST": "localhost",
-            "API_HOST": "api.localhost",
-            "WEB_HOST": "web.localhost",
-            "DB_HOST": "db.localhost",
-            "REDIS_HOST": "redis.localhost",
-            "SMTP_HOST": "smtp.localhost",
-            "TRAEFIK_HOST": "traefik.localhost",
-            "LE_EMAIL": "ops@localhost",
-            "DATABASE_URL": "sqlite:///./data/app.db",
-        }
-        _env = dict(_default_env)
-        for _ref in (spec.env_refs or []):
-            _env.setdefault(_ref, "localhost")
-        result["env_vars"] = _env
-        result["env_refs"] = list(spec.env_refs or [])
-        issues = _parser.validate(spec, env_vars=_env)
-        for i in issues:
-            result["diagnostics"].append({
-                "severity": i.severity,
-                "path": i.path,
-                "message": i.message,
-                "line": getattr(i, "line", 0),
-            })
-
-        # Spec summary (AST-ish)
-        result["spec"] = {
-            "app_name": spec.app_name,
-            "version": spec.version,
-            "domain": spec.domain,
-            "entities": [
-                {
-                    "name": e.name,
-                    "fields": [
-                        {
-                            "name": f.name,
-                            "type": f.type,
-                            "required": f.required,
-                            "unique": f.unique,
-                            "auto": f.auto,
-                            "ref": f.ref,
-                            "default": f.default,
-                        }
-                        for f in e.fields
-                    ],
-                }
-                for e in spec.entities
-            ],
-            "interfaces": [{"name": i.name, "type": i.type} for i in spec.interfaces],
-            "workflows": [{"name": w.name, "trigger": w.trigger} for w in spec.workflows],
-            "roles": [r.name for r in spec.roles],
-            "languages": spec.languages,
-        }
-
-        # Try to generate models + schemas source
-        try:
-            from doql.generators.api_gen import _gen_models, _gen_schemas
-            result["models_py"] = _gen_models(spec)
-            result["schemas_py"] = _gen_schemas(spec)
-            result["files"] = [
-                {"path": "api/main.py",    "size": 0},
-                {"path": "api/models.py",  "size": len(result["models_py"])},
-                {"path": "api/schemas.py", "size": len(result["schemas_py"])},
-                {"path": "api/routes.py",  "size": 0},
-                {"path": "api/database.py","size": 0},
-            ]
-        except Exception as e:
-            result["diagnostics"].append({
-                "severity": "warning",
-                "path": "generator",
-                "message": f"Could not generate API: {e}",
-                "line": 0,
-            })
-
-        result["ok"] = not any(d["severity"] == "error" for d in result["diagnostics"])
-        return json.dumps(result)
-
-    build
-  `);
+async function _createBuildFunction() {
+  const resp = await fetch("./doql_build.py");
+  if (!resp.ok) throw new Error(`Failed to fetch doql_build.py: ${resp.status}`);
+  const src = await resp.text();
+  pyodide.runPython(src);
+  return pyodide.globals.get("build");
 }
 
 /**
@@ -239,7 +131,7 @@ export async function bootPyodide() {
     const version = await _installDoql();
     $doqlVersion.textContent = `v${version}`;
 
-    buildFn = _createBuildFunction();
+    buildFn = await _createBuildFunction();
 
     $status.textContent = "Ready";
     $status.className = "status-ready";

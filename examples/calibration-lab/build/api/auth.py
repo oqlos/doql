@@ -12,6 +12,14 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 from database import Base, get_db
+class User(Base):
+    __tablename__ = "users"
+    id = Column(String(36), primary_key=True)
+    username = Column(String(255), unique=True, nullable=False)
+    email = Column(String(255), unique=True, nullable=True)
+    hashed_password = Column(String(255), nullable=False)
+    role = Column(String(64), default="user")
+    created_at = Column(DateTime, default=datetime.now)
 
 SECRET_KEY = os.getenv("JWT_SECRET", "change-me-in-production")
 ALGORITHM = "HS256"
@@ -22,16 +30,6 @@ ROLES = ["technician", "metrologist", "quality_manager", "user"]
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 router = APIRouter(prefix="/auth", tags=["auth"])
-
-
-class User(Base):
-    __tablename__ = "users"
-    id = Column(String(36), primary_key=True)
-    username = Column(String(255), unique=True, nullable=False)
-    email = Column(String(255), unique=True, nullable=True)
-    hashed_password = Column(String(255), nullable=False)
-    role = Column(String(64), default="user")
-    created_at = Column(DateTime, default=datetime.now)
 
 
 class Token(BaseModel):
