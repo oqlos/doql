@@ -1,5 +1,18 @@
 # Rodzina OQL — paczka kompletna
 
+
+## AI Cost Tracking
+
+![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.0.1-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![AI Cost](https://img.shields.io/badge/AI%20Cost-$0.75-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-8.7h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
+
+- 🤖 **LLM usage:** $0.7500 (5 commits)
+- 👤 **Human dev:** ~$871 (8.7h @ $100/h, 30min dedup)
+
+Generated on 2026-04-17 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
+
+---
+
 **Data wydania:** 2026-04-16  
 **Zawartość:** repo `doql/` + repo `articles/` + ten README
 
@@ -66,6 +79,30 @@ cp .env.example .env
 doql validate
 doql plan
 ```
+
+### Szybki start z CLI shell
+
+Użyj skryptu `doql.sh` do generowania i uruchamiania aplikacji jedną komendą:
+
+```bash
+# Generuj i uruchom desktop app
+./doql.sh examples/notes-app/app.doql desktop
+
+# Generuj i uruchom web
+./doql.sh examples/notes-app/app.doql web
+
+# Generuj i uruchom API
+./doql.sh examples/notes-app/app.doql api
+
+# Generuj wszystko
+./doql.sh examples/notes-app/app.doql all
+```
+
+CLI shell automatycznie:
+- Waliduje specyfikację
+- Planuje generację
+- Generuje wszystkie artefakty
+- Uruchamia aplikację (desktop/web/api)
 
 ### Publikacja artykułów
 
@@ -160,3 +197,8 @@ Premium plugins doql (komercyjne) — osobne warunki, patrz `doql/LICENSE`.
 - Repo główne: github.com/softreck/oqlos
 - Repo doql: github.com/softreck/doql
 - Email: hello@softreck.dev
+
+
+## License
+
+Licensed under Apache-2.0.

@@ -1,0 +1,59 @@
+---
+# Ansible playbook to test all Doql desktop app builds
+- name: Test all desktop apps
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  
+  tasks:
+    - name: Check desktop builds exist
+      stat:
+        path: "{{ item }}"
+      register: desktop_builds
+      loop:
+        - /home/tom/github/oqlos/doql/examples/asset-management/build/desktop
+        - /home/tom/github/oqlos/doql/examples/notes-app/build/desktop
+    
+    - name: Display desktop build status
+      debug:
+        msg: "{{ item.item }} exists: {{ item.stat.exists }}"
+      loop: "{{ desktop_builds.results }}"
+    
+    - name: Check web builds exist
+      stat:
+        path: "{{ item }}"
+      register: web_builds
+      loop:
+        - /home/tom/github/oqlos/doql/examples/asset-management/build/web/dist
+        - /home/tom/github/oqlos/doql/examples/notes-app/build/web/dist
+    
+    - name: Display web build status
+      debug:
+        msg: "{{ item.item }} exists: {{ item.stat.exists }}"
+      loop: "{{ web_builds.results }}"
+    
+    - name: Check API builds exist
+      stat:
+        path: "{{ item }}"
+      register: api_builds
+      loop:
+        - /home/tom/github/oqlos/doql/examples/asset-management/build/api
+        - /home/tom/github/oqlos/doql/examples/notes-app/build/api
+    
+    - name: Display API build status
+      debug:
+        msg: "{{ item.item }} exists: {{ item.stat.exists }}"
+      loop: "{{ api_builds.results }}"
+    
+    - name: Check Tauri source exists
+      stat:
+        path: "{{ item }}"
+      register: tauri_src
+      loop:
+        - /home/tom/github/oqlos/doql/examples/asset-management/build/desktop/src-tauri
+        - /home/tom/github/oqlos/doql/examples/notes-app/build/desktop/src-tauri
+    
+    - name: Display Tauri source status
+      debug:
+        msg: "{{ item.item }} exists: {{ item.stat.exists }}"
+      loop: "{{ tauri_src.results }}"

@@ -1,51 +1,51 @@
-# doql | 196 func | 25f | 9232L | python | 2026-04-16
+# doql | 267 func | 63f | 10814L | python | 2026-04-17
 
 HEALTH:
-  CC̄=4.1  critical=22 (limit:10)  dup=0  cycles=1
+  CC̄=3.3  critical=18 (limit:10)  dup=0  cycles=1
 
 ALERTS[20]:
-  !!! cc_exceeded      _apply_block = 49 (limit:15)
-  !!! high_fan_out     _apply_block = 47 (limit:10)
-  !!! high_fan_out     cmd_sync = 32 (limit:10)
-  !!! cc_exceeded      validate = 30 (limit:15)
-  !!! cc_exceeded      cmd_sync = 29 (limit:15)
   !!! high_fan_out     pyodide = 26 (limit:10)
   !!! high_fan_out     buildFn = 26 (limit:10)
   !!! high_fan_out     debounceTimer = 26 (limit:10)
   !!! high_fan_out     bootPyodide = 26 (limit:10)
   !!! high_fan_out     generate = 24 (limit:10)
+  !!! high_fan_out     extract_pages = 22 (limit:10)
+  !!  high_fan_out     generate = 19 (limit:10)
+  !!  high_fan_out     cmd_sync = 18 (limit:10)
+  !!  high_fan_out     _diagnostics_for = 17 (limit:10)
+  !   cc_exceeded      generate = 15 (limit:15)
 
-MODULES[30] (top by size):
-  M[doql/parser.py] 726L C:19 F:12 CC↑49 D:0 (python)
-  M[doql/generators/api_gen.py] 710L C:0 F:17 CC↑22 D:0 (python)
-  M[doql/generators/web_gen.py] 649L C:0 F:20 CC↑13 D:0 (python)
-  M[doql/cli.py] 611L C:1 F:23 CC↑29 D:0 (python)
+MODULES[74] (top by size):
   M[plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py] 578L C:0 F:7 CC↑2 D:0 (python)
   M[plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py] 524L C:0 F:7 CC↑2 D:0 (python)
-  M[doql/generators/mobile_gen.py] 462L C:0 F:8 CC↑5 D:0 (python)
+  M[doql/generators/mobile_gen.py] 462L C:0 F:8 CC↑5 D:1 (python)
   M[playground/app.js] 441L C:0 F:27 CC↑13 D:0 (javascript)
   M[plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py] 427L C:0 F:6 CC↑2 D:0 (python)
   M[doql/lsp_server.py] 361L C:0 F:12 CC↑14 D:0 (python)
   M[plugins/doql-plugin-erp/doql_plugin_erp/__init__.py] 357L C:0 F:6 CC↑2 D:0 (python)
   M[doql/generators/infra_gen.py] 321L C:0 F:5 CC↑8 D:0 (python)
   M[doql/generators/integrations_gen.py] 320L C:0 F:7 CC↑15 D:0 (python)
-  M[doql/generators/workflow_gen.py] 309L C:0 F:7 CC↑11 D:0 (python)
-  M[doql/generators/desktop_gen.py] 214L C:0 F:8 CC↑6 D:0 (python)
-  LANGS: python:25/shell:3/javascript:1/typescript:1
+  M[doql/generators/workflow_gen.py] 304L C:0 F:7 CC↑11 D:0 (python)
+  M[doql/parsers/registry.py] 262L C:0 F:23 CC↑6 D:1 (python)
+  M[doql/generators/desktop_gen.py] 214L C:0 F:8 CC↑6 D:2 (python)
+  M[doql/cli/sync.py] 210L C:0 F:10 CC↑11 D:0 (python)
+  M[doql/parsers/models.py] 207L C:19 F:0 CC↑0 D:0 (python)
+  M[doql.sh] 195L C:0 F:1 CC↑0 D:0 (shell)
+  LANGS: python:68/shell:4/javascript:1/typescript:1
 
 HOTSPOTS[10]:
-  ★ _apply_block fan=47  // Apply a single parsed block to *spec*. Raises on malformed input.
-  ★ cmd_sync fan=32  // Selective rebuild — only regenerate sections that changed since last build.
   ★ pyodide fan=26  // Orchestrates 26 calls
   ★ buildFn fan=26  // Orchestrates 26 calls
   ★ debounceTimer fan=26  // Orchestrates 26 calls
+  ★ bootPyodide fan=26  // Orchestrates 26 calls
+  ★ generate fan=24  // Generate React + Vite + TailwindCSS frontend into *out* directory.
 
-REFACTOR[15]:
-  [1] H/L Split cmd_sync (CC=29 → target CC<10)
-  [2] H/L Split _apply_block (CC=49 → target CC<10)
-  [3] H/L Split validate (CC=30 → target CC<10)
-  [4] H/H Split god module doql/parser.py (726L, 19 classes)
-  [5] H/H Split god module doql/cli.py (611L, 1 classes)
+REFACTOR[7]:
+  [1] H/H Split god module plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py (524L, 0 classes)
+  [2] H/H Split god module plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py (578L, 0 classes)
+  [3] M/L Split generate (CC=15 → target CC<10)
+  [4] M/L Break circular dependency: playground.app.executeBuild → playground.app.buildFn
+  [5] M/M Reduce pyodide fan-out (currently 26)
 
 EVOLUTION:
-  2026-04-16 CC̄=4.1 crit=22 9232L // Automated analysis
+  2026-04-17 CC̄=3.3 crit=18 10814L // Automated analysis

@@ -1,4 +1,6 @@
 # Build artifacts
+.env.example
+vscode-doql/.env.example
 /build/
 doql.lock
 .fingerprint

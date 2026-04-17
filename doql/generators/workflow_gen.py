@@ -10,15 +10,10 @@ Produces:
 from __future__ import annotations
 
 import pathlib
-import re
 import textwrap
 
 from ..parser import DoqlSpec, Workflow, WorkflowStep
-
-
-def _snake(name: str) -> str:
-    s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
-    return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+from ..utils.naming import snake as _snake
 
 
 def _gen_engine() -> str:

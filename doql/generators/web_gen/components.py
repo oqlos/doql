@@ -16,7 +16,7 @@ def _gen_layout(spec: DoqlSpec, pages: list[Page], entities: list[Entity]) -> st
     nav_items.append("  { path: '/', label: 'Dashboard', icon: 'LayoutDashboard' },")
     for ent in entities:
         slug = _kebab(ent.name) + "s"
-        nav_items.append(f"  {{ path: '/{slug}', label: '{ent.name}s', icon: 'List' }}")
+        nav_items.append(f"  {{ path: '/{slug}', label: '{ent.name}s', icon: 'List' }},")
     nav_block = "\n".join(nav_items)
 
     return textwrap.dedent(f"""\

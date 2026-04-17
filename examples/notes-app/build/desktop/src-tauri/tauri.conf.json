@@ -1,43 +1,15 @@
 {
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Notes",
+  "version": "1.0.0",
+  "identifier": "com.doql.notes",
   "build": {
-    "beforeBuildCommand": "cd ../../web && npm run build",
-    "beforeDevCommand": "cd ../../web && npm run dev",
-    "devPath": "http://localhost:5173",
-    "distDir": "../../web/dist"
+    "beforeBuildCommand": "cd ../web && npm install --silent && npm run build",
+    "beforeDevCommand": "cd ../web && npm install --silent && npm run dev",
+    "devUrl": "http://localhost:5173",
+    "frontendDist": "../../web/dist"
   },
-  "package": {
-    "productName": "Notes",
-    "version": "1.0.0"
-  },
-  "tauri": {
-    "allowlist": {
-      "all": false,
-      "shell": {
-        "open": true
-      }
-    },
-    "bundle": {
-      "active": true,
-      "identifier": "com.doql.notes",
-      "targets": "all",
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ]
-    },
-    "security": {
-      "csp": null
-    },
-    "systemTray": {
-      "iconPath": "icons/icon.png",
-      "iconAsTemplate": true
-    },
-    "updater": {
-      "active": false,
-      "endpoints": []
-    },
+  "app": {
     "windows": [
       {
         "title": "Notes",
@@ -46,6 +18,16 @@
         "resizable": true,
         "fullscreen": false
       }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": false,
+    "targets": "all",
+    "icon": [
+      "icons/icon.png"
     ]
   }
 }

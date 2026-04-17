@@ -87,6 +87,39 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 - Pilot w realnej firmie
 - LSP dla VS Code
 
+## [0.0.1] - 2026-04-17
+
+### Docs
+- Update README.md
+- Update TODO/01-doql-format-migration-analysis.md
+- Update TODO/02-doql-css-iot-fleet-example.md
+- Update TODO/03-doql-less-calibration-lab-example.md
+- Update TODO/04-doql-sass-notes-app-example.md
+- Update TODO/05-doql-migration-guide.md
+- Update TODO/README.md
+- Update docs/README.md
+- Update examples/notes-app/build/desktop/README.md
+- Update project/README.md
+- ... and 1 more files
+
+### Test
+- Update test_all_desktop.yml
+- Update test_desktop_builds.yml
+- Update test_playbook.yml
+
+### Other
+- Update .gitignore
+- Update doql.sh
+- Update doql/cli.py
+- Update doql/cli/__init__.py
+- Update doql/cli/build.py
+- Update doql/cli/commands/__init__.py
+- Update doql/cli/commands/deploy.py
+- Update doql/cli/commands/docs.py
+- Update doql/cli/commands/export.py
+- Update doql/cli/commands/generate.py
+- ... and 57 more files
+
 ## [0.2.0-alpha] — 2026-04-16
 
 Rozszerzenie zakresu: dokumenty, dane, kiosk, jednoznaczna semantyka.

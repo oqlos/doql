@@ -1,85 +1,121 @@
-# code2llm | 30f 7929L | python:25,shell:3,typescript:1,javascript:1 | 2026-04-16
-# CC̄=4.1 | critical:9/196 | dups:0 | cycles:1
+# code2llm | 74f 9244L | python:68,shell:3,typescript:1,javascript:1 | 2026-04-17
+# CC̄=3.3 | critical:1/267 | dups:0 | cycles:1
 
-HEALTH[11]:
-  🔴 GOD   doql/parser.py = 726L, 19 classes, 12m, max CC=49
-  🔴 CYCLE Circular dependency detected: playground.app.runBuild -> playground.app.buildFn. This indicates high coupling and may lead to infinite recursion or initialization issues.
+HEALTH[2]:
+  🔴 CYCLE Circular dependency detected: playground.app.executeBuild -> playground.app.buildFn. This indicates high coupling and may lead to infinite recursion or initialization issues.
   🟡 CC    generate CC=15 (limit:15)
-  🟡 CC    _gen_models CC=16 (limit:15)
-  🟡 CC    _gen_schemas CC=22 (limit:15)
-  🟡 CC    cmd_plan CC=18 (limit:15)
-  🟡 CC    cmd_build CC=17 (limit:15)
-  🟡 CC    cmd_sync CC=29 (limit:15)
-  🟡 CC    _extract_entity_fields CC=15 (limit:15)
-  🟡 CC    _apply_block CC=49 (limit:15)
-  🟡 CC    validate CC=30 (limit:15)
 
-REFACTOR[3]:
-  1. split doql/parser.py  (god module)
-  2. split 9 high-CC methods  (CC>15)
-  3. break 1 circular dependencies
+REFACTOR[2]:
+  1. split 1 high-CC methods  (CC>15)
+  2. break 1 circular dependencies
 
-PIPELINES[59]:
-  [1] Src [generate]: generate → _traceability_module
+PIPELINES[88]:
+  [1] Src [generate]: generate → _tenant_module
       PURITY: 100% pure
-  [2] Src [generate]: generate → _tenant_module
+  [2] Src [plugin_generate]: plugin_generate
       PURITY: 100% pure
-  [3] Src [generate]: generate → _audit_log_module
+  [3] Src [generate_readme]: generate_readme
       PURITY: 100% pure
-  [4] Src [generate]: generate → _odoo_client_module
+  [4] Src [generate]: generate → _audit_log_module
       PURITY: 100% pure
-  [5] Src [activate]: activate
+  [5] Src [generate]: generate → _odoo_client_module
       PURITY: 100% pure
 
 LAYERS:
-  doql/                           CC̄=4.8    ←in:0  →out:18  !! split
-  │ !! parser                     726L  19C   12m  CC=49     ←0
-  │ !! api_gen                    710L  0C   17m  CC=22     ←1
-  │ !! web_gen                    649L  0C   20m  CC=13     ←1
-  │ !! cli                        611L  1C   23m  CC=29     ←0
-  │ mobile_gen                 462L  0C    8m  CC=5      ←0
-  │ lsp_server                 361L  0C   12m  CC=14     ←0
-  │ infra_gen                  321L  0C    5m  CC=8      ←1
-  │ !! integrations_gen           320L  0C    7m  CC=15     ←1
-  │ workflow_gen               309L  0C    7m  CC=11     ←1
-  │ desktop_gen                214L  0C    8m  CC=6      ←0
-  │ document_gen               182L  0C    4m  CC=6      ←1
-  │ i18n_gen                   173L  0C    4m  CC=6      ←1
-  │ report_gen                 142L  0C    2m  CC=9      ←1
-  │ ci_gen                     112L  0C    2m  CC=1      ←1
-  │ plugins                    101L  1C    4m  CC=8      ←0
-  │ export_ts_sdk               26L  0C    1m  CC=2      ←1
-  │ export_postman              25L  0C    1m  CC=2      ←1
-  │ docs_gen                    24L  0C    1m  CC=3      ←1
-  │ deploy                      20L  0C    1m  CC=2      ←1
-  │ __init__                     7L  0C    0m  CC=0.0    ←0
-  │ __init__                     5L  0C    0m  CC=0.0    ←0
-  │
   playground/                     CC̄=4.1    ←in:0  →out:0
   │ app.js                     441L  0C   27m  CC=13     ←0
   │ serve.sh                    15L  0C    0m  CC=0.0    ←0
   │
+  doql/                           CC̄=3.5    ←in:0  →out:3
+  │ mobile_gen                 462L  0C    8m  CC=5      ←1
+  │ lsp_server                 361L  0C   12m  CC=14     ←0
+  │ infra_gen                  321L  0C    5m  CC=8      ←1
+  │ !! integrations_gen           320L  0C    7m  CC=15     ←1
+  │ workflow_gen               309L  0C    7m  CC=11     ←0
+  │ registry                   262L  0C   23m  CC=6      ←1
+  │ desktop_gen                214L  0C    8m  CC=6      ←2
+  │ sync                       210L  0C   10m  CC=11     ←0
+  │ models                     207L  19C    0m  CC=0.0    ←0
+  │ extractors                 191L  0C   12m  CC=11     ←2
+  │ document_gen               182L  0C    4m  CC=6      ←1
+  │ __init__                   176L  0C    1m  CC=13     ←1
+  │ i18n_gen                   173L  0C    4m  CC=6      ←1
+  │ __init__                   167L  0C    2m  CC=6      ←2
+  │ pages                      163L  0C    3m  CC=13     ←1
+  │ alembic                    154L  0C    3m  CC=12     ←1
+  │ report_gen                 142L  0C    2m  CC=9      ←1
+  │ auth                       141L  0C    1m  CC=5      ←1
+  │ validators                 138L  0C    9m  CC=6      ←0
+  │ config                     122L  0C    6m  CC=1      ←1
+  │ main                       117L  0C    2m  CC=1      ←0
+  │ __init__                   117L  0C    3m  CC=6      ←0
+  │ plan                       115L  0C   10m  CC=4      ←0
+  │ routes                     115L  0C    7m  CC=2      ←1
+  │ ci_gen                     112L  0C    2m  CC=1      ←0
+  │ pwa                        109L  0C    3m  CC=1      ←1
+  │ plugins                    101L  1C    4m  CC=8      ←0
+  │ lockfile                    88L  0C    4m  CC=12     ←1
+  │ schemas                     83L  0C    5m  CC=10     ←1
+  │ models                      82L  0C    2m  CC=10     ←1
+  │ common                      79L  0C    5m  CC=6      ←5
+  │ components                  76L  0C    1m  CC=2      ←1
+  │ main                        74L  0C    2m  CC=2      ←1
+  │ parser                      70L  0C    0m  CC=0.0    ←0
+  │ context                     60L  1C    4m  CC=5      ←3
+  │ core                        57L  0C    3m  CC=1      ←1
+  │ blocks                      50L  0C    2m  CC=4      ←1
+  │ validate                    43L  0C    1m  CC=12     ←0
+  │ init                        43L  0C    1m  CC=8      ←0
+  │ router                      43L  0C    1m  CC=3      ←1
+  │ __init__                    38L  0C    0m  CC=0.0    ←0
+  │ export                      36L  0C    1m  CC=6      ←0
+  │ database                    35L  0C    1m  CC=1      ←1
+  │ generate                    34L  0C    1m  CC=9      ←0
+  │ naming                      34L  0C    2m  CC=1      ←0
+  │ query                       31L  0C    1m  CC=7      ←0
+  │ render                      26L  0C    1m  CC=4      ←0
+  │ export_ts_sdk               26L  0C    1m  CC=2      ←1
+  │ run                         25L  0C    1m  CC=3      ←0
+  │ deploy                      25L  0C    1m  CC=7      ←0
+  │ export_postman              25L  0C    1m  CC=2      ←1
+  │ docs_gen                    24L  0C    1m  CC=3      ←1
+  │ quadlet                     22L  0C    1m  CC=2      ←0
+  │ docs                        21L  0C    1m  CC=3      ←0
+  │ kiosk                       20L  0C    1m  CC=2      ←0
+  │ deploy                      20L  0C    1m  CC=2      ←0
+  │ __init__                    19L  0C    0m  CC=0.0    ←0
+  │ common                      15L  0C    2m  CC=1      ←4
+  │ __init__                     7L  0C    0m  CC=0.0    ←0
+  │ __init__                     6L  0C    0m  CC=0.0    ←0
+  │ __init__                     5L  0C    0m  CC=0.0    ←0
+  │
   vscode-doql/                    CC̄=1.5    ←in:0  →out:0
   │ extension.ts                51L  0C    4m  CC=2      ←0
   │
-  plugins/                        CC̄=1.2    ←in:0  →out:0
+  plugins/                        CC̄=1.3    ←in:0  →out:0
   │ !! __init__                   578L  0C    7m  CC=2      ←0
   │ !! __init__                   524L  0C    7m  CC=2      ←0
   │ __init__                   427L  0C    6m  CC=2      ←0
   │ __init__                   357L  0C    6m  CC=2      ←0
+  │ readme                      37L  0C    1m  CC=3      ←0
+  │ base                        29L  0C    1m  CC=3      ←0
+  │ __init__                    11L  0C    0m  CC=0.0    ←0
   │
   ./                              CC̄=0.0    ←in:0  →out:0
+  │ doql.sh                    195L  0C    1m  CC=0.0    ←0
   │ project.sh                  35L  0C    0m  CC=0.0    ←0
   │ tree.sh                      1L  0C    0m  CC=0.0    ←0
   │
 
 COUPLING:
-                              doql  doql.generators
-             doql               ──               18  !! fan-out
-  doql.generators              ←18               ──  hub
+                          doql.cli  doql.generators             doql     doql.parsers
+         doql.cli               ──               11                                    !! fan-out
+  doql.generators              ←11               ──                                    hub
+             doql                                                 ──                3
+     doql.parsers                                                 ←3               ──
   CYCLES: 1
-  HUB: doql.generators/ (fan-in=18)
-  SMELL: doql/ fan-out=18 → split needed
+  HUB: doql.generators/ (fan-in=11)
+  SMELL: doql.cli/ fan-out=11 → split needed
 
 EXTERNAL:
   validation: run `vallm batch .` → validation.toon

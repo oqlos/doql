@@ -1,0 +1,70 @@
+---
+# Ansible playbook to test Doql-generated Notes app
+- name: Test Notes app from Doql
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  
+  tasks:
+    - name: Start API server
+      shell: |
+        cd /home/tom/github/oqlos/doql/examples/notes-app/build/api
+        nohup uvicorn main:app --port 3000 > /tmp/api.log 2>&1 &
+        sleep 3
+      async: 5
+      poll: 0
+    
+    - name: Wait for API to start
+      wait_for:
+        port: 3000
+        delay: 2
+        timeout: 10
+    
+    - name: Check if API is running on port 3000
+      uri:
+        url: http://127.0.0.1:3000/health
+        method: GET
+        return_content: yes
+      register: health_check
+      ignore_errors: yes
+    
+    - name: Display health check result
+      debug:
+        var: health_check.content
+    
+    - name: Test API endpoints
+      uri:
+        url: http://127.0.0.1:3000/api/v1/notebooks
+        method: GET
+        return_content: yes
+      register: api_test
+      ignore_errors: yes
+    
+    - name: Display API test result
+      debug:
+        var: api_test.content
+    
+    - name: Try to create a notebook
+      uri:
+        url: http://127.0.0.1:3000/api/v1/notebooks
+        method: POST
+        body_format: json
+        body:
+          name: "Test Notebook"
+          color: "blue"
+        return_content: yes
+        status_code: [201]
+      register: create_notebook
+    
+    - name: Display create result
+      debug:
+        var: create_notebook.content
+    
+    - name: Check if web build exists
+      stat:
+        path: /home/tom/github/oqlos/doql/examples/notes-app/build/web/dist
+      register: web_build
+    
+    - name: Display web build status
+      debug:
+        msg: "Web build exists: {{ web_build.stat.exists }}"

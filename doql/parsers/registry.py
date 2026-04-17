@@ -231,16 +231,21 @@ def _handle_role(spec: DoqlSpec, header: str, body: str) -> None:
         spec.roles.append(Role(name=name))
 
 
+def _handle_import_block(spec: DoqlSpec, body: str, target_attr: str) -> None:
+    """Parse IMPORT statements from block body and append to target list."""
+    target_list = getattr(spec, target_attr)
+    for im in re.finditer(r'IMPORT:\s*(.+)', body):
+        target_list.append(im.group(1).strip())
+
+
 @register("SCENARIOS")
 def _handle_scenarios(spec: DoqlSpec, header: str, body: str) -> None:
-    for im in re.finditer(r'IMPORT:\s*(.+)', body):
-        spec.scenarios.append(im.group(1).strip())
+    _handle_import_block(spec, body, "scenarios")
 
 
 @register("TESTS")
 def _handle_tests(spec: DoqlSpec, header: str, body: str) -> None:
-    for im in re.finditer(r'IMPORT:\s*(.+)', body):
-        spec.tests.append(im.group(1).strip())
+    _handle_import_block(spec, body, "tests")
 
 
 @register("DEPLOY")

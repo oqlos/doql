@@ -114,37 +114,74 @@ def extract_pages(body: str) -> list[Page]:
     return pages
 
 
+def _should_skip_line(line: str) -> bool:
+    """Check if a line should be skipped during field extraction."""
+    if not line:
+        return True
+    skip_prefixes = ("#", "COMPUTED", "INDEX", "AUDIT", "IF ", "ELSE")
+    if line.startswith(skip_prefixes):
+        return True
+    if ":" not in line:
+        return True
+    return False
+
+
+def _is_valid_field_name(name: str) -> bool:
+    """Check if field name is valid (starts with lowercase)."""
+    return bool(name and name[0].islower())
+
+
+def _parse_field_flags(ftype_raw: str) -> dict[str, bool]:
+    """Parse field flags from type string."""
+    return {
+        "required": "!" in ftype_raw,
+        "unique": "unique" in ftype_raw.lower(),
+        "auto": "auto" in ftype_raw.lower(),
+        "computed": "computed" in ftype_raw.lower(),
+    }
+
+
+def _parse_field_ref(ftype_raw: str) -> str | None:
+    """Extract reference entity from type string."""
+    ref_m = re.search(r'(\w+)\s+ref', ftype_raw)
+    return ref_m.group(1) if ref_m else None
+
+
+def _parse_field_default(ftype_raw: str) -> str | None:
+    """Extract default value from type string."""
+    default_m = re.search(r'default=(\S+)', ftype_raw)
+    return default_m.group(1) if default_m else None
+
+
+def _parse_field_type(ftype_raw: str) -> str:
+    """Extract clean base type from type string."""
+    return re.split(r'[!\s]', ftype_raw)[0]
+
+
 def extract_entity_fields(body: str) -> list[EntityField]:
     """Extract field definitions from ENTITY body."""
     fields: list[EntityField] = []
     for line in body.splitlines():
         line = line.strip()
-        if not line or line.startswith("#") or line.startswith("COMPUTED") or line.startswith("INDEX") or line.startswith("AUDIT"):
+        if _should_skip_line(line):
             continue
-        if ":" not in line:
-            continue
-        # skip sub-blocks like IF/ELSE
-        if line.startswith("IF ") or line.startswith("ELSE"):
-            continue
+
         parts = line.split(":", 1)
         fname = parts[0].strip()
         ftype_raw = parts[1].strip() if len(parts) > 1 else "string"
-        if not fname or not fname[0].islower():
+
+        if not _is_valid_field_name(fname):
             continue
-        required = "!" in ftype_raw
-        unique = "unique" in ftype_raw.lower()
-        auto = "auto" in ftype_raw.lower()
-        computed = "computed" in ftype_raw.lower()
-        ref_m = re.search(r'(\w+)\s+ref', ftype_raw)
-        ref = ref_m.group(1) if ref_m else None
-        default_m = re.search(r'default=(\S+)', ftype_raw)
-        default = default_m.group(1) if default_m else None
-        # clean type
-        base_type = re.split(r'[!\s]', ftype_raw)[0]
+
+        flags = _parse_field_flags(ftype_raw)
+        ref = _parse_field_ref(ftype_raw)
+        default = _parse_field_default(ftype_raw)
+        base_type = _parse_field_type(ftype_raw)
+
         fields.append(EntityField(
-            name=fname, type=base_type, required=required,
-            unique=unique, computed=computed, ref=ref,
-            default=default, auto=auto,
+            name=fname, type=base_type, required=flags["required"],
+            unique=flags["unique"], computed=flags["computed"], ref=ref,
+            default=default, auto=flags["auto"],
         ))
     return fields
 

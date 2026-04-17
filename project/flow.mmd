@@ -4,30 +4,33 @@ flowchart TD
     classDef entry fill:#4dabf7,stroke:#1971c2,color:#fff
 
     subgraph CLI
-        doql__cli__cmd_init["cmd_init"]
-        doql__cli__cmd_validate["cmd_validate"]
-        doql__cli__cmd_plan["cmd_plan"]
-        doql__cli___load_spec["_load_spec"]
-        doql__cli__cmd_build["cmd_build"]
-        doql__cli__cmd_run["cmd_run"]
-        doql__cli__cmd_deploy["cmd_deploy"]
-        doql__cli__cmd_sync["cmd_sync"]
-        doql__cli__cmd_export["cmd_export"]
-        doql__cli__cmd_generate["cmd_generate"]
-        doql__cli__cmd_render["cmd_render"]
-        doql__cli__cmd_query["cmd_query"]
-        doql__cli__cmd_kiosk["cmd_kiosk"]
-        doql__cli__cmd_quadlet["cmd_quadlet"]
-        doql__cli__cmd_docs["cmd_docs"]
-        ...["+8 more"]
+        doql__cli__lockfile__spec_section_hashes["spec_section_hashes"]
+        doql__cli__lockfile__read_lockfile["read_lockfile"]
+        doql__cli__lockfile__diff_sections["diff_sections"]
+        doql__cli__lockfile__write_lockfile["write_lockfile"]
+        doql__cli__sync__determine_regeneration_set["determine_regeneration_set"]
+        doql__cli__sync__regenerate_api["regenerate_api"]
+        doql__cli__sync__regenerate_web["regenerate_web"]
+        doql__cli__sync__regenerate_infra["regenerate_infra"]
+        doql__cli__sync__regenerate_documents["regenerate_documents"]
+        doql__cli__sync__regenerate_reports["regenerate_reports"]
+        doql__cli__sync__regenerate_i18n["regenerate_i18n"]
+        doql__cli__sync__regenerate_integrations["regenerate_integrations"]
+        doql__cli__sync__run_generators["run_generators"]
+        doql__cli__sync__cmd_sync["cmd_sync"]
+        doql__cli__commands__render__cmd_render["cmd_render"]
+        ...["+25 more"]
     end
 
     subgraph Core
-        plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate["generate"]
+        doql__usage["usage"]
         plugins__doql_plugin_fleet__doql_plugin_fleet__generate["generate"]
+        plugins___shared__base__plugin_generate["plugin_generate"]
+        plugins___shared__readme__generate_readme["generate_readme"]
         plugins__doql_plugin_gxp__doql_plugin_gxp__generate["generate"]
         plugins__doql_plugin_erp__doql_plugin_erp___odoo_client_module["_odoo_client_module"]
         plugins__doql_plugin_erp__doql_plugin_erp__generate["generate"]
+        plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate["generate"]
         vscode_doql__src__extension__activate["activate"]
         vscode_doql__src__extension__config["config"]
         vscode_doql__src__extension__serverPath["serverPath"]
@@ -35,10 +38,7 @@ flowchart TD
         playground__app__TAB_NAMES["TAB_NAMES"]
         playground__app__tabFromHash["tabFromHash"]
         playground__app__name["name"]
-        playground__app__initial["initial"]
-        playground__app__key["key"]
-        playground__app__lines["lines"]
-        ...["+44 more"]
+        ...["+70 more"]
     end
 
     subgraph Exporters
@@ -47,4 +47,4 @@ flowchart TD
         doql__generators__api_gen__export_openapi["export_openapi"]
     end
 
-    class plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate,plugins__doql_plugin_fleet__doql_plugin_fleet__generate,plugins__doql_plugin_gxp__doql_plugin_gxp__generate,plugins__doql_plugin_erp__doql_plugin_erp___odoo_client_module,plugins__doql_plugin_erp__doql_plugin_erp__generate,vscode_doql__src__extension__activate,vscode_doql__src__extension__config,vscode_doql__src__extension__serverPath,vscode_doql__src__extension__deactivate,playground__app__TAB_NAMES entry
+    class doql__usage,plugins__doql_plugin_fleet__doql_plugin_fleet__generate,plugins___shared__base__plugin_generate,plugins___shared__readme__generate_readme,plugins__doql_plugin_gxp__doql_plugin_gxp__generate,plugins__doql_plugin_erp__doql_plugin_erp___odoo_client_module,plugins__doql_plugin_erp__doql_plugin_erp__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate,vscode_doql__src__extension__activate,vscode_doql__src__extension__config entry

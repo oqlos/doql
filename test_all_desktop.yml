@@ -1,0 +1,102 @@
+---
+# Ansible playbook to test all Doql-generated desktop apps API
+- name: Test all desktop apps APIs
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  
+  tasks:
+    - name: Test asset-management API
+      block:
+        - name: Start asset-management API
+          shell: |
+            source /home/tom/github/oqlos/venv/bin/activate
+            cd /home/tom/github/oqlos/doql/examples/asset-management/build/api
+            nohup uvicorn main:app --port 3001 > /tmp/asset-api.log 2>&1 &
+            sleep 3
+          async: 5
+          poll: 0
+        
+        - name: Wait for asset-management API
+          wait_for:
+            port: 3001
+            delay: 2
+            timeout: 10
+        
+        - name: Check asset-management health
+          uri:
+            url: http://127.0.0.1:3001/health
+            return_content: yes
+          register: asset_health
+        
+        - name: Display asset-management health
+          debug:
+            var: asset_health.content
+        
+        - name: Test asset-management endpoint
+          uri:
+            url: http://127.0.0.1:3001/api/v1/stations
+            return_content: yes
+          register: asset_test
+        
+        - name: Display asset-management test
+          debug:
+            var: asset_test.content
+        
+        - name: Stop asset-management API
+          shell: pkill -f "uvicorn main:app --port 3001"
+          ignore_errors: yes
+    
+    - name: Test notes-app API
+      block:
+        - name: Start notes-app API
+          shell: |
+            source /home/tom/github/oqlos/venv/bin/activate
+            cd /home/tom/github/oqlos/doql/examples/notes-app/build/api
+            nohup uvicorn main:app --port 3002 > /tmp/notes-api.log 2>&1 &
+            sleep 3
+          async: 5
+          poll: 0
+        
+        - name: Wait for notes-app API
+          wait_for:
+            port: 3002
+            delay: 2
+            timeout: 10
+        
+        - name: Check notes-app health
+          uri:
+            url: http://127.0.0.1:3002/health
+            return_content: yes
+          register: notes_health
+        
+        - name: Display notes-app health
+          debug:
+            var: notes_health.content
+        
+        - name: Test notes-app endpoint
+          uri:
+            url: http://127.0.0.1:3002/api/v1/notebooks
+            return_content: yes
+          register: notes_test
+        
+        - name: Display notes-app test
+          debug:
+            var: notes_test.content
+        
+        - name: Stop notes-app API
+          shell: pkill -f "uvicorn main:app --port 3002"
+          ignore_errors: yes
+    
+    - name: Check desktop builds exist
+      stat:
+        path: "{{ item }}"
+      register: desktop_builds
+      loop:
+        - /home/tom/github/oqlos/doql/examples/asset-management/build/desktop
+        - /home/tom/github/oqlos/doql/examples/notes-app/build/desktop
+    
+    - name: Display desktop build status
+      debug:
+        msg: "{{ item.item }} exists: {{ item.stat.exists }}"
+      loop: "{{ desktop_builds.results }}"

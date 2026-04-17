@@ -150,22 +150,25 @@ def _word_at(source: str, position: lsp.Position) -> str:
 # Handlers
 # ─────────────────────────────────────────────────────────
 
+def _on_text_document_event(ls: LanguageServer, uri: str) -> None:
+    """Unified handler for text document open/change/save events."""
+    doc = ls.workspace.get_text_document(uri)
+    ls.publish_diagnostics(doc.uri, _diagnostics_for(doc.source, doc.uri))
+
+
 @server.feature(lsp.TEXT_DOCUMENT_DID_OPEN)
 def did_open(ls: LanguageServer, params: lsp.DidOpenTextDocumentParams):
-    doc = ls.workspace.get_text_document(params.text_document.uri)
-    ls.publish_diagnostics(doc.uri, _diagnostics_for(doc.source, doc.uri))
+    _on_text_document_event(ls, params.text_document.uri)
 
 
 @server.feature(lsp.TEXT_DOCUMENT_DID_CHANGE)
 def did_change(ls: LanguageServer, params: lsp.DidChangeTextDocumentParams):
-    doc = ls.workspace.get_text_document(params.text_document.uri)
-    ls.publish_diagnostics(doc.uri, _diagnostics_for(doc.source, doc.uri))
+    _on_text_document_event(ls, params.text_document.uri)
 
 
 @server.feature(lsp.TEXT_DOCUMENT_DID_SAVE)
 def did_save(ls: LanguageServer, params: lsp.DidSaveTextDocumentParams):
-    doc = ls.workspace.get_text_document(params.text_document.uri)
-    ls.publish_diagnostics(doc.uri, _diagnostics_for(doc.source, doc.uri))
+    _on_text_document_event(ls, params.text_document.uri)
 
 
 @server.feature(

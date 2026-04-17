@@ -19,12 +19,12 @@ from __future__ import annotations
 
 import json
 import pathlib
-import re
 import struct
 import textwrap
 import zlib
 
 from ..parser import DoqlSpec
+from ..utils.naming import snake as _snake
 
 
 def _make_solid_png(width: int, height: int, rgb: tuple[int, int, int]) -> bytes:
@@ -44,11 +44,6 @@ def _make_solid_png(width: int, height: int, rgb: tuple[int, int, int]) -> bytes
     idat = chunk(b"IDAT", zlib.compress(raw, 9))
     iend = chunk(b"IEND", b"")
     return sig + ihdr + idat + iend
-
-
-def _snake(name: str) -> str:
-    s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
-    return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower().replace(" ", "_")
 
 
 def _gen_cargo_toml(spec: DoqlSpec) -> str:
