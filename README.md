@@ -45,7 +45,7 @@ Kompletny projekt **doql** — warstwa deklaratywna nad `oqlos`, która z jedneg
 
 **Infrastruktura projektu:**
 - `pyproject.toml` — pakowanie Python
-- `doql/cli/` — CLI z 15 komendami: init/validate/plan/build/run/deploy/sync/export/import/generate/render/query/kiosk/quadlet/docs
+- `doql/cli/` — CLI z 19 komendami: init/validate/plan/build/run/deploy/sync/export/import/generate/render/query/kiosk/quadlet/docs/adopt/doctor/publish
 - `doql/parsers/` — parser classic `.doql` + CSS-like parser (`.doql.css`, `.doql.less`, `.doql.sass`)
 - `doql/exporters/` — eksport do YAML, Markdown, CSS/LESS/SASS
 - `doql/importers/` — import z YAML do `.doql`
@@ -272,14 +272,19 @@ Testy aplikacji (`.iql`) → testql → Playwright-alternative z integracją har
 
 ## Co dalej
 
-**Zrealizowane (Fazy 0–3):**
+**Zrealizowane (Fazy 0–4):**
 - ✅ Parser `.doql` v0.2 (16 sekcji) + CSS-like parser (`.doql.css` / `.doql.less` / `.doql.sass`)
 - ✅ 10 przykładów z walidacją i budowaniem
 - ✅ Generatory: API (FastAPI), Web (React+Vite), Mobile (PWA), Desktop (Tauri v2), Infra, Documents, Reports
 - ✅ Plugin system + 4 pluginy (GxP, ISO17025, Fleet, ERP)
 - ✅ Eksport/Import: YAML, Markdown, CSS/LESS/SASS, OpenAPI, Postman, TypeScript SDK
 - ✅ LSP server dla VS Code + playground online (Pyodide)
-- ✅ 99 testów pytest, CI matrix 3.10–3.13
+- ✅ `doql adopt` — reverse-engineer istniejącego projektu → app.doql.css
+- ✅ `doql doctor` — diagnostyka projektu + remote SSH checks
+- ✅ `doql build --no-overwrite` — merge-friendly build
+- ✅ Deploy directives `@local`/`@push`/`@remote` w bloku deploy
+- ✅ `doql publish` — PyPI, npm, Docker, GitHub releases
+- ✅ 130 testów pytest, CI matrix 3.10–3.13
 
 **Następne kroki:**
 - Certyfikacja deweloperów (`Doql Certified Developer`)

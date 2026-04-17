@@ -1,6 +1,6 @@
-# doql Language Specification v0.2.1
+# doql Language Specification v0.2.2
 
-> **Status:** Draft · **Last updated:** 2026-04-17 · **Wersja poprzednia:** v0.2
+> **Status:** Draft · **Last updated:** 2026-04-17 · **Wersja poprzednia:** v0.2.1
 
 `doql` (Declarative OQL) to język deklaratywny opisujący to, **co ma powstać** z danej deklaracji. Nie tylko aplikacje SaaS — także dokumenty, raporty PDF, szablony, bazy danych SQLite, klienty API, stanowiska kiosk.
 
@@ -517,7 +517,55 @@ systemctl --user daemon-reload
 systemctl --user start doql-api doql-web doql-db doql-traefik
 ```
 
-### 12.3 Kiosk appliance
+### 12.4 Deploy directives `@local` / `@push` / `@remote`
+
+Blok `deploy` może zawierać dyrektywy `@local`, `@push`, `@remote` — komendy shell wykonywane przez `doql deploy` w kolejności:
+
+```css
+deploy {
+  target: quadlet;
+  @local: doql build && podman build -t myapp .;
+  @push: podman push myapp registry.example.com/myapp;
+  @remote: ssh prod systemctl --user restart myapp;
+}
+```
+
+| Dyrektywa | Kiedy | Typowe użycie |
+|-----------|-------|---------------|
+| `@local` | Przed deployem | Build, testy, pakowanie |
+| `@push` | Po local | Push image/artifact do registry |
+| `@remote` | Po push | Restart usługi na serwerze |
+
+Jeśli brak dyrektyw, `doql deploy` wykonuje fallback do docker-compose.
+
+### 12.5 Environment — definicje środowisk
+
+`ENVIRONMENT` definiuje nazwane środowisko docelowe (dev, staging, prod):
+
+```css
+environment[name="dev"] {
+  runtime: docker-compose;
+  env_file: ".env.dev";
+}
+
+environment[name="prod"] {
+  runtime: podman-quadlet;
+  ssh_host: env.PROD_HOST;
+  replicas: 3;
+}
+```
+
+| Pole | Typ | Opis |
+|------|-----|------|
+| `runtime` | string | `docker-compose`, `quadlet`, `podman` |
+| `ssh_host` | string? | Host SSH do remote deploy |
+| `env_file` | string? | Plik .env dla tego środowiska |
+| `replicas` | int | Liczba replik (default: 1) |
+| `config.*` | string | Dowolne key-value konfig |
+
+Diagnostyka środowiska: `doql doctor --env prod` (sprawdza SSH, runtime, dysk).
+
+### 12.6 Kiosk appliance
 
 ```doql
 DEPLOY:
@@ -589,11 +637,24 @@ WORKFLOW sync:
 
 | Komenda | Co robi |
 |---------|---------|
+| `doql init` | Utwórz nowy projekt z szablonu |
+| `doql validate` | Sprawdź poprawność `.doql` + `.env` |
+| `doql plan` | Dry-run: pokaż co zostanie wygenerowane |
+| `doql build` | Wygeneruj cały kod (`--no-overwrite` pomija istniejące pliki) |
+| `doql run` | Uruchom lokalnie (dev mode) |
+| `doql deploy` | Deploy na środowisko (wykonuje `@local/@push/@remote`) |
+| `doql sync` | Re-generuj zmienione części (merge-friendly) |
+| `doql export` | Eksportuj do OpenAPI / Postman / TS SDK / YAML / Markdown / CSS / LESS / SASS |
+| `doql import` | Importuj YAML → DOQL |
 | `doql generate <artifact>` | Wygeneruj pojedynczy artefakt (dokument, raport) |
 | `doql render <template>` | Wyrenderuj szablon z danymi |
 | `doql query <data>` | Zapytaj DATA source i zwróć JSON |
 | `doql kiosk --install` | Zainstaluj wygenerowany kiosk na urządzeniu |
 | `doql quadlet --install` | Zainstaluj Quadlet containers |
+| `doql docs` | Wygeneruj stronę dokumentacji |
+| `doql adopt <dir>` | Reverse-engineer istniejącego projektu → `app.doql.css` |
+| `doql doctor` | Diagnostyka projektu (9 checks + `--env` remote SSH) |
+| `doql publish` | Publikuj artefakty (PyPI, npm, Docker, GitHub) |
 
 ---
 

@@ -4,6 +4,61 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+### Added (sesja 13 — doql adopt + environments)
+- **`doql adopt`** command — reverse-engineer existing project into `app.doql.css`.
+  Scans `pyproject.toml`, `package.json`, `.env`, `Dockerfile`, `docker-compose.yml`,
+  SQL `CREATE TABLE`, Python model classes. Detects API (FastAPI/Flask/Django),
+  CLI (click/argparse), Web (React/Vue/Svelte), Mobile, Desktop interfaces.
+  Implementation: `doql/adopt/scanner.py` (~400 lines) + `doql/adopt/emitter.py`.
+- **`Environment` model** — `environment[name="prod"] { runtime: quadlet; ssh_host: ...; }`
+  New dataclass in `parsers/models.py`, CSS mapper `_map_environment`, CSS renderer
+  `_render_environment`, full round-trip support across all formats.
+- Generated manifests for 5 oqlos sibling projects: oql, oqlos, testql, weboql, www.
+
+### Fixed (sesja 13)
+- **Interface lookup** — changed from `i.type == itype` to `i.name == itype` in
+  `_map_interface`, preventing duplicates when `type` declaration differs from selector.
+- **Interface renderer** — now uses `interface[type="..."]` instead of `interface[name="..."]`.
+- **Duplicate pages** — added deduplication in web frontend scanner.
+- **SQL entity parser** — filtered REFERENCES/CASCADE/etc. from field names.
+
+### Added (sesja 14 — doctor, publish, deploy directives)
+- **`doql doctor`** — comprehensive 9-check health diagnostic: parse validation,
+  env vars coverage, file references, database config, interface consistency,
+  required tools on PATH, deploy config, environment definitions. Optional
+  `--env <name>` runs remote SSH diagnostics (connectivity, runtime, disk space).
+- **`doql build --no-overwrite`** — merge-friendly build that generates into temp
+  directory and copies only new files to `build/`, skipping existing ones.
+- **Deploy directives `@local`/`@push`/`@remote`** — CSS tokenizer updated to accept
+  `@`-prefixed property names. New `Deploy.directives: dict[str, str]` field. Parsed
+  in `_map_deploy`, rendered in `_render_deploy`. `doql deploy` executes them in
+  order: local → push → remote, falling back to docker-compose if no directives.
+- **`doql publish`** — publish artifacts to PyPI (twine), npm, Docker/Podman registries,
+  GitHub Releases (gh CLI). Flags: `--target pypi,npm,docker,github`, `--dry-run`.
+- **Test suite: 130 passed**, 3 skipped (pygls, 2× psycopg2).
+- **CLI: 19 subcommands** (added: adopt, doctor, publish).
+
+### Fixed (sesja 14)
+- **Workflow generator** — `_step_fn_name()` sanitizes special characters (`+`, etc.)
+  from step action names, preventing invalid Python function names like
+  `step_hash_+_sign_certificate_pdf`.
+
+#### Project metrics (sesja 14)
+| Metric | Value |
+|--------|-------|
+| Source files | 92 |
+| Lines of code | ~10,500 |
+| Tests | 130 passed, 3 skipped |
+| CLI subcommands | 19 |
+| Examples | 10 |
+| Plugins | 4 |
+| Scaffold templates | 4 |
+
+### W toku
+- Parser tree-sitter (pełna gramatyka `.doql`, error recovery)
+- Rozszerzenie VS Code o `.doql.css` / `.doql.less` / `.doql.sass`
+- Pilot w realnej firmie
+
 ### Refactored (sesja 11 — static-analysis-driven refactoring)
 - **css_exporter split** — 423-line monolith `css_exporter.py` → package
   `doql/exporters/css/` (`helpers.py`, `renderers.py`, `format_convert.py`,
@@ -165,10 +220,6 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
   entity has no explicit id field (TSX was `TS2339: Property 'id' does
   not exist`).
 
-### W toku
-- Parser tree-sitter (pełna gramatyka `.doql`, error recovery)
-- Rozszerzenie VS Code o `.doql.css` / `.doql.less` / `.doql.sass`
-- Pilot w realnej firmie
 
 ## [0.0.1] - 2026-04-17
 

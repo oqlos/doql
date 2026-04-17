@@ -29,11 +29,11 @@
 - [x] Scaffolds: `doql/scaffolds/minimal/` z `app.doql` + `.env.example`
 - [x] Artykuły WordPress (6 szt.) w `articles/`
 - [x] GLOSSARY.md — semantyka OQL/DOQL/IQL
-- [ ] Parser tree-sitter (pełna gramatyka, LSP-ready) — odłożone do Faza 1
-- [ ] Generatory produkujące prawdziwy kod (nie stuby) — odłożone do Faza 1
+- [x] Generatory produkujące prawdziwy kod — FastAPI CRUD, React+Vite, Tauri, PWA, Infra, Documents, Reports
+- [ ] Parser tree-sitter (pełna gramatyka, LSP-ready) — odłożone
 
 **Deliverable:** `doql init --template minimal demo && cd demo && doql build` → generuje scaffold. ✅
-`doql plan` na każdym z 5 przykładów → poprawny plan. ✅
+`doql plan` na każdym z 10 przykładów → poprawny plan. ✅
 `doql validate` → sprawdza env.*, pliki DATA, szablony, cross-referencje. ✅
 
 ---
@@ -74,7 +74,7 @@
 - [x] GitHub Action `doql-ci` — validate + build + API compile + npm build jobs
 - [x] LSP / język server dla VS Code — `doql-lsp` (pygls 2.x), diagnostics/hover/goto-def/completions/symbols + VS Code extension scaffold (`vscode-doql/`)
 - [x] Parser error recovery — `parse_text()` z per-block try/except, `spec.parse_errors`, line tracking w `ValidationIssue(line, column)`
-- [x] Test suite (pytest) — 99 passing + 2 skipped: parser/generators/plugins/LSP/CSS-parser/exporters + runtime smoke (`tests/runtime_deploy.sh` + `tests/runtime_all_examples.sh`) + Playwright e2e (`tests/playground_e2e.py`)
+- [x] Test suite (pytest) — 130 passing + 3 skipped: parser/generators/plugins/LSP/CSS-parser/exporters/runtime + Playwright e2e (`tests/playground_e2e.py`)
 - [x] Pakietowanie — doql + 4 plugins jako sdist + wheel (`dist/*.whl`, scaffolds included via package-data)
 - [x] GitHub Actions CI — matrix 3.10–3.13 unit-tests + runtime-smoke + packaging + artifact upload (`.github/workflows/ci.yml`)
 - [x] Playground online — `playground/` static HTML+Pyodide app, loads doql wheel in-browser, live parser+validator+generator diagnostics, deployable to GitHub Pages / Netlify / S3; Playwright e2e verified
@@ -97,6 +97,19 @@
 
 ---
 
+## Faza 4 — Operacje + DevOps (sesje 13–14)
+
+- [x] **`doql adopt`** — reverse-engineer istniejącego projektu → `app.doql.css` (skanuje pyproject.toml, package.json, .env, Dockerfile, SQL, modele Python)
+- [x] **Model `Environment`** — `environment[name="prod"] { runtime: quadlet; ssh_host: ...; }` w CSS
+- [x] **`doql doctor`** — 9 checked diagnostyk: parse, env vars, pliki, bazy, interfejsy, narzędzia, deploy, environments + `--env` SSH remote
+- [x] **`doql build --no-overwrite`** — merge-friendly build, pomija istniejące pliki
+- [x] **Deploy directives `@local`/`@push`/`@remote`** — w bloku deploy CSS, wykonywane przez `doql deploy` w kolejności
+- [x] **`doql publish`** — publikacja do PyPI, npm, Docker registry, GitHub Releases (`--target`, `--dry-run`)
+- [x] **Fix workflow generator** — sanityzacja nazw funkcji Python ze znaków specjalnych
+- [x] Test suite: **130 passed**, 3 skipped; **CLI: 19 subcommands**; **92 source files**, **~10.5k LOC**
+
+---
+
 ## Odłożone / do dyskusji
 
 | Pomysł | Status | Uwagi |
@@ -107,7 +120,7 @@
 | Serverless target | 🤔 | AWS Lambda, Cloudflare Workers |
 | AI-powered UI suggestions | 🌟 | „dodaj filtr po modelu" → modyfikacja `.doql` |
 | Visual `.doql` editor | 🌟 | Drag-and-drop, dla non-tech |
-| Reverse: introspect existing app → generate `.doql` | 💭 | bardzo ambitne |
+| Reverse: introspect existing app → generate `.doql` | ✅ | zrealizowane jako `doql adopt` (Faza 4) |
 
 ---
 

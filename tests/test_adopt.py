@@ -207,3 +207,116 @@ def test_cmd_adopt_rejects_non_directory(tmp_path: Path, capsys) -> None:
     target = tmp_path / "does-not-exist"
     rc = cmd_adopt(_make_args(target))
     assert rc == 1
+
+
+# ── 6. Workflow detection (Makefile / Taskfile.yml) ──────────
+
+
+def test_makefile_targets_become_workflows(tmp_path: Path) -> None:
+    """Existing ``Makefile`` automation must survive the round-trip through
+    ``app.doql.css`` as ``workflow[name="..."]`` blocks.
+    """
+    _write(tmp_path, "Makefile", (
+        ".PHONY: all build test deploy help\n"
+        "\n"
+        "all: build test\n"
+        "\n"
+        "build:\n"
+        "\t@echo building\n"
+        "\tpython -m build\n"
+        "\n"
+        "test:\n"
+        "\tpytest -q\n"
+        "\n"
+        "deploy:\n"
+        "\tdocker compose up -d\n"
+        "\n"
+        "help:\n"
+        "\t@echo 'usage: make <target>'\n"
+    ))
+
+    spec = scan_project(tmp_path)
+    names = {w.name for w in spec.workflows}
+
+    # Meaningful targets captured
+    assert {"build", "test", "deploy"} <= names
+    # Meta targets filtered out
+    assert "all" not in names
+    assert "help" not in names
+    assert "PHONY" not in names and ".PHONY" not in names
+
+    build = next(w for w in spec.workflows if w.name == "build")
+    assert build.trigger == "manual"
+    cmds = [s.params["cmd"] for s in build.steps]
+    assert "echo building" in cmds  # @-prefix stripped
+    assert "python -m build" in cmds
+
+
+def test_makefile_workflows_round_trip_to_css(tmp_path: Path) -> None:
+    _write(tmp_path, "Makefile", "lint:\n\truff check .\n")
+    spec = scan_project(tmp_path)
+    out = tmp_path / "app.doql.css"
+    emit_css(spec, out)
+    text = out.read_text()
+    assert 'workflow[name="lint"]' in text
+    assert "ruff check ." in text
+
+
+def test_taskfile_yml_tasks_become_workflows(tmp_path: Path) -> None:
+    """Tasks from a ``Taskfile.yml`` must also be promoted to workflows."""
+    _write(tmp_path, "Taskfile.yml", (
+        "version: '1'\n"
+        "name: demo\n"
+        "tasks:\n"
+        "  install:\n"
+        "    desc: install deps\n"
+        "    cmds:\n"
+        "      - pip install -e .\n"
+        "  serve:\n"
+        "    desc: run api\n"
+        "    cmds:\n"
+        "      - uvicorn app:app\n"
+    ))
+    spec = scan_project(tmp_path)
+    names = {w.name for w in spec.workflows}
+    assert {"install", "serve"} <= names
+
+    serve = next(w for w in spec.workflows if w.name == "serve")
+    assert [s.params["cmd"] for s in serve.steps] == ["uvicorn app:app"]
+
+
+def test_makefile_variable_assignments_are_not_workflows(tmp_path: Path) -> None:
+    """Regression: ``VAR := value`` / ``VAR ?= value`` / ``VAR = value`` must
+    not be promoted to workflows. Originally the target regex matched the
+    ``:`` in ``:=`` and produced bogus entries like ``workflow[name="PYTHON"]``.
+    """
+    _write(tmp_path, "Makefile", (
+        "PYTHON := python3\n"
+        "PIP ?= pip\n"
+        "GREEN = \\033[0;32m\n"
+        "SHELL := /bin/bash\n"
+        "VERSION = 1.0.0\n"
+        "\n"
+        "build:\n"
+        "\t$(PYTHON) -m build\n"
+    ))
+    spec = scan_project(tmp_path)
+    names = {w.name for w in spec.workflows}
+    assert names == {"build"}
+    for forbidden in ("PYTHON", "PIP", "GREEN", "SHELL", "VERSION"):
+        assert forbidden not in names, f"{forbidden} is a variable, not a target"
+
+
+def test_workflows_are_deduplicated_across_makefile_and_taskfile(tmp_path: Path) -> None:
+    """A project may have both \u2014 the first file wins so we don't emit two
+    ``workflow[name="build"]`` blocks.
+    """
+    _write(tmp_path, "Makefile", "build:\n\tmake-build\n")
+    _write(tmp_path, "Taskfile.yml", (
+        "version: '1'\nname: x\ntasks:\n  build:\n    cmds:\n      - taskfile-build\n"
+    ))
+    spec = scan_project(tmp_path)
+    build_ws = [w for w in spec.workflows if w.name == "build"]
+    assert len(build_ws) == 1, "build workflow must not be duplicated"
+    # Makefile runs first, so its command wins.
+    assert build_ws[0].steps[0].params["cmd"] == "make-build"

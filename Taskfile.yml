@@ -28,6 +28,12 @@ tasks:
     desc: Build wheel + sdist
     cmds:
     - python -m build
+  health:
+    desc: Health check for services
+    cmds:
+    - docker compose ps
+    - docker compose exec app echo "Health check passed"
+
   clean:
     desc: Remove build artefacts
     cmds:

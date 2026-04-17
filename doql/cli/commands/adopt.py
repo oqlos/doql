@@ -33,6 +33,7 @@ def cmd_adopt(args: argparse.Namespace) -> int:
     roles = len(spec.roles)
     envs = len(spec.env_refs)
     environments = len(spec.environments)
+    workflows = len(spec.workflows)
     deploy_target = spec.deploy.target if spec.deploy else "none"
 
     print(f"   app:          {spec.app_name} v{spec.version}")
@@ -40,6 +41,7 @@ def cmd_adopt(args: argparse.Namespace) -> int:
     print(f"   interfaces:   {ifaces}  ({', '.join(i.name for i in spec.interfaces)})" if ifaces else "   interfaces:   0")
     print(f"   databases:    {dbs}  ({', '.join(d.name for d in spec.databases)})" if dbs else "   databases:    0")
     print(f"   integrations: {integ}  ({', '.join(i.name for i in spec.integrations)})" if integ else "   integrations: 0")
+    print(f"   workflows:    {workflows}  ({', '.join(w.name for w in spec.workflows[:5])}{' ...' if workflows > 5 else ''})" if workflows else "   workflows:    0")
     print(f"   roles:        {roles}")
     print(f"   environments: {environments}  ({', '.join(e.name for e in spec.environments)})" if environments else "   environments: 0")
     print(f"   env vars:     {envs}")
