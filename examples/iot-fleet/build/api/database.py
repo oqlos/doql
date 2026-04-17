@@ -3,7 +3,7 @@ import pathlib
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
-DATABASE_URL = "sqlite:///./iot.db"
+DATABASE_URL = "postgresql://fleet:secret@db:5432/fleet"
 
 if DATABASE_URL.startswith("sqlite:///"):
     _db_path = pathlib.Path(DATABASE_URL[len("sqlite:///"):])

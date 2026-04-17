@@ -179,8 +179,11 @@ def _render_interface(iface: Interface) -> list[str]:
     if iface.pwa:
         props.append(_prop("pwa", True))
     if iface.auth:
-        for k, v in iface.auth.items():
-            props.append(_prop(f"auth-{k}", v, quote_str=False))
+        if isinstance(iface.auth, dict):
+            for k, v in iface.auth.items():
+                props.append(_prop(f"auth-{k}", v, quote_str=False))
+        else:
+            props.append(_prop("auth-method", iface.auth, quote_str=False))
     if iface.hardware:
         for k, v in iface.hardware.items():
             props.append(_prop(f"hardware-{k}", v, quote_str=False))
