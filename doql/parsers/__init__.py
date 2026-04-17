@@ -37,12 +37,40 @@ from .models import (
 from .extractors import collect_env_refs
 from .blocks import split_blocks, apply_block
 from .validators import validate
+from .css_parser import parse_css_file, parse_css_text
+
+# File extensions that use the CSS-like parser
+_CSS_EXTENSIONS = {'.doql.css', '.doql.less', '.doql.sass'}
+
+
+def _is_css_format(path: pathlib.Path) -> bool:
+    """Check if a path uses one of the CSS-like DOQL formats."""
+    name = path.name.lower()
+    return any(name.endswith(ext) for ext in _CSS_EXTENSIONS)
+
+
+def detect_doql_file(root: pathlib.Path) -> pathlib.Path:
+    """Auto-detect the DOQL spec file in a project directory.
+
+    Searches for (in priority order):
+      1. app.doql.less
+      2. app.doql.sass
+      3. app.doql.css
+      4. app.doql (classic)
+    """
+    for ext in ['app.doql.less', 'app.doql.sass', 'app.doql.css', 'app.doql']:
+        candidate = root / ext
+        if candidate.exists():
+            return candidate
+    return root / 'app.doql'  # fallback
 
 
 def parse_file(path: pathlib.Path) -> DoqlSpec:
-    """Parse a .doql file into a DoqlSpec."""
+    """Parse a .doql / .doql.css / .doql.less / .doql.sass file into a DoqlSpec."""
     if not path.exists():
         raise DoqlParseError(f"File not found: {path}")
+    if _is_css_format(path):
+        return parse_css_file(path)
     return parse_text(path.read_text(encoding="utf-8"))
 
 
@@ -114,4 +142,8 @@ __all__ = [
     "split_blocks",
     "apply_block",
     "collect_env_refs",
+    # CSS-like parser
+    "parse_css_file",
+    "parse_css_text",
+    "detect_doql_file",
 ]

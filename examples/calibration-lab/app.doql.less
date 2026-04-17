@@ -1,0 +1,309 @@
+/* ─── Calibration Lab Manager — doql.less format ─── */
+/* ISO 17025 Laboratory with variables for multi-env (dev/staging/prod) */
+
+/* ─── Variables ─── */
+
+@app-name:        "Calibration Lab Manager";
+@app-version:     "0.9.0";
+@app-domain:      env.DOMAIN;
+
+@env-dev:         dev;
+@env-staging:     staging;
+@env-prod:        prod;
+
+@auth-method:     jwt;
+@db-backend:      sqlite;
+@db-backend-prod: postgresql;
+
+@retention-certs:     10years;
+@retention-telemetry: 90days;
+
+@signing-method:  xades;
+
+@deploy-target:   quadlet;
+
+@languages:       [pl, en, de];
+
+/* ─── App Definition ─── */
+
+app {
+  name:      @app-name;
+  version:   @app-version;
+  domain:    @app-domain;
+  languages: @languages;
+}
+
+/* ─── Data Model ─── */
+
+entity[name="Instrument"] {
+  serial:                 string! unique;
+  manufacturer:           string!;
+  model:                  string!;
+  category:               enum[scale, pressure_gauge, thermometer, multimeter, torque];
+  range_min:              decimal(20,6);
+  range_max:              decimal(20,6);
+  unit:                   string!;
+  uncertainty_class:      string;
+  owner_organization:     string;
+  last_calibration:       date;
+  next_calibration:       date computed;
+  certificate_valid_until: date;
+
+  computed[name="next_calibration"] {
+    formula: last_calibration + calibration_interval;
+  }
+
+  computed[name="calibration_interval"] {
+    when-category: scale;
+    result:        12 months;
+  }
+
+  computed[name="calibration_interval"][fallback="pressure_gauge"] {
+    when-category: pressure_gauge;
+    result:        6 months;
+  }
+
+  computed[name="calibration_interval"][fallback] {
+    result: 12 months;
+  }
+}
+
+entity[name="ReferenceStandard"] {
+  instrument:         Instrument ref;
+  traceability_chain: text!;
+  uncertainty_budget: json;
+  certificate_pdf:    pdf!;
+  valid_until:        date!;
+}
+
+entity[name="Calibration"] {
+  id:                      uuid! auto;
+  instrument:              Instrument ref;
+  performed_by:            Operator ref;
+  reviewed_by:             Operator ref;
+  reference_used:          ReferenceStandard ref;
+  scenario:                oql;
+  date:                    datetime auto;
+  measurements:            json;
+  uncertainty_calculation: json;
+  result:                  enum[pass, fail, out_of_tolerance];
+  certificate_pdf:         pdf computed;
+  certificate_number:      string auto;
+
+  validate {
+    rule:   reviewed_by != performed_by;
+    reason: "4-eyes principle";
+  }
+
+  audit {
+    type:   full signed;
+    reason: "ISO 17025 tamper-evident";
+  }
+}
+
+entity[name="Customer"] {
+  name:          string!;
+  address:       text;
+  contact_email: email;
+  vat_id:        string;
+  active:        bool default=true;
+}
+
+entity[name="CalibrationOrder"] {
+  customer:       Customer ref;
+  instruments:    [Instrument];
+  received_date:  date;
+  due_date:       date;
+  priority:       enum[normal, rush, urgent];
+  status:         enum[received, in_progress, review, ready, shipped];
+  total_price:    decimal(10,2);
+  invoice_number: string;
+}
+
+/* ─── Scenarios ─── */
+
+scenarios {
+  import: scenarios/*.oql;
+
+  register[name="scenario_scale_calibration"] {
+    file:               scenarios/kalibracja-wagi.oql;
+    applies_to:         Instrument WHERE category=scale;
+    requires_reference: ReferenceStandard WHERE category=scale;
+  }
+
+  register[name="scenario_pressure_calibration"] {
+    file:       scenarios/kalibracja-manometru.oql;
+    applies_to: Instrument WHERE category=pressure_gauge;
+  }
+}
+
+/* ─── Interfaces ─── */
+
+interface[type="web"] {
+  framework: react;
+  theme:     material;
+
+  page[name="lab_overview"] {
+    layout: widgets;
+
+    widget[name="active_orders"] {
+      type:  stat;
+      query: CalibrationOrder WHERE status IN [received, in_progress];
+    }
+
+    widget[name="due_soon"] {
+      type:  stat;
+      query: CalibrationOrder WHERE due_date < today + 3 days;
+      color: yellow;
+    }
+
+    widget[name="calibrations_chart"] {
+      type:  chart;
+      query: Calibration OVER 12 months GROUP BY category;
+    }
+
+    widget[name="review_queue"] {
+      type:  table;
+      query: CalibrationOrder WHERE status=review LIMIT 5;
+    }
+  }
+
+  page[name="intake"] {
+    from:   CalibrationOrder;
+    layout: workflow;
+  }
+
+  page[name="calibration_workflow"] {
+    from:   Calibration;
+    layout: guided;
+  }
+
+  page[name="calibration_workflow"] step[order="1"] { action: select instrument from order; }
+  page[name="calibration_workflow"] step[order="2"] { action: verify reference_standard valid; }
+  page[name="calibration_workflow"] step[order="3"] { action: run_scenario; }
+  page[name="calibration_workflow"] step[order="4"] { action: uncertainty_calculation auto; }
+  page[name="calibration_workflow"] step[order="5"] { action: review by different operator; }
+  page[name="calibration_workflow"] step[order="6"] { action: generate_certificate ISO 17025; }
+  page[name="calibration_workflow"] step[order="7"] { action: sign digital; }
+
+  page[name="certificates"] {
+    from:           Calibration;
+    filter_default: result=pass;
+    actions:        [download_pdf, verify_signature, resend_to_customer];
+  }
+}
+
+interface[type="api"] {
+  auth:    @auth-method;
+  openapi: true;
+
+  endpoint[method="GET"][path="/certificates/{number}/verify"] {
+    public:      true;
+    returns:     { valid: bool, signature_ok: bool, issued: date, not_after: date };
+    description: "Publiczna weryfikacja certyfikatów";
+  }
+}
+
+/* ─── Integrations ─── */
+
+integration[name="reports"] {
+  generator:        weasyprint;
+  templates:        templates/reports/iso17025/;
+  signed:           true;
+  signature_method: @signing-method;
+}
+
+integration[name="storage"] {
+  type:       s3-compatible;
+  encryption: at-rest + in-transit;
+  immutable:  true;
+
+  retention {
+    duration: @retention-certs;
+    reason:   "ISO/IEC 17025 compliance";
+  }
+}
+
+integration[name="accounting"] {
+  provider:      optima;
+  export_format: xml;
+}
+
+/* ─── Workflows ─── */
+
+workflow[name="calibration_due_reminder"] {
+  trigger: schedule "0 8 * * MON";
+
+  step[order="1"] {
+    action: find;
+    query:  "Instrument WHERE next_calibration < today + 30 days";
+  }
+
+  step[order="2"] {
+    action: group_by;
+    field:  owner_organization;
+  }
+
+  step[order="3"] {
+    action:   foreach org;
+    do:       [notify_customer_email];
+    template: calibration_due;
+  }
+}
+
+workflow[name="certificate_immutability"] {
+  trigger: event Calibration.signed;
+
+  step[order="1"] { action: freeze calibration record; }
+  step[order="2"] { action: hash + sign certificate_pdf; }
+  step[order="3"] { action: upload S3 with Object Lock (WORM); }
+  step[order="4"] { action: audit_log "Certificate ${number} sealed"; }
+}
+
+/* ─── Roles (ISO 17025 compliance) ─── */
+
+role[name="technician"] {
+  can:    [create_calibration, perform_measurements];
+  cannot: [review_own_calibration];
+}
+
+role[name="metrologist"] {
+  extends: technician;
+  can:     [review_calibrations, sign_certificates];
+}
+
+role[name="quality_manager"] {
+  can: [view_audit_log, export_compliance_report, manage_reference_standards];
+}
+
+role[name="customer"] {
+  can_read_only: true;
+  scope:         my_instruments;
+  can:           [view_certificates, request_calibration];
+}
+
+/* ─── Deploy ─── */
+
+deploy {
+  target:         @deploy-target;
+  immutable_logs: true;
+
+  /* Default: dev */
+  container[name="api"] {
+    db:       @db-backend;
+    replicas: 1;
+  }
+
+  /* Override for prod */
+  container[name="api"][env="prod"] {
+    db:       @db-backend-prod;
+    replicas: 3;
+  }
+
+  backup {
+    provider:   restic;
+    schedule:   "0 2 * * *";
+    retention:  @retention-certs;
+    encryption: gpg;
+  }
+}

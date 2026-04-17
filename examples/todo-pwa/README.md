@@ -18,4 +18,9 @@ python3 -m http.server 8091 &
 #    address bar menu → Install app
 ```
 
+## Formats
+
+- `app.doql` — classic DOQL format
+- `app.doql.css` — CSS-like variant (SSOT)
+
 To test the full stack with Traefik see `tests/env_manager.py`.

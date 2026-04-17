@@ -13,6 +13,11 @@ Kompletna aplikacja do zarządzania sprzętem ochrony dróg oddechowych (SCBA, m
 - ✅ Desktopem (Tauri) do pracy offline przy stanowisku testowym
 - ✅ Deploy: Docker Compose + Traefik + Let's Encrypt + backup
 
+## Formaty
+
+- `app.doql` — klasyczny format DOQL
+- `app.doql.css` — wariant CSS-like (SSOT)
+
 ---
 
 ## Szybki start

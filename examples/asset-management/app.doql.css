@@ -1,0 +1,522 @@
+/* ─── Mask Inspection Manager — doql.css format (SSOT) ─── */
+
+app {
+  name:             "Mask Inspection Manager";
+  version:          "1.0.0";
+  domain:           "asset-management";
+  author:           "Your Fire Department";
+  languages:        [pl, en, de];
+  default_language: pl;
+}
+
+/* ─── Data Model ─── */
+
+entity[name="Station"] {
+  id:      uuid! auto;
+  name:    string!;
+  address: text;
+  manager: User ref;
+}
+
+entity[name="Operator"] {
+  id:              uuid! auto;
+  name:            string!;
+  personal_id:     string unique;
+  station:         Station ref;
+  qualifications:  [Qualification];
+  hire_date:       date;
+  active:          bool default=true;
+}
+
+entity[name="Qualification"] {
+  name:             string!;
+  level:            enum[basic, advanced, instructor];
+  valid_until:      date;
+  certificate_file: pdf;
+}
+
+entity[name="Device"] {
+  id:              uuid! auto;
+  serial:          string! unique;
+  model:           string!;
+  manufacturer:    string!;
+  device_type:     enum[scba, mask, cylinder, regulator, harness];
+  station:         Station ref;
+  purchase_date:   date;
+  warranty_until:  date;
+  photo:           image;
+  barcode:         string unique;
+  status:          enum[ready, in_use, failed, retired, overdue] default=ready;
+  last_inspection: date;
+  next_inspection: date computed;
+  total_uses:      int default=0;
+  index:           [serial, barcode, status, next_inspection];
+  audit:           full;
+}
+
+entity[name="Device"] computed[name="next_inspection"] {
+  formula: last_inspection + inspection_interval;
+}
+
+entity[name="Device"] computed[name="inspection_interval"] {
+  when-device_type: scba;
+  result: 12 months;
+}
+
+entity[name="Device"] computed[name="inspection_interval"][fallback="cylinder"] {
+  when-device_type: cylinder;
+  result: 60 months;
+}
+
+entity[name="Device"] computed[name="inspection_interval"][fallback] {
+  result: 6 months;
+}
+
+entity[name="Device"] computed[name="status"][condition="overdue"] {
+  when: next_inspection < today;
+  result: "overdue";
+}
+
+entity[name="Device"] computed[name="status"][condition="failed"] {
+  when: last_inspection IS NULL;
+  result: "failed";
+}
+
+entity[name="Device"] computed[name="status"][fallback] {
+  result: "ready";
+}
+
+entity[name="Inspection"] {
+  id:           uuid! auto;
+  device:       Device ref;
+  operator:     Operator ref;
+  scenario_id:  oql;
+  started_at:   datetime auto;
+  completed_at: datetime;
+  result:       enum[pass, fail, incomplete, cancelled];
+  measurements: json;
+  notes:        text;
+  report_pdf:   pdf computed;
+  signed_by:    Operator ref;
+}
+
+entity[name="CylinderFill"] {
+  id:               uuid! auto;
+  cylinder:         Device ref WHERE device_type=cylinder;
+  filled_at:        datetime auto;
+  pressure_bar:     decimal(10,1);
+  operator:         Operator ref;
+  quality_check:    bool;
+  air_quality_cert: pdf;
+}
+
+entity[name="Exercise"] {
+  id:               uuid! auto;
+  operator:         Operator ref;
+  date:             date!;
+  type:             enum[training, live_exercise, annual_mandatory];
+  duration_minutes: int;
+  equipment_used:   [Device];
+  pass:             bool;
+  notes:            text;
+}
+
+entity[name="Deployment"] {
+  id:                  uuid! auto;
+  operator:            Operator ref;
+  device:              Device ref;
+  taken_at:            datetime auto;
+  returned_at:         datetime;
+  incident_ref:        string;
+  condition_on_return: enum[ok, damaged, lost];
+}
+
+/* ─── Scenarios ─── */
+
+scenarios {
+  import: scenarios/*.oql;
+  import-tests: tests/ui-*.iql;
+}
+
+scenarios register[name="scenario_pss7000_full"] {
+  file:                 scenarios/drager-pss7000-pelny-test.oql;
+  applies_to:           Device WHERE model MATCHES "PSS 7000.*";
+  interval:             12 months;
+  operator_role:        [operator, manager];
+  auto_generate_report: true;
+}
+
+scenarios register[name="scenario_mask_leak_test"] {
+  file:       scenarios/maskleaktest-testszczelnosci.oql;
+  applies_to: Device WHERE device_type=mask;
+  interval:   12 months;
+}
+
+scenarios register[name="scenario_fenzy_zenith"] {
+  file:       scenarios/pss7000-fenzy-zenith.oql;
+  applies_to: Device WHERE model MATCHES ".*Fenzy.*";
+}
+
+/* ─── Interfaces ─── */
+
+interface[type="api"] {
+  type:       rest;
+  auth:       jwt;
+  rate-limit: 200/min;
+  openapi:    true;
+}
+
+interface[type="api"] endpoint[method="POST"][path="/devices/{id}/inspect"] {
+  body:                 { scenario_id: string, notes?: text };
+  returns:              Inspection;
+  roles:                [operator, manager];
+  webhook_on_complete:  env.NOTIFICATION_WEBHOOK;
+}
+
+interface[type="api"] endpoint[method="GET"][path="/devices/due-for-inspection"] {
+  returns:        [Device];
+  description:    "Devices with next_inspection within 14 days";
+  filter_default: next_inspection <= today + 14 days;
+}
+
+interface[type="api"] endpoint[method="GET"][path="/operators/{id}/readiness"] {
+  returns:     { ready: bool, issues: [string] };
+  description: "Check if operator has valid qualifications + annual exercise";
+}
+
+interface[type="web"] {
+  type:      spa;
+  framework: react;
+  theme:     material;
+}
+
+interface[type="web"] page[name="dashboard"] {
+  layout: widgets;
+}
+
+interface[type="web"] page[name="dashboard"] widget[name="ready_count"] {
+  type:  stat;
+  query: Device WHERE status=ready;
+}
+
+interface[type="web"] page[name="dashboard"] widget[name="overdue_count"] {
+  type:  stat;
+  query: Device WHERE status=overdue;
+  color: red;
+}
+
+interface[type="web"] page[name="dashboard"] widget[name="inspections_week"] {
+  type:  stat;
+  query: Inspection WHERE started_at > today - 7d;
+}
+
+interface[type="web"] page[name="dashboard"] widget[name="result_chart"] {
+  type:  chart;
+  query: Inspection GROUP BY result OVER 30 days;
+}
+
+interface[type="web"] page[name="dashboard"] widget[name="overdue_table"] {
+  type:  table;
+  query: Device WHERE status=overdue LIMIT 10;
+}
+
+interface[type="web"] page[name="dashboard"] widget[name="calendar"] {
+  type:  calendar;
+  query: Device.next_inspection NEXT 30 days;
+}
+
+interface[type="web"] page[name="devices"] {
+  from:         Device;
+  layout:       crud;
+  list_view:    table;
+  filters:      [status, device_type, station, model];
+  search:       [serial, barcode, model];
+  bulk_actions: [export_csv, print_labels, mark_retired];
+}
+
+interface[type="web"] page[name="scan"] {
+  features: [barcode_scanner, manual_entry];
+}
+
+interface[type="web"] page[name="inspections"] {
+  from:      Inspection;
+  layout:    list-with-filters;
+  filters:   [result, operator, date_range, device.model];
+  row_click: inspection_detail;
+}
+
+interface[type="web"] page[name="operators"] {
+  from:   Operator;
+  layout: crud;
+  search: [name, personal_id];
+}
+
+interface[type="web"] page[name="reports"] {
+  layout: grid;
+}
+
+interface[type="web"] page[name="reports"] card[name="monthly"] {
+  label:    "Monthly Inspection Summary";
+  action:   GENERATE pdf;
+  template: monthly_summary;
+}
+
+interface[type="web"] page[name="reports"] card[name="overdue"] {
+  label:    "Overdue Devices";
+  action:   GENERATE pdf;
+  template: overdue_list;
+}
+
+interface[type="web"] page[name="reports"] card[name="readiness"] {
+  label:    "Operator Readiness";
+  action:   GENERATE pdf;
+  template: operator_readiness;
+}
+
+interface[type="web"] page[name="cylinder_filling"] {
+  from:   CylinderFill;
+  layout: workflow;
+}
+
+interface[type="web"] page[name="settings"] {
+  sections: [stations, users, roles, integrations, scenario_library];
+}
+
+interface[type="mobile"] {
+  type:        pwa;
+  offline:     true;
+  sync:        background;
+  installable: true;
+}
+
+interface[type="mobile"] feature[name="barcode_scanner"] { library: zxing; }
+interface[type="mobile"] feature[name="camera_capture"] {}
+interface[type="mobile"] feature[name="nfc_read"] {}
+interface[type="mobile"] feature[name="push_notifications"] {}
+interface[type="mobile"] feature[name="offline_queue"] {}
+
+interface[type="mobile"] page[name="quick_scan"] {
+  is_default: true;
+  camera:     active;
+}
+
+interface[type="mobile"] page[name="my_tasks"] {
+  query: Inspection WHERE next_inspection <= today + 7 days AND assigned_to=me;
+}
+
+interface[type="mobile"] page[name="deployments"] {
+  query: Deployment WHERE operator=me AND returned_at IS NULL;
+}
+
+interface[type="mobile"] sync {
+  strategy:            last-write-wins;
+  conflict_resolution: manual;
+  cache_size:          200mb;
+  sync_on:             [network_available, app_resume];
+}
+
+interface[type="desktop"] {
+  type: tauri;
+}
+
+interface[type="desktop"] feature[name="system_tray"] {}
+interface[type="desktop"] feature[name="auto_update"] {}
+interface[type="desktop"] feature[name="local_hardware_access"] {}
+interface[type="desktop"] feature[name="offline_full"] {}
+
+interface[type="desktop"] menu[name="File"] {
+  items: [New Inspection, Print Labels, Export CSV, Quit];
+}
+
+interface[type="desktop"] menu[name="Hardware"] {
+  items: [Connect, Scan Devices, Calibrate];
+}
+
+interface[type="desktop"] menu[name="View"] {
+  items: [Dashboard, Devices, Inspections, Reports];
+}
+
+interface[type="desktop"] menu[name="Help"] {
+  items: [Documentation, About];
+}
+
+/* ─── Integrations ─── */
+
+integration[name="notifications"] channel[name="email"] {
+  provider:  smtp;
+  config:    env.SMTP_*;
+  templates: templates/email/;
+}
+
+integration[name="notifications"] channel[name="slack"] {
+  webhook: env.SLACK_WEBHOOK;
+}
+
+integration[name="notifications"] channel[name="push"] {
+  provider: fcm;
+  config:   env.FCM_*;
+}
+
+integration[name="storage"] {
+  type:   s3-compatible;
+  bucket: env.S3_BUCKET;
+  config: env.S3_*;
+}
+
+integration[name="auth"] {
+  provider: internal;
+  sso:      [google, microsoft];
+  mfa:      totp;
+}
+
+integration[name="reports"] {
+  generator: weasyprint;
+  templates: templates/reports/;
+  signed:    true;
+}
+
+integration[name="barcode_printer"] {
+  type:     zebra_zpl;
+  endpoint: env.LABEL_PRINTER_URL;
+  fallback: save_pdf;
+}
+
+/* ─── Workflows ─── */
+
+workflow[name="daily_overdue_check"] {
+  trigger: schedule "0 8 * * *";
+}
+
+workflow[name="daily_overdue_check"] step[order="1"] {
+  action: find;
+  query:  "Device WHERE next_inspection < today";
+}
+
+workflow[name="daily_overdue_check"] step[order="2"] {
+  action: group_by;
+  field:  station;
+}
+
+workflow[name="daily_overdue_check"] step[order="3"] {
+  action:   foreach station;
+  do:       [notify_manager_email, notify_slack, update_status_overdue];
+  template: overdue_summary;
+}
+
+workflow[name="inspection_fail_handling"] {
+  trigger: event Inspection.completed WHERE result=fail;
+}
+
+workflow[name="inspection_fail_handling"] step[order="1"] {
+  action: update;
+  target: Device;
+  set:    status=failed;
+}
+
+workflow[name="inspection_fail_handling"] step[order="2"] {
+  action:   notify;
+  to:       station.manager;
+  template: "FAIL: ${device.serial}";
+}
+
+workflow[name="inspection_fail_handling"] step[order="3"] {
+  action:      create_task;
+  description: "Review failed device ${device.serial}";
+  assigned_to: station.manager;
+}
+
+workflow[name="annual_exercise_reminder"] {
+  trigger: schedule "0 9 1 1 *";
+}
+
+workflow[name="annual_exercise_reminder"] step[order="1"] {
+  action: find;
+  query:  "Operator WHERE last_annual_exercise < today - 11 months";
+}
+
+workflow[name="annual_exercise_reminder"] step[order="2"] {
+  action:   foreach operator;
+  do:       [notify_email];
+  template: annual_exercise_due;
+}
+
+workflow[name="cylinder_filling_audit"] {
+  trigger: schedule "monthly";
+}
+
+workflow[name="cylinder_filling_audit"] step[order="1"] {
+  action:   count;
+  query:    "CylinderFill GROUP BY operator, month";
+}
+
+workflow[name="cylinder_filling_audit"] step[order="2"] {
+  action:   generate_report;
+  template: cylinder_audit_monthly;
+  send_to:  compliance_officer;
+}
+
+/* ─── Roles ─── */
+
+role[name="operator"] {
+  can:    [read_devices, read_inspections, read_operators, read_exercises,
+           read_stations, execute_inspection, start_deployment, return_deployment,
+           create_inspection, create_deployment, create_cylinder_fill];
+  cannot: [delete_any, modify_qualifications, modify_users, modify_stations];
+}
+
+role[name="station_manager"] {
+  extends: operator;
+  scope:   station = my_station;
+  can:     [create_operator, create_exercise, update_device, update_operator,
+            view_station_reports, export_station_data];
+}
+
+role[name="auditor"] {
+  can_read_only: true;
+  can:           [view_audit_log, export_compliance_report];
+}
+
+role[name="admin"] {
+  can: [*];
+}
+
+/* ─── Deploy ─── */
+
+deploy {
+  target:  docker-compose;
+  quadlet: true;
+}
+
+deploy service[name="traefik"] {
+  enabled: true;
+  network: web;
+}
+
+deploy service[name="tls"] {
+  provider: letsencrypt;
+  email:    env.LE_EMAIL;
+}
+
+deploy service[name="backup"] {
+  provider:    restic;
+  schedule:    "0 2 * * *";
+  retention:   30d;
+  destination: env.BACKUP_REPO;
+}
+
+deploy environment[name="dev"] {
+  domain:    localhost;
+  tls:       false;
+  seed_data: true;
+}
+
+deploy environment[name="staging"] {
+  domain: staging-scba.example.com;
+}
+
+deploy environment[name="prod"] {
+  domain:     scba.example.com;
+  replicas:   2;
+  autoscale:  false;
+  monitoring: prometheus + grafana;
+}

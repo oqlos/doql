@@ -1,0 +1,320 @@
+/* ─── Calibration Certificate Generator — doql.less format ─── */
+/* Pure document generator with variables for multi-env. No application server. */
+
+/* ─── Variables ─── */
+
+@app-name:      "Calibration Certificate Generator";
+@app-version:   "0.3.0";
+@app-domain:    "document-generation";
+
+@signing-method: pades;
+@retention:      10years;
+
+@oqlos-url:     env.OQLOS_URL;
+@oqlos-key:     env.OQLOS_API_KEY;
+
+@deploy-target: quadlet;
+
+/* ─── App Definition ─── */
+
+app {
+  name:        @app-name;
+  version:     @app-version;
+  domain:      @app-domain;
+  description: "Pure document generator — PDF certs from HTML templates + JSON/SQLite/API data";
+}
+
+/* ─── Data Sources ─── */
+
+data[name="customers"] {
+  source: json;
+  file:   data/customers.json;
+}
+
+data[name="instruments"] {
+  source:    sqlite;
+  file:      data/instruments.db;
+  read_only: true;
+}
+
+data[name="measurements"] {
+  source: api;
+  url:    @oqlos-url + "/api/v1/executions";
+  auth:   bearer;
+  token:  @oqlos-key;
+  cache:  5m;
+}
+
+data[name="organization"] {
+  source:        json;
+  file:          data/organization.json;
+  env_overrides: true;
+}
+
+/* ─── Reusable Templates (partials) ─── */
+
+template[name="letterhead"] {
+  type: html;
+  file: templates/partials/letterhead.html;
+  vars: [org_name, org_address, logo_url, iso_accreditation];
+}
+
+template[name="measurement_table"] {
+  type: html;
+  file: templates/partials/measurement_table.html;
+  vars: [measurements, uncertainty, unit];
+}
+
+template[name="signature_block"] {
+  type: html;
+  file: templates/partials/signature_block.html;
+  vars: [performed_by, reviewed_by, date];
+}
+
+/* ─── Documents ─── */
+
+document[name="calibration_certificate"] {
+  type:     pdf;
+  template: templates/cert_iso17025.html;
+  partials: [letterhead, measurement_table, signature_block];
+
+  data[field="organization"]  { source: DATA organization; }
+  data[field="instrument"]    { source: DATA instruments WHERE id = $args.instrument_id; }
+  data[field="customer"]      { source: DATA customers WHERE id = $args.customer_id; }
+  data[field="measurements"]  { source: DATA measurements WHERE execution_id = $args.execution_id; }
+  data[field="performed_by"]  { source: $args.operator; }
+  data[field="reviewed_by"]   { source: $args.reviewer; }
+  data[field="date"]          { source: today; }
+
+  styling {
+    paper:  A4;
+    margin: 2.5cm;
+
+    font[family="Inter"] {
+      source: assets/fonts/Inter.ttf;
+    }
+
+    font[family="JetBrains Mono"] {
+      source: assets/fonts/JetBrainsMono.ttf;
+    }
+  }
+
+  metadata {
+    title:    "Świadectwo wzorcowania ${instrument.serial}";
+    author:   $performed_by.name;
+    subject:  "ISO/IEC 17025 Calibration Certificate";
+    keywords: [kalibracja, ISO 17025, ${instrument.category}];
+  }
+
+  signature {
+    enabled:  true;
+    method:   @signing-method;
+    key:      env.SIGNING_KEY_PATH;
+    reason:   "ISO 17025 compliance";
+    location: $organization.city;
+  }
+
+  output {
+    path:    "certs/${instrument.serial}_${date}.pdf";
+    storage: local;
+  }
+
+  hook[event="on_generate"] {
+    action[type="audit_log"] {
+      message: "Cert ${id} generated for ${instrument.serial}";
+    }
+
+    action[type="email"][condition="customer.email IS NOT NULL"] {
+      template: cert_delivery;
+      attach:   $self;
+    }
+  }
+}
+
+document[name="non_conformance_report"] {
+  type:     pdf;
+  template: templates/ncr.html;
+
+  data[field="instrument"]   { source: DATA instruments WHERE id = $args.instrument_id; }
+  data[field="measurements"] { source: DATA measurements WHERE execution_id = $args.execution_id; }
+  data[field="deviations"]   { source: $args.deviations; }
+
+  output {
+    path: "ncr/${instrument.serial}_${date}.pdf";
+  }
+}
+
+document[name="qr_label"] {
+  type:     html;
+  template: templates/label.html;
+
+  data[field="instrument"] { source: DATA instruments WHERE id = $args.instrument_id; }
+  data[field="cert_url"]   { source: env.APP_URL + "/verify/" + $args.cert_id; }
+
+  styling {
+    paper:  custom;
+    width:  50mm;
+    height: 30mm;
+    margin: 2mm;
+  }
+
+  output {
+    path: "labels/${instrument.serial}.html";
+  }
+}
+
+/* ─── Reports ─── */
+
+report[name="monthly_calibration_summary"] {
+  schedule: "0 6 1 * *";
+  template: templates/monthly_summary.html;
+  output:   pdf;
+
+  query[name="certificates_issued"] {
+    from:  DATA measurements;
+    where: date in last_month;
+    count: true;
+  }
+
+  query[name="by_category"] {
+    from:     DATA measurements;
+    group_by: instrument.category;
+  }
+
+  query[name="failure_rate"] {
+    from:    DATA measurements;
+    where:   date in last_month;
+    compute: count_where(result=fail) / count();
+  }
+
+  recipients {
+    to: [env.QUALITY_MANAGER_EMAIL];
+    cc: [env.COMPLIANCE_EMAIL];
+  }
+
+  retention {
+    duration: @retention;
+  }
+}
+
+/* ─── API Client ─── */
+
+api-client[name="oqlos"] {
+  base_url: @oqlos-url;
+  auth:     bearer;
+  token:    @oqlos-key;
+  openapi:  @oqlos-url + "/openapi.json";
+  retry:    3;
+  timeout:  30s;
+}
+
+/* ─── Interfaces ─── */
+
+interface[type="web"] {
+  framework: htmx;
+
+  page[name="home"] {
+    layout: single-column;
+
+    form[name="generate_cert"] {
+      fields: [instrument_id, execution_id, customer_id, operator, reviewer];
+      submit: "Generuj świadectwo";
+      action: GENERATE DOCUMENT calibration_certificate;
+    }
+
+    preview {
+      mode: live;
+    }
+
+    download_button {
+      show: after_generate;
+    }
+  }
+
+  page[name="verify"][public="true"] {
+    path: /verify/{cert_id};
+
+    content {
+      fetch:   cert from storage WHERE id = $cert_id;
+      display: [issued_date, instrument, status, signature_valid];
+    }
+
+    action[label="Pobierz PDF"] {
+      type: download;
+    }
+  }
+}
+
+interface[type="api"] {
+  auth: jwt;
+
+  endpoint[method="POST"][path="/certificates"] {
+    body:    { instrument_id: string!, execution_id: string!, customer_id: string, operator: string, reviewer: string };
+    action:  GENERATE DOCUMENT calibration_certificate;
+    returns: { id: uuid, url: string, signed: bool };
+  }
+
+  endpoint[method="GET"][path="/certificates/{id}/verify"] {
+    public:  true;
+    action:  VERIFY signature OF certificate WHERE id=$id;
+    returns: { valid: bool, issued: date, instrument: object };
+  }
+}
+
+/* ─── Workflow ─── */
+
+workflow[name="auto_generate_on_calibration_done"] {
+  trigger:   webhook oqlos.scenario.completed;
+  condition: "$payload.scenario_type == 'calibration'";
+
+  step[order="1"] {
+    action:        GENERATE DOCUMENT calibration_certificate;
+    instrument_id: $payload.instrument_id;
+    execution_id:  $payload.execution_id;
+    operator:      $payload.operator;
+  }
+
+  step[order="2"][condition="success"] {
+    action: email;
+    to:     $payload.customer_email;
+    attach: $generated;
+  }
+
+  step[order="2"][condition="failure"] {
+    action: GENERATE DOCUMENT non_conformance_report;
+    notify: env.QUALITY_MANAGER_EMAIL;
+  }
+}
+
+/* ─── Deploy ─── */
+
+deploy {
+  target:   @deploy-target;
+  rootless: true;
+
+  container[name="doqgen"] {
+    image: auto;
+    volume: [
+      ./templates:/app/templates:ro,
+      ./data:/app/data:ro,
+      ./assets:/app/assets:ro,
+      certs:/app/certs
+    ];
+    labels: [
+      "traefik.enable=true",
+      "traefik.http.routers.doqgen.rule=Host(`${DOMAIN}`)",
+      "traefik.http.routers.doqgen.tls.certresolver=letsencrypt"
+    ];
+  }
+
+  traefik {
+    as_quadlet: true;
+    le_email:   env.LE_EMAIL;
+  }
+
+  backup {
+    paths:     [certs/, data/];
+    schedule:  daily;
+    retention: @retention;
+  }
+}

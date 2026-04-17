@@ -2,6 +2,11 @@
 
 Stanowisko operatora w trybie kiosk na tablecie / Raspberry Pi z 10-calowym ekranem dotykowym. Operator loguje się PIN-em, skanuje sprzęt kodem kreskowym, uruchamia scenariusz testowy, drukuje etykietę. Bez myszy, bez klawiatury, bez dostępu do systemu — jak terminal samoobsługowy w serwisie samochodowym, tylko dla stanowisk testowych PSA.
 
+## Formaty
+
+- `app.doql` — klasyczny format DOQL
+- `app.doql.css` — wariant CSS-like (SSOT)
+
 ---
 
 ## Dlaczego kiosk, a nie zwykła PWA

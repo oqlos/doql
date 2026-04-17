@@ -22,6 +22,10 @@ from .parsers import (  # noqa: F401
     parse_text,
     parse_env,
     validate,
+    # CSS-like parser
+    parse_css_file,
+    parse_css_text,
+    detect_doql_file,
     # Models
     DoqlSpec,
     DoqlParseError,

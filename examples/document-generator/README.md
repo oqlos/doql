@@ -4,6 +4,11 @@ Przykład doql pokazujący, że **z jednego pliku `.doql` można zbudować gener
 
 **Use case:** laboratorium kalibracyjne wystawiające świadectwa ISO 17025.
 
+## Formaty
+
+- `app.doql` — klasyczny format DOQL
+- `app.doql.less` — wariant LESS z zmiennymi dla multi-env
+
 ---
 
 ## Co ten przykład pokazuje

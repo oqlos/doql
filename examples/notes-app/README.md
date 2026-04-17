@@ -23,6 +23,11 @@ cd build/infra && docker compose -f docker-compose.localhost.yml up -d --build
 # → http://notes.localhost/m/      (PWA, installable)
 ```
 
+## Formats
+
+- `app.doql` — classic DOQL format
+- `app.doql.sass` — SASS variant with `$variables`, `@mixin`/`@include`, whitespace-based
+
 ## Entities
 
 - **Notebook** — groups notes

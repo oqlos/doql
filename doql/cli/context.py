@@ -8,6 +8,7 @@ from typing import Optional
 
 from .. import __version__
 from .. import parser as doql_parser
+from ..parsers import detect_doql_file
 
 
 @dataclass
@@ -23,9 +24,14 @@ class BuildContext:
 def build_context(args: argparse.Namespace) -> BuildContext:
     """Create BuildContext from CLI arguments."""
     root = pathlib.Path(getattr(args, "dir", None) or ".").resolve()
+    explicit_file = getattr(args, "file", None)
+    if explicit_file:
+        doql_file = root / explicit_file
+    else:
+        doql_file = detect_doql_file(root)
     return BuildContext(
         root=root,
-        doql_file=root / (getattr(args, "file", None) or "app.doql"),
+        doql_file=doql_file,
         env_file=root / ".env",
         build_dir=root / "build",
     )

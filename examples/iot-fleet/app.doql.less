@@ -1,0 +1,328 @@
+/* ─── IoT Fleet Manager — doql.less format ─── */
+/* Multi-platform fleet management with variables for env/hardware */
+
+/* ─── Variables ─── */
+
+@app-name:        "IoT Fleet Manager";
+@app-version:     "0.5.0";
+@app-domain:      "iot-fleet";
+
+@auth-method:     api-key;
+@rate-limit:      10000/min;
+
+@deploy-target:   kubernetes;
+@ingress:         traefik;
+
+@telemetry-db:    influxdb;
+@telemetry-retention: 90days;
+
+@ota-strategy:    canary;
+@ota-rollback:    failure_rate > 1%;
+
+@scrape-interval: 15s;
+
+/* Hardware type palette */
+@hw-rpi4:        "rpi4";
+@hw-rpi5:        "rpi5";
+@hw-jetson:      "jetson_nano";
+@hw-x86:         "x86";
+
+/* ─── App Definition ─── */
+
+app {
+  name:        @app-name;
+  version:     @app-version;
+  domain:      @app-domain;
+  description: "Fleet management for 100–10000 IoT nodes with oqlos-agent";
+}
+
+/* ─── Data Model ─── */
+
+entity[name="Node"] {
+  id:               uuid! auto;
+  hostname:         string! unique;
+  location:         geo;
+  tags:             [string];
+  hardware_type:    enum[@hw-rpi4, @hw-rpi5, @hw-jetson, @hw-x86];
+  firmware_version: string;
+  last_seen:        datetime;
+  status:           enum[online, offline, updating, error] computed;
+  peripherals:      json;
+
+  computed[name="status"] {
+    when: last_seen > now - 60s;
+    result: "online";
+  }
+
+  computed[name="status"][fallback="warning"] {
+    when: last_seen < now - 5min;
+    result: "offline";
+  }
+
+  computed[name="status"][fallback] {
+    result: "warning";
+  }
+}
+
+entity[name="Telemetry"] {
+  node:          Node ref;
+  timestamp:     datetime auto;
+  cpu_load:      float;
+  memory_used:   float;
+  temperature_c: float;
+  data:          json;
+
+  index[fields="node, timestamp"] {
+    type: time-series;
+  }
+}
+
+entity[name="Deployment"] {
+  name:          string!;
+  scenario:      oql;
+  target_filter: string;
+  schedule:      cron;
+  last_run:      datetime;
+  next_run:      datetime computed;
+  success_rate:  float computed;
+}
+
+entity[name="FirmwareBuild"] {
+  version:       string!;
+  release_notes: text;
+  image_url:     url;
+  signature:     string;
+  targets:       [string];
+  tested:        bool;
+}
+
+entity[name="OTAUpdate"] {
+  firmware:   FirmwareBuild ref;
+  targets:    [Node];
+  status:     enum[pending, rolling, paused, completed, failed];
+  started_at: datetime;
+  progress:   float computed;
+}
+
+/* ─── Interfaces ─── */
+
+interface[type="web"] {
+  framework: react;
+  theme:     tailwind;
+
+  page[name="fleet_map"] {
+    layout:             fullscreen;
+    map:                leaflet;
+    markers:            Node;
+    markers-colored-by: status;
+    on-click:           show_popup(node_info);
+  }
+
+  page[name="fleet_list"] {
+    from:    Node;
+    filters: [status, hardware_type, location.country, tags];
+
+    bulk-action[name="run_scenario"] {
+      label:  "Run Scenario";
+      action: SELECT scenario → ENQUEUE;
+    }
+
+    bulk-action[name="ota_update"] {
+      label:  "OTA Update";
+      action: SELECT firmware → ENQUEUE;
+    }
+
+    bulk-action[name="restart"] {
+      label: "Restart";
+    }
+
+    bulk-action[name="export_telemetry"] {
+      label: "Export Telemetry CSV";
+    }
+  }
+
+  page[name="node_detail"] {
+    from: Node;
+
+    tab[name="overview"] {
+      fields: [hostname, status, peripherals, firmware_version];
+    }
+
+    tab[name="live_telemetry"] {
+      type:   realtime chart;
+      source: SSE from oqlos-agent;
+    }
+
+    tab[name="scenarios"] {
+      query: registered_scenarios FILTER node.compatible;
+    }
+
+    tab[name="logs"] {
+      type: tail;
+      source: SSE;
+    }
+
+    tab[name="terminal"] {
+      type: web-ssh;
+    }
+  }
+
+  page[name="deployments"] {
+    from:    Deployment;
+    actions: [create_new, run_now, pause_schedule];
+  }
+}
+
+interface[type="api"] {
+  auth:       @auth-method;
+  rate-limit: @rate-limit;
+
+  endpoint[method="POST"][path="/nodes/{id}/heartbeat"] {
+    body:    { telemetry: json };
+    returns: { pending_commands: [] };
+    auth:    node_key;
+  }
+
+  endpoint[method="POST"][path="/nodes/{id}/execute"] {
+    body:    { scenario_id: string, args: json };
+    returns: { execution_id: string };
+    roles:   [operator, admin];
+  }
+
+  endpoint[method="WEBSOCKET"][path="/nodes/{id}/stream"] {
+    description: "Bi-directional telemetry + commands";
+  }
+}
+
+/* ─── Integrations ─── */
+
+integration[name="monitoring"] {
+  provider[name="prometheus"] {
+    scrape-interval: @scrape-interval;
+    targets:         auto;
+  }
+
+  provider[name="grafana"] {
+    auto-provision-dashboards: true;
+    dashboards: [fleet_overview, node_detail, sla_compliance];
+  }
+}
+
+integration[name="alerting"] {
+  provider[name="pagerduty"] {
+    config: env.PAGERDUTY_*;
+  }
+
+  rule[trigger="node_offline_warning"] {
+    condition: "Node offline > 10 min";
+    severity:  warning;
+  }
+
+  rule[trigger="node_offline_critical"] {
+    condition: "Node offline > 1 hour";
+    severity:  critical;
+  }
+
+  rule[trigger="temperature_critical"] {
+    condition: "Temperature > 80°C";
+    severity:  critical;
+  }
+}
+
+integration[name="storage"] {
+  telemetry: @telemetry-db;
+  config:    env.INFLUXDB_*;
+  retention: @telemetry-retention;
+}
+
+integration[name="ota"] {
+  strategy:    @ota-strategy;
+  rollback-on: @ota-rollback;
+  signed:      true;
+}
+
+/* ─── Workflows ─── */
+
+workflow[name="heartbeat_check"] {
+  trigger: schedule "*/1 * * * *";
+
+  step[order="1"] {
+    action: find;
+    query:  "Node WHERE last_seen < now - 5min AND status=online";
+  }
+
+  step[order="2"] {
+    action: foreach node;
+    do:     [update_status_offline, alert_pagerduty_warning];
+  }
+}
+
+workflow[name="ota_canary"] {
+  trigger: manual;
+  input:   { firmware: FirmwareBuild, target_filter: string };
+
+  step[order="1"] {
+    action: select;
+    sample: 5%;
+    label:  canary;
+  }
+
+  step[order="2"] {
+    action: push_update;
+    target: canary;
+  }
+
+  step[order="3"] {
+    action:   wait;
+    duration: 1h;
+  }
+
+  step[order="4"] condition[if="failure_rate < 1%"] {
+    action: push_update;
+    target: next 20%;
+  }
+
+  step[order="5"] condition[if="failure_rate < 1%"] {
+    action: push_update;
+    target: remaining;
+  }
+
+  step[order="5"] condition[else] {
+    action:   rollback;
+    alert:    pagerduty;
+    severity: critical;
+  }
+}
+
+/* ─── Roles ─── */
+
+role[name="operator"] {
+  can: [run_scenario, view_telemetry];
+}
+
+role[name="ops"] {
+  can: [ota_update, node_restart, view_logs];
+}
+
+role[name="admin"] {
+  can: [*];
+}
+
+/* ─── Deploy ─── */
+
+deploy {
+  target:       @deploy-target;
+  helm-chart:   true;
+  ingress:      @ingress;
+  service-mesh: optional;
+
+  autoscale[service="api"] {
+    min-replicas: 2;
+    max-replicas: 10;
+  }
+
+  autoscale[service="worker"] {
+    min-replicas: 1;
+    max-replicas: 5;
+  }
+}
