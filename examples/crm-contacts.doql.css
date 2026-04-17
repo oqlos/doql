@@ -1,0 +1,124 @@
+app {
+  name: "CRM Contacts";
+  version: "0.1.0";
+  domain: env.DOMAIN;
+  languages: en, pl, de;
+}
+
+entity[name="Contact"] {
+  id: uuid! auto;
+  first_name: string!;
+  last_name: string!;
+  email: string unique;
+  phone: string;
+  company: ref(Company);
+  position: string;
+  tags: json;
+  notes: text;
+  source: enum[web, referral, cold, event] default=web;
+  created: datetime auto;
+  updated: datetime auto;
+}
+
+entity[name="Company"] {
+  id: uuid! auto;
+  name: string! unique;
+  domain: string;
+  industry: string;
+  size: enum[startup, small, medium, enterprise];
+  website: string;
+  address: json;
+  created: datetime auto;
+}
+
+entity[name="Deal"] {
+  id: uuid! auto;
+  title: string!;
+  contact: ref(Contact)!;
+  company: ref(Company);
+  value: decimal;
+  currency: enum[USD, EUR, PLN] default=EUR;
+  stage: enum[lead, qualified, proposal, negotiation, won, lost] default=lead;
+  probability: int default=0;
+  expected_close: date;
+  assigned_to: string;
+  notes: text;
+  created: datetime auto;
+  updated: datetime auto;
+}
+
+entity[name="Activity"] {
+  id: uuid! auto;
+  type: enum[call, email, meeting, note, task]!;
+  contact: ref(Contact);
+  deal: ref(Deal);
+  subject: string!;
+  description: text;
+  due_date: datetime;
+  completed: bool default=false;
+  assigned_to: string;
+  created: datetime auto;
+}
+
+database[name="main"] {
+  type: "postgres";
+  url: env.DATABASE_URL;
+}
+
+interface[type="api"] {
+  type: rest;
+}
+
+interface[type="web"] {
+  type: spa;
+  framework: react;
+}
+interface[type="web"] page[name="dashboard"] {
+  layout: "dashboard";
+}
+interface[type="web"] page[name="contacts"] {
+  layout: "table";
+}
+interface[type="web"] page[name="contact-detail"] {
+  layout: "detail";
+}
+interface[type="web"] page[name="companies"] {
+  layout: "table";
+}
+interface[type="web"] page[name="deals"] {
+  layout: "kanban";
+}
+interface[type="web"] page[name="activities"] {
+  layout: "table";
+}
+
+integration[name="email"] {
+  type: email;
+  host: env.SMTP_HOST;
+  port: env.SMTP_PORT;
+  from: env.SMTP_FROM;
+}
+
+workflow[name="deal_stage_notification"] {
+  trigger: "deal.updated";
+}
+
+
+role[name="admin"] {
+  permit: *;
+}
+
+role[name="sales"] {
+  permit: create Contact;
+  permit: create Deal;
+  permit: update Deal own;
+}
+
+role[name="viewer"] {
+  permit: read Contact;
+  permit: read Deal;
+}
+
+deploy {
+  target: docker-compose;
+}

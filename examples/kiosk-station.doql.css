@@ -1,0 +1,383 @@
+/* ─── Inspection Kiosk Station — doql.css format (SSOT) ─── */
+/* Stanowisko operatora — tablet 10" przy warsztacie testowym. */
+
+app {
+  name:    "Inspection Kiosk Station";
+  version: "0.2.0";
+  domain:  "kiosk";
+}
+
+/* ─── Data Sources (local cache + sync from oqlos) ─── */
+
+data[name="operators"] {
+  source: sqlite;
+  file:   /var/lib/kiosk/operators.db;
+}
+
+data[name="operators"] sync {
+  from:             API oqlos;
+  endpoint:         /api/v1/operators;
+  interval:         15m;
+  offline_fallback: true;
+}
+
+data[name="devices"] {
+  source: sqlite;
+  file:   /var/lib/kiosk/devices.db;
+  index:  [barcode, serial];
+}
+
+data[name="devices"] sync {
+  from:             API oqlos;
+  endpoint:         /api/v1/devices;
+  interval:         5m;
+  offline_fallback: true;
+}
+
+data[name="scenarios"] {
+  source:           api;
+  url:              env.OQLOS_URL + "/api/v1/scenarios";
+  auth:             bearer;
+  token:            env.OQLOS_API_KEY;
+  cache:            1h;
+  offline_fallback: cached;
+}
+
+/* ─── API Client ─── */
+
+api-client[name="oqlos"] {
+  base_url: env.OQLOS_URL;
+  auth:     bearer;
+  token:    env.OQLOS_API_KEY;
+}
+
+api-client[name="oqlos"] offline {
+  queue:             /var/lib/kiosk/queue/;
+  retry_when_online: true;
+}
+
+/* ─── Scenarios ─── */
+
+scenarios {
+  import: scenarios/*.oql;
+}
+
+/* ─── Kiosk Interface ─── */
+
+interface[type="kiosk"] {
+  target:       tablet;
+  fullscreen:   true;
+  chrome:       none;
+  orientation:  landscape;
+  idle_timeout: 180s;
+}
+
+interface[type="kiosk"] auth {
+  mode:        pin;
+  length:      4;
+  timeout:     8h;
+  data_source: DATA operators;
+}
+
+interface[type="kiosk"] auth lockout {
+  attempts: 5;
+  duration: 15min;
+}
+
+interface[type="kiosk"] hardware {
+  barcode_scanner: usb-hid;
+  card_reader:     none;
+  printer:         zebra-zpl;
+  camera:          rear;
+}
+
+interface[type="kiosk"] input {
+  keyboard: virtual-only;
+  touch:    primary;
+  voice:    disabled;
+}
+
+interface[type="kiosk"] style {
+  theme:       high-contrast;
+  font_size:   large;
+  button_size: xl;
+}
+
+interface[type="kiosk"] style colors {
+  primary:    "#00A86B";
+  danger:     "#CC0000";
+  background: "#0A0A0A";
+  foreground: "#FFFFFF";
+}
+
+/* ─── Kiosk Pages ─── */
+
+interface[type="kiosk"] page[name="welcome"] {
+  is_entry: true;
+  layout:   center;
+}
+
+interface[type="kiosk"] page[name="welcome"] content {
+  logo:          assets/logo.svg size=xl;
+  heading:       "Stanowisko testowe {{ env.STATION_NAME }}";
+  subtitle:      "Zeskanuj swój identyfikator lub wpisz PIN";
+  action_button: "Zaloguj" → login;
+}
+
+interface[type="kiosk"] page[name="welcome"] status-bar {
+  network:      indicator;
+  last_sync:    DATA operators.last_sync;
+  current_time: clock;
+}
+
+interface[type="kiosk"] page[name="login"] {
+  layout:        center;
+  auth_required: false;
+}
+
+interface[type="kiosk"] page[name="login"] content {
+  heading:    "Wpisz PIN";
+  pin_pad:    4;
+  on_valid:   → home;
+  on_invalid: show_toast "Nieprawidłowy PIN";
+}
+
+interface[type="kiosk"] page[name="home"] {
+  auth_required: true;
+  layout:        grid cols=2;
+}
+
+interface[type="kiosk"] page[name="home"] header {
+  show:          "Dzień dobry, {{ $user.name }}";
+  logout_button: top-right;
+}
+
+interface[type="kiosk"] page[name="home"] card[name="new_inspection"] {
+  icon:     qr-scan;
+  title:    "Nowa inspekcja";
+  subtitle: "Zeskanuj sprzęt";
+  goto:     scan;
+}
+
+interface[type="kiosk"] page[name="home"] card[name="my_tasks"] {
+  icon:  tasks;
+  title: "Moje zadania";
+  badge: count(Tasks WHERE assigned_to=$user);
+  goto:  my_tasks;
+}
+
+interface[type="kiosk"] page[name="home"] card[name="return_equipment"] {
+  icon:  return;
+  title: "Zwrot sprzętu";
+  goto:  return_equipment;
+}
+
+interface[type="kiosk"] page[name="home"] card[name="help"] {
+  icon:  help;
+  title: "Pomoc";
+  goto:  help;
+}
+
+interface[type="kiosk"] page[name="scan"] {
+  auth_required: true;
+  layout:        fullscreen;
+}
+
+interface[type="kiosk"] page[name="scan"] content {
+  barcode_scanner_active: true;
+  manual_entry_button:    bottom;
+}
+
+interface[type="kiosk"] page[name="scan"] on-scan {
+  lookup:     DATA devices WHERE barcode = $scanned;
+  if-found:   → device_detail WITH device=$device;
+  if-not-found: show_dialog "Nieznane urządzenie";
+}
+
+interface[type="kiosk"] page[name="device_detail"] {
+  auth_required: true;
+  layout:        split;
+}
+
+interface[type="kiosk"] page[name="device_detail"] left-panel {
+  photo:            $device.photo;
+  field-serial:     $device.serial;
+  field-model:      $device.model;
+  field-manufacturer: $device.manufacturer;
+  field-status:     $device.status color_by=status;
+  field-last:       $device.last_inspection;
+  field-next:       $device.next_inspection;
+}
+
+interface[type="kiosk"] page[name="device_detail"] right-panel action[name="inspect"] {
+  label:  "Rozpocznij inspekcję";
+  icon:   play;
+  action: → start_inspection WITH device=$device;
+  size:   xl;
+}
+
+interface[type="kiosk"] page[name="device_detail"] right-panel action[name="print"] {
+  label:  "Wydrukuj etykietę";
+  icon:   print;
+  action: PRINT label FOR $device;
+  size:   xl;
+}
+
+interface[type="kiosk"] page[name="device_detail"] right-panel action[name="history"] {
+  label:  "Historia inspekcji";
+  icon:   history;
+  action: → history WITH device=$device;
+  size:   xl;
+}
+
+interface[type="kiosk"] page[name="device_detail"] right-panel action[name="report_issue"] {
+  label:  "Zgłoś usterkę";
+  icon:   alert;
+  action: → report_issue WITH device=$device;
+}
+
+interface[type="kiosk"] page[name="start_inspection"] {
+  auth_required: true;
+  layout:        guided_flow;
+}
+
+interface[type="kiosk"] page[name="start_inspection"] step[order="1"] {
+  title:   "Wybierz scenariusz";
+  content: list DATA scenarios WHERE applies_to=$device.model;
+}
+
+interface[type="kiosk"] page[name="start_inspection"] step[order="2"] {
+  title:   "Podłącz urządzenie";
+  text:    "Podłącz {{ $device.model }} do stanowiska zgodnie z instrukcją";
+  image:   assets/instructions/{{ $device.model }}.png;
+  confirm: "Podłączone, kontynuuj";
+}
+
+interface[type="kiosk"] page[name="start_inspection"] step[order="3"] {
+  title:        "Wykonywanie testu";
+  live_log:     true;
+  progress_bar: from $execution.progress;
+  cancel:       "Przerwij test";
+}
+
+interface[type="kiosk"] page[name="start_inspection"] step[order="4"] {
+  title:  "Wynik";
+  result: $execution.result;
+}
+
+interface[type="kiosk"] page[name="start_inspection"] step[order="4"] on-pass {
+  auto_generate: cert.pdf AFTER 2s;
+  print_label:   true;
+}
+
+interface[type="kiosk"] page[name="start_inspection"] step[order="4"] on-fail {
+  details:         $execution.error;
+  notify_manager:  true;
+}
+
+interface[type="kiosk"] page[name="my_tasks"] {
+  auth_required: true;
+  layout:        list;
+  query:         DATA devices WHERE next_inspection <= today + 7 days AND assigned_to=$user;
+  empty_state:   "Brak zadań. Dobra robota!";
+}
+
+interface[type="kiosk"] page[name="help"] {
+  auth_required: false;
+  layout:        list;
+}
+
+interface[type="kiosk"] page[name="idle_screen"] {
+  show_after: 60s;
+  fullscreen: true;
+  content:    slideshow;
+  from:       assets/idle/;
+  duration:   10s;
+  on_tap:     → welcome;
+}
+
+/* ─── Lockdown ─── */
+
+interface[type="kiosk"] lockdown {
+  prevent_exit:            true;
+  disable_system_keys:     true;
+  kiosk_user:              kiosk_ro;
+  auto_restart_on_crash:   true;
+  disable_context_menu:    true;
+  disable_developer_tools: true;
+  disable_print_dialog:    false;
+  allowed_domains:         [env.OQLOS_URL, env.DOMAIN];
+}
+
+/* ─── Workflows ─── */
+
+workflow[name="offline_sync"] {
+  trigger:   event network.online;
+  condition: queue_size > 0;
+}
+
+workflow[name="offline_sync"] step[order="1"] {
+  action:     iterate;
+  path:       /var/lib/kiosk/queue/*;
+  do:         send_to API oqlos;
+  on_success: delete local;
+  on_fail:    retry with backoff;
+}
+
+workflow[name="auto_logout_on_idle"] {
+  trigger: event kiosk.idle > 180s AND session.active;
+}
+
+workflow[name="auto_logout_on_idle"] step[order="1"] {
+  action: lock_session;
+  show:   welcome;
+}
+
+/* ─── Deploy: kiosk appliance na Raspberry Pi ─── */
+
+deploy {
+  target:   kiosk-appliance;
+  os_image: rpi-os-lite-64;
+}
+
+deploy hardware-profile {
+  model:       raspberry-pi-4;
+  display:     10.1-inch-touch;
+  ram_min:     2gb;
+  usb_devices: [barcode-scanner, printer];
+}
+
+deploy first-boot {
+  packages:   [chromium-browser, unclutter, xserver-xorg, openbox, cups];
+  auto_login: kiosk_user;
+}
+
+deploy first-boot service[name="openbox-autostart"] {
+  config: |
+    xset s off
+    xset -dpms
+    xset s noblank
+    unclutter -idle 5 -root &
+    chromium-browser --kiosk --noerrdialogs --disable-infobars --app=http://localhost:8080;
+}
+
+deploy auto-update {
+  channel:             stable;
+  schedule:            "0 3 * * *";
+  strategy:            download-verify-restart;
+  rollback_on_failure: true;
+}
+
+deploy container[name="kiosk-app"] {
+  image:   auto;
+  network: host;
+  restart: always;
+  volume:  [/var/lib/kiosk:/var/lib/kiosk, /dev/bus/usb:/dev/bus/usb];
+  devices: [/dev/ttyUSB0];
+}
+
+deploy telemetry {
+  endpoint: env.OQLOS_URL + "/kiosks/telemetry";
+  interval: 5m;
+  include:  [uptime, memory, queue_size, last_login, network];
+}

@@ -1,0 +1,106 @@
+app {
+  name: "Calibration Certificate Generator";
+  version: "0.3.0";
+  domain: document-generation;
+}
+
+data[name="customers"] {
+  source: "json";
+  file: "data/customers.json";
+}
+
+data[name="instruments"] {
+  source: "sqlite";
+  file: "data/instruments.db";
+  read-only: true;
+}
+
+data[name="measurements"] {
+  source: "api";
+  url: env.OQLOS_URL + "/api/v1/executions";
+  auth: "bearer";
+  token: env.OQLOS_API_KEY;
+  cache: "5m";
+}
+
+data[name="organization"] {
+  source: "json";
+  file: "data/organization.json";
+  env-overrides: true;
+}
+
+template[name="letterhead"] {
+  type: "html";
+  file: "templates/partials/letterhead.html";
+}
+
+template[name="measurement_table"] {
+  type: "html";
+  file: "templates/partials/measurement_table.html";
+}
+
+template[name="signature_block"] {
+  type: "html";
+  file: "templates/partials/signature_block.html";
+}
+
+document[name="calibration_certificate"] {
+  type: "pdf";
+  template: "templates/cert_iso17025.html";
+}
+
+document[name="non_conformance_report"] {
+  type: "pdf";
+  template: "templates/ncr.html";
+}
+
+document[name="qr_label"] {
+  type: "html";
+  template: "templates/label.html";
+}
+
+report[name="monthly_calibration_summary"] {
+  output: pdf;
+  schedule: "0 6 1 * *";
+  template: templates/monthly_summary.html;
+}
+
+interface[type="web"] {
+  framework: htmx;
+}
+interface[type="web"] page[name="home"] {
+  layout: "single-column";
+}
+interface[type="web"] page[name="verify"] {
+  layout: form;
+}
+
+interface[type="api"] {
+  auth-method: jwt;
+}
+
+workflow[name="auto_generate_on_calibration_done"] {
+  trigger: webhook oqlos.scenario.completed;
+}
+
+workflow[name="auto_generate_on_calibration_done"] step[order="1"] {
+  action: GENERATE DOCUMENT calibration_certificate;
+  instrument_id: $payload.instrument_id;
+  execution_id: $payload.execution_id;
+  operator: $payload.operator;
+}
+
+workflow[name="auto_generate_on_calibration_done"] step[order="2"] {
+  action: email;
+  to: $payload.customer_email;
+  attach: $generated;
+}
+
+workflow[name="auto_generate_on_calibration_done"] step[order="3"] {
+  action: GENERATE DOCUMENT non_conformance_report;
+  notify: env.QUALITY_MANAGER_EMAIL;
+}
+
+deploy {
+  target: quadlet;
+}
