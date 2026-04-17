@@ -1,0 +1,33 @@
+pipeline:
+  name: doql-example-quality
+  
+  # Quality gates
+  metrics:
+    cc_max: 20
+    coverage_min: 70
+    
+  stages:
+    - name: validate-doql
+      run: task validate
+      when: always
+      
+    - name: plan-build
+      run: task plan
+      when: always
+      
+    - name: build
+      run: task build
+      when: always
+      
+    - name: test
+      run: echo "Tests would run here (test target if configured)"
+      optional: true
+      when: always
+      
+  artifacts:
+    - path: ./build
+      name: build-output
+      
+  loop:
+    max_iterations: 2
+    on_fail: report
