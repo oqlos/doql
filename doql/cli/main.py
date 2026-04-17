@@ -14,6 +14,7 @@ from .commands import (
     cmd_run, cmd_sync, cmd_deploy,
     cmd_export, cmd_import, cmd_generate, cmd_render, cmd_query,
     cmd_kiosk, cmd_quadlet, cmd_docs,
+    register_workspace_parser,
 )
 
 
@@ -134,6 +135,9 @@ def create_parser() -> argparse.ArgumentParser:
                    help="Comma-separated targets: pypi,npm,docker,github (default: all)")
     s.add_argument("--dry-run", action="store_true", help="Simulate without publishing")
     s.set_defaults(func=cmd_publish)
+
+    # workspace — multi-project operations
+    register_workspace_parser(sub)
 
     return p
 

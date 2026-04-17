@@ -924,11 +924,17 @@ def _extract_makefile_workflows(path: Path, spec: DoqlSpec) -> None:
             if cmd:
                 steps.append(WorkflowStep(action="run", params={"cmd": cmd}))
 
+        # Promote prerequisites to explicit ``depend`` steps so a target like
+        # ``install: install-backend install-frontend`` round-trips as a
+        # meaningful workflow rather than an empty block.
+        deps = _parse_makefile_deps(deps_raw)
+        if deps and not steps:
+            for dep in deps:
+                steps.append(WorkflowStep(action="depend", params={"target": dep}))
+
         if not steps:
-            # A dependency-only alias (e.g. ``ci: lint test``) still has
-            # informational value; record it without commands.
-            if not deps_raw.strip():
-                continue
+            # Truly empty target (no deps, no commands) — skip.
+            continue
 
         spec.workflows.append(Workflow(
             name=name,
@@ -936,6 +942,18 @@ def _extract_makefile_workflows(path: Path, spec: DoqlSpec) -> None:
             steps=steps,
         ))
         seen.add(name)
+
+
+def _parse_makefile_deps(deps_raw: str) -> list[str]:
+    """Split the ``deps`` portion of ``target: dep1 dep2 ## comment``.
+
+    Strips trailing ``## help`` comments and filters out dot-targets.
+    """
+    text = deps_raw.split("#", 1)[0]
+    return [
+        tok for tok in text.split()
+        if tok and not tok.startswith(".")
+    ]
 
 
 def _extract_taskfile_workflows(path: Path, spec: DoqlSpec) -> None:

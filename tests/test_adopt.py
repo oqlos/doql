@@ -285,6 +285,49 @@ def test_taskfile_yml_tasks_become_workflows(tmp_path: Path) -> None:
     assert [s.params["cmd"] for s in serve.steps] == ["uvicorn app:app"]
 
 
+def test_dependency_only_targets_emit_depend_steps(tmp_path: Path) -> None:
+    """Regression: ``install: install-backend install-frontend`` (no body)
+    used to produce an empty ``workflow[name="install"]`` block with only
+    ``trigger: manual``. Deps must be preserved as explicit ``depend`` steps
+    so the workflow carries meaningful information.
+    """
+    _write(tmp_path, "Makefile", (
+        "install: install-backend install-frontend ## Install everything\n"
+        "\n"
+        "install-backend:\n"
+        "\t@echo backend\n"
+        "\n"
+        "install-frontend:\n"
+        "\t@echo frontend\n"
+        "\n"
+        "# Aliases\n"
+        "up: dev\n"
+        "\n"
+        "dev:\n"
+        "\tuvicorn app:app\n"
+    ))
+    spec = scan_project(tmp_path)
+
+    install = next(w for w in spec.workflows if w.name == "install")
+    assert len(install.steps) == 2
+    assert install.steps[0].action == "depend"
+    assert install.steps[0].params == {"target": "install-backend"}
+    assert install.steps[1].params == {"target": "install-frontend"}
+
+    up = next(w for w in spec.workflows if w.name == "up")
+    assert len(up.steps) == 1
+    assert up.steps[0].action == "depend"
+    assert up.steps[0].params == {"target": "dev"}
+
+
+def test_empty_target_without_deps_is_skipped(tmp_path: Path) -> None:
+    """A truly empty target (no deps, no body) has no useful data \u2014 drop it."""
+    _write(tmp_path, "Makefile", "noop:\n\nreal:\n\techo hi\n")
+    spec = scan_project(tmp_path)
+    names = {w.name for w in spec.workflows}
+    assert names == {"real"}
+
+
 def test_makefile_variable_assignments_are_not_workflows(tmp_path: Path) -> None:
     """Regression: ``VAR := value`` / ``VAR ?= value`` / ``VAR = value`` must
     not be promoted to workflows. Originally the target regex matched the

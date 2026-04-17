@@ -25,6 +25,7 @@ from .import_cmd import cmd_import
 from .adopt import cmd_adopt
 from .doctor import cmd_doctor
 from .publish import cmd_publish
+from .workspace import cmd_workspace, register_parser as register_workspace_parser
 from ..build import cmd_build
 from ..sync import cmd_sync
 
@@ -47,4 +48,6 @@ __all__ = [
     "cmd_kiosk",
     "cmd_quadlet",
     "cmd_docs",
+    "cmd_workspace",
+    "register_workspace_parser",
 ]

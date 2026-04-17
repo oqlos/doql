@@ -65,9 +65,9 @@ def _publish_npm(root: pathlib.Path, dry_run: bool) -> int:
 
 def _publish_docker(root: pathlib.Path, spec, dry_run: bool) -> int:
     """Build and push Docker/Podman image."""
-    dockerfile = root / "build" / "infra" / "Dockerfile"
+    dockerfile = root / "Dockerfile"
     if not dockerfile.exists():
-        dockerfile = root / "Dockerfile"
+        dockerfile = root / "build" / "infra" / "Dockerfile"
     if not dockerfile.exists():
         print("  ⏭️  No Dockerfile — skipping docker")
         return 0

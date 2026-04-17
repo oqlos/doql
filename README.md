@@ -190,6 +190,45 @@ doql -d examples/notes-app run -t web
 ./doql.sh examples/notes-app/app.doql all
 ```
 
+### `doql workspace` — operacje na wielu projektach
+
+Gdy trzymasz kilka projektów z `app.doql.css` w jednym folderze (np. `~/github/oqlos/`), `doql workspace` pozwala na grupowe operacje.
+
+```bash
+# Wylistuj wszystkie projekty z app.doql.css (głębokość 2)
+doql workspace list --root ~/github/oqlos --depth 2
+
+# Przeanalizuj wszystkie projekty: workflowy, entity, bazy, interfejsy
+doql workspace analyze --root ~/github/oqlos
+
+# Eksport do CSV (do arkusza / BI / raportu)
+doql workspace analyze --root ~/github/oqlos -o oqlos_report.csv
+
+# Walidacja manifestów (puste workflowy, brak sekcji app{}, itp.)
+doql workspace validate --root ~/github/oqlos
+doql workspace validate --root ~/github/oqlos --strict   # exit 1 przy błędach
+
+# Filtrowanie po obecności workflowa
+doql workspace list --root ~/github/oqlos --has-workflow test
+
+# Uruchomienie `doql <action>` we wszystkich projektach
+doql workspace run validate --root ~/github/oqlos --dry-run
+doql workspace run validate --root ~/github/oqlos
+doql workspace run build    --root ~/github/oqlos --fail-fast
+
+# Naprawa błędów w manifestach (wymaga `pip install taskfile`)
+doql workspace fix --root ~/github/oqlos --dry-run
+doql workspace fix --root ~/github/oqlos
+```
+
+Podstawowa pętla (list/analyze/validate/run) działa bez dodatkowych zależności.
+Komenda `fix` używa `taskfile.workspace` do napraw (puste workflowy, orphans,
+brakujące workflowy z Taskfile.yml) — zainstaluj `pip install taskfile`, aby
+odblokować.
+
+Pełna dokumentacja i równoważna komenda `taskfile workspace`: zob.
+[`pyfunc/taskfile/docs/WORKSPACE.md`](../../pyfunc/taskfile/docs/WORKSPACE.md).
+
 ### Publikacja artykułów
 
 Opcja A — ręcznie do WP (najprostsze):
