@@ -97,14 +97,12 @@ interface[type="web"] page[name="admin-comments"] {
 }
 
 integration[name="storage"] {
-  type: "s3";
   type: s3;
   bucket: env.S3_BUCKET;
   region: env.S3_REGION;
 }
 
 integration[name="email"] {
-  type: "email";
   type: email;
   host: env.SMTP_HOST;
   from: env.SMTP_FROM;

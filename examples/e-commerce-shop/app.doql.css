@@ -79,52 +79,52 @@ integration[name="payment"] {
 
 /* ─── Interfaces ─── */
 
-interface[name="api"] {
+interface[type="api"] {
   type: rest;
   auth-method: jwt;
   auth-secret: env.JWT_SECRET;
 }
 
-interface[name="web"] {
+interface[type="web"] {
   type: spa;
   framework: react;
   auth-method: jwt;
 }
 
-interface[name="web"] > page[name="home"] {
+interface[type="web"] page[name="home"] {
   layout: grid;
   path: /;
   public: true;
 }
 
-interface[name="web"] > page[name="catalog"] {
+interface[type="web"] page[name="catalog"] {
   layout: grid;
   path: /products;
   public: true;
 }
 
-interface[name="web"] > page[name="product-detail"] {
+interface[type="web"] page[name="product-detail"] {
   layout: detail;
   path: /products/:slug;
   public: true;
 }
 
-interface[name="web"] > page[name="cart"] {
+interface[type="web"] page[name="cart"] {
   layout: form;
   path: /cart;
 }
 
-interface[name="web"] > page[name="checkout"] {
+interface[type="web"] page[name="checkout"] {
   layout: form;
   path: /checkout;
 }
 
-interface[name="web"] > page[name="orders"] {
+interface[type="web"] page[name="orders"] {
   layout: table;
   path: /orders;
 }
 
-interface[name="web"] > page[name="admin-products"] {
+interface[type="web"] page[name="admin-products"] {
   layout: table;
   path: /admin/products;
 }
@@ -133,13 +133,23 @@ interface[name="web"] > page[name="admin-products"] {
 
 workflow[name="order_confirmation"] {
   trigger: order.created;
-  step-1: send_email order.customer.email template=order_confirmation;
+}
+
+workflow[name="order_confirmation"] step[order="1"] {
+  action: send_email;
+  to: order.customer.email;
+  template: order_confirmation;
 }
 
 workflow[name="low_stock_alert"] {
   trigger: product.updated;
   condition: product.stock < 5;
-  step-1: send_email env.ADMIN_EMAIL template=low_stock_alert;
+}
+
+workflow[name="low_stock_alert"] step[order="1"] {
+  action: send_email;
+  to: env.ADMIN_EMAIL;
+  template: low_stock_alert;
 }
 
 /* ─── Roles ─── */

@@ -89,7 +89,6 @@ interface[type="web"] page[name="admin-products"] {
 }
 
 integration[name="email"] {
-  type: "email";
   type: email;
   host: env.SMTP_HOST;
   port: env.SMTP_PORT;
@@ -97,7 +96,6 @@ integration[name="email"] {
 }
 
 integration[name="payment"] {
-  type: "webhook";
   type: webhook;
   provider: stripe;
   secret: env.STRIPE_SECRET;
@@ -112,15 +110,18 @@ workflow[name="low_stock_alert"] {
 }
 
 role[name="admin"] {
-
+  permit: *;
 }
 
 role[name="customer"] {
-
+  permit: read Product;
+  permit: create Order;
+  permit: read Order own;
+  permit: manage CartItem own;
 }
 
 role[name="guest"] {
-
+  permit: read Product;
 }
 
 deploy {

@@ -1,0 +1,84 @@
+version: '3'
+name: e-commerce-shop
+description: E-Commerce Shop - Online Store
+variables:
+  APP_NAME: e-commerce-shop
+  DOQL_ROOT: ../../
+environments:
+  local:
+    container_runtime: docker
+    compose_command: docker compose
+tasks:
+  validate:
+    desc: Validate DOQL DSL files
+    cmds:
+      - echo "Validating DOQL files..."
+      - doql validate -f app.doql.css
+      - doql validate -f app.doql.less
+      - echo "Validation complete"
+  
+  plan:
+    desc: Show build plan
+    cmds:
+      - doql plan -f app.doql.css
+  
+  build:
+    desc: Generate code from DOQL (api, web, infra)
+    cmds:
+      - echo "Generating code from DOQL..."
+      - doql build -f app.doql.css
+      - echo "Build complete"
+  
+  sync:
+    desc: Merge-friendly sync (preserves custom code)
+    cmds:
+      - doql sync -f app.doql.css
+  
+  run-api:
+    desc: Run API target
+    cmds:
+      - doql run -t api
+  
+  run-web:
+    desc: Run web target
+    cmds:
+      - doql run -t web
+  
+  run:
+    desc: Run full stack (docker-compose)
+    cmds:
+      - doql run
+  
+  deploy:
+    desc: Deploy application
+    cmds:
+      - echo "Deploying application..."
+      - doql deploy --env prod
+      - echo "Deployment complete"
+  
+  clean:
+    desc: Clean build artifacts
+    cmds:
+      - echo "Cleaning build artifacts..."
+      - rm -rf build/
+      - echo "Clean complete"
+  
+  help:
+    desc: Show available tasks
+    cmds:
+      - echo "e-commerce-shop — available tasks:"
+      - echo ""
+      - echo "DOQL operations:"
+      - echo "  validate    - Validate DOQL files"
+      - echo "  plan        - Show build plan"
+      - echo "  build       - Generate all code"
+      - echo "  sync        - Merge-friendly sync"
+      - echo ""
+      - echo "Run targets:"
+      - echo "  run-api     - Run API"
+      - echo "  run-web     - Run web"
+      - echo "  run         - Run full stack"
+      - echo ""
+      - echo "Operations:"
+      - echo "  deploy      - Deploy to production"
+      - echo "  clean       - Clean build artifacts"

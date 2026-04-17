@@ -93,7 +93,6 @@ interface[type="web"] page[name="activities"] {
 }
 
 integration[name="email"] {
-  type: "email";
   type: email;
   host: env.SMTP_HOST;
   port: env.SMTP_PORT;
@@ -104,20 +103,20 @@ workflow[name="deal_stage_notification"] {
   trigger: "deal.updated";
 }
 
-workflow[name="overdue_activity_reminder"] {
-
-}
 
 role[name="admin"] {
-
+  permit: *;
 }
 
 role[name="sales"] {
-
+  permit: create Contact;
+  permit: create Deal;
+  permit: update Deal own;
 }
 
 role[name="viewer"] {
-
+  permit: read Contact;
+  permit: read Deal;
 }
 
 deploy {

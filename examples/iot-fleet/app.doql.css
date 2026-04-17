@@ -73,41 +73,73 @@ interface[type="api"] {
 }
 
 integration[name="monitoring"] {
-  type: "";
+  type: prometheus;
 }
 
 integration[name="alerting"] {
-  type: "";
+  type: pagerduty;
 }
 
 integration[name="storage"] {
-  type: "";
-  telemetry: influxdb;
+  type: influxdb;
   config: env.INFLUXDB_*;
   retention: 90days;
 }
 
 integration[name="ota"] {
-  type: "";
+  type: ota-manager;
   strategy: canary;
   rollback-on: failure_rate > 1%;
   signed: true;
 }
 
 workflow[name="heartbeat_check"] {
-  trigger: "schedule "*/1 * * * *"";
-  step-1: find action=find query="Node WHERE last_seen < now - 5min AND status=online";
-  step-2: foreach node action=foreach node do=[update_status_offline, alert_pagerduty_warning];
+  trigger: schedule "*/1 * * * *";
+}
+
+workflow[name="heartbeat_check"] step[order="1"] {
+  action: find;
+  query:  "Node WHERE last_seen < now - 5min AND status=online";
+}
+
+workflow[name="heartbeat_check"] step[order="2"] {
+  action: foreach node;
+  do:     [update_status_offline, alert_pagerduty_warning];
 }
 
 workflow[name="ota_canary"] {
-  trigger: "manual";
-  step-1: select action=select sample=5% label=canary;
-  step-2: push_update canary action=push_update target=canary;
-  step-3: wait action=wait duration=1h;
-  step-4: push_update next 20% action=push_update target=next 20%;
-  step-5: push_update remaining action=push_update target=remaining;
-  step-6: rollback action=rollback alert=pagerduty severity=critical;
+  trigger: manual;
+}
+
+workflow[name="ota_canary"] step[order="1"] {
+  action: select;
+  sample: 5%;
+  label: canary;
+}
+
+workflow[name="ota_canary"] step[order="2"] {
+  action: push_update;
+  target: canary;
+}
+
+workflow[name="ota_canary"] step[order="3"] {
+  action: wait;
+  duration: 1h;
+}
+
+workflow[name="ota_canary"] step[order="4"] {
+  action: push_update;
+  target: next 20%;
+}
+
+workflow[name="ota_canary"] step[order="5"] {
+  action: push_update;
+  target: remaining;
+}
+
+workflow[name="ota_canary"] step[order="6"] {
+  action: rollback;
+  alert: pagerduty severity=critical;
 }
 
 role[name="operator"] {

@@ -60,9 +60,9 @@ document[name="qr_label"] {
 }
 
 report[name="monthly_calibration_summary"] {
-  output: "pdf";
-  schedule: ""0 6 1 * *"";
-  template: "templates/monthly_summary.html";
+  output: pdf;
+  schedule: "0 6 1 * *";
+  template: templates/monthly_summary.html;
 }
 
 interface[type="web"] {
@@ -72,7 +72,7 @@ interface[type="web"] page[name="home"] {
   layout: "single-column";
 }
 interface[type="web"] page[name="verify"] {
-
+  layout: form;
 }
 
 interface[type="api"] {
@@ -80,10 +80,25 @@ interface[type="api"] {
 }
 
 workflow[name="auto_generate_on_calibration_done"] {
-  trigger: "webhook oqlos.scenario.completed";
-  step-1: GENERATE DOCUMENT calibration_certificate action=GENERATE DOCUMENT calibration_certificate instrument_id=$payload.instrument_id execution_id=$payload.execution_id operator=$payload.operator;
-  step-2: email action=email to=$payload.customer_email attach=$generated;
-  step-3: GENERATE DOCUMENT non_conformance_report action=GENERATE DOCUMENT non_conformance_report notify=env.QUALITY_MANAGER_EMAIL;
+  trigger: webhook oqlos.scenario.completed;
+}
+
+workflow[name="auto_generate_on_calibration_done"] step[order="1"] {
+  action: GENERATE DOCUMENT calibration_certificate;
+  instrument_id: $payload.instrument_id;
+  execution_id: $payload.execution_id;
+  operator: $payload.operator;
+}
+
+workflow[name="auto_generate_on_calibration_done"] step[order="2"] {
+  action: email;
+  to: $payload.customer_email;
+  attach: $generated;
+}
+
+workflow[name="auto_generate_on_calibration_done"] step[order="3"] {
+  action: GENERATE DOCUMENT non_conformance_report;
+  notify: env.QUALITY_MANAGER_EMAIL;
 }
 
 deploy {

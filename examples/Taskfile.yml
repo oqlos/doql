@@ -1,0 +1,130 @@
+version: '3'
+name: doql-examples
+description: Taskfile for DOQL examples - manages all example projects
+variables:
+  APP_NAME: doql-examples
+  DOQL_ROOT: ../
+  EXAMPLES: asset-management blog-cms calibration-lab crm-contacts document-generator e-commerce-shop iot-fleet kiosk-station notes-app todo-pwa
+environments:
+  local:
+    container_runtime: docker
+    compose_command: docker compose
+tasks:
+  default:
+    desc: Show available tasks
+    cmds:
+      - task: help
+
+  list:
+    desc: List all available examples with descriptions
+    cmds:
+      - echo "Available DOQL examples:"
+      - echo ""
+      - for dir in {{.EXAMPLES}}; do echo "  - $$dir"; done
+      - echo ""
+      - echo "Use 'task <example-name>' to run tasks in specific example"
+
+  # Run tasks in specific examples
+  {{range .EXAMPLES}}
+  {{.}}:
+    desc: Run task in {{.}} example
+    dir: {{.}}
+    cmds:
+      - task --list
+  {{end}}
+
+  # Bulk operations across all examples
+  validate-all:
+    desc: Validate all DOQL DSL files across examples
+    cmds:
+      - echo "Validating all DOQL examples..."
+      - for dir in {{.EXAMPLES}}; do echo "Validating $$dir..."; cd "$$dir" && task validate 2>/dev/null || echo "No validate task"; cd ..; done
+      - echo "Validation complete"
+
+  lint-all:
+    desc: Lint all DOQL DSL files across examples
+    cmds:
+      - echo "Linting all DOQL examples..."
+      - for dir in {{.EXAMPLES}}; do echo "Linting $$dir..."; cd "$$dir" && task lint 2>/dev/null || echo "No lint task"; cd ..; done
+      - echo "Lint complete"
+
+  format-all:
+    desc: Format all DOQL DSL files across examples
+    cmds:
+      - echo "Formatting all DOQL examples..."
+      - for dir in {{.EXAMPLES}}; do echo "Formatting $$dir..."; cd "$$dir" && task format 2>/dev/null || echo "No format task"; cd ..; done
+      - echo "Format complete"
+
+  build-all:
+    desc: Build all examples
+    cmds:
+      - echo "Building all examples..."
+      - for dir in {{.EXAMPLES}}; do echo "Building $$dir..."; cd "$$dir" && task build 2>/dev/null || echo "No build task"; cd ..; done
+      - echo "Build complete"
+
+  test-all:
+    desc: Test all examples
+    cmds:
+      - echo "Testing all examples..."
+      - for dir in {{.EXAMPLES}}; do echo "Testing $$dir..."; cd "$$dir" && task test 2>/dev/null || echo "No test task"; cd ..; done
+      - echo "Test complete"
+
+  clean-all:
+    desc: Clean build artifacts from all examples
+    cmds:
+      - echo "Cleaning all examples..."
+      - for dir in {{.EXAMPLES}}; do echo "Cleaning $$dir..."; cd "$$dir" && task clean 2>/dev/null || echo "No clean task"; cd ..; done
+      - echo "Clean complete"
+
+  deploy-all:
+    desc: Deploy all examples
+    cmds:
+      - echo "Deploying all examples..."
+      - for dir in {{.EXAMPLES}}; do echo "Deploying $$dir..."; cd "$$dir" && task deploy 2>/dev/null || echo "No deploy task"; cd ..; done
+      - echo "Deploy complete"
+
+  # DOQL-specific operations
+  install:
+    desc: Install DOQL dependencies (editable)
+    dir: {{.DOQL_ROOT}}
+    cmds:
+      - pip install -e .[dev]
+
+  check:
+    desc: Quick health check - list examples and validate DOQL files
+    cmds:
+      - task: list
+      - echo ""
+      - task: validate-all
+
+  status:
+    desc: Show status of all examples (build artifacts, lock files)
+    cmds:
+      - echo "DOQL Examples Status:"
+      - echo ""
+      - for dir in {{.EXAMPLES}}; do echo "  $$dir:"; if [ -f "$$dir/doql.lock" ]; then echo "    ✓ doql.lock exists"; else echo "    ✗ doql.lock missing"; fi; if [ -d "$$dir/build" ]; then echo "    ✓ build/ exists"; else echo "    ✗ build/ missing"; fi; done
+
+  help:
+    desc: Show available tasks
+    cmds:
+      - echo "doql-examples — available tasks:"
+      - echo ""
+      - echo "Bulk operations:"
+      - echo "  validate-all  - Validate all DOQL files"
+      - echo "  lint-all      - Lint all DOQL files"
+      - echo "  format-all    - Format all DOQL files"
+      - echo "  build-all     - Build all examples"
+      - echo "  test-all      - Test all examples"
+      - echo "  clean-all     - Clean all build artifacts"
+      - echo "  deploy-all    - Deploy all examples"
+      - echo ""
+      - echo "Information:"
+      - echo "  list          - List all examples"
+      - echo "  check         - Quick health check"
+      - echo "  status        - Show status of all examples"
+      - echo ""
+      - echo "DOQL operations:"
+      - echo "  install       - Install DOQL dependencies"
+      - echo ""
+      - echo "Run tasks in specific example:"
+      - echo "  task <example-name>  - e.g., task asset-management"

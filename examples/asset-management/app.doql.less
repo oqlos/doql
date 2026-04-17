@@ -19,7 +19,7 @@ entity[name="Station"] {
   id: uuid! auto;
   name: string!;
   address: text;
-  manager: User ref=User;
+  manager: User ref;
 }
 
 entity[name="Operator"] {
@@ -130,9 +130,6 @@ interface[type="web"] page[name="devices"] {
   layout: "crud";
   from: "Device";
 }
-interface[type="web"] page[name="scan"] {
-
-}
 interface[type="web"] page[name="inspections"] {
   layout: "list-with-filters";
   from: "Inspection";
@@ -148,87 +145,69 @@ interface[type="web"] page[name="cylinder_filling"] {
   layout: "workflow";
   from: "CylinderFill";
 }
-interface[type="web"] page[name="settings"] {
-
-}
 
 interface[type="mobile"] {
   type: pwa;
-}
-interface[type="mobile"] page[name="quick_scan"] {
-
-}
-interface[type="mobile"] page[name="my_tasks"] {
-
-}
-interface[type="mobile"] page[name="deployments"] {
-
 }
 
 interface[type="desktop"] {
   type: tauri;
 }
 
-integration[name="notifications"] {
-  type: "";
-  provider: smtp;
+integration[name="notifications_email"] {
+  type: smtp;
   config: env.SMTP_*;
   templates: templates/email/;
 }
 
-integration[name="notifications"] {
-  type: "";
+integration[name="notifications_slack"] {
+  type: webhook;
   webhook: env.SLACK_WEBHOOK;
 }
 
-integration[name="notifications"] {
-  type: "";
-  provider: fcm;
+integration[name="notifications_push"] {
+  type: fcm;
   config: env.FCM_*;
 }
 
 integration[name="storage"] {
-  type: "s3-compatible";
   type: s3-compatible;
   bucket: env.S3_BUCKET;
   config: env.S3_*;
 }
 
 integration[name="auth"] {
-  type: "";
   provider: internal;
   sso: [google, microsoft];
   mfa: totp;
 }
 
 integration[name="reports"] {
-  type: "";
   generator: weasyprint;
   templates: templates/reports/;
   signed: true;
 }
 
 integration[name="barcode_printer"] {
-  type: "zebra_zpl";
   type: zebra_zpl;
   endpoint: env.LABEL_PRINTER_URL;
   fallback: save_pdf;
 }
 
 workflow[name="daily_overdue_check"] {
-  trigger: "schedule "0 8 * * *"";
+  trigger: schedule "0 8 * * *";
 }
 
 workflow[name="inspection_fail_handling"] {
-  trigger: "event Inspection.completed WHERE result=fail";
+  trigger: event Inspection.completed WHERE result=fail;
 }
 
 workflow[name="annual_exercise_reminder"] {
-  trigger: "schedule "0 9 1 1 *"";
+  trigger: schedule "0 9 1 1 *";
 }
 
 workflow[name="cylinder_filling_audit"] {
-  trigger: "schedule "monthly"";
+  trigger: schedule "monthly";
 }
 
 role[name="operator"] {

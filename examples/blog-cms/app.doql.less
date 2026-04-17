@@ -99,14 +99,12 @@ interface[type="web"] page[name="admin-comments"] {
 }
 
 integration[name="storage"] {
-  type: "s3";
   type: s3;
   bucket: env.S3_BUCKET;
   region: env.S3_REGION;
 }
 
 integration[name="email"] {
-  type: "email";
   type: email;
   host: env.SMTP_HOST;
   from: env.SMTP_FROM;
@@ -121,19 +119,25 @@ workflow[name="comment_moderation"] {
 }
 
 role[name="admin"] {
-
+  permit: *;
 }
 
 role[name="editor"] {
-
+  permit: create Post;
+  permit: update Post;
+  permit: delete Post;
+  permit: moderate Comment;
 }
 
 role[name="writer"] {
-
+  permit: create Post own;
+  permit: update Post own;
+  permit: delete Post own;
 }
 
 role[name="public"] {
-
+  permit: read Post;
+  permit: create Comment;
 }
 
 deploy {

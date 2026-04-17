@@ -93,7 +93,6 @@ interface[type="api"] {
 }
 
 integration[name="reports"] {
-  type: "";
   generator: weasyprint;
   templates: templates/reports/iso17025/;
   signed: true;
@@ -101,31 +100,50 @@ integration[name="reports"] {
 }
 
 integration[name="storage"] {
-  type: "s3-compatible";
   type: s3-compatible;
   encryption: at-rest + in-transit;
   immutable: true;
 }
 
 integration[name="accounting"] {
-  type: "";
   provider: optima;
   export_format: xml;
 }
 
 workflow[name="calibration_due_reminder"] {
-  trigger: "schedule "0 8 * * MON"";
-  step-1: find action=find query="Instrument WHERE next_calibration < today + 30 days";
-  step-2: group_by action=group_by field=owner_organization;
-  step-3: foreach org action=foreach org do=[notify_customer_email] template=calibration_due;
+  trigger: schedule "0 8 * * MON";
+}
+
+workflow[name="calibration_due_reminder"] step[order="1"] {
+  action: find;
+  query:  "Instrument WHERE next_calibration < today + 30 days";
+}
+
+workflow[name="calibration_due_reminder"] step[order="2"] {
+  action: group_by;
+  field:  owner_organization;
+}
+
+workflow[name="calibration_due_reminder"] step[order="3"] {
+  action:   foreach org;
+  do:       [notify_customer_email];
+  template: calibration_due;
 }
 
 workflow[name="certificate_immutability"] {
-  trigger: "event Calibration.signed";
-  step-1: freeze calibration record action=freeze calibration record;
-  step-2: hash + sign certificate_pdf action=hash + sign certificate_pdf;
-  step-3: upload S3 with Object Lock (WORM) action=upload S3 with Object Lock (WORM);
-  step-4: ;
+  trigger: event Calibration.signed;
+}
+
+workflow[name="certificate_immutability"] step[order="1"] {
+  action: freeze calibration record;
+}
+
+workflow[name="certificate_immutability"] step[order="2"] {
+  action: hash + sign certificate_pdf;
+}
+
+workflow[name="certificate_immutability"] step[order="3"] {
+  action: upload S3 with Object Lock (WORM);
 }
 
 role[name="technician"] {

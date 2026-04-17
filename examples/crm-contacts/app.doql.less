@@ -78,44 +78,44 @@ integration[name="email"] {
   from: env.SMTP_FROM;
 }
 
-interface[name="api"] {
+interface[type="api"] {
   type: rest;
   auth-method: jwt;
   auth-secret: @jwt-secret;
 }
 
-interface[name="web"] {
+interface[type="web"] {
   type: spa;
   framework: react;
   auth-method: jwt;
 }
 
-interface[name="web"] > page[name="dashboard"] {
+interface[type="web"] page[name="dashboard"] {
   layout: dashboard;
   path: /;
 }
 
-interface[name="web"] > page[name="contacts"] {
+interface[type="web"] page[name="contacts"] {
   layout: table;
   path: /contacts;
 }
 
-interface[name="web"] > page[name="contact-detail"] {
+interface[type="web"] page[name="contact-detail"] {
   layout: detail;
   path: /contacts/:id;
 }
 
-interface[name="web"] > page[name="companies"] {
+interface[type="web"] page[name="companies"] {
   layout: table;
   path: /companies;
 }
 
-interface[name="web"] > page[name="deals"] {
+interface[type="web"] page[name="deals"] {
   layout: kanban;
   path: /deals;
 }
 
-interface[name="web"] > page[name="activities"] {
+interface[type="web"] page[name="activities"] {
   layout: table;
   path: /activities;
 }
@@ -123,13 +123,28 @@ interface[name="web"] > page[name="activities"] {
 workflow[name="deal_stage_notification"] {
   trigger: deal.updated;
   condition: deal.stage changed;
-  step-1: send_email deal.assigned_to template=deal_stage_changed;
+}
+
+workflow[name="deal_stage_notification"] step[order="1"] {
+  action: send_email;
+  to: deal.assigned_to;
+  template: deal_stage_changed;
 }
 
 workflow[name="overdue_activity_reminder"] {
-  schedule: "0 9 * * *";
-  step-1: query Activity filter=due_date < now AND completed = false;
-  step-2: send_email activity.assigned_to template=overdue_reminder;
+  trigger: schedule "0 9 * * *";
+}
+
+workflow[name="overdue_activity_reminder"] step[order="1"] {
+  action: query;
+  target: Activity;
+  filter: due_date < now AND completed = false;
+}
+
+workflow[name="overdue_activity_reminder"] step[order="2"] {
+  action: send_email;
+  to: activity.assigned_to;
+  template: overdue_reminder;
 }
 
 role[name="admin"] {
