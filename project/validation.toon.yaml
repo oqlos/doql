@@ -1,9 +1,9 @@
-# vallm batch | 178f | 98✓ 8⚠ 0✗ | 2026-04-17
+# vallm batch | 199f | 117✓ 11⚠ 1✗ | 2026-04-17
 
 SUMMARY:
-  scanned: 178  passed: 98 (55.1%)  warnings: 8  errors: 0  unsupported: 79
+  scanned: 199  passed: 117 (58.8%)  warnings: 11  errors: 1  unsupported: 80
 
-WARNINGS[8]{path,score}:
+WARNINGS[11]{path,score}:
   vscode-doql/src/extension.ts,0.78
     issues[2]{rule,severity,message,line}:
       js.import.resolvable,warning,Module 'vscode' not found,2
@@ -12,32 +12,47 @@ WARNINGS[8]{path,score}:
     issues[2]{rule,severity,message,line}:
       complexity.lizard_length,warning,_audit_log_module: 110 lines exceeds limit 100,21
       complexity.lizard_length,warning,_e_signature_module: 119 lines exceeds limit 100,133
-  plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py,0.93
-    issues[2]{rule,severity,message,line}:
-      complexity.lizard_length,warning,_uncertainty_module: 119 lines exceeds limit 100,106
-      complexity.lizard_length,warning,_certificate_module: 128 lines exceeds limit 100,227
   tests/env_manager.py,0.93
     issues[4]{rule,severity,message,line}:
       complexity.cyclomatic,warning,check_api has cyclomatic complexity 25 (max: 15),113
       complexity.cyclomatic,warning,check_desktop has cyclomatic complexity 17 (max: 15),268
       complexity.lizard_cc,warning,check_api: CC=26 exceeds limit 15,113
       complexity.lizard_cc,warning,check_desktop: CC=17 exceeds limit 15,268
+  doql/exporters/css_exporter.py,0.97
+    issues[2]{rule,severity,message,line}:
+      complexity.cyclomatic,warning,_render_css has cyclomatic complexity 17 (max: 15),341
+      complexity.lizard_cc,warning,_render_css: CC=17 exceeds limit 15,341
+  doql/exporters/markdown_exporter.py,0.97
+    issues[2]{rule,severity,message,line}:
+      complexity.cyclomatic,warning,export_markdown has cyclomatic complexity 26 (max: 15),113
+      complexity.lizard_cc,warning,export_markdown: CC=26 exceeds limit 15,113
   doql/generators/mobile_gen.py,0.97
     issues[1]{rule,severity,message,line}:
       complexity.lizard_length,warning,_gen_style_css: 148 lines exceeds limit 100,250
   doql/generators/workflow_gen.py,0.97
     issues[1]{rule,severity,message,line}:
       complexity.lizard_length,warning,_gen_engine: 102 lines exceeds limit 100,19
-  playground/app.js,0.97
+  playground/pyodide-bridge.js,0.97
     issues[1]{rule,severity,message,line}:
-      complexity.lizard_length,warning,bootPyodide: 148 lines exceeds limit 100,190
+      complexity.lizard_length,warning,bootPyodide: 148 lines exceeds limit 100,82
   plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py,0.97
     issues[1]{rule,severity,message,line}:
       complexity.lizard_length,warning,_device_registry_module: 124 lines exceeds limit 100,97
+  plugins/doql-plugin-iso17025/doql_plugin_iso17025/certificate.py,0.97
+    issues[1]{rule,severity,message,line}:
+      complexity.lizard_length,warning,generate: 128 lines exceeds limit 100,7
+  plugins/doql-plugin-iso17025/doql_plugin_iso17025/uncertainty.py,0.97
+    issues[1]{rule,severity,message,line}:
+      complexity.lizard_length,warning,generate: 119 lines exceeds limit 100,7
 
-UNSUPPORTED[5]{bucket,count}:
-  *.md,34
+ERRORS[1]{path,score}:
+  plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py,0.83
+    issues[2]{rule,severity,message,line}:
+      python.import.resolvable,error,Module '_shared.base' not found,22
+      python.import.resolvable,error,Module '_shared.readme' not found,23
+
+UNSUPPORTED[4]{bucket,count}:
+  *.md,36
   *.txt,1
   *.yml,3
-  *.example,9
-  other,32
+  other,40

@@ -38,6 +38,7 @@ from .extractors import collect_env_refs
 from .blocks import split_blocks, apply_block
 from .validators import validate
 from .css_parser import parse_css_file, parse_css_text
+from .css_utils import CssBlock, ParsedSelector
 
 # File extensions that use the CSS-like parser
 _CSS_EXTENSIONS = {'.doql.css', '.doql.less', '.doql.sass'}
@@ -146,4 +147,7 @@ __all__ = [
     "parse_css_file",
     "parse_css_text",
     "detect_doql_file",
+    # CSS utilities
+    "CssBlock",
+    "ParsedSelector",
 ]

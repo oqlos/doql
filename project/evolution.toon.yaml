@@ -1,28 +1,27 @@
-# code2llm/evolution | 267 func | 63f | 2026-04-17
+# code2llm/evolution | 310 func | 75f | 2026-04-17
 
 NEXT[3] (ranked by impact):
-  [1] !! SPLIT           plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py
-      WHY: 578L, 0 classes, max CC=2
-      EFFORT: ~4h  IMPACT: 1156
-
-  [2] !! SPLIT           plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py
+  [1] !! SPLIT           plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py
       WHY: 524L, 0 classes, max CC=2
       EFFORT: ~4h  IMPACT: 1048
+
+  [2] !! SPLIT-FUNC      export_markdown  CC=26  fan=8
+      WHY: CC=26 exceeds 15
+      EFFORT: ~1h  IMPACT: 208
 
   [3] !  SPLIT-FUNC      generate  CC=15  fan=12
       WHY: CC=15 exceeds 15
       EFFORT: ~1h  IMPACT: 180
 
 
-RISKS[2]:
-  ⚠ Splitting plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py may break 7 import paths
+RISKS[1]:
   ⚠ Splitting plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py may break 7 import paths
 
 METRICS-TARGET:
-  CC̄:          3.3 → ≤2.3
-  max-CC:      15 → ≤7
-  god-modules: 2 → 0
-  high-CC(≥15): 1 → ≤0
+  CC̄:          3.4 → ≤2.4
+  max-CC:      26 → ≤13
+  god-modules: 1 → 0
+  high-CC(≥15): 2 → ≤1
   hub-types:   0 → ≤0
 
 PATTERNS (language parser shared logic):
@@ -50,4 +49,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=3.3 → now CC̄=3.3
+  prev CC̄=3.4 → now CC̄=3.4

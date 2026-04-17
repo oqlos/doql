@@ -21,6 +21,7 @@ from .query import cmd_query
 from .kiosk import cmd_kiosk
 from .quadlet import cmd_quadlet
 from .docs import cmd_docs
+from .import_cmd import cmd_import
 
 __all__ = [
     "cmd_init",
@@ -29,6 +30,7 @@ __all__ = [
     "cmd_run",
     "cmd_deploy",
     "cmd_export",
+    "cmd_import",
     "cmd_generate",
     "cmd_render",
     "cmd_query",

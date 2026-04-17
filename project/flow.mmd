@@ -25,26 +25,29 @@ flowchart TD
     subgraph Core
         doql__usage["usage"]
         plugins__doql_plugin_fleet__doql_plugin_fleet__generate["generate"]
-        plugins___shared__base__plugin_generate["plugin_generate"]
-        plugins___shared__readme__generate_readme["generate_readme"]
         plugins__doql_plugin_gxp__doql_plugin_gxp__generate["generate"]
+        plugins__doql_plugin_iso17025__doql_plugin_iso17025__traceability__generate["generate"]
         plugins__doql_plugin_erp__doql_plugin_erp___odoo_client_module["_odoo_client_module"]
         plugins__doql_plugin_erp__doql_plugin_erp__generate["generate"]
+        plugins__doql_plugin_iso17025__doql_plugin_iso17025__certificate__generate["generate"]
+        plugins__doql_plugin_iso17025__doql_plugin_iso17025__migration__generate["generate"]
+        plugins__doql_plugin_iso17025__doql_plugin_iso17025__uncertainty__generate["generate"]
         plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate["generate"]
-        vscode_doql__src__extension__activate["activate"]
-        vscode_doql__src__extension__config["config"]
-        vscode_doql__src__extension__serverPath["serverPath"]
-        vscode_doql__src__extension__deactivate["deactivate"]
-        playground__app__TAB_NAMES["TAB_NAMES"]
-        playground__app__tabFromHash["tabFromHash"]
-        playground__app__name["name"]
-        ...["+70 more"]
+        plugins__doql_plugin_iso17025__doql_plugin_iso17025__drift_monitor__generate["generate"]
+        playground__renderers__renderFatal["renderFatal"]
+        playground__renderers__renderDiagnostics["renderDiagnostics"]
+        playground__renderers__loc["loc"]
+        playground__renderers__renderAst["renderAst"]
+        ...["+91 more"]
     end
 
     subgraph Exporters
+        doql__exporters__yaml_exporter__export_yaml_file["export_yaml_file"]
+        doql__exporters__markdown_exporter__export_markdown{{export_markdown CC=26}}
+        doql__exporters__markdown_exporter__export_markdown_file["export_markdown_file"]
         doql__generators__export_postman__run["run"]
         doql__generators__export_ts_sdk__run["run"]
         doql__generators__api_gen__export_openapi["export_openapi"]
     end
 
-    class doql__usage,plugins__doql_plugin_fleet__doql_plugin_fleet__generate,plugins___shared__base__plugin_generate,plugins___shared__readme__generate_readme,plugins__doql_plugin_gxp__doql_plugin_gxp__generate,plugins__doql_plugin_erp__doql_plugin_erp___odoo_client_module,plugins__doql_plugin_erp__doql_plugin_erp__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate,vscode_doql__src__extension__activate,vscode_doql__src__extension__config entry
+    class doql__usage,plugins__doql_plugin_fleet__doql_plugin_fleet__generate,plugins__doql_plugin_gxp__doql_plugin_gxp__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__traceability__generate,plugins__doql_plugin_erp__doql_plugin_erp___odoo_client_module,plugins__doql_plugin_erp__doql_plugin_erp__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__certificate__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__migration__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__uncertainty__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate entry

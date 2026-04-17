@@ -11,7 +11,7 @@ import sys
 from .. import __version__
 from .commands import (
     cmd_init, cmd_validate, cmd_plan, cmd_run, cmd_deploy,
-    cmd_export, cmd_generate, cmd_render, cmd_query,
+    cmd_export, cmd_import, cmd_generate, cmd_render, cmd_query,
     cmd_kiosk, cmd_quadlet, cmd_docs,
 )
 from .build import cmd_build
@@ -64,9 +64,21 @@ def create_parser() -> argparse.ArgumentParser:
     s.set_defaults(func=cmd_sync)
     
     # export
-    s = sub.add_parser("export", help="Export OpenAPI / Postman / TS SDK")
-    s.add_argument("--format", required=True, choices=["openapi", "postman", "typescript-sdk"])
+    s = sub.add_parser("export", help="Export OpenAPI / Postman / TS SDK / YAML / Markdown / CSS / LESS / SASS")
+    s.add_argument("--format", required=True,
+                   choices=["openapi", "postman", "typescript-sdk",
+                            "yaml", "markdown", "css", "less", "sass"])
+    s.add_argument("-o", "--output", help="Output file path (default: stdout)")
     s.set_defaults(func=cmd_export)
+
+    # import
+    s = sub.add_parser("import", help="Import YAML → DOQL format")
+    s.add_argument("source", help="Source YAML file path")
+    s.add_argument("--format", required=True,
+                   choices=["yaml", "css", "less", "sass"],
+                   help="Output format")
+    s.add_argument("-o", "--output", help="Output file path")
+    s.set_defaults(func=cmd_import)
     
     # generate
     s = sub.add_parser("generate", help="Generate a single document/artifact")

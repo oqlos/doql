@@ -1,12 +1,10 @@
-# doql | 267 func | 63f | 10814L | python | 2026-04-17
+# doql | 310 func | 75f | 12061L | python | 2026-04-17
 
 HEALTH:
-  CC̄=3.3  critical=18 (limit:10)  dup=0  cycles=1
+  CC̄=3.4  critical=19 (limit:10)  dup=0  cycles=2
 
 ALERTS[20]:
-  !!! high_fan_out     pyodide = 26 (limit:10)
-  !!! high_fan_out     buildFn = 26 (limit:10)
-  !!! high_fan_out     debounceTimer = 26 (limit:10)
+  !!! cc_exceeded      export_markdown = 26 (limit:15)
   !!! high_fan_out     bootPyodide = 26 (limit:10)
   !!! high_fan_out     generate = 24 (limit:10)
   !!! high_fan_out     extract_pages = 22 (limit:10)
@@ -14,38 +12,45 @@ ALERTS[20]:
   !!  high_fan_out     cmd_sync = 18 (limit:10)
   !!  high_fan_out     _diagnostics_for = 17 (limit:10)
   !   cc_exceeded      generate = 15 (limit:15)
+  !   high_fan_out     definition = 14 (limit:10)
+  !   high_fan_out     cmd_plan = 13 (limit:10)
 
-MODULES[74] (top by size):
-  M[plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py] 578L C:0 F:7 CC↑2 D:0 (python)
+MODULES[88] (top by size):
   M[plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py] 524L C:0 F:7 CC↑2 D:0 (python)
   M[doql/generators/mobile_gen.py] 462L C:0 F:8 CC↑5 D:1 (python)
-  M[playground/app.js] 441L C:0 F:27 CC↑13 D:0 (javascript)
   M[plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py] 427L C:0 F:6 CC↑2 D:0 (python)
-  M[doql/lsp_server.py] 361L C:0 F:12 CC↑14 D:0 (python)
+  M[doql/lsp_server.py] 364L C:0 F:13 CC↑14 D:0 (python)
   M[plugins/doql-plugin-erp/doql_plugin_erp/__init__.py] 357L C:0 F:6 CC↑2 D:0 (python)
   M[doql/generators/infra_gen.py] 321L C:0 F:5 CC↑8 D:0 (python)
   M[doql/generators/integrations_gen.py] 320L C:0 F:7 CC↑15 D:0 (python)
-  M[doql/generators/workflow_gen.py] 304L C:0 F:7 CC↑11 D:0 (python)
-  M[doql/parsers/registry.py] 262L C:0 F:23 CC↑6 D:1 (python)
-  M[doql/generators/desktop_gen.py] 214L C:0 F:8 CC↑6 D:2 (python)
+  M[doql/generators/workflow_gen.py] 304L C:0 F:6 CC↑11 D:0 (python)
+  M[doql/parsers/registry.py] 267L C:0 F:24 CC↑6 D:1 (python)
+  M[doql/parsers/css_mappers.py] 261L C:0 F:12 CC↑10 D:1 (python)
+  M[playground/pyodide-bridge.js] 238L C:0 F:10 CC↑13 D:0 (javascript)
+  M[doql/parsers/css_parser.py] 213L C:0 F:8 CC↑12 D:2 (python)
+  M[playground/app.js] 212L C:0 F:9 CC↑5 D:0 (javascript)
   M[doql/cli/sync.py] 210L C:0 F:10 CC↑11 D:0 (python)
-  M[doql/parsers/models.py] 207L C:19 F:0 CC↑0 D:0 (python)
-  M[doql.sh] 195L C:0 F:1 CC↑0 D:0 (shell)
-  LANGS: python:68/shell:4/javascript:1/typescript:1
+  M[doql/generators/desktop_gen.py] 209L C:0 F:7 CC↑6 D:1 (python)
+  LANGS: python:80/shell:4/javascript:3/typescript:1
 
 HOTSPOTS[10]:
-  ★ pyodide fan=26  // Orchestrates 26 calls
-  ★ buildFn fan=26  // Orchestrates 26 calls
-  ★ debounceTimer fan=26  // Orchestrates 26 calls
   ★ bootPyodide fan=26  // Orchestrates 26 calls
   ★ generate fan=24  // Generate React + Vite + TailwindCSS frontend into *out* directory.
+  ★ extract_pages fan=22  // Extract PAGE definitions from INTERFACE body.
 
-REFACTOR[7]:
-  [1] H/H Split god module plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py (524L, 0 classes)
-  [2] H/H Split god module plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py (578L, 0 classes)
+Supports two formats:
+  1. ``PAGE
+  ★ generate fan=19  // Generate API layer files into *out* directory.
+  ★ cmd_sync fan=18  // Selective rebuild — only regenerate sections that changed since last build.
+
+Thi
+
+REFACTOR[8]:
+  [1] H/L Split export_markdown (CC=26 → target CC<10)
+  [2] H/H Split god module plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py (524L, 0 classes)
   [3] M/L Split generate (CC=15 → target CC<10)
-  [4] M/L Break circular dependency: playground.app.executeBuild → playground.app.buildFn
-  [5] M/M Reduce pyodide fan-out (currently 26)
+  [4] M/L Break circular dependency: doql.exporters.yaml_exporter._clean
+  [5] M/L Break circular dependency: doql.parsers.css_parser._tokenise_css
 
 EVOLUTION:
-  2026-04-17 CC̄=3.3 crit=18 10814L // Automated analysis
+  2026-04-17 CC̄=3.4 crit=19 12061L // Automated analysis

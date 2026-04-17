@@ -4,30 +4,38 @@
 
 - **Project**: /home/tom/github/oqlos/doql
 - **Primary Language**: python
-- **Languages**: python: 68, shell: 3, typescript: 1, javascript: 1
+- **Languages**: python: 80, shell: 3, javascript: 3, typescript: 1
 - **Analysis Mode**: static
-- **Total Functions**: 267
-- **Total Classes**: 21
-- **Modules**: 73
-- **Entry Points**: 96
+- **Total Functions**: 310
+- **Total Classes**: 23
+- **Modules**: 87
+- **Entry Points**: 119
 
 ## Architecture by Module
 
-### playground.app
-- **Functions**: 27
-- **File**: `app.js`
-
 ### doql.parsers.registry
-- **Functions**: 23
+- **Functions**: 24
 - **File**: `registry.py`
 
 ### doql.lsp_server
-- **Functions**: 12
+- **Functions**: 13
 - **File**: `lsp_server.py`
 
 ### doql.parsers.extractors
 - **Functions**: 12
 - **File**: `extractors.py`
+
+### doql.parsers.css_mappers
+- **Functions**: 12
+- **File**: `css_mappers.py`
+
+### playground.renderers
+- **Functions**: 10
+- **File**: `renderers.js`
+
+### playground.pyodide-bridge
+- **Functions**: 10
+- **File**: `pyodide-bridge.js`
 
 ### doql.cli.sync
 - **Functions**: 10
@@ -37,23 +45,27 @@
 - **Functions**: 10
 - **File**: `plan.py`
 
+### playground.app
+- **Functions**: 9
+- **File**: `app.js`
+
+### doql.exporters.markdown_exporter
+- **Functions**: 9
+- **File**: `markdown_exporter.py`
+
 ### doql.parsers.validators
 - **Functions**: 9
 - **File**: `validators.py`
-
-### doql.generators.desktop_gen
-- **Functions**: 8
-- **File**: `desktop_gen.py`
 
 ### doql.generators.mobile_gen
 - **Functions**: 8
 - **File**: `mobile_gen.py`
 
-### plugins.doql-plugin-fleet.doql_plugin_fleet
-- **Functions**: 7
-- **File**: `__init__.py`
+### doql.parsers.css_parser
+- **Functions**: 8
+- **File**: `css_parser.py`
 
-### plugins.doql-plugin-iso17025.doql_plugin_iso17025
+### plugins.doql-plugin-fleet.doql_plugin_fleet
 - **Functions**: 7
 - **File**: `__init__.py`
 
@@ -61,13 +73,17 @@
 - **Functions**: 7
 - **File**: `integrations_gen.py`
 
-### doql.generators.workflow_gen
+### doql.generators.desktop_gen
 - **Functions**: 7
-- **File**: `workflow_gen.py`
+- **File**: `desktop_gen.py`
 
 ### doql.generators.api_gen.routes
 - **Functions**: 7
 - **File**: `routes.py`
+
+### doql.parsers.css_transformers
+- **Functions**: 7
+- **File**: `css_transformers.py`
 
 ### plugins.doql-plugin-gxp.doql_plugin_gxp
 - **Functions**: 6
@@ -76,22 +92,6 @@
 ### plugins.doql-plugin-erp.doql_plugin_erp
 - **Functions**: 6
 - **File**: `__init__.py`
-
-### doql.generators.web_gen.config
-- **Functions**: 6
-- **File**: `config.py`
-
-### doql.generators.infra_gen
-- **Functions**: 5
-- **File**: `infra_gen.py`
-
-### doql.generators.api_gen.common
-- **Functions**: 5
-- **File**: `common.py`
-
-### doql.generators.api_gen.schemas
-- **Functions**: 5
-- **File**: `schemas.py`
 
 ## Key Entry Points
 
@@ -112,14 +112,8 @@ a
 > Generate API layer files into *out* directory.
 - **Calls**: bool, files.items, alembic_dir.mkdir, None.write_text, None.write_text, None.write_text, print, readme.write_text
 
-### playground.app.pyodide
-- **Calls**: playground.app.loadPyodide, playground.app.loadPackage, playground.app.first, playground.app.runPythonAsync, playground.app.install, playground.app.getattr, playground.app.print, playground.app.runPython
-
-### playground.app.debounceTimer
-- **Calls**: playground.app.loadPyodide, playground.app.loadPackage, playground.app.first, playground.app.runPythonAsync, playground.app.install, playground.app.getattr, playground.app.print, playground.app.runPython
-
-### playground.app.bootPyodide
-- **Calls**: playground.app.loadPyodide, playground.app.loadPackage, playground.app.first, playground.app.runPythonAsync, playground.app.install, playground.app.getattr, playground.app.print, playground.app.runPython
+### playground.pyodide-bridge.bootPyodide
+- **Calls**: playground.pyodide-bridge.loadPyodide, playground.pyodide-bridge.loadPackage, playground.pyodide-bridge.first, playground.pyodide-bridge.runPythonAsync, playground.pyodide-bridge.install, playground.pyodide-bridge.getattr, playground.pyodide-bridge.print, playground.pyodide-bridge.runPython
 
 ### doql.generators.integrations_gen.generate
 > Generate integration service modules.
@@ -186,6 +180,10 @@ and estimated file counts per i
 ### doql.parsers.registry._handle_api_client
 - **Calls**: doql.parsers.registry.register, None.strip, doql.parsers.extractors.extract_val, spec.api_clients.append, ApiClient, header.split, doql.parsers.extractors.extract_val, doql.parsers.extractors.extract_val
 
+### doql.parsers.css_mappers._map_data_source
+> Map CSS block to DataSource definition.
+- **Calls**: sel.attributes.get, DataSource, spec.data_sources.append, block.declarations.get, block.declarations.get, block.declarations.get, block.declarations.get, block.declarations.get
+
 ### doql.lsp_server.completion
 - **Calls**: server.feature, ls.workspace.get_text_document, doql.lsp_server._parse_doc, lsp.CompletionList, lsp.CompletionOptions, items.append, items.append, lsp.CompletionItem
 
@@ -209,6 +207,10 @@ The artifact name must match a DOCUMENT defined in the .doql file.
 
 ### doql.parsers.registry._handle_document
 - **Calls**: doql.parsers.registry.register, None.strip, doql.parsers.extractors.extract_list, spec.documents.append, doql.parsers.extractors.extract_yaml_list, Document, header.split, doql.parsers.extractors.extract_val
+
+### doql.parsers.css_mappers._map_workflow
+> Map CSS block to Workflow definition.
+- **Calls**: sel.attributes.get, next, Workflow, spec.workflows.append, doql.parsers.css_parser._parse_selector, WorkflowStep, wf.steps.append, block.declarations.get
 
 ### doql.parsers.parse_env
 > Parse a .env file into a dict. Missing file → empty dict.
@@ -235,57 +237,68 @@ cmd_sync [doql.cli.sync]
   └─ →> load_spec
   └─ →> read_lockfile
   └─ →> spec_section_hashes
+      └─ →> _h
+      └─ →> _h
 ```
 
-### Flow 3: pyodide
+### Flow 3: bootPyodide
 ```
-pyodide [playground.app]
-```
-
-### Flow 4: debounceTimer
-```
-debounceTimer [playground.app]
+bootPyodide [playground.pyodide-bridge]
 ```
 
-### Flow 5: bootPyodide
-```
-bootPyodide [playground.app]
-```
-
-### Flow 6: cmd_init
+### Flow 4: cmd_init
 ```
 cmd_init [doql.cli.commands.init]
   └─ →> scaffold_from_template
 ```
 
-### Flow 7: document_symbols
+### Flow 5: document_symbols
 ```
 document_symbols [doql.lsp_server]
   └─> _parse_doc
   └─> _find_line_col
 ```
 
-### Flow 8: hover
+### Flow 6: hover
 ```
 hover [doql.lsp_server]
   └─> _word_at
   └─> _parse_doc
 ```
 
-### Flow 9: cmd_deploy
+### Flow 7: cmd_deploy
 ```
 cmd_deploy [doql.cli.commands.deploy]
 ```
 
-### Flow 10: validate
+### Flow 8: validate
 ```
 validate [doql.parsers.validators]
+```
+
+### Flow 9: definition
+```
+definition [doql.lsp_server]
+  └─> _word_at
+```
+
+### Flow 10: cmd_validate
+```
+cmd_validate [doql.cli.commands.validate]
 ```
 
 ## Key Classes
 
 ### doql.cli.context.BuildContext
 > Build context for doql commands.
+- **Methods**: 0
+
+### doql.parsers.css_utils.CssBlock
+> Single CSS-like rule: selector + key-value declarations.
+- **Methods**: 0
+
+### doql.parsers.css_utils.ParsedSelector
+> Decomposed CSS selector.
 - **Methods**: 0
 
 ### doql.plugins.Plugin
@@ -341,12 +354,6 @@ validate [doql.parsers.validators]
 ### doql.parsers.models.Workflow
 - **Methods**: 0
 
-### doql.parsers.models.Role
-- **Methods**: 0
-
-### doql.parsers.models.Deploy
-- **Methods**: 0
-
 ## Data Transformation Functions
 
 Key functions that process and transform data:
@@ -366,19 +373,29 @@ Returns:
     0 if validation passes, 1 if there are err
 - **Output to**: None.resolve, print, sum, sum, print
 
-### doql.parsers.parse_file
-> Parse a .doql file into a DoqlSpec.
-- **Output to**: doql.parsers.parse_text, path.exists, DoqlParseError, path.read_text
+### doql.parsers.css_parser._parse_declarations
+> Extract property: value pairs from a CSS block body (top-level only).
+- **Output to**: body.splitlines, line.strip, re.match, line.count, line.count
 
-### doql.parsers.parse_text
-> Parse .doql source text into a DoqlSpec (in-memory, no disk I/O).
+### doql.parsers.css_parser._parse_selector
+> Parse a CSS-like selector into structured form.
 
-Uses error recovery: malformed bl
-- **Output to**: DoqlSpec, doql.parsers.extractors.collect_env_refs, doql.parsers.blocks.split_blocks, doql.parsers.blocks.apply_block, spec.parse_errors.append
+Examples:
+    "app" → type="app"
+    'entity[name="
+- **Output to**: None.split, ParsedSelector, re.match, re.finditer, selector.strip
 
-### doql.parsers.parse_env
-> Parse a .env file into a dict. Missing file → empty dict.
-- **Output to**: None.splitlines, path.exists, line.strip, path.read_text, line.startswith
+### doql.parsers.css_parser.parse_css_file
+> Parse a .doql.css / .doql.less / .doql.sass file into DoqlSpec.
+- **Output to**: path.read_text, doql.parsers.css_parser.parse_css_text, path.exists, DoqlParseError, doql.parsers.css_parser._detect_format
+
+### doql.parsers.css_parser.parse_css_text
+> Parse CSS-like DOQL source text into a DoqlSpec.
+- **Output to**: doql.parsers.css_utils._strip_comments, doql.parsers.css_parser._tokenise_css, doql.parsers.css_parser._map_to_spec, doql.parsers.extractors.collect_env_refs, doql.parsers.css_transformers._resolve_less_vars
+
+### doql.parsers.css_parser._detect_format
+> Detect format from file extension.
+- **Output to**: path.name.lower, name.endswith, name.endswith
 
 ### doql.parsers.extractors._parse_field_flags
 > Parse field flags from type string.
@@ -395,6 +412,28 @@ Uses error recovery: malformed bl
 ### doql.parsers.extractors._parse_field_type
 > Extract clean base type from type string.
 - **Output to**: re.split
+
+### doql.parsers.css_transformers._convert_indent_to_braces
+> Convert indent-based SASS blocks to brace-delimited CSS.
+- **Output to**: line.rstrip, doql.parsers.css_transformers._is_selector_line, indent_stack.pop, result_lines.append, len
+
+### doql.parsers._is_css_format
+> Check if a path uses one of the CSS-like DOQL formats.
+- **Output to**: path.name.lower, any, name.endswith
+
+### doql.parsers.parse_file
+> Parse a .doql / .doql.css / .doql.less / .doql.sass file into a DoqlSpec.
+- **Output to**: doql.parsers._is_css_format, doql.parsers.parse_text, path.exists, DoqlParseError, doql.parsers.css_parser.parse_css_file
+
+### doql.parsers.parse_text
+> Parse .doql source text into a DoqlSpec (in-memory, no disk I/O).
+
+Uses error recovery: malformed bl
+- **Output to**: DoqlSpec, doql.parsers.extractors.collect_env_refs, doql.parsers.blocks.split_blocks, doql.parsers.blocks.apply_block, spec.parse_errors.append
+
+### doql.parsers.parse_env
+> Parse a .env file into a dict. Missing file → empty dict.
+- **Output to**: None.splitlines, path.exists, line.strip, path.read_text, line.startswith
 
 ### doql.parsers.validators._validate_app_name
 > Validate APP name is set.
@@ -428,23 +467,29 @@ Uses error recovery: malformed bl
 > Warn on interfaces with no pages.
 - **Output to**: issues.append, ValidationIssue
 
-### doql.parsers.validators.validate
-> Validate a parsed DoqlSpec against env vars and internal consistency.
-- **Output to**: issues.extend, issues.extend, issues.extend, issues.extend, issues.extend
+## Behavioral Patterns
+
+### recursion__clean
+- **Type**: recursion
+- **Confidence**: 0.90
+- **Functions**: doql.exporters.yaml_exporter._clean
+
+### recursion__tokenise_css
+- **Type**: recursion
+- **Confidence**: 0.90
+- **Functions**: doql.parsers.css_parser._tokenise_css
 
 ## Public API Surface
 
 Functions exposed as public API (no underscore prefix):
 
+- `doql.exporters.markdown_exporter.export_markdown` - 47 calls
 - `doql.cli.main.create_parser` - 44 calls
 - `doql.generators.web_gen.generate` - 43 calls
 - `doql.cli.sync.cmd_sync` - 40 calls
 - `doql.parsers.extractors.extract_pages` - 36 calls
 - `doql.generators.api_gen.generate` - 27 calls
-- `playground.app.pyodide` - 26 calls
-- `playground.app.buildFn` - 26 calls
-- `playground.app.debounceTimer` - 26 calls
-- `playground.app.bootPyodide` - 26 calls
+- `playground.pyodide-bridge.bootPyodide` - 26 calls
 - `doql.generators.integrations_gen.generate` - 24 calls
 - `doql.generators.desktop_gen.generate` - 23 calls
 - `doql.generators.api_gen.alembic.gen_initial_migration` - 23 calls
@@ -469,13 +514,15 @@ Functions exposed as public API (no underscore prefix):
 - `doql.cli.commands.generate.cmd_generate` - 11 calls
 - `doql.generators.document_gen.generate` - 11 calls
 - `doql.generators.api_gen.models.gen_models` - 11 calls
-- `doql.parsers.parse_env` - 10 calls
 - `doql.parsers.extractors.extract_val` - 10 calls
+- `doql.parsers.parse_env` - 10 calls
 - `plugins.doql-plugin-fleet.doql_plugin_fleet.generate` - 9 calls
-- `plugins.doql-plugin-iso17025.doql_plugin_iso17025.generate` - 9 calls
 - `doql.cli.commands.render.cmd_render` - 9 calls
 - `doql.cli.commands.export.cmd_export` - 9 calls
 - `doql.cli.commands.query.cmd_query` - 9 calls
+- `plugins.doql-plugin-gxp.doql_plugin_gxp.generate` - 8 calls
+- `plugins.doql-plugin-erp.doql_plugin_erp.generate` - 8 calls
+- `playground.pyodide-bridge.executeBuild` - 8 calls
 
 ## System Interactions
 
@@ -493,16 +540,6 @@ graph TD
     cmd_sync --> diff_sections
     generate --> bool
     generate --> mkdir
-    pyodide --> loadPyodide
-    pyodide --> loadPackage
-    pyodide --> first
-    pyodide --> runPythonAsync
-    pyodide --> install
-    debounceTimer --> loadPyodide
-    debounceTimer --> loadPackage
-    debounceTimer --> first
-    debounceTimer --> runPythonAsync
-    debounceTimer --> install
     bootPyodide --> loadPyodide
     bootPyodide --> loadPackage
     bootPyodide --> first
@@ -513,6 +550,16 @@ graph TD
     cmd_init --> getattr
     cmd_init --> Path
     cmd_init --> exists
+    cmd_init --> print
+    cmd_init --> scaffold_from_templa
+    document_symbols --> feature
+    document_symbols --> get_text_document
+    document_symbols --> _parse_doc
+    document_symbols --> _find_line_col
+    document_symbols --> Range
+    hover --> feature
+    hover --> get_text_document
+    hover --> _word_at
 ```
 
 ## Reverse Engineering Guidelines
