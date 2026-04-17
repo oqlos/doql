@@ -30,6 +30,23 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
   with unexpected indent for specs without a `User` entity
   (e.g. calibration-lab). Fixed via `textwrap.indent` pre-alignment.
 
+### Added (sesja 12 — full runtime testing)
+- **`tests/test_runtime.py`** — 18 new pytest tests: 8 API boot+health
+  tests (uvicorn launched per example, /health + /openapi.json verified)
+  and 10 build-target artifact checks (web/mobile/desktop/infra per example).
+- **`test_generators.py`** expanded from 5 → 10 examples (added blog-cms,
+  crm-contacts, e-commerce-shop, notes-app, todo-pwa).
+- **`runtime_all_examples.sh`** updated: all 10 examples, auto-skip
+  postgres-dependent APIs, `auth.py` compile check, `python-multipart`
+  auto-install in runtime venv.
+- **Test suite: 120 tests** (99 → 120), 4 skipped
+  (2 sqlalchemy plugin, 2 psycopg2/postgres).
+
+### Fixed (sesja 12)
+- **Runtime `python-multipart`** — generated `auth.py` uses
+  `OAuth2PasswordRequestForm` (form data) which requires
+  `python-multipart`; added to runtime venv deps.
+
 #### Metrics (before → after)
 | Metric | Before | After | Target |
 |--------|--------|-------|--------|

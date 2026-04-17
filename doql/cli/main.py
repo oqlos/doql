@@ -52,6 +52,8 @@ def create_parser() -> argparse.ArgumentParser:
     
     # run
     s = sub.add_parser("run", help="Run locally (dev mode)")
+    s.add_argument("--target", "-t", choices=["api", "web", "mobile", "desktop"],
+                   help="Run a specific target (default: full stack via docker-compose)")
     s.set_defaults(func=cmd_run)
     
     # deploy

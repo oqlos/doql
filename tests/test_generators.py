@@ -13,10 +13,15 @@ ROOT = pathlib.Path(__file__).parent.parent
 DOQL_BIN = ROOT / "venv" / "bin" / "doql"
 EXAMPLES = [
     "asset-management",
+    "blog-cms",
     "calibration-lab",
+    "crm-contacts",
     "document-generator",
+    "e-commerce-shop",
     "iot-fleet",
     "kiosk-station",
+    "notes-app",
+    "todo-pwa",
 ]
 TEMPLATES = ["minimal", "saas-multi-tenant", "calibration-lab", "iot-fleet"]
 

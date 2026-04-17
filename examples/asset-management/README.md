@@ -31,21 +31,31 @@ cd my-scba-manager
 cp .env.example .env
 $EDITOR .env    # wpisz hasła, klucze, domeny
 
-# 3. Waliduj deklarację
-doql validate
+# 3. Waliduj deklarację (wskazując konkretny plik)
+doql validate -f app.doql.css
 
 # 4. Zobacz plan generowania
-doql plan
+doql plan -f app.doql.css
 
 # 5. Wygeneruj cały kod
-doql build
+doql build -f app.doql.css
 # → build/api/        FastAPI app
 # → build/web/        React SPA
 # → build/mobile/     PWA
 # → build/desktop/    Tauri project
 # → build/infra/      docker-compose.yml + Traefik + Quadlet
 
-# 6. Uruchom wybrany target (patrz sekcja niżej)
+# 6. Uruchom wybrany target
+# Uwaga: doql run wymaga -d (katalog projektu), nie -f (plik)
+doql -d examples/asset-management run -t desktop   # aplikacja desktopowa Tauri
+doql -d examples/asset-management run -t api       # tylko API
+doql -d examples/asset-management run -t web       # tylko frontend
+doql -d examples/asset-management run -t mobile    # PWA na http://localhost:8091
+doql -d examples/asset-management run              # pełny stack via docker-compose
+
+# lub z katalogu projektu:
+cd examples/asset-management
+doql run -t desktop
 
 # 7. Deploy na produkcję
 doql deploy --env prod
@@ -55,9 +65,15 @@ doql deploy --env prod
 
 ## Uruchamianie aplikacji
 
-### Desktop (Tauri)
+### Desktop (Tauri) — przez doql CLI
 
 Do pracy offline przy stanowisku testowym:
+
+```bash
+doql run --target desktop
+```
+
+Lub ręcznie:
 
 ```bash
 cd build/desktop
@@ -65,10 +81,10 @@ npm install  # tylko przy pierwszym uruchomieniu
 npm run dev
 ```
 
-**Wymagania:**
+**Wymagania systemowe (Linux):**
 - Rust toolchain: <https://rustup.rs>
 - Node 20+
-- System libraries (Linux):
+- System libraries:
   ```bash
   sudo apt install -y \
       libwebkit2gtk-4.1-dev libsoup-3.0-dev \
@@ -79,14 +95,27 @@ npm run dev
 ### Web (React + Vite)
 
 ```bash
+doql run --target web
+# → http://localhost:5173
+```
+
+Lub ręcznie:
+
+```bash
 cd build/web
 npm install
-npm run dev  # dev mode na http://localhost:5173
-# lub
-npm run build && npm run preview  # production build
+npm run dev
 ```
 
 ### API (FastAPI)
+
+```bash
+doql run --target api
+# → http://localhost:8000
+# → http://localhost:8000/docs
+```
+
+Lub ręcznie:
 
 ```bash
 cd build/api
@@ -94,16 +123,19 @@ pip install -r requirements.txt
 uvicorn main:app --reload --port 8000
 ```
 
-Dokumentacja API: http://localhost:8000/docs
+### Mobile (PWA)
+
+```bash
+doql run --target mobile
+# → http://localhost:8091
+```
 
 ### Pełny stack (Docker Compose)
 
 ```bash
-cd build/infra
-docker-compose up
+doql run
+# uruchamia docker-compose z build/infra/docker-compose.yml
 ```
-
-**Uwaga:** `doql run` próbuje uruchomić pełny stack Docker — może się nie udać jeśli port 8000 jest już zajęty.
 
 ---
 

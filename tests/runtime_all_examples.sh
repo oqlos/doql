@@ -7,16 +7,25 @@ ROOT="/home/tom/github/oqlos/doql"
 VENV="/tmp/doql-runtime"
 PORT=8777
 
-# Examples that produce an API (have ENTITY definitions). kiosk-station
-# and document-generator may only have documents/interfaces — they are
-# skipped when no api/main.py exists.
+# All ten showcase examples.  Those without api/main.py (document-generator,
+# kiosk-station) are automatically skipped by the loop below.
 EXAMPLES=(
   asset-management
+  blog-cms
   calibration-lab
-  iot-fleet
+  crm-contacts
   document-generator
+  e-commerce-shop
+  iot-fleet
   kiosk-station
+  notes-app
+  todo-pwa
 )
+
+# Ensure runtime venv has all API deps (idempotent).
+if [[ -x "$VENV/bin/pip" ]]; then
+  "$VENV/bin/pip" install -q python-multipart 2>/dev/null || true
+fi
 
 cleanup() {
   pkill -f "uvicorn main:app.*--port $PORT" 2>/dev/null || true
@@ -42,15 +51,30 @@ for ex in "${EXAMPLES[@]}"; do
     continue
   fi
 
+  # Skip examples that hardcode postgresql:// when psycopg2 is not installed
+  if grep -q 'postgresql://' "$api_dir/database.py" 2>/dev/null; then
+    if ! "$VENV/bin/python" -c "import psycopg2" 2>/dev/null; then
+      echo "— (postgres required, psycopg2 absent, skipped)"
+      skip=$((skip+1))
+      continue
+    fi
+  fi
+
   # Compile the API as a sanity check (catches syntax errors)
-  (cd "$api_dir" && "$VENV/bin/python" -m py_compile main.py routes.py models.py schemas.py) || {
+  py_files=()
+  for f in main.py routes.py models.py schemas.py auth.py; do
+    [[ -f "$api_dir/$f" ]] && py_files+=("$f")
+  done
+  (cd "$api_dir" && "$VENV/bin/python" -m py_compile "${py_files[@]}") || {
     echo "✗ .py compile failed"; fail=$((fail+1)); continue
   }
 
   # Boot server
-  rm -f "$api_dir/data.db"
+  mkdir -p "$api_dir/data"
+  rm -f "$api_dir/data"/*.db "$api_dir/data.db"
   cleanup; sleep 0.3
-  (cd "$api_dir" && JWT_SECRET=test-secret "$VENV/bin/uvicorn" main:app \
+  (cd "$api_dir" && JWT_SECRET=test-secret DATABASE_URL=sqlite:///./data/app.db \
+    "$VENV/bin/uvicorn" main:app \
     --host 127.0.0.1 --port $PORT > /tmp/doql-ex-${ex}.log 2>&1) &
   server_pid=$!
 

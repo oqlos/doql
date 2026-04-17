@@ -79,19 +79,105 @@ pip install -e .
 doql --version
 ```
 
-### Szybki test — generator PDF
+### Przykłady użycia CLI
+
+#### Minimalny przykład — Todo PWA
 
 ```bash
-doql init --template document-generator my-lab
-cd my-lab
-cp .env.example .env
-doql validate
-doql plan
+cd examples/todo-pwa
+doql validate -f app.doql.css   # sprawdź deklarację
+doql plan -f app.doql.css       # podgląd co zostanie wygenerowane
+doql build -f app.doql.css      # generuj kod
+doql run -t api                 # uruchom API na http://localhost:8000
+doql run -t mobile              # uruchom PWA na http://localhost:8091
 ```
 
-### Szybki start z CLI shell
+#### Asset Management — pełen stack (API + Web + Mobile + Desktop)
 
-Użyj skryptu `doql.sh` do generowania i uruchamiania aplikacji jedną komendą:
+```bash
+cd examples/asset-management
+cp .env.example .env
+doql validate -f app.doql.css
+doql build -f app.doql.css
+
+doql run -t api        # FastAPI → http://localhost:8000/docs
+doql run -t web        # React   → http://localhost:5173
+doql run -t mobile     # PWA     → http://localhost:8091
+doql run -t desktop    # Tauri desktop app (wymaga Rust)
+doql run               # pełny stack via docker-compose
+```
+
+#### Laboratorium kalibracyjne ISO 17025
+
+```bash
+cd examples/calibration-lab
+doql validate -f app.doql.less
+doql build -f app.doql.less
+doql run -t api        # FastAPI → http://localhost:8000/docs
+doql run -t web        # React   → http://localhost:5173
+```
+
+#### Generator PDF (świadectwa kalibracyjne)
+
+```bash
+cd examples/document-generator
+cp .env.example .env
+doql validate -f app.doql.less
+doql build -f app.doql.less
+doql run -t web        # htmx UI → http://localhost:8080
+
+# Generowanie pojedynczego dokumentu:
+doql generate calibration_certificate \
+    --instrument-id "INST-001" \
+    --customer-id "cust-001" \
+    --operator "Jan Kowalski"
+```
+
+#### CRM Contacts
+
+```bash
+cd examples/crm-contacts
+doql validate -f app.doql.less
+doql build -f app.doql.less
+doql run -t api        # FastAPI → http://localhost:8000/docs
+doql run -t web        # React   → http://localhost:5173
+```
+
+#### IoT Fleet Manager (Kubernetes)
+
+```bash
+cd examples/iot-fleet
+doql validate -f app.doql.less
+doql build -f app.doql.less
+doql run -t api        # FastAPI → http://localhost:8000/docs
+doql run -t web        # React + Leaflet map → http://localhost:5173
+```
+
+#### Kiosk Station (Raspberry Pi)
+
+```bash
+cd examples/kiosk-station
+doql validate -f app.doql.css
+doql build -f app.doql.css
+
+# Instalacja na urządzeniu:
+scp -r build/infra pi@kiosk-01.local:/tmp/
+ssh pi@kiosk-01.local "sudo /tmp/infra/install-kiosk.sh && sudo reboot"
+```
+
+#### Uwaga: `doql run` vs `doql -d ... run`
+
+```bash
+# z katalogu projektu — krótsza forma:
+cd examples/asset-management
+doql run -t desktop
+
+# z dowolnego miejsca — z flagą -d:
+doql -d examples/asset-management run -t desktop
+doql -d examples/notes-app run -t web
+```
+
+### Szybki start z CLI shell (alternatywa)
 
 ```bash
 # Generuj i uruchom desktop app
@@ -100,18 +186,9 @@ Użyj skryptu `doql.sh` do generowania i uruchamiania aplikacji jedną komendą:
 # Generuj i uruchom web
 ./doql.sh examples/notes-app/app.doql web
 
-# Generuj i uruchom API
-./doql.sh examples/notes-app/app.doql api
-
 # Generuj wszystko
 ./doql.sh examples/notes-app/app.doql all
 ```
-
-CLI shell automatycznie:
-- Waliduje specyfikację
-- Planuje generację
-- Generuje wszystkie artefakty
-- Uruchamia aplikację (desktop/web/api)
 
 ### Publikacja artykułów
 
