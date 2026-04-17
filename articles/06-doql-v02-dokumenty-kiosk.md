@@ -32,7 +32,7 @@ Przez pierwsze tygodnie ktoś zapytał, czy można "napisać test w doql". Ktoś
 
 **DOQL jest deklaratywny.** Odpowiada na pytanie "co ma powstać". Plik `.doql` to opis celu — aplikacji, dokumentu, stanowiska. Kolejność sekcji nie ma znaczenia. Generator czyta całość, buduje plan, produkuje artefakty. Analogie: Terraform, Rails, CloudFormation.
 
-**IQL jest deklaratywny, ale na innej osi.** Odpowiada na pytanie "jak wygląda interakcja". Plik `.iql` to zapis sekwencji zdarzeń — kliknij tu, wpisz to, sprawdź to. Używany do session recording, testów UI, dokumentacji przepływów, specyfikacji integracji przez webhooki. Analogie: Gherkin, OpenAPI z sekwencjami, Playwright trace.
+**TestQL jest deklaratywny, ale na innej osi.** Odpowiada na pytanie "jak wygląda interakcja". Plik `.testql.toon.yaml` to zapis sekwencji zdarzeń — kliknij tu, wpisz to, sprawdź to. Używany do session recording, testów UI, dokumentacji przepływów, specyfikacji integracji przez webhooki. Analogie: Gherkin, OpenAPI z sekwencjami, Playwright trace.
 
 Każdy z tych języków używa tego samego tokenizera (wspólny `_cql_tokenizer.py` w rodzinie oqlos), więc narzędzia (syntax highlighting, LSP) działają dla wszystkich. Ale semantyki są rozdzielne i nie konkurują.
 

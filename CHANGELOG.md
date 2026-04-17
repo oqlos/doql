@@ -221,6 +221,20 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
   not exist`).
 
 
+## [0.0.2] - 2026-04-17
+
+### Docs
+- Update GLOSSARY.md
+- Update README.md
+- Update articles/01-oqlos-status-2026-q2.md
+- Update articles/02-testql-status-2026-q2.md
+- Update articles/05-wizja-ekosystemu-oqlos.md
+- Update articles/06-doql-v02-dokumenty-kiosk.md
+
+### Other
+- Update doql/__init__.py
+- Update examples/asset-management/app.doql.css
+
 ## [0.0.1] - 2026-04-17
 
 ### Docs

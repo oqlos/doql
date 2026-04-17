@@ -11,7 +11,7 @@
 |-------|-----------|---------------------|----------|
 | **OQL** (`.oql`) | imperatywny | **JAK wykonać zadanie?** (sekwencyjnie) | Bash / sekwencer CNC |
 | **DOQL** (`.doql`) | deklaratywny | **CO ma powstać?** (aplikacja, dokument, artefakt) | Terraform / Rails |
-| **IQL** (`.iql`) | deklaratywny | **JAK wygląda interakcja/komunikacja?** | Gherkin / OpenAPI + session |
+| **TestQL** (`.testql.toon.yaml`) | deklaratywny | **JAK wygląda interakcja/komunikacja?** | Gherkin / OpenAPI + session |
 
 ---
 
@@ -84,14 +84,14 @@ Kluczowe cechy:
 
 ---
 
-## IQL — deklaratywny, do interakcji i testów interfejsów
+## TestQL — deklaratywny, do interakcji i testów interfejsów
 
-`.iql` to zapis sposobu *komunikacji z interfejsem* — webowym, API, mobilnym. Może być nagrany z sesji użytkownika, napisany ręcznie, albo wygenerowany z deklaracji testowej.
+`.testql.toon.yaml` to zapis sposobu *komunikacji z interfejsem* — webowym, API, mobilnym. Może być nagrany z sesji użytkownika, napisany ręcznie, albo wygenerowany z deklaracji testowej.
 
 **Użycie:** session recording, testy UI, integracja z webhookami, dokumentacja przepływu API, onboarding (replay).
 
 **Przykład:**
-```iql
+```testql
 SESSION: "Periodyczny test urządzenia"
 
 NAVIGATE "/connect-test-device"
@@ -130,7 +130,7 @@ ENTITY Device: ...
 INTERFACE web: ...
 INTERFACE kiosk: ...
 SCENARIOS: IMPORT scenarios/*.oql
-TESTS: IMPORT tests/*.iql
+TESTS: IMPORT tests/*.testql.toon.yaml
 ```
 
 **Warstwa OQL** (`scenarios/pss7000.oql`) definiuje konkretne sekwencje hardware:
@@ -141,8 +141,8 @@ GOAL: Podciśnienie
   ...
 ```
 
-**Warstwa IQL** (`tests/acceptance.iql`) definiuje jak aplikacja ma się zachowywać:
-```iql
+**Warstwa TestQL** (`tests/acceptance.testql.toon.yaml`) definiuje jak aplikacja ma się zachowywać:
+```testql
 NAVIGATE "/devices/d-001"
 CLICK ".btn-start-inspection"
 ASSERT_TEXT ".status" "in_progress"
@@ -158,11 +158,11 @@ Generator `doql build` czyta DOQL, importuje referencje do OQL i IQL, i produkuj
 |-----------|---------|
 | „Uruchom pompę na 5 sekund" | **OQL** (to zadanie) |
 | „Skonfiguruj API z endpointem /devices" | **DOQL** (to deklaracja artefaktu) |
-| „Kliknij przycisk i sprawdź, czy strona się zmieniła" | **IQL** (to interakcja) |
+| „Kliknij przycisk i sprawdź, czy strona się zmieniła” | **TestQL** (to interakcja) |
 | „Zrób mi raport PDF z ostatniego testu" | **DOQL** (`ARTIFACT report`) |
 | „Zaimportuj dane z JSON" | **DOQL** (`DATA source: json`) |
 | „Wykonaj procedurę kalibracji" | **OQL** |
-| „Opisz przepływ użytkownika do dokumentacji" | **IQL** |
+| „Opisz przepływ użytkownika do dokumentacji” | **TestQL** |
 | „Zbuduj stanowisko operatora w trybie kiosk" | **DOQL** (`INTERFACE kiosk`) |
 
 ---

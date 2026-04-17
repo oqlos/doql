@@ -35,7 +35,7 @@ Interpreter — największy moduł projektu — został rozbity z 576 linii (CC=
 
 Pokazowy scenariusz *Dräger PSS 7000 — pełny test maski* (`drager-fps-7000-pelny-test-maski.oql`) wykonuje się end-to-end na stanowisku z pilotowego wdrożenia: od inicjalizacji peryferii, przez sekwencję nadciśnienia statycznego, test szczelności, pomiar ciśnienia otwarcia zaworu, aż po oględziny wizualne i zapis protokołu. Scenariuszy tego typu mamy w repozytorium trzy — w pełnej produkcji od kilku miesięcy, z częstotliwością kilkudziesięciu wykonań tygodniowo.
 
-Stos komend obejmuje `SET`, `GOAL`, `SCENARIO`, `VAL`, `MIN`, `MAX`, `SAVE`, `WAIT`, `FUNC`, `IF`, `GOTO`, `SAMPLE`, `ERROR` plus drugi dialekt `.iql` do testów GUI/API — z komendami `NAVIGATE`, `CLICK`, `SELECT`, `STEP_COMPLETE`. Ten drugi powstał w odpowiedzi na konkretną potrzebę zapisywania i odtwarzania sesji testowych w aplikacji webowej.
+Stos komend obejmuje `SET`, `GOAL`, `SCENARIO`, `VAL`, `MIN`, `MAX`, `SAVE`, `WAIT`, `FUNC`, `IF`, `GOTO`, `SAMPLE`, `ERROR` plus drugi dialekt `.testql.toon.yaml` do testów GUI/API — z komendami `NAVIGATE`, `CLICK`, `SELECT`, `STEP_COMPLETE`. Ten drugi powstał w odpowiedzi na konkretną potrzebę zapisywania i odtwarzania sesji testowych w aplikacji webowej.
 
 ## Co nie działa albo świeci na żółto
 
@@ -79,7 +79,7 @@ Dla pierwszej integracji rekomendujemy zacząć od pliku `hardware-diagnostics.o
 
 ## Gdzie to idzie
 
-oqlos to fundament. Nad nim budujemy **testql** (framework testowy nad `.iql`, zobacz osobny artykuł), **weboql** (warstwa webowa i IDE) oraz **doql** (generator kompletnych aplikacji). Każdy z tych projektów rozwiązuje inny poziom problemu — od „jak sterować sprzętem" po „jak zbudować wokół tego SaaS". oqlos, w tej stratyfikacji, jest warstwą najniższą i najważniejszą. Dlatego przez najbliższy kwartał priorytetem jest jego stabilność, nie rozszerzanie o nowe cechy.
+oqlos to fundament. Nad nim budujemy **testql** (framework testowy nad `.testql.toon.yaml`, zobacz osobny artykuł), **weboql** (warstwa webowa i IDE) oraz **doql** (generator kompletnych aplikacji). Każdy z tych projektów rozwiązuje inny poziom problemu — od „jak sterować sprzętem" po „jak zbudować wokół tego SaaS". oqlos, w tej stratyfikacji, jest warstwą najniższą i najważniejszą. Dlatego przez najbliższy kwartał priorytetem jest jego stabilność, nie rozszerzanie o nowe cechy.
 
 ---
 

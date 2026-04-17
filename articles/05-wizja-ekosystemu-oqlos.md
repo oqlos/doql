@@ -14,7 +14,7 @@ status: draft
 
 Gdy zaczynaliśmy od `.oql`, nie było planu ekosystemu. Był konkretny problem: jak opisać test aparatu oddechowego tak, żeby opis ten był czytelny dla operatora BHP, wykonywalny przez maszynę i wersjonowalny w Git. Z tego wyrosło `oqlos`.
 
-Potem, pracując nad interfejsem do zarządzania scenariuszami, zobaczyliśmy, że możemy użyć tego samego formatu do testowania samej aplikacji — tak powstał `.iql` i `testql`. Strona SaaS-owa — `weboql` i `www`. A teraz `doql` — generator kompletnych aplikacji z deklaracji.
+Potem, pracując nad interfejsem do zarządzania scenariuszami, zobaczyliśmy, że możemy użyć tego samego formatu do testowania samej aplikacji — tak powstał `.testql.toon.yaml` i `testql`. Strona SaaS-owa — `weboql` i `www`. A teraz `doql` — generator kompletnych aplikacji z deklaracji.
 
 Cztery projekty. Gdy układam je warstwowo, pojawia się spójna struktura.
 
@@ -25,7 +25,7 @@ Cztery projekty. Gdy układam je warstwowo, pojawia się spójna struktura.
 │  doql      — generator aplikacji z deklaracji            │
 │              (analogia: Rails, Django, Retool)           │
 ├─────────────────────────────────────────────────────────┤
-│  testql    — framework testowy nad oqlos (.iql)          │
+│  testql    — framework testowy nad oqlos (.testql.toon.yaml)          │
 │  weboql    — web layer + IDE                             │
 │              (analogia: pytest, Jupyter)                 │
 ├─────────────────────────────────────────────────────────┤
@@ -77,7 +77,7 @@ Dwa lata temu mieliśmy pokusę, żeby zrobić jeden duży produkt — „platfo
 
 ## Spójność językowa
 
-Jedna rzecz, która spina wszystkie warstwy: ta sama gramatyka deklaratywna. `.oql` i `.iql` mają wspólny parser, wspólny tokenizer (`_cql_tokenizer.py` w repo). Operator, który w poniedziałek pisze scenariusz hardwareowy, we wtorek potrafi napisać test UI bez zmiany modelu umysłowego.
+Jedna rzecz, która spina wszystkie warstwy: ta sama gramatyka deklaratywna. `.oql` i `.testql.toon.yaml` mają wspólny parser, wspólny tokenizer (`_cql_tokenizer.py` w repo). Operator, który w poniedziałek pisze scenariusz hardwareowy, we wtorek potrafi napisać test UI bez zmiany modelu umysłowego.
 
 `.doql` pójdzie o krok dalej — użyje tej samej estetyki składniowej (blokowa, wcięciami, frazy naturalno-językowe) do opisu aplikacji. Patrząc na trzy pliki:
 

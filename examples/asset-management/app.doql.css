@@ -143,7 +143,7 @@ entity[name="Deployment"] {
 
 scenarios {
   import: scenarios/*.oql;
-  import-tests: tests/ui-*.iql;
+  import-tests: tests/ui-*.testql.toon.yaml;
 }
 
 scenarios register[name="scenario_pss7000_full"] {
