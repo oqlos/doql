@@ -9,6 +9,13 @@ DEFAULT_LANGUAGE: pl
 # 1. DANE
 # ─────────────────────────────────────────────────
 
+ENTITY User:
+  id: uuid! auto
+  name: string!
+  email: email unique
+  role: enum[admin, manager, operator]
+  active: bool default=true
+
 ENTITY Station:
   id: uuid! auto
   name: string!

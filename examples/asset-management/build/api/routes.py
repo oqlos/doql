@@ -7,6 +7,49 @@ import schemas
 
 router = APIRouter(prefix='/api/v1')
 
+# ── User ──
+
+@router.get("/users", response_model=list[schemas.UserResponse])
+def list_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return db.query(models.User).offset(skip).limit(limit).all()
+
+@router.get("/users/{item_id}", response_model=schemas.UserResponse)
+def get_user(item_id: str, db: Session = Depends(get_db)):
+    obj = db.query(models.User).filter(models.User.id == item_id).first()
+    if not obj:
+        raise HTTPException(404, "User not found")
+    return obj
+
+@router.post("/users", response_model=schemas.UserResponse, status_code=201)
+def create_user(data: schemas.UserCreate, db: Session = Depends(get_db)):
+    import uuid as _uuid
+    payload = data.model_dump()
+    payload.setdefault('id', str(_uuid.uuid4()))
+    obj = models.User(**payload)
+    db.add(obj)
+    db.commit()
+    db.refresh(obj)
+    return obj
+
+@router.patch("/users/{item_id}", response_model=schemas.UserResponse)
+def update_user(item_id: str, data: schemas.UserUpdate, db: Session = Depends(get_db)):
+    obj = db.query(models.User).filter(models.User.id == item_id).first()
+    if not obj:
+        raise HTTPException(404, "User not found")
+    for key, val in data.model_dump(exclude_unset=True).items():
+        setattr(obj, key, val)
+    db.commit()
+    db.refresh(obj)
+    return obj
+
+@router.delete("/users/{item_id}", status_code=204)
+def delete_user(item_id: str, db: Session = Depends(get_db)):
+    obj = db.query(models.User).filter(models.User.id == item_id).first()
+    if not obj:
+        raise HTTPException(404, "User not found")
+    db.delete(obj)
+    db.commit()
+
 # ── Station ──
 
 @router.get("/stations", response_model=list[schemas.StationResponse])

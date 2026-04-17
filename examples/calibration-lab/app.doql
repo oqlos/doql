@@ -7,6 +7,13 @@ LANGUAGES: [pl, en, de]
 # ISO 17025 — laboratorium kalibracyjne
 # ─────────────────────────────────────────────────
 
+ENTITY Operator:
+  id: uuid! auto
+  name: string!
+  email: email unique
+  qualification: enum[technician, metrologist, quality_manager]
+  active: bool default=true
+
 ENTITY Instrument:
   serial: string! unique
   manufacturer: string!

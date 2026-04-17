@@ -153,12 +153,10 @@ ENTITY Calibration:
     assert ref_errors[0].severity == "error"
 
 
-def test_calibration_lab_has_dangling_operator_ref():
-    """Known data-quality issue in examples/calibration-lab/app.doql.
+def test_calibration_lab_has_no_dangling_refs():
+    """Ensure calibration-lab has no dangling entity references.
 
-    The spec references an `Operator` entity which isn't defined.
-    The generator must still produce runnable SQLAlchemy models by
-    degrading FK-to-unknown-entity into a plain String column.
+    After adding the Operator entity, all ref fields should resolve.
     """
     path = EXAMPLES / "calibration-lab" / "app.doql"
     if not path.exists():
@@ -168,6 +166,6 @@ def test_calibration_lab_has_dangling_operator_ref():
     for ent in spec.entities:
         for f in ent.fields:
             if f.ref and f.ref not in names:
-                # at least one dangling ref is expected — Operator
-                return
-    pytest.fail("Expected at least one dangling ref (Operator) in calibration-lab")
+                pytest.fail(
+                    f"Dangling ref: {ent.name}.{f.name} -> {f.ref}"
+                )

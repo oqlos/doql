@@ -1,11 +1,13 @@
 flowchart TD
-    doql__cli["doql.cli<br/>41 funcs"]
-    doql__exporters["doql.exporters<br/>13 funcs"]
+    doql__cli["doql.cli<br/>42 funcs"]
+    doql__exporters["doql.exporters<br/>37 funcs"]
     doql__generators["doql.generators<br/>94 funcs"]
-    doql__parsers["doql.parsers<br/>82 funcs"]
+    doql__importers["doql.importers<br/>20 funcs"]
+    doql__parsers["doql.parsers<br/>83 funcs"]
     plugins___shared["plugins._shared<br/>2 funcs"]
     plugins__doql_plugin_iso17025["plugins.doql-plugin-iso17025<br/>6 funcs"]
+    doql__cli ==>|14| doql__exporters
     doql__cli ==>|11| doql__generators
-    doql__cli ==>|7| doql__exporters
+    doql__cli -->|3| doql__parsers
     plugins__doql_plugin_iso17025 -->|2| plugins___shared
-    doql__cli -->|1| doql__parsers
+    doql__cli -->|1| doql__importers

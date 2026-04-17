@@ -4,6 +4,7 @@
 
       const NAV = [
         { path: '/', label: 'Dashboard', icon: 'LayoutDashboard' },
+{ path: '/operators', label: 'Operators', icon: 'List' },
 { path: '/instruments', label: 'Instruments', icon: 'List' },
 { path: '/reference-standards', label: 'ReferenceStandards', icon: 'List' },
 { path: '/calibrations', label: 'Calibrations', icon: 'List' },

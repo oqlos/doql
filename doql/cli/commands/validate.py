@@ -6,6 +6,7 @@ import argparse
 import pathlib
 
 from ... import parser as doql_parser
+from ...parsers import detect_doql_file
 
 
 def cmd_validate(args: argparse.Namespace) -> int:
@@ -15,7 +16,8 @@ def cmd_validate(args: argparse.Namespace) -> int:
         0 if validation passes, 1 if there are errors
     """
     root = pathlib.Path(getattr(args, "dir", None) or ".").resolve()
-    doql_file = root / (getattr(args, "file", None) or "app.doql")
+    explicit = getattr(args, "file", None)
+    doql_file = root / explicit if explicit else detect_doql_file(root)
     env_file = root / ".env"
     
     print(f"🔍 Validating {doql_file}...")

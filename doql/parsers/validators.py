@@ -19,12 +19,16 @@ def _validate_env_refs(spec: DoqlSpec, env_vars: dict[str, str]) -> list[Validat
     """Validate env.* references exist in env vars."""
     issues: list[ValidationIssue] = []
     for ref in spec.env_refs:
-        if ref not in env_vars:
-            issues.append(ValidationIssue(
-                f"env.{ref}",
-                f"Referenced env var '{ref}' not found in .env",
-                "warning",
-            ))
+        if ref in env_vars:
+            continue
+        # Treat trailing-underscore refs as wildcard prefixes (e.g. SMTP_ from env.SMTP_*)
+        if ref.endswith("_") and any(k.startswith(ref) for k in env_vars):
+            continue
+        issues.append(ValidationIssue(
+            f"env.{ref}",
+            f"Referenced env var '{ref}' not found in .env",
+            "warning",
+        ))
     return issues
 
 
@@ -33,6 +37,14 @@ def _validate_data_source_files(spec: DoqlSpec, project_root: pathlib.Path) -> l
     issues: list[ValidationIssue] = []
     for ds in spec.data_sources:
         if ds.file and ds.source in ("json", "sqlite", "csv", "excel"):
+            # Absolute paths are deployment targets — warn instead of error
+            if pathlib.PurePosixPath(ds.file).is_absolute():
+                issues.append(ValidationIssue(
+                    f"DATA {ds.name}",
+                    f"Absolute path (skipped local check): {ds.file}",
+                    "warning",
+                ))
+                continue
             fpath = project_root / ds.file
             if not fpath.exists():
                 issues.append(ValidationIssue(

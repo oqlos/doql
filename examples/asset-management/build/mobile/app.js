@@ -3,6 +3,37 @@
 
         const ENTITIES = [
   {
+    "name": "User",
+    "path": "/api/v1/users",
+    "fields": [
+      {
+        "name": "id",
+        "type": "uuid",
+        "required": true
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "required": true
+      },
+      {
+        "name": "email",
+        "type": "email",
+        "required": false
+      },
+      {
+        "name": "role",
+        "type": "enum[admin,",
+        "required": false
+      },
+      {
+        "name": "active",
+        "type": "bool",
+        "required": false
+      }
+    ]
+  },
+  {
     "name": "Station",
     "path": "/api/v1/stations",
     "fields": [

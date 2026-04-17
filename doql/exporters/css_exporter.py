@@ -287,10 +287,12 @@ def _render_role(role: Role) -> list[str]:
 
 def _render_deploy(deploy: Deploy) -> list[str]:
     lines = ["deploy {\n"]
-    props = [_prop("target", deploy.target)]
+    props = [_prop("target", deploy.target, quote_str=False)]
     if deploy.rootless:
         props.append(_prop("rootless", True))
     for k, v in deploy.config.items():
+        if k in ("target", "rootless"):
+            continue
         props.append(_prop(k, v, quote_str=False))
     lines.append(_indent(props))
     lines.append("}\n")

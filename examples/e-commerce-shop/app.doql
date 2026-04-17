@@ -1,0 +1,128 @@
+APP: "E-Commerce Shop"
+VERSION: "0.1.0"
+DOMAIN: env.DOMAIN
+LANGUAGES: en, pl
+
+ENTITY Product:
+  id: uuid! auto
+  name: string!
+  slug: string! unique
+  description: text
+  price: decimal!
+  currency: enum[USD, EUR, PLN] default=EUR
+  stock: int default=0
+  category: string
+  images: json
+  active: bool default=true
+  created: datetime auto
+  updated: datetime auto
+
+ENTITY Customer:
+  id: uuid! auto
+  email: string! unique
+  name: string!
+  phone: string
+  address: json
+  created: datetime auto
+
+ENTITY Order:
+  id: uuid! auto
+  customer: ref(Customer)!
+  status: enum[pending, paid, shipped, delivered, cancelled] default=pending
+  items: json!
+  total: decimal!
+  currency: enum[USD, EUR, PLN]
+  shipping_address: json
+  payment_method: string
+  paid_at: datetime
+  shipped_at: datetime
+  created: datetime auto
+
+ENTITY CartItem:
+  id: uuid! auto
+  session_id: string!
+  product: ref(Product)!
+  quantity: int default=1
+  created: datetime auto
+
+DATABASE main:
+  type: postgres
+  url: env.DATABASE_URL
+
+INTEGRATION email:
+  type: email
+  host: env.SMTP_HOST
+  port: env.SMTP_PORT
+  from: env.SMTP_FROM
+
+INTEGRATION payment:
+  type: webhook
+  provider: stripe
+  secret: env.STRIPE_SECRET
+
+INTERFACE api:
+  type: rest
+  auth:
+    method: jwt
+    secret: env.JWT_SECRET
+
+INTERFACE web:
+  type: spa
+  framework: react
+  auth:
+    method: jwt
+  pages:
+    - name: home
+      layout: grid
+      path: /
+      public: true
+    - name: catalog
+      layout: grid
+      path: /products
+      public: true
+    - name: product-detail
+      layout: detail
+      path: /products/:slug
+      public: true
+    - name: cart
+      layout: form
+      path: /cart
+    - name: checkout
+      layout: form
+      path: /checkout
+    - name: orders
+      layout: table
+      path: /orders
+    - name: admin-products
+      layout: table
+      path: /admin/products
+
+WORKFLOW order_confirmation:
+  trigger: order.created
+  steps:
+    - action: send_email
+      target: order.customer.email
+      template: order_confirmation
+
+WORKFLOW low_stock_alert:
+  trigger: product.updated
+  condition: product.stock < 5
+  steps:
+    - action: send_email
+      target: env.ADMIN_EMAIL
+      template: low_stock_alert
+
+ROLES:
+  admin:
+    - full_access
+  customer:
+    - read Product
+    - create Order
+    - read Order own
+    - manage CartItem own
+  guest:
+    - read Product
+
+DEPLOY:
+  target: docker-compose
+  domain: env.DOMAIN

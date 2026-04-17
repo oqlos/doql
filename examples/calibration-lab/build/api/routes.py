@@ -7,6 +7,49 @@ import schemas
 
 router = APIRouter(prefix='/api/v1')
 
+# ── Operator ──
+
+@router.get("/operators", response_model=list[schemas.OperatorResponse])
+def list_operators(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return db.query(models.Operator).offset(skip).limit(limit).all()
+
+@router.get("/operators/{item_id}", response_model=schemas.OperatorResponse)
+def get_operator(item_id: str, db: Session = Depends(get_db)):
+    obj = db.query(models.Operator).filter(models.Operator.id == item_id).first()
+    if not obj:
+        raise HTTPException(404, "Operator not found")
+    return obj
+
+@router.post("/operators", response_model=schemas.OperatorResponse, status_code=201)
+def create_operator(data: schemas.OperatorCreate, db: Session = Depends(get_db)):
+    import uuid as _uuid
+    payload = data.model_dump()
+    payload.setdefault('id', str(_uuid.uuid4()))
+    obj = models.Operator(**payload)
+    db.add(obj)
+    db.commit()
+    db.refresh(obj)
+    return obj
+
+@router.patch("/operators/{item_id}", response_model=schemas.OperatorResponse)
+def update_operator(item_id: str, data: schemas.OperatorUpdate, db: Session = Depends(get_db)):
+    obj = db.query(models.Operator).filter(models.Operator.id == item_id).first()
+    if not obj:
+        raise HTTPException(404, "Operator not found")
+    for key, val in data.model_dump(exclude_unset=True).items():
+        setattr(obj, key, val)
+    db.commit()
+    db.refresh(obj)
+    return obj
+
+@router.delete("/operators/{item_id}", status_code=204)
+def delete_operator(item_id: str, db: Session = Depends(get_db)):
+    obj = db.query(models.Operator).filter(models.Operator.id == item_id).first()
+    if not obj:
+        raise HTTPException(404, "Operator not found")
+    db.delete(obj)
+    db.commit()
+
 # ── Instrument ──
 
 @router.get("/instruments", response_model=list[schemas.InstrumentResponse])

@@ -5,6 +5,27 @@ from typing import Optional
 from pydantic import BaseModel
 
 
+class OperatorCreate(BaseModel):
+    name: str
+    email: Optional[str] = None
+    qualification: Optional[str] = None
+    active: Optional[bool] = True
+
+class OperatorResponse(BaseModel):
+    model_config = {'from_attributes': True}
+    id: Optional[str] = None
+    name: str
+    email: Optional[str] = None
+    qualification: Optional[str] = None
+    active: Optional[bool] = None
+
+class OperatorUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+    qualification: Optional[str] = None
+    active: Optional[bool] = None
+
+
 class InstrumentCreate(BaseModel):
     serial: str
     manufacturer: str

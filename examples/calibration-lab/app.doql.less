@@ -35,6 +35,14 @@ app {
 
 /* ─── Data Model ─── */
 
+entity[name="Operator"] {
+  id:            uuid! auto;
+  name:          string!;
+  email:         email unique;
+  qualification: enum[technician, metrologist, quality_manager];
+  active:        bool default=true;
+}
+
 entity[name="Instrument"] {
   serial:                 string! unique;
   manufacturer:           string!;

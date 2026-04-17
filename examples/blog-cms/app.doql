@@ -1,0 +1,144 @@
+APP: "Blog CMS"
+VERSION: "0.1.0"
+DOMAIN: env.DOMAIN
+LANGUAGES: en, pl
+
+ENTITY Post:
+  id: uuid! auto
+  title: string!
+  slug: string! unique
+  content: text!
+  excerpt: text
+  author: ref(Author)!
+  category: ref(Category)
+  tags: json
+  status: enum[draft, review, published, archived] default=draft
+  featured_image: string
+  published_at: datetime
+  created: datetime auto
+  updated: datetime auto
+
+ENTITY Author:
+  id: uuid! auto
+  name: string!
+  email: string! unique
+  bio: text
+  avatar: string
+  role: enum[admin, editor, writer] default=writer
+  created: datetime auto
+
+ENTITY Category:
+  id: uuid! auto
+  name: string! unique
+  slug: string! unique
+  description: text
+  parent: ref(Category)
+  sort_order: int default=0
+
+ENTITY Comment:
+  id: uuid! auto
+  post: ref(Post)!
+  author_name: string!
+  author_email: string!
+  content: text!
+  approved: bool default=false
+  parent: ref(Comment)
+  created: datetime auto
+
+ENTITY MediaFile:
+  id: uuid! auto
+  filename: string!
+  mime_type: string!
+  size: int!
+  url: string!
+  alt_text: string
+  uploaded_by: ref(Author)
+  created: datetime auto
+
+DATABASE main:
+  type: postgres
+  url: env.DATABASE_URL
+
+INTEGRATION storage:
+  type: s3
+  bucket: env.S3_BUCKET
+  region: env.S3_REGION
+
+INTEGRATION email:
+  type: email
+  host: env.SMTP_HOST
+  from: env.SMTP_FROM
+
+INTERFACE api:
+  type: rest
+  auth:
+    method: jwt
+    secret: env.JWT_SECRET
+
+INTERFACE web:
+  type: spa
+  framework: react
+  pwa: true
+  auth:
+    method: jwt
+  pages:
+    - name: home
+      layout: blog
+      path: /
+      public: true
+    - name: post
+      layout: article
+      path: /posts/:slug
+      public: true
+    - name: category
+      layout: grid
+      path: /category/:slug
+      public: true
+    - name: admin-posts
+      layout: table
+      path: /admin/posts
+    - name: admin-editor
+      layout: editor
+      path: /admin/posts/:id/edit
+    - name: admin-media
+      layout: grid
+      path: /admin/media
+    - name: admin-comments
+      layout: table
+      path: /admin/comments
+
+WORKFLOW publish_notification:
+  trigger: post.updated
+  condition: post.status = published
+  steps:
+    - action: send_email
+      target: subscribers
+      template: new_post
+
+WORKFLOW comment_moderation:
+  trigger: comment.created
+  steps:
+    - action: send_email
+      target: post.author.email
+      template: new_comment
+
+ROLES:
+  admin:
+    - full_access
+  editor:
+    - manage Post
+    - manage Category
+    - manage Comment
+    - read MediaFile
+  writer:
+    - create Post
+    - update Post own
+    - read Category
+    - create MediaFile
+  public:
+    - read Post published
+    - read Category
+    - create Comment
+
+DEPLOY:
+  target: docker-compose

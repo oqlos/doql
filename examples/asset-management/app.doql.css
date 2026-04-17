@@ -11,6 +11,14 @@ app {
 
 /* ─── Data Model ─── */
 
+entity[name="User"] {
+  id:     uuid! auto;
+  name:   string!;
+  email:  email unique;
+  role:   enum[admin, manager, operator];
+  active: bool default=true;
+}
+
 entity[name="Station"] {
   id:      uuid! auto;
   name:    string!;

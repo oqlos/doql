@@ -12,6 +12,7 @@ uvicorn main:app --reload
 
 ## Entities
 
+- **Operator** (5 fields)
 - **Instrument** (12 fields)
 - **ReferenceStandard** (5 fields)
 - **Calibration** (12 fields)
@@ -20,6 +21,7 @@ uvicorn main:app --reload
 
 ## Endpoints
 
+- `GET /api/v1/operators` · `POST` · `GET /:id` · `PATCH /:id` · `DELETE /:id`
 - `GET /api/v1/instruments` · `POST` · `GET /:id` · `PATCH /:id` · `DELETE /:id`
 - `GET /api/v1/reference_standards` · `POST` · `GET /:id` · `PATCH /:id` · `DELETE /:id`
 - `GET /api/v1/calibrations` · `POST` · `GET /:id` · `PATCH /:id` · `DELETE /:id`

@@ -44,3 +44,24 @@ def _parse_list(val: str) -> list[str]:
     """Parse '[a, b, c]' or 'a, b, c' into a list."""
     val = val.strip().strip('[]')
     return [v.strip().strip('"\'') for v in val.split(',') if v.strip()]
+
+
+def _parse_selector(selector: str) -> ParsedSelector:
+    """Parse a CSS-like selector into structured form.
+
+    Examples:
+        "app" → type="app"
+        'entity[name="Node"]' → type="entity", attributes={"name": "Node"}
+    """
+    parts = selector.strip().split()
+    result = ParsedSelector(chain=parts)
+
+    if parts:
+        first = parts[0]
+        base_match = re.match(r'^([\w\-]+)', first)
+        if base_match:
+            result.type = base_match.group(1).lower()
+        for m in re.finditer(r'\[(\w+)=["\']?([^"\'\]]+)["\']?\]', first):
+            result.attributes[m.group(1)] = m.group(2)
+
+    return result

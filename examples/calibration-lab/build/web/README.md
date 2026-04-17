@@ -13,6 +13,7 @@ npm run dev
 ## Pages
 
 - **Dashboard** — entity counts overview
+- **Operators** — CRUD list/create/delete
 - **Instruments** — CRUD list/create/delete
 - **ReferenceStandards** — CRUD list/create/delete
 - **Calibrations** — CRUD list/create/delete

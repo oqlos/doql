@@ -5,6 +5,27 @@ from typing import Optional
 from pydantic import BaseModel
 
 
+class UserCreate(BaseModel):
+    name: str
+    email: Optional[str] = None
+    role: Optional[str] = None
+    active: Optional[bool] = True
+
+class UserResponse(BaseModel):
+    model_config = {'from_attributes': True}
+    id: Optional[str] = None
+    name: str
+    email: Optional[str] = None
+    role: Optional[str] = None
+    active: Optional[bool] = None
+
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+    role: Optional[str] = None
+    active: Optional[bool] = None
+
+
 class StationCreate(BaseModel):
     name: str
     address: Optional[str] = None

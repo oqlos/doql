@@ -12,6 +12,7 @@ uvicorn main:app --reload
 
 ## Entities
 
+- **User** (5 fields)
 - **Station** (4 fields)
 - **Operator** (7 fields)
 - **Qualification** (4 fields)
@@ -23,6 +24,7 @@ uvicorn main:app --reload
 
 ## Endpoints
 
+- `GET /api/v1/users` · `POST` · `GET /:id` · `PATCH /:id` · `DELETE /:id`
 - `GET /api/v1/stations` · `POST` · `GET /:id` · `PATCH /:id` · `DELETE /:id`
 - `GET /api/v1/operators` · `POST` · `GET /:id` · `PATCH /:id` · `DELETE /:id`
 - `GET /api/v1/qualifications` · `POST` · `GET /:id` · `PATCH /:id` · `DELETE /:id`

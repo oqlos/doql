@@ -4,6 +4,16 @@ from sqlalchemy.orm import relationship
 from database import Base
 
 
+class Operator(Base):
+    __tablename__ = "operators"
+
+    id = Column(String(36), primary_key=True)
+    name = Column(String(255))
+    email = Column(String(255), unique=True, nullable=True)
+    qualification = Column(String(255), nullable=True)
+    active = Column(Boolean, nullable=True, default=True)
+
+
 class Instrument(Base):
     __tablename__ = "instruments"
 
@@ -37,8 +47,8 @@ class Calibration(Base):
 
     id = Column(String(36), primary_key=True)
     instrument = Column(String(255), ForeignKey("instruments.id"), nullable=True)
-    performed_by = Column(String(255), nullable=True)
-    reviewed_by = Column(String(255), nullable=True)
+    performed_by = Column(String(255), ForeignKey("operators.id"), nullable=True)
+    reviewed_by = Column(String(255), ForeignKey("operators.id"), nullable=True)
     reference_used = Column(String(255), ForeignKey("reference_standards.id"), nullable=True)
     scenario = Column(String(255), nullable=True)
     date = Column(DateTime, nullable=True)

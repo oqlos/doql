@@ -8,6 +8,14 @@ import sqlalchemy as sa
 
 def upgrade():
     op.create_table(
+        "users",
+        sa.Column("id", sa.String(36), primary_key=True),
+        sa.Column("name", sa.String(255)),
+        sa.Column("email", sa.String(255), unique=True, nullable=True),
+        sa.Column("role", sa.String(255), nullable=True),
+        sa.Column("active", sa.Boolean, nullable=True),
+    )
+    op.create_table(
         "stations",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column("name", sa.String(255)),
@@ -103,3 +111,4 @@ def downgrade():
     op.drop_table("qualifications")
     op.drop_table("operators")
     op.drop_table("stations")
+    op.drop_table("users")

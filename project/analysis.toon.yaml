@@ -1,40 +1,44 @@
-# code2llm | 88f 10300L | python:80,shell:3,javascript:3,typescript:1 | 2026-04-17
-# CC̄=3.4 | critical:2/310 | dups:0 | cycles:2
+# code2llm | 92f 11068L | python:84,shell:3,javascript:3,typescript:1 | 2026-04-17
+# CC̄=3.5 | critical:4/356 | dups:0 | cycles:2
 
-HEALTH[2]:
+HEALTH[4]:
+  🟡 CC    import_yaml CC=15 (limit:15)
   🟡 CC    export_markdown CC=26 (limit:15)
+  🟡 CC    _render_css CC=16 (limit:15)
   🟡 CC    generate CC=15 (limit:15)
 
 REFACTOR[2]:
-  1. split 2 high-CC methods  (CC>15)
+  1. split 4 high-CC methods  (CC>15)
   2. break 2 circular dependencies
 
-PIPELINES[107]:
-  [1] Src [generate]: generate → _tenant_module
+PIPELINES[109]:
+  [1] Src [generate]: generate → _audit_log_module
       PURITY: 100% pure
-  [2] Src [generate]: generate → _audit_log_module
+  [2] Src [generate]: generate
       PURITY: 100% pure
   [3] Src [generate]: generate
       PURITY: 100% pure
   [4] Src [generate]: generate → _odoo_client_module
       PURITY: 100% pure
-  [5] Src [generate]: generate
+  [5] Src [generate]: generate → _tenant_module
       PURITY: 100% pure
 
 LAYERS:
-  doql/                           CC̄=3.7    ←in:1  →out:4
+  doql/                           CC̄=3.8    ←in:3  →out:4
   │ mobile_gen                 462L  0C    8m  CC=5      ←1
+  │ !! css_exporter               395L  0C   24m  CC=16     ←2
   │ lsp_server                 364L  0C   13m  CC=14     ←0
   │ infra_gen                  321L  0C    5m  CC=8      ←1
   │ !! integrations_gen           320L  0C    7m  CC=15     ←1
   │ workflow_gen               304L  0C    6m  CC=11     ←0
   │ registry                   267L  0C   24m  CC=6      ←1
   │ css_mappers                261L  0C   12m  CC=10     ←1
+  │ !! yaml_importer              248L  0C   20m  CC=15     ←1
   │ css_parser                 213L  0C    8m  CC=12     ←2
   │ sync                       210L  0C   10m  CC=11     ←0
   │ desktop_gen                209L  0C    7m  CC=6      ←1
   │ models                     207L  19C    0m  CC=0.0    ←0
-  │ !! markdown_exporter          193L  0C    9m  CC=26     ←1
+  │ !! markdown_exporter          193L  0C    9m  CC=26     ←2
   │ extractors                 191L  0C   12m  CC=11     ←3
   │ document_gen               182L  0C    4m  CC=6      ←1
   │ css_transformers           179L  0C    7m  CC=10     ←1
@@ -43,12 +47,12 @@ LAYERS:
   │ __init__                   167L  0C    2m  CC=6      ←2
   │ pages                      163L  0C    3m  CC=13     ←1
   │ alembic                    154L  0C    3m  CC=12     ←1
-  │ __init__                   153L  0C    5m  CC=6      ←1
+  │ __init__                   153L  0C    5m  CC=6      ←3
+  │ validators                 150L  0C    9m  CC=6      ←0
   │ report_gen                 142L  0C    2m  CC=9      ←1
   │ auth                       141L  0C    1m  CC=5      ←1
-  │ validators                 138L  0C    9m  CC=6      ←0
+  │ main                       129L  0C    2m  CC=1      ←0
   │ config                     122L  0C    6m  CC=1      ←1
-  │ main                       117L  0C    2m  CC=1      ←0
   │ plan                       115L  0C   10m  CC=4      ←0
   │ routes                     115L  0C    7m  CC=2      ←1
   │ ci_gen                     112L  0C    2m  CC=1      ←0
@@ -61,24 +65,25 @@ LAYERS:
   │ components                  76L  0C    1m  CC=2      ←1
   │ main                        74L  0C    2m  CC=2      ←1
   │ parser                      74L  0C    0m  CC=0.0    ←0
+  │ css_utils                   67L  2C    4m  CC=4      ←2
+  │ export                      66L  0C    1m  CC=14     ←0
   │ context                     66L  1C    4m  CC=5      ←3
   │ core                        57L  0C    3m  CC=1      ←1
-  │ yaml_exporter               51L  0C    4m  CC=9      ←0
+  │ yaml_exporter               51L  0C    4m  CC=9      ←2
   │ blocks                      50L  0C    2m  CC=4      ←1
-  │ css_utils                   46L  2C    3m  CC=4      ←2
-  │ validate                    43L  0C    1m  CC=12     ←0
+  │ validate                    45L  0C    1m  CC=12     ←0
+  │ import_cmd                  45L  0C    1m  CC=7      ←0
   │ init                        43L  0C    1m  CC=8      ←0
   │ router                      43L  0C    1m  CC=3      ←1
-  │ __init__                    38L  0C    0m  CC=0.0    ←0
+  │ __init__                    40L  0C    0m  CC=0.0    ←0
   │ naming                      37L  0C    2m  CC=1      ←0
-  │ export                      36L  0C    1m  CC=6      ←0
   │ database                    35L  0C    1m  CC=1      ←1
   │ generate                    34L  0C    1m  CC=9      ←0
   │ query                       31L  0C    1m  CC=7      ←0
   │ render                      26L  0C    1m  CC=4      ←0
   │ export_ts_sdk               26L  0C    1m  CC=2      ←1
-  │ run                         25L  0C    1m  CC=3      ←0
   │ deploy                      25L  0C    1m  CC=7      ←0
+  │ run                         25L  0C    1m  CC=3      ←0
   │ export_postman              25L  0C    1m  CC=2      ←1
   │ docs_gen                    24L  0C    1m  CC=3      ←1
   │ quadlet                     22L  0C    1m  CC=2      ←0
@@ -90,6 +95,7 @@ LAYERS:
   │ __init__                     7L  0C    0m  CC=0.0    ←0
   │ __init__                     6L  0C    0m  CC=0.0    ←0
   │ __init__                     5L  0C    0m  CC=0.0    ←0
+  │ __init__                     1L  0C    0m  CC=0.0    ←0
   │ __init__                     1L  0C    0m  CC=0.0    ←0
   │
   playground/                     CC̄=2.7    ←in:0  →out:0
@@ -122,18 +128,19 @@ LAYERS:
   │
 
 COUPLING:
-                                                    doql.cli               doql.generators                doql.exporters                          doql                  doql.parsers               plugins._shared  plugins.doql-plugin-iso17025
-                      doql.cli                            ──                            11                             7                             1                                                                                            !! fan-out
-               doql.generators                           ←11                            ──                                                                                                                                                        hub
-                doql.exporters                            ←7                                                          ──                                                                                                                          hub
-                          doql                            ←1                                                                                        ──                             4                                                            
-                  doql.parsers                                                                                                                      ←4                            ──                                                            
-               plugins._shared                                                                                                                                                                                  ──                            ←2
-  plugins.doql-plugin-iso17025                                                                                                                                                                                   2                            ──
+                                                    doql.cli                doql.exporters               doql.generators                          doql                  doql.parsers               plugins._shared  plugins.doql-plugin-iso17025                doql.importers
+                      doql.cli                            ──                            14                            11                             3                                                                                                                       1  !! fan-out
+                doql.exporters                           ←14                            ──                                                                                                                                                                                      hub
+               doql.generators                           ←11                                                          ──                                                                                                                                                        hub
+                          doql                            ←3                                                                                        ──                             4                                                                                          
+                  doql.parsers                                                                                                                      ←4                            ──                                                                                          
+               plugins._shared                                                                                                                                                                                  ──                            ←2                              
+  plugins.doql-plugin-iso17025                                                                                                                                                                                   2                            ──                              
+                doql.importers                            ←1                                                                                                                                                                                                                ──
   CYCLES: 2
   HUB: doql.generators/ (fan-in=11)
-  HUB: doql.exporters/ (fan-in=7)
-  SMELL: doql.cli/ fan-out=19 → split needed
+  HUB: doql.exporters/ (fan-in=14)
+  SMELL: doql.cli/ fan-out=29 → split needed
 
 EXTERNAL:
   validation: run `vallm batch .` → validation.toon

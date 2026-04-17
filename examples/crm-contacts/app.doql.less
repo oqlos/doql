@@ -1,0 +1,155 @@
+// ─── CRM Contacts — doql.less format ───
+
+@db-url: env.DATABASE_URL;
+@jwt-secret: env.JWT_SECRET;
+@smtp-host: env.SMTP_HOST;
+
+app {
+  name: "CRM Contacts";
+  version: "0.1.0";
+  domain: env.DOMAIN;
+  languages: en, pl, de;
+}
+
+entity[name="Contact"] {
+  id: uuid! auto;
+  first_name: string!;
+  last_name: string!;
+  email: string unique;
+  phone: string;
+  company: ref(Company);
+  position: string;
+  tags: json;
+  notes: text;
+  source: enum[web, referral, cold, event] default=web;
+  created: datetime auto;
+  updated: datetime auto;
+}
+
+entity[name="Company"] {
+  id: uuid! auto;
+  name: string! unique;
+  domain: string;
+  industry: string;
+  size: enum[startup, small, medium, enterprise];
+  website: string;
+  address: json;
+  created: datetime auto;
+}
+
+entity[name="Deal"] {
+  id: uuid! auto;
+  title: string!;
+  contact: ref(Contact)!;
+  company: ref(Company);
+  value: decimal;
+  currency: enum[USD, EUR, PLN] default=EUR;
+  stage: enum[lead, qualified, proposal, negotiation, won, lost] default=lead;
+  probability: int default=0;
+  expected_close: date;
+  assigned_to: string;
+  notes: text;
+  created: datetime auto;
+  updated: datetime auto;
+}
+
+entity[name="Activity"] {
+  id: uuid! auto;
+  type: enum[call, email, meeting, note, task]!;
+  contact: ref(Contact);
+  deal: ref(Deal);
+  subject: string!;
+  description: text;
+  due_date: datetime;
+  completed: bool default=false;
+  assigned_to: string;
+  created: datetime auto;
+}
+
+database[name="main"] {
+  type: postgres;
+  url: @db-url;
+}
+
+integration[name="email"] {
+  type: email;
+  host: @smtp-host;
+  port: env.SMTP_PORT;
+  from: env.SMTP_FROM;
+}
+
+interface[name="api"] {
+  type: rest;
+  auth-method: jwt;
+  auth-secret: @jwt-secret;
+}
+
+interface[name="web"] {
+  type: spa;
+  framework: react;
+  auth-method: jwt;
+}
+
+interface[name="web"] > page[name="dashboard"] {
+  layout: dashboard;
+  path: /;
+}
+
+interface[name="web"] > page[name="contacts"] {
+  layout: table;
+  path: /contacts;
+}
+
+interface[name="web"] > page[name="contact-detail"] {
+  layout: detail;
+  path: /contacts/:id;
+}
+
+interface[name="web"] > page[name="companies"] {
+  layout: table;
+  path: /companies;
+}
+
+interface[name="web"] > page[name="deals"] {
+  layout: kanban;
+  path: /deals;
+}
+
+interface[name="web"] > page[name="activities"] {
+  layout: table;
+  path: /activities;
+}
+
+workflow[name="deal_stage_notification"] {
+  trigger: deal.updated;
+  condition: deal.stage changed;
+  step-1: send_email deal.assigned_to template=deal_stage_changed;
+}
+
+workflow[name="overdue_activity_reminder"] {
+  schedule: "0 9 * * *";
+  step-1: query Activity filter=due_date < now AND completed = false;
+  step-2: send_email activity.assigned_to template=overdue_reminder;
+}
+
+role[name="admin"] {
+  permit: full_access;
+}
+
+role[name="sales"] {
+  permit: manage Contact;
+  permit: manage Company;
+  permit: manage Deal own;
+  permit: manage Activity own;
+}
+
+role[name="viewer"] {
+  permit: read Contact;
+  permit: read Company;
+  permit: read Deal;
+  permit: read Activity;
+}
+
+deploy {
+  target: docker-compose;
+}

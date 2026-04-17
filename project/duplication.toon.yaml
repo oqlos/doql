@@ -1,20 +1,20 @@
-# redup/duplication | 12 groups | 86f 10136L | 2026-04-17
+# redup/duplication | 12 groups | 88f 10508L | 2026-04-17
 
 SUMMARY:
-  files_scanned: 86
-  total_lines:   10136
+  files_scanned: 88
+  total_lines:   10508
   dup_groups:    12
   dup_fragments: 54
   saved_lines:   795
-  scan_ms:       6360
+  scan_ms:       5110
 
 HOTSPOTS[7] (files with most duplication):
-  plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py  dup=479L  groups=2  frags=6  (4.7%)
-  plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py  dup=382L  groups=2  frags=5  (3.8%)
-  plugins/doql-plugin-erp/doql_plugin_erp/__init__.py  dup=317L  groups=2  frags=5  (3.1%)
-  doql/generators/mobile_gen.py  dup=148L  groups=1  frags=1  (1.5%)
-  plugins/doql-plugin-iso17025/doql_plugin_iso17025/certificate.py  dup=129L  groups=1  frags=1  (1.3%)
-  plugins/doql-plugin-iso17025/doql_plugin_iso17025/uncertainty.py  dup=120L  groups=1  frags=1  (1.2%)
+  plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py  dup=479L  groups=2  frags=6  (4.6%)
+  plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py  dup=382L  groups=2  frags=5  (3.6%)
+  plugins/doql-plugin-erp/doql_plugin_erp/__init__.py  dup=317L  groups=2  frags=5  (3.0%)
+  doql/generators/mobile_gen.py  dup=148L  groups=1  frags=1  (1.4%)
+  plugins/doql-plugin-iso17025/doql_plugin_iso17025/certificate.py  dup=129L  groups=1  frags=1  (1.2%)
+  plugins/doql-plugin-iso17025/doql_plugin_iso17025/uncertainty.py  dup=120L  groups=1  frags=1  (1.1%)
   doql/generators/integrations_gen.py  dup=113L  groups=1  frags=3  (1.1%)
 
 DUPLICATES[12] (ranked by impact):
@@ -67,8 +67,8 @@ DUPLICATES[12] (ranked by impact):
       doql/parsers/css_mappers.py:105-118  (_map_template)
       doql/parsers/css_mappers.py:121-134  (_map_document)
   [0bdb0413e924de28]   STRU  _validate_document_templates  L=13 N=2 saved=13 sim=1.00
-      doql/parsers/validators.py:46-58  (_validate_document_templates)
-      doql/parsers/validators.py:61-73  (_validate_template_files)
+      doql/parsers/validators.py:58-70  (_validate_document_templates)
+      doql/parsers/validators.py:73-85  (_validate_template_files)
   [360046efac640a5c]   STRU  run_report_generators  L=9 N=2 saved=9 sim=1.00
       doql/cli/build.py:66-74  (run_report_generators)
       doql/cli/build.py:77-85  (run_i18n_generators)

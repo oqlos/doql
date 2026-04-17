@@ -4,18 +4,26 @@
 
 - **Project**: /home/tom/github/oqlos/doql
 - **Primary Language**: python
-- **Languages**: python: 80, shell: 3, javascript: 3, typescript: 1
+- **Languages**: python: 84, shell: 3, javascript: 3, typescript: 1
 - **Analysis Mode**: static
-- **Total Functions**: 310
+- **Total Functions**: 356
 - **Total Classes**: 23
-- **Modules**: 87
-- **Entry Points**: 119
+- **Modules**: 91
+- **Entry Points**: 121
 
 ## Architecture by Module
+
+### doql.exporters.css_exporter
+- **Functions**: 24
+- **File**: `css_exporter.py`
 
 ### doql.parsers.registry
 - **Functions**: 24
 - **File**: `registry.py`
+
+### doql.importers.yaml_importer
+- **Functions**: 20
+- **File**: `yaml_importer.py`
 
 ### doql.lsp_server
 - **Functions**: 13
@@ -85,14 +93,6 @@
 - **Functions**: 7
 - **File**: `css_transformers.py`
 
-### plugins.doql-plugin-gxp.doql_plugin_gxp
-- **Functions**: 6
-- **File**: `__init__.py`
-
-### plugins.doql-plugin-erp.doql_plugin_erp
-- **Functions**: 6
-- **File**: `__init__.py`
-
 ## Key Entry Points
 
 Main execution flows into the system:
@@ -136,6 +136,10 @@ With --list-templates, shows available templates and exits.
 ### doql.lsp_server.document_symbols
 - **Calls**: server.feature, ls.workspace.get_text_document, doql.lsp_server._parse_doc, doql.lsp_server._find_line_col, lsp.Range, _mkrange, symbols.append, _mkrange
 
+### doql.cli.commands.export.cmd_export
+> Export project specification to various formats.
+- **Calls**: None.resolve, getattr, doql_parser.parse_file, getattr, doql.parsers.detect_doql_file, open, print, pathlib.Path
+
 ### doql.lsp_server.hover
 - **Calls**: server.feature, ls.workspace.get_text_document, doql.lsp_server._word_at, doql.lsp_server._parse_doc, lsp.Hover, None.join, lsp.Hover, lsp.Hover
 
@@ -161,7 +165,7 @@ Delegates to infra_gen's deploy script.
 
 Returns:
     0 if validation passes, 1 if there are errors
-- **Calls**: None.resolve, print, sum, sum, print, doql_parser.parse_file, doql_parser.parse_env, doql_parser.validate
+- **Calls**: None.resolve, getattr, print, sum, sum, print, doql.parsers.detect_doql_file, doql_parser.parse_file
 
 ### doql.cli.commands.plan.cmd_plan
 > Show dry-run plan of what would be generated.
@@ -169,6 +173,10 @@ Returns:
 Displays project overview including entities, data sources, interfaces,
 and estimated file counts per i
 - **Calls**: None.resolve, doql_parser.parse_file, doql.cli.commands.plan._print_header, doql.cli.commands.plan._print_entities, doql.cli.commands.plan._print_data_sources, doql.cli.commands.plan._print_documents, doql.cli.commands.plan._print_api_clients, doql.cli.commands.plan._print_summary
+
+### doql.cli.commands.import_cmd.cmd_import
+> Import a YAML spec file and convert to DOQL format.
+- **Calls**: None.resolve, getattr, doql.importers.yaml_importer.import_yaml_file, print, source.exists, print, None.resolve, None.replace
 
 ### doql.generators.export_ts_sdk.run
 > Write TypeScript SDK to the given stream.
@@ -216,12 +224,6 @@ The artifact name must match a DOCUMENT defined in the .doql file.
 > Parse a .env file into a dict. Missing file → empty dict.
 - **Calls**: None.splitlines, path.exists, line.strip, path.read_text, line.startswith, line.partition, None.strip, key.strip
 
-### doql.parsers.registry._handle_database
-- **Calls**: doql.parsers.registry.register, None.strip, spec.databases.append, Database, header.split, doql.parsers.extractors.extract_val, doql.parsers.extractors.extract_val, doql.parsers.extractors.extract_val
-
-### doql.parsers.registry._handle_interface
-- **Calls**: doql.parsers.registry.register, None.strip, doql.parsers.extractors.extract_pages, doql.parsers.extractors.extract_val, doql.parsers.extractors.extract_val, doql.parsers.extractors.extract_val, spec.interfaces.append, doql.parsers.extractors.extract_val
-
 ## Process Flows
 
 Key execution flows identified:
@@ -259,32 +261,33 @@ document_symbols [doql.lsp_server]
   └─> _find_line_col
 ```
 
-### Flow 6: hover
+### Flow 6: cmd_export
+```
+cmd_export [doql.cli.commands.export]
+  └─ →> detect_doql_file
+```
+
+### Flow 7: hover
 ```
 hover [doql.lsp_server]
   └─> _word_at
   └─> _parse_doc
 ```
 
-### Flow 7: cmd_deploy
+### Flow 8: cmd_deploy
 ```
 cmd_deploy [doql.cli.commands.deploy]
 ```
 
-### Flow 8: validate
+### Flow 9: validate
 ```
 validate [doql.parsers.validators]
 ```
 
-### Flow 9: definition
+### Flow 10: definition
 ```
 definition [doql.lsp_server]
   └─> _word_at
-```
-
-### Flow 10: cmd_validate
-```
-cmd_validate [doql.cli.commands.validate]
 ```
 
 ## Key Classes
@@ -371,7 +374,7 @@ Key functions that process and transform data:
 
 Returns:
     0 if validation passes, 1 if there are err
-- **Output to**: None.resolve, print, sum, sum, print
+- **Output to**: None.resolve, getattr, print, sum, sum
 
 ### doql.parsers.css_parser._parse_declarations
 > Extract property: value pairs from a CSS block body (top-level only).
@@ -435,17 +438,29 @@ Uses error recovery: malformed bl
 > Parse a .env file into a dict. Missing file → empty dict.
 - **Output to**: None.splitlines, path.exists, line.strip, path.read_text, line.startswith
 
+### doql.parsers.css_utils._parse_list
+> Parse '[a, b, c]' or 'a, b, c' into a list.
+- **Output to**: None.strip, None.strip, val.strip, val.split, v.strip
+
+### doql.parsers.css_utils._parse_selector
+> Parse a CSS-like selector into structured form.
+
+Examples:
+    "app" → type="app"
+    'entity[name="
+- **Output to**: None.split, ParsedSelector, re.match, re.finditer, selector.strip
+
 ### doql.parsers.validators._validate_app_name
 > Validate APP name is set.
 - **Output to**: issues.append, ValidationIssue
 
 ### doql.parsers.validators._validate_env_refs
 > Validate env.* references exist in env vars.
-- **Output to**: issues.append, ValidationIssue
+- **Output to**: issues.append, ref.endswith, any, ValidationIssue, k.startswith
 
 ### doql.parsers.validators._validate_data_source_files
 > Validate DATA source files exist.
-- **Output to**: fpath.exists, issues.append, ValidationIssue
+- **Output to**: None.is_absolute, issues.append, fpath.exists, issues.append, pathlib.PurePosixPath
 
 ### doql.parsers.validators._validate_document_templates
 > Validate DOCUMENT template files exist.
@@ -457,14 +472,6 @@ Uses error recovery: malformed bl
 
 ### doql.parsers.validators._validate_document_partials
 > Cross-reference: DOCUMENT partials must reference known TEMPLATEs.
-- **Output to**: issues.append, ValidationIssue
-
-### doql.parsers.validators._validate_entity_refs
-> Cross-reference: ENTITY ref fields must reference known entities.
-- **Output to**: issues.append, ValidationIssue
-
-### doql.parsers.validators._validate_interfaces
-> Warn on interfaces with no pages.
 - **Output to**: issues.append, ValidationIssue
 
 ## Behavioral Patterns
@@ -483,8 +490,9 @@ Uses error recovery: malformed bl
 
 Functions exposed as public API (no underscore prefix):
 
+- `doql.cli.main.create_parser` - 50 calls
 - `doql.exporters.markdown_exporter.export_markdown` - 47 calls
-- `doql.cli.main.create_parser` - 44 calls
+- `doql.importers.yaml_importer.import_yaml` - 43 calls
 - `doql.generators.web_gen.generate` - 43 calls
 - `doql.cli.sync.cmd_sync` - 40 calls
 - `doql.parsers.extractors.extract_pages` - 36 calls
@@ -497,15 +505,17 @@ Functions exposed as public API (no underscore prefix):
 - `doql.generators.mobile_gen.generate` - 21 calls
 - `doql.cli.lockfile.spec_section_hashes` - 19 calls
 - `doql.lsp_server.document_symbols` - 19 calls
+- `doql.cli.commands.export.cmd_export` - 19 calls
 - `doql.cli.sync.determine_regeneration_set` - 18 calls
 - `doql.lsp_server.hover` - 17 calls
 - `doql.cli.commands.deploy.cmd_deploy` - 17 calls
 - `doql.generators.workflow_gen.generate` - 16 calls
 - `doql.parsers.validators.validate` - 16 calls
 - `doql.lsp_server.definition` - 15 calls
+- `doql.cli.commands.validate.cmd_validate` - 15 calls
 - `doql.parsers.blocks.split_blocks` - 15 calls
-- `doql.cli.commands.validate.cmd_validate` - 14 calls
 - `doql.cli.commands.plan.cmd_plan` - 14 calls
+- `doql.cli.commands.import_cmd.cmd_import` - 14 calls
 - `doql.generators.export_ts_sdk.run` - 14 calls
 - `doql.parsers.extractors.extract_entity_fields` - 14 calls
 - `doql.lsp_server.completion` - 12 calls
@@ -518,11 +528,8 @@ Functions exposed as public API (no underscore prefix):
 - `doql.parsers.parse_env` - 10 calls
 - `plugins.doql-plugin-fleet.doql_plugin_fleet.generate` - 9 calls
 - `doql.cli.commands.render.cmd_render` - 9 calls
-- `doql.cli.commands.export.cmd_export` - 9 calls
 - `doql.cli.commands.query.cmd_query` - 9 calls
 - `plugins.doql-plugin-gxp.doql_plugin_gxp.generate` - 8 calls
-- `plugins.doql-plugin-erp.doql_plugin_erp.generate` - 8 calls
-- `playground.pyodide-bridge.executeBuild` - 8 calls
 
 ## System Interactions
 
@@ -557,9 +564,9 @@ graph TD
     document_symbols --> _parse_doc
     document_symbols --> _find_line_col
     document_symbols --> Range
-    hover --> feature
-    hover --> get_text_document
-    hover --> _word_at
+    cmd_export --> resolve
+    cmd_export --> getattr
+    cmd_export --> parse_file
 ```
 
 ## Reverse Engineering Guidelines

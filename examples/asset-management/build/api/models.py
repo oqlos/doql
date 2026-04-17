@@ -4,13 +4,23 @@ from sqlalchemy.orm import relationship
 from database import Base
 
 
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(String(36), primary_key=True)
+    name = Column(String(255))
+    email = Column(String(255), unique=True, nullable=True)
+    role = Column(String(255), nullable=True)
+    active = Column(Boolean, nullable=True, default=True)
+
+
 class Station(Base):
     __tablename__ = "stations"
 
     id = Column(String(36), primary_key=True)
     name = Column(String(255))
     address = Column(Text, nullable=True)
-    manager = Column(String(255), nullable=True)
+    manager = Column(String(255), ForeignKey("users.id"), nullable=True)
 
 
 class Operator(Base):

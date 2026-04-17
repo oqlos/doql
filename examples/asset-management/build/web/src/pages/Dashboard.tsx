@@ -6,7 +6,8 @@
           const [counts, setCounts] = React.useState<Record<string, number>>({}); 
 
           React.useEffect(() => {
-              api.list('stations').then((d: any[]) => setCounts(c => ({...c, 'stations': d.length})));
+              api.list('users').then((d: any[]) => setCounts(c => ({...c, 'users': d.length})));
+      api.list('stations').then((d: any[]) => setCounts(c => ({...c, 'stations': d.length})));
       api.list('operators').then((d: any[]) => setCounts(c => ({...c, 'operators': d.length})));
       api.list('qualifications').then((d: any[]) => setCounts(c => ({...c, 'qualifications': d.length})));
       api.list('devices').then((d: any[]) => setCounts(c => ({...c, 'devices': d.length})));
@@ -20,7 +21,11 @@
             <div>
               <h1 className="text-2xl font-bold mb-6">Mask Inspection Manager</h1>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Link to="/stations" className="block p-6 bg-white rounded-xl border hover:shadow-md transition-shadow">
+        <Link to="/users" className="block p-6 bg-white rounded-xl border hover:shadow-md transition-shadow">
+  <h3 className="text-sm text-gray-500">Users</h3>
+  <p className="text-2xl font-bold mt-1">{counts['users'] ?? '…'}</p>
+</Link>
+<Link to="/stations" className="block p-6 bg-white rounded-xl border hover:shadow-md transition-shadow">
   <h3 className="text-sm text-gray-500">Stations</h3>
   <p className="text-2xl font-bold mt-1">{counts['stations'] ?? '…'}</p>
 </Link>

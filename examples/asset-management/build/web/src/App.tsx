@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
+import UserPage from './pages/UserPage';
 import StationPage from './pages/StationPage';
 import OperatorPage from './pages/OperatorPage';
 import QualificationPage from './pages/QualificationPage';
@@ -15,6 +16,7 @@ export default function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Dashboard />} />
+        <Route path="/users" element={<UserPage />} />
         <Route path="/stations" element={<StationPage />} />
         <Route path="/operators" element={<OperatorPage />} />
         <Route path="/qualifications" element={<QualificationPage />} />

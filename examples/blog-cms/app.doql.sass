@@ -1,0 +1,152 @@
+// ─── Blog CMS — doql.sass format ───
+// Indented syntax — no braces, no semicolons
+
+$db-url: env.DATABASE_URL
+$jwt-secret: env.JWT_SECRET
+$s3-bucket: env.S3_BUCKET
+
+app
+  name: "Blog CMS"
+  version: "0.1.0"
+  domain: env.DOMAIN
+  languages: en, pl
+
+entity[name="Post"]
+  id: uuid! auto
+  title: string!
+  slug: string! unique
+  content: text!
+  excerpt: text
+  author: ref(Author)!
+  category: ref(Category)
+  tags: json
+  status: enum[draft, review, published, archived] default=draft
+  featured_image: string
+  published_at: datetime
+  created: datetime auto
+  updated: datetime auto
+
+entity[name="Author"]
+  id: uuid! auto
+  name: string!
+  email: string! unique
+  bio: text
+  avatar: string
+  role: enum[admin, editor, writer] default=writer
+  created: datetime auto
+
+entity[name="Category"]
+  id: uuid! auto
+  name: string! unique
+  slug: string! unique
+  description: text
+  parent: ref(Category)
+  sort_order: int default=0
+
+entity[name="Comment"]
+  id: uuid! auto
+  post: ref(Post)!
+  author_name: string!
+  author_email: string!
+  content: text!
+  approved: bool default=false
+  parent: ref(Comment)
+  created: datetime auto
+
+entity[name="MediaFile"]
+  id: uuid! auto
+  filename: string!
+  mime_type: string!
+  size: int!
+  url: string!
+  alt_text: string
+  uploaded_by: ref(Author)
+  created: datetime auto
+
+database[name="main"]
+  type: postgres
+  url: $db-url
+
+integration[name="storage"]
+  type: s3
+  bucket: $s3-bucket
+  region: env.S3_REGION
+
+integration[name="email"]
+  type: email
+  host: env.SMTP_HOST
+  from: env.SMTP_FROM
+
+interface[name="api"]
+  type: rest
+  auth-method: jwt
+  auth-secret: $jwt-secret
+
+interface[name="web"]
+  type: spa
+  framework: react
+  pwa: true
+  auth-method: jwt
+
+interface[name="web"] > page[name="home"]
+  layout: blog
+  path: /
+  public: true
+
+interface[name="web"] > page[name="post"]
+  layout: article
+  path: /posts/:slug
+  public: true
+
+interface[name="web"] > page[name="category"]
+  layout: grid
+  path: /category/:slug
+  public: true
+
+interface[name="web"] > page[name="admin-posts"]
+  layout: table
+  path: /admin/posts
+
+interface[name="web"] > page[name="admin-editor"]
+  layout: editor
+  path: /admin/posts/:id/edit
+
+interface[name="web"] > page[name="admin-media"]
+  layout: grid
+  path: /admin/media
+
+interface[name="web"] > page[name="admin-comments"]
+  layout: table
+  path: /admin/comments
+
+workflow[name="publish_notification"]
+  trigger: post.updated
+  condition: post.status = published
+  step-1: send_email subscribers template=new_post
+
+workflow[name="comment_moderation"]
+  trigger: comment.created
+  step-1: send_email post.author.email template=new_comment
+
+role[name="admin"]
+  permit: full_access
+
+role[name="editor"]
+  permit: manage Post
+  permit: manage Category
+  permit: manage Comment
+  permit: read MediaFile
+
+role[name="writer"]
+  permit: create Post
+  permit: update Post own
+  permit: read Category
+  permit: create MediaFile
+
+role[name="public"]
+  permit: read Post published
+  permit: read Category
+  permit: create Comment
+
+deploy
+  target: docker-compose

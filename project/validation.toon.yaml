@@ -1,9 +1,9 @@
-# vallm batch | 199f | 117✓ 11⚠ 1✗ | 2026-04-17
+# vallm batch | 211f | 120✓ 12⚠ 1✗ | 2026-04-17
 
 SUMMARY:
-  scanned: 199  passed: 117 (58.8%)  warnings: 11  errors: 1  unsupported: 80
+  scanned: 211  passed: 120 (56.9%)  warnings: 12  errors: 1  unsupported: 89
 
-WARNINGS[11]{path,score}:
+WARNINGS[12]{path,score}:
   vscode-doql/src/extension.ts,0.78
     issues[2]{rule,severity,message,line}:
       js.import.resolvable,warning,Module 'vscode' not found,2
@@ -20,8 +20,8 @@ WARNINGS[11]{path,score}:
       complexity.lizard_cc,warning,check_desktop: CC=17 exceeds limit 15,268
   doql/exporters/css_exporter.py,0.97
     issues[2]{rule,severity,message,line}:
-      complexity.cyclomatic,warning,_render_css has cyclomatic complexity 17 (max: 15),341
-      complexity.lizard_cc,warning,_render_css: CC=17 exceeds limit 15,341
+      complexity.cyclomatic,warning,_render_css has cyclomatic complexity 16 (max: 15),343
+      complexity.lizard_cc,warning,_render_css: CC=16 exceeds limit 15,343
   doql/exporters/markdown_exporter.py,0.97
     issues[2]{rule,severity,message,line}:
       complexity.cyclomatic,warning,export_markdown has cyclomatic complexity 26 (max: 15),113
@@ -44,6 +44,9 @@ WARNINGS[11]{path,score}:
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/uncertainty.py,0.97
     issues[1]{rule,severity,message,line}:
       complexity.lizard_length,warning,generate: 119 lines exceeds limit 100,7
+  tests/test_exporters.py,0.98
+    issues[1]{rule,severity,message,line}:
+      complexity.maintainability,warning,Low maintainability index: 16.5 (threshold: 20),
 
 ERRORS[1]{path,score}:
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py,0.83
@@ -52,7 +55,7 @@ ERRORS[1]{path,score}:
       python.import.resolvable,error,Module '_shared.readme' not found,23
 
 UNSUPPORTED[4]{bucket,count}:
-  *.md,36
+  *.md,39
   *.txt,1
   *.yml,3
-  other,40
+  other,46

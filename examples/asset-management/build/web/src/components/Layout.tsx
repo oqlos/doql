@@ -4,6 +4,7 @@
 
       const NAV = [
         { path: '/', label: 'Dashboard', icon: 'LayoutDashboard' },
+{ path: '/users', label: 'Users', icon: 'List' },
 { path: '/stations', label: 'Stations', icon: 'List' },
 { path: '/operators', label: 'Operators', icon: 'List' },
 { path: '/qualifications', label: 'Qualifications', icon: 'List' },

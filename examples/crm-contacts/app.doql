@@ -1,0 +1,131 @@
+APP: "CRM Contacts"
+VERSION: "0.1.0"
+DOMAIN: env.DOMAIN
+LANGUAGES: en, pl, de
+
+ENTITY Contact:
+  id: uuid! auto
+  first_name: string!
+  last_name: string!
+  email: string unique
+  phone: string
+  company: ref(Company)
+  position: string
+  tags: json
+  notes: text
+  source: enum[web, referral, cold, event] default=web
+  created: datetime auto
+  updated: datetime auto
+
+ENTITY Company:
+  id: uuid! auto
+  name: string! unique
+  domain: string
+  industry: string
+  size: enum[startup, small, medium, enterprise]
+  website: string
+  address: json
+  created: datetime auto
+
+ENTITY Deal:
+  id: uuid! auto
+  title: string!
+  contact: ref(Contact)!
+  company: ref(Company)
+  value: decimal
+  currency: enum[USD, EUR, PLN] default=EUR
+  stage: enum[lead, qualified, proposal, negotiation, won, lost] default=lead
+  probability: int default=0
+  expected_close: date
+  assigned_to: string
+  notes: text
+  created: datetime auto
+  updated: datetime auto
+
+ENTITY Activity:
+  id: uuid! auto
+  type: enum[call, email, meeting, note, task]!
+  contact: ref(Contact)
+  deal: ref(Deal)
+  subject: string!
+  description: text
+  due_date: datetime
+  completed: bool default=false
+  assigned_to: string
+  created: datetime auto
+
+DATABASE main:
+  type: postgres
+  url: env.DATABASE_URL
+
+INTEGRATION email:
+  type: email
+  host: env.SMTP_HOST
+  port: env.SMTP_PORT
+  from: env.SMTP_FROM
+
+INTERFACE api:
+  type: rest
+  auth:
+    method: jwt
+    secret: env.JWT_SECRET
+
+INTERFACE web:
+  type: spa
+  framework: react
+  auth:
+    method: jwt
+  pages:
+    - name: dashboard
+      layout: dashboard
+      path: /
+    - name: contacts
+      layout: table
+      path: /contacts
+    - name: contact-detail
+      layout: detail
+      path: /contacts/:id
+    - name: companies
+      layout: table
+      path: /companies
+    - name: deals
+      layout: kanban
+      path: /deals
+    - name: activities
+      layout: table
+      path: /activities
+
+WORKFLOW deal_stage_notification:
+  trigger: deal.updated
+  condition: deal.stage changed
+  steps:
+    - action: send_email
+      target: deal.assigned_to
+      template: deal_stage_changed
+
+WORKFLOW overdue_activity_reminder:
+  schedule: "0 9 * * *"
+  steps:
+    - action: query
+      target: Activity
+      filter: due_date < now AND completed = false
+    - action: send_email
+      target: activity.assigned_to
+      template: overdue_reminder
+
+ROLES:
+  admin:
+    - full_access
+  sales:
+    - manage Contact
+    - manage Company
+    - manage Deal own
+    - manage Activity own
+  viewer:
+    - read Contact
+    - read Company
+    - read Deal
+    - read Activity
+
+DEPLOY:
+  target: docker-compose
