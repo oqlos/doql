@@ -19,31 +19,31 @@ flowchart TD
         doql__cli__commands__plan___print_entities["_print_entities"]
         doql__cli__commands__plan___print_data_sources["_print_data_sources"]
         doql__cli__commands__plan___print_documents["_print_documents"]
-        ...["+62 more"]
+        ...["+68 more"]
     end
 
     subgraph Core
         doql__usage["usage"]
-        plugins__doql_plugin_gxp__doql_plugin_gxp__generate["generate"]
+        plugins__doql_plugin_fleet__doql_plugin_fleet__generate["generate"]
+        plugins__doql_plugin_iso17025__doql_plugin_iso17025__traceability__generate["generate"]
         plugins__doql_plugin_erp__doql_plugin_erp___odoo_client_module["_odoo_client_module"]
         plugins__doql_plugin_erp__doql_plugin_erp__generate["generate"]
-        plugins__doql_plugin_iso17025__doql_plugin_iso17025__traceability__generate["generate"]
-        plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate["generate"]
+        plugins__doql_plugin_gxp__doql_plugin_gxp__generate["generate"]
         plugins__doql_plugin_iso17025__doql_plugin_iso17025__certificate__generate["generate"]
+        plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate["generate"]
         plugins__doql_plugin_iso17025__doql_plugin_iso17025__migration__generate["generate"]
         plugins__doql_plugin_iso17025__doql_plugin_iso17025__uncertainty__generate["generate"]
         plugins__doql_plugin_iso17025__doql_plugin_iso17025__drift_monitor__generate["generate"]
-        playground__pyodide_bridge__pyodide["pyodide"]
-        playground__pyodide_bridge__debounceTimer["debounceTimer"]
-        playground__pyodide_bridge__initElements["initElements"]
-        playground__pyodide_bridge__isReady["isReady"]
-        playground__pyodide_bridge__debouncedBuild["debouncedBuild"]
-        ...["+119 more"]
+        playground__app__TAB_NAMES["TAB_NAMES"]
+        playground__app__tabFromHash["tabFromHash"]
+        playground__app__name["name"]
+        playground__app__initial["initial"]
+        ...["+116 more"]
     end
 
     subgraph Exporters
-        doql__exporters__css__renderers___render_api_client["_render_api_client"]
         doql__exporters__markdown__export_markdown_file["export_markdown_file"]
+        doql__exporters__css__renderers___render_api_client["_render_api_client"]
         doql__exporters__markdown__sections___entity_section["_entity_section"]
         doql__exporters__markdown__sections___interface_section["_interface_section"]
         doql__exporters__markdown__sections___workflow_section["_workflow_section"]
@@ -54,4 +54,4 @@ flowchart TD
         doql__generators__api_gen__export_openapi["export_openapi"]
     end
 
-    class doql__usage,plugins__doql_plugin_gxp__doql_plugin_gxp__generate,plugins__doql_plugin_erp__doql_plugin_erp___odoo_client_module,plugins__doql_plugin_erp__doql_plugin_erp__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__traceability__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__certificate__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__migration__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__uncertainty__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__drift_monitor__generate entry
+    class doql__usage,plugins__doql_plugin_fleet__doql_plugin_fleet__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__traceability__generate,plugins__doql_plugin_erp__doql_plugin_erp___odoo_client_module,plugins__doql_plugin_erp__doql_plugin_erp__generate,plugins__doql_plugin_gxp__doql_plugin_gxp__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__certificate__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__migration__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__uncertainty__generate entry

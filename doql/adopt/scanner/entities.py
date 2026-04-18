@@ -42,13 +42,20 @@ def scan_entities(root: Path, spec: DoqlSpec) -> None:
 
     seen: set[str] = set()
     for mf in model_files:
-        if ".venv" in str(mf) or "venv" in str(mf) or "node_modules" in str(mf):
+        mf_str = str(mf)
+        if (".venv" in mf_str or "venv" in mf_str
+                or "node_modules" in mf_str
+                or "/build/" in mf_str or mf_str.endswith("/build")
+                or "/.doql/" in mf_str or mf_str.endswith("/.doql")
+                or "/dist/" in mf_str):
             continue
         _extract_entities_from_python(mf, spec, seen)
 
     # Check SQL init files
     for sql in root.rglob("*.sql"):
-        if ".venv" in str(sql) or "venv" in str(sql):
+        sql_str = str(sql)
+        if (".venv" in sql_str or "venv" in sql_str
+                or "/build/" in sql_str or "/.doql/" in sql_str):
             continue
         _extract_entities_from_sql(sql, spec, seen)
 

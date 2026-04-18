@@ -1,8 +1,8 @@
-# doql | 124f 13846L | python:117,shell:3,javascript:3,typescript:1 | 2026-04-18
-# stats: 498 func | 0 cls | 124 mod | CC̄=3.7 | critical:6 | cycles:0
-# alerts[5]: fan-out _convert_indent_to_braces=24; fan-out _discover_local=20; fan-out _map_workflow=20; CC scan_environments=20; fan-out _diagnostics_for=17
-# hotspots[5]: _convert_indent_to_braces fan=24; _discover_local fan=20; _map_workflow fan=20; _diagnostics_for fan=17; _extract_makefile_workflows fan=17
-# evolution: CC̄ 3.7→3.7 (flat 0.0)
+# doql | 124f 13962L | shell:3,python:117,javascript:3,typescript:1 | 2026-04-18
+# stats: 514 func | 0 cls | 124 mod | CC̄=3.6 | critical:1 | cycles:0
+# alerts[5]: fan-out _convert_indent_to_braces=24; fan-out _discover_local=20; fan-out _map_workflow=20; fan-out _diagnostics_for=17; CC _map_workflow=16
+# hotspots[5]: _convert_indent_to_braces fan=24; _discover_local fan=20; _map_workflow fan=20; _diagnostics_for fan=17; cmd_export fan=16
+# evolution: CC̄ 3.7→3.6 (improved -0.1)
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
 M[124]:
   doql/__init__.py,7
@@ -11,14 +11,14 @@ M[124]:
   doql/adopt/scanner/__init__.py,58
   doql/adopt/scanner/databases.py,58
   doql/adopt/scanner/deploy.py,107
-  doql/adopt/scanner/entities.py,171
-  doql/adopt/scanner/environments.py,59
+  doql/adopt/scanner/entities.py,175
+  doql/adopt/scanner/environments.py,86
   doql/adopt/scanner/integrations.py,35
   doql/adopt/scanner/interfaces.py,324
   doql/adopt/scanner/metadata.py,68
   doql/adopt/scanner/roles.py,28
   doql/adopt/scanner/utils.py,100
-  doql/adopt/scanner/workflows.py,155
+  doql/adopt/scanner/workflows.py,158
   doql/cli/__init__.py,19
   doql/cli/__main__.py,9
   doql/cli/commands/__init__.py,53
@@ -38,14 +38,14 @@ M[124]:
   doql/cli/commands/render.py,26
   doql/cli/commands/run.py,157
   doql/cli/commands/validate.py,45
-  doql/cli/commands/workspace.py,493
+  doql/cli/commands/workspace.py,538
   doql/cli/context.py,66
   doql/cli/lockfile.py,88
   doql/cli/main.py,159
   doql/cli/sync.py,119
   doql/exporters/__init__.py,1
   doql/exporters/css/__init__.py,107
-  doql/exporters/css/format_convert.py,39
+  doql/exporters/css/format_convert.py,75
   doql/exporters/css/helpers.py,39
   doql/exporters/css/renderers.py,296
   doql/exporters/css_exporter.py,16
@@ -96,7 +96,7 @@ M[124]:
   doql/parsers/css_parser.py,144
   doql/parsers/css_tokenizer.py,120
   doql/parsers/css_transformers.py,268
-  doql/parsers/css_utils.py,71
+  doql/parsers/css_utils.py,72
   doql/parsers/extractors.py,205
   doql/parsers/models.py,219
   doql/parsers/registry.py,267
@@ -130,9 +130,6 @@ M[124]:
   tree.sh,1
   vscode-doql/src/extension.ts,51
 D:
-  doql/adopt/scanner/environments.py:
-    e: scan_environments
-    scan_environments(root;spec)
   doql/parsers/css_mappers.py:
     e: _map_entity,_add_entity_field,_map_data_source,_map_config_block,_map_template,_map_document,_map_report,_find_or_create_interface,_handle_interface_chain,_apply_interface_properties,_apply_nested_interface_children,_map_interface,_add_interface_page,_map_integration,_map_workflow,_map_role,_map_deploy,_map_database,_map_environment
     _map_entity(spec;sel;block)
@@ -154,41 +151,6 @@ D:
     _map_deploy(spec;sel;block)
     _map_database(spec;sel;block)
     _map_environment(spec;sel;block)
-  doql/cli/commands/workspace.py:
-    e: DoqlProject,_is_project,_parse_doql,_discover_local,_print,_cmd_list,_analyze_workflow_issues,_analyze_content_issues,_analyze_content_recs,_analyze_project,_output_csv,_output_table,_cmd_analyze,_cmd_validate,_cmd_fix,_cmd_run,cmd_workspace,register_parser
-    DoqlProject:  # Minimal project descriptor (used when taskfile is not instal...
-    _is_project(d)
-    _parse_doql(content)
-    _discover_local(root;max_depth)
-    _print(msg)
-    _cmd_list(args)
-    _analyze_workflow_issues(content)
-    _analyze_content_issues(content)
-    _analyze_content_recs(content;project)
-    _analyze_project(project)
-    _output_csv(rows;output_path)
-    _output_table(rows)
-    _cmd_analyze(args)
-    _cmd_validate(args)
-    _cmd_fix(args)
-    _cmd_run(args)
-    cmd_workspace(args)
-    register_parser(sub)
-  doql/adopt/scanner/workflows.py:
-    e: scan_workflows,_extract_makefile_workflows,_parse_makefile_deps,_build_taskfile_steps,_extract_taskfile_schedule,_extract_taskfile_workflows
-    scan_workflows(root;spec)
-    _extract_makefile_workflows(path;spec)
-    _parse_makefile_deps(deps_raw)
-    _build_taskfile_steps(task)
-    _extract_taskfile_schedule(task)
-    _extract_taskfile_workflows(path;spec)
-  doql/adopt/scanner/entities.py:
-    e: _is_dto_name,scan_entities,_extract_entities_from_python,_extract_fields,_extract_entities_from_sql
-    _is_dto_name(name)
-    scan_entities(root;spec)
-    _extract_entities_from_python(path;spec;seen)
-    _extract_fields(text;start;entity)
-    _extract_entities_from_sql(path;spec;seen)
   doql/lsp_server.py:
     e: _parse_doc,_find_line_col,_diagnostics_for,_word_at,_on_text_document_event,did_open,did_change,did_save,completion,hover,definition,document_symbols,main
     _parse_doc(source)
@@ -298,9 +260,29 @@ D:
     _scan_web_frontend(root;spec)
     _scan_mobile(root;spec)
     _scan_desktop(root;spec)
+  doql/adopt/scanner/workflows.py:
+    e: scan_workflows,_is_valid_target,_build_steps_from_body,_create_workflow,_extract_makefile_workflows,_parse_makefile_deps,_build_taskfile_steps,_extract_taskfile_schedule,_extract_taskfile_workflows
+    scan_workflows(root;spec)
+    _is_valid_target(name;deps_raw;seen)
+    _build_steps_from_body(body;deps_raw)
+    _create_workflow(name;steps)
+    _extract_makefile_workflows(path;spec)
+    _parse_makefile_deps(deps_raw)
+    _build_taskfile_steps(task)
+    _extract_taskfile_schedule(task)
+    _extract_taskfile_workflows(path;spec)
   doql/adopt/scanner/roles.py:
     e: scan_roles
     scan_roles(root;spec)
+  doql/adopt/scanner/entities.py:
+    e: _is_dto_name,scan_entities,_extract_entities_from_python,_extract_annotation_fields,_extract_sqlalchemy_fields,_extract_fields,_extract_entities_from_sql
+    _is_dto_name(name)
+    scan_entities(root;spec)
+    _extract_entities_from_python(path;spec;seen)
+    _extract_annotation_fields(stripped;entity)
+    _extract_sqlalchemy_fields(stripped;entity)
+    _extract_fields(text;start;entity)
+    _extract_entities_from_sql(path;spec;seen)
   doql/exporters/css/renderers.py:
     e: _render_app,_render_entity,_render_data_source,_render_template,_render_document,_render_report,_render_database,_render_api_client,_render_webhook,_build_interface_props,_build_page_props,_render_interface,_render_integration,_render_workflow,_render_role,_render_deploy,_render_environment
     _render_app(spec)
@@ -320,6 +302,32 @@ D:
     _render_role(role)
     _render_deploy(deploy)
     _render_environment(env)
+  doql/cli/commands/workspace.py:
+    e: DoqlProject,_is_project,_parse_doql,_discover_local,_print,_filter_projects,_print_project_table,_cmd_list,_analyze_workflow_issues,_analyze_content_issues,_analyze_content_recs,_analyze_project,_output_csv,_output_table,_cmd_analyze,_cmd_validate,_cmd_fix,_select_run_projects,_execute_single_project,_print_dry_run_commands,_print_run_summary,_cmd_run,cmd_workspace,register_parser
+    DoqlProject:  # Minimal project descriptor (used when taskfile is not instal...
+    _is_project(d)
+    _parse_doql(content)
+    _discover_local(root;max_depth)
+    _print(msg)
+    _filter_projects(projects;doql_only;has_workflow)
+    _print_project_table(projects;root)
+    _cmd_list(args)
+    _analyze_workflow_issues(content)
+    _analyze_content_issues(content)
+    _analyze_content_recs(content;project)
+    _analyze_project(project)
+    _output_csv(rows;output_path)
+    _output_table(rows)
+    _cmd_analyze(args)
+    _cmd_validate(args)
+    _cmd_fix(args)
+    _select_run_projects(root;max_depth;name_pattern)
+    _execute_single_project(project;action;timeout;index;total)
+    _print_dry_run_commands(projects;action)
+    _print_run_summary(success;total)
+    _cmd_run(args)
+    cmd_workspace(args)
+    register_parser(sub)
   doql/generators/api_gen/schemas.py:
     e: gen_schemas,_gen_entity_schemas,_gen_create_schema,_gen_response_schema,_gen_update_schema
     gen_schemas(spec)
@@ -370,6 +378,13 @@ D:
     _indent(lines;level)
     _prop(key;value;quote_str)
     _field_line(f)
+  doql/generators/infra_gen.py:
+    e: _slug,_gen_docker_compose,_gen_quadlet,_gen_kiosk,generate
+    _slug(name)
+    _gen_docker_compose(spec;env_vars;out)
+    _gen_quadlet(spec;env_vars;out)
+    _gen_kiosk(spec;env_vars;out)
+    generate(spec;env_vars;out)
   doql/generators/integrations_gen.py:
     e: _gen_email_service,_gen_slack_service,_gen_storage_service,_gen_notifications,_gen_api_client,_gen_webhook_dispatcher,_setup_services_dir,_generate_integration_services,_generate_api_clients,_generate_webhooks,generate
     _gen_email_service()
@@ -383,13 +398,6 @@ D:
     _generate_api_clients(spec;services_dir;generated)
     _generate_webhooks(spec;services_dir;generated)
     generate(spec;env_vars;out)
-  doql/generators/infra_gen.py:
-    e: _slug,_gen_docker_compose,_gen_quadlet,_gen_kiosk,generate
-    _slug(name)
-    _gen_docker_compose(spec;env_vars;out)
-    _gen_quadlet(spec;env_vars;out)
-    _gen_kiosk(spec;env_vars;out)
-    generate(spec;env_vars;out)
   doql/plugins.py:
     e: Plugin,_discover_entry_points,_discover_local,discover_plugins,run_plugins
     Plugin:
@@ -397,6 +405,18 @@ D:
     _discover_local(project_root)
     discover_plugins(project_root)
     run_plugins(spec;env_vars;build_dir;project_root)
+  playground/renderers.js:
+    e: escapeHtml,renderFatal,renderDiagnostics,loc,renderAst,renderEnv,refs,keys,marker,renderFiles
+    escapeHtml()
+    renderFatal()
+    renderDiagnostics()
+    loc()
+    renderAst()
+    renderEnv()
+    refs()
+    keys()
+    marker()
+    renderFiles()
   playground/pyodide-bridge.js:
     i: ./renderers.js
     e: pyodide,buildFn,debounceTimer,initElements,isReady,debouncedBuild,executeBuild,r,_loadPyodide,_installDoql,_createBuildFunction,resp,src,bootPyodide,version
@@ -415,18 +435,6 @@ D:
     src()
     bootPyodide()
     version()
-  playground/renderers.js:
-    e: escapeHtml,renderFatal,renderDiagnostics,loc,renderAst,renderEnv,refs,keys,marker,renderFiles
-    escapeHtml()
-    renderFatal()
-    renderDiagnostics()
-    loc()
-    renderAst()
-    renderEnv()
-    refs()
-    keys()
-    marker()
-    renderFiles()
   doql/cli/commands/query.py:
     e: cmd_query
     cmd_query(args)
@@ -443,6 +451,14 @@ D:
   doql/generators/api_gen/auth.py:
     e: gen_auth
     gen_auth(spec)
+  doql/adopt/scanner/environments.py:
+    e: _detect_local_env,_extract_env_refs,_detect_env_files,_assign_ssh_host,_detect_compose_envs,scan_environments
+    _detect_local_env(root;spec)
+    _extract_env_refs(env_path;spec)
+    _detect_env_files(root;spec)
+    _assign_ssh_host(env;name;env_refs)
+    _detect_compose_envs(root;spec)
+    scan_environments(root;spec)
   doql/parsers/css_parser.py:
     e: _parse_selector,_map_to_spec,_apply_css_block,parse_css_file,parse_css_text,_detect_format
     _parse_selector(selector)
@@ -498,6 +514,22 @@ D:
     _parse_pyproject(path;spec)
     _parse_package_json(path;spec)
     _parse_goal_yaml(path;spec)
+  doql/parsers/extractors.py:
+    e: extract_val,extract_list,extract_yaml_list,_extract_page_from_format1,_extract_page_from_format2,extract_pages,_should_skip_line,_is_valid_field_name,_parse_field_flags,_parse_field_ref,_parse_field_default,_parse_field_type,extract_entity_fields,collect_env_refs
+    extract_val(body;key)
+    extract_list(body;key)
+    extract_yaml_list(body;key)
+    _extract_page_from_format1(body)
+    _extract_page_from_format2(body)
+    extract_pages(body)
+    _should_skip_line(line)
+    _is_valid_field_name(name)
+    _parse_field_flags(ftype_raw)
+    _parse_field_ref(ftype_raw)
+    _parse_field_default(ftype_raw)
+    _parse_field_type(ftype_raw)
+    extract_entity_fields(body)
+    collect_env_refs(text)
   doql/parsers/__init__.py:
     e: _is_css_format,detect_doql_file,parse_file,parse_text,parse_env
     _is_css_format(path)
@@ -505,6 +537,18 @@ D:
     parse_file(path)
     parse_text(text)
     parse_env(path)
+  doql/parsers/validators.py:
+    e: _validate_app_name,_validate_env_refs,_validate_data_source_files,_validate_file_refs,_validate_document_templates,_validate_template_files,_validate_document_partials,_validate_entity_refs,_validate_interfaces,validate
+    _validate_app_name(spec)
+    _validate_env_refs(spec;env_vars)
+    _validate_data_source_files(spec;project_root)
+    _validate_file_refs(items;project_root;item_type;name_attr;file_attr;error_msg)
+    _validate_document_templates(spec;project_root)
+    _validate_template_files(spec;project_root)
+    _validate_document_partials(spec)
+    _validate_entity_refs(spec)
+    _validate_interfaces(spec)
+    validate(spec;env_vars;project_root)
   doql/parsers/registry.py:
     e: register,get_handler,list_registered,_handle_app,_handle_version,_handle_domain,_handle_languages,_handle_entity,_handle_data,_handle_template,_handle_document,_handle_report,_handle_database,_handle_api_client,_handle_webhook,_handle_interface,_handle_integration,_handle_workflow,_handle_roles,_handle_role,_handle_import_block,_handle_scenarios,_handle_tests,_handle_deploy
     register(keyword)
@@ -531,34 +575,6 @@ D:
     _handle_scenarios(spec;header;body)
     _handle_tests(spec;header;body)
     _handle_deploy(spec;header;body)
-  doql/parsers/validators.py:
-    e: _validate_app_name,_validate_env_refs,_validate_data_source_files,_validate_file_refs,_validate_document_templates,_validate_template_files,_validate_document_partials,_validate_entity_refs,_validate_interfaces,validate
-    _validate_app_name(spec)
-    _validate_env_refs(spec;env_vars)
-    _validate_data_source_files(spec;project_root)
-    _validate_file_refs(items;project_root;item_type;name_attr;file_attr;error_msg)
-    _validate_document_templates(spec;project_root)
-    _validate_template_files(spec;project_root)
-    _validate_document_partials(spec)
-    _validate_entity_refs(spec)
-    _validate_interfaces(spec)
-    validate(spec;env_vars;project_root)
-  doql/parsers/extractors.py:
-    e: extract_val,extract_list,extract_yaml_list,_extract_page_from_format1,_extract_page_from_format2,extract_pages,_should_skip_line,_is_valid_field_name,_parse_field_flags,_parse_field_ref,_parse_field_default,_parse_field_type,extract_entity_fields,collect_env_refs
-    extract_val(body;key)
-    extract_list(body;key)
-    extract_yaml_list(body;key)
-    _extract_page_from_format1(body)
-    _extract_page_from_format2(body)
-    extract_pages(body)
-    _should_skip_line(line)
-    _is_valid_field_name(name)
-    _parse_field_flags(ftype_raw)
-    _parse_field_ref(ftype_raw)
-    _parse_field_default(ftype_raw)
-    _parse_field_type(ftype_raw)
-    extract_entity_fields(body)
-    collect_env_refs(text)
   playground/app.js:
     i: ./pyodide-bridge.js
     e: TAB_NAMES,activateTab,tabFromHash,name,initial,key,updateStats,lines,chars
@@ -705,12 +721,8 @@ D:
   doql/generators/web_gen/router.py:
     e: _gen_app
     _gen_app(spec)
-  plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py:
-    e: _audit_log_module,_e_signature_module,_audit_middleware,_migration_audit,_readme,generate
-    _audit_log_module()
-    _e_signature_module()
-    _audit_middleware()
-    _migration_audit()
+  plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py:
+    e: _readme,generate
     _readme(spec)
     generate(spec;env_vars;out;project_root)
   plugins/doql-plugin-erp/doql_plugin_erp/__init__.py:
@@ -721,6 +733,14 @@ D:
     _webhook_module()
     _readme(spec)
     generate(spec;env_vars;out;project_root)
+  plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py:
+    e: _audit_log_module,_e_signature_module,_audit_middleware,_migration_audit,_readme,generate
+    _audit_log_module()
+    _e_signature_module()
+    _audit_middleware()
+    _migration_audit()
+    _readme(spec)
+    generate(spec;env_vars;out;project_root)
   vscode-doql/src/extension.ts:
     i: path,vscode
     e: activate,config,serverPath,deactivate
@@ -728,10 +748,6 @@ D:
     config()
     serverPath()
     deactivate()
-  plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py:
-    e: _readme,generate
-    _readme(spec)
-    generate(spec;env_vars;out;project_root)
   doql/cli/commands/kiosk.py:
     e: cmd_kiosk
     cmd_kiosk(args)
@@ -776,21 +792,21 @@ D:
   plugins/doql-plugin-fleet/doql_plugin_fleet/ota.py:
     e: _ota_module
     _ota_module()
-  plugins/doql-plugin-fleet/doql_plugin_fleet/migration.py:
-    e: _migration_module
-    _migration_module()
   plugins/doql-plugin-fleet/doql_plugin_fleet/tenant.py:
     e: _tenant_module
     _tenant_module()
+  plugins/doql-plugin-fleet/doql_plugin_fleet/migration.py:
+    e: _migration_module
+    _migration_module()
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/traceability.py:
+    e: generate
+    generate()
+  plugins/doql-plugin-iso17025/doql_plugin_iso17025/certificate.py:
     e: generate
     generate()
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py:
     e: generate
     generate(spec;env_vars;out;project_root)
-  plugins/doql-plugin-iso17025/doql_plugin_iso17025/certificate.py:
-    e: generate
-    generate()
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/migration.py:
     e: generate
     generate()
@@ -817,6 +833,11 @@ D:
     e: _gen_github_action,generate
     _gen_github_action(spec)
     generate(spec;env_vars;out)
+  doql/generators/web_gen/pwa.py:
+    e: _gen_manifest,_gen_service_worker,_gen_sw_register
+    _gen_manifest(spec)
+    _gen_service_worker(spec)
+    _gen_sw_register()
   doql/generators/web_gen/config.py:
     e: _gen_package_json,_gen_vite_config,_gen_tailwind_config,_gen_postcss_config,_gen_tsconfig,_gen_index_html
     _gen_package_json(spec)
@@ -825,11 +846,6 @@ D:
     _gen_postcss_config()
     _gen_tsconfig()
     _gen_index_html(spec)
-  doql/generators/web_gen/pwa.py:
-    e: _gen_manifest,_gen_service_worker,_gen_sw_register
-    _gen_manifest(spec)
-    _gen_service_worker(spec)
-    _gen_sw_register()
   doql/generators/web_gen/core.py:
     e: _gen_main_tsx,_gen_index_css,_gen_api_ts
     _gen_main_tsx()
@@ -838,21 +854,21 @@ D:
   doql/generators/api_gen/database.py:
     e: gen_database
     gen_database(spec;env_vars)
-  doql/adopt/scanner/__init__.py:
-    e: scan_project
-    scan_project(root)
   doql/utils/naming.py:
     e: snake,kebab
     snake(name)
     kebab(name)
+  doql/adopt/scanner/__init__.py:
+    e: scan_project
+    scan_project(root)
   doql/adopt/emitter.py:
     e: emit_css
     emit_css(spec;output)
+  project.sh:
   doql/__init__.py:
   tree.sh:
-  project.sh:
-  playground/serve.sh:
   plugins/doql-plugin-shared/doql_plugin_shared/__init__.py:
+  playground/serve.sh:
   doql/cli/__init__.py:
   doql/parser.py:
   doql/importers/__init__.py:

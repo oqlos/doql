@@ -1,9 +1,9 @@
-# doql | 513 func | 107f | 17350L | python | 2026-04-18
+# doql | 514 func | 107f | 17352L | python | 2026-04-18
 
 HEALTH:
-  CC̄=3.5  critical=31 (limit:10)  dup=0  cycles=0
+  CC̄=3.6  critical=31 (limit:10)  dup=0  cycles=0
 
-ALERTS[15]:
+ALERTS[20]:
   !!! high_fan_out     _convert_indent_to_braces = 24 (limit:10)
   !!! high_fan_out     _discover_local = 20 (limit:10)
   !!! high_fan_out     _map_workflow = 20 (limit:10)
@@ -11,10 +11,12 @@ ALERTS[15]:
   !!  high_fan_out     cmd_export = 16 (limit:10)
   !!  high_fan_out     cmd_doctor = 16 (limit:10)
   !!  high_fan_out     _extract_entities_from_python = 16 (limit:10)
-  !   cc_exceeded      css_mappers = 16 (limit:15)
+  !!  high_fan_out     _extract_page_from_format2 = 16 (limit:10)
+  !!  high_fan_out     cmd_run = 15 (limit:10)
+  !   cc_exceeded      _map_workflow = 16 (limit:15)
 
 MODULES[125] (top by size):
-  M[doql/cli/commands/workspace.py] 520L C:1 F:26 CC↑8 D:0 (python)  [REFACTORED]
+  M[doql/cli/commands/workspace.py] 538L C:1 F:23 CC↑10 D:0 (python)
   M[doql/generators/mobile_gen.py] 462L C:0 F:8 CC↑5 D:1 (python)
   M[plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py] 427L C:0 F:6 CC↑2 D:0 (python)
   M[doql/parsers/css_mappers.py] 399L C:0 F:19 CC↑16 D:1 (python)
@@ -31,30 +33,19 @@ MODULES[125] (top by size):
   M[doql/importers/yaml_importer.py] 267L C:0 F:22 CC↑3 D:1 (python)
   LANGS: python:117/shell:4/javascript:3/typescript:1
 
-NEW_EXPORTS[15]:
-  doql/adopt/scanner/environments.py:
-    - _detect_local_env, _extract_env_refs, _detect_env_files
-    - _assign_ssh_host, _detect_compose_envs, _COMPOSE_PATTERNS
-  doql/adopt/scanner/entities.py:
-    - _extract_annotation_fields, _extract_sqlalchemy_fields
-  doql/adopt/scanner/workflows.py:
-    - _TARGET_RE, _is_valid_target, _build_steps_from_body, _create_workflow
-  doql/cli/commands/workspace.py:
-    - _filter_projects, _print_project_table, _select_run_projects
-    - _execute_single_project, _print_dry_run_commands, _print_run_summary
+HOTSPOTS[10]:
+  ★ _convert_indent_to_braces fan=24  // Convert indent-based SASS blocks to brace-delimited CSS.
+  ★ _discover_local fan=20  // Walk `root` up to `max_depth` levels, collect projects with manifests.
+  ★ _map_workflow fan=20  // Map CSS block to Workflow definition.
+  ★ _diagnostics_for fan=17  // Parse, validate and return LSP diagnostics.
+  ★ cmd_export fan=16  // Export with 16 outputs
 
-REFACTOR[COMPLETED]:
-  [✓] Split scan_environments (CC=20→3) into _detect_local_env, _detect_env_files, _detect_compose_envs
-  [✓] Split _extract_fields (CC=15→4) into _extract_annotation_fields, _extract_sqlalchemy_fields
-  [✓] Split _extract_makefile_workflows (CC=15→4) into _is_valid_target, _build_steps_from_body, _create_workflow
-  [✓] Split _cmd_list (CC=15→4) into _filter_projects, _print_project_table
-  [✓] Split _cmd_run (CC=15→4) into _select_run_projects, _execute_single_project, _print_dry_run_commands, _print_run_summary
-
-REFACTOR[PENDING]:
-  [1] Split _convert_indent_to_braces (CC=12, fan=24) → reduce fan-out
-  [2] Split _discover_local (fan=20) → extract helper functions
-  [3] Split _map_workflow (CC=16, fan=20) → decompose mapping logic
+REFACTOR[5]:
+  [1] H/H Split god module doql/cli/commands/workspace.py (538L, 1 classes)
+  [2] M/L Split _map_workflow (CC=16 → target CC<10)
+  [3] M/M Reduce _convert_indent_to_braces fan-out (currently 24)
+  [4] M/M Reduce _discover_local fan-out (currently 20)
+  [5] M/M Reduce _map_workflow fan-out (currently 20)
 
 EVOLUTION:
-  2026-04-18 CC̄=3.7 crit=36 17236L // Automated analysis
-  2026-04-18 CC̄=3.5 crit=31 17350L // Split 5 high-CC functions (+15 helpers, -5 critical alerts)
+  2026-04-18 CC̄=3.6 crit=31 17352L // Automated analysis

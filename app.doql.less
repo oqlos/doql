@@ -1,17 +1,9 @@
 // LESS format — define @variables here as needed
-// doql showcase app combining all example domains
-
-@framework: react;
-@auth: jwt;
 
 app {
-  name: "doql";
-  version: "0.0.2";
-  domain: env.DOMAIN;
-  languages: en, pl;
+  name: doql;
+  version: 0.1.1;
 }
-
-// ── Blog CMS ──
 
 entity[name="Post"] {
   id: uuid! auto;
@@ -68,8 +60,6 @@ entity[name="MediaFile"] {
   created: datetime auto;
 }
 
-// ── IoT Fleet ──
-
 entity[name="Node"] {
   id: uuid! auto;
   hostname: string! unique;
@@ -118,8 +108,6 @@ entity[name="OTAUpdate"] {
   progress: float computed;
 }
 
-// ── Notes App ──
-
 entity[name="Notebook"] {
   id: uuid! auto;
   name: string!;
@@ -143,8 +131,6 @@ entity[name="Tag"] {
   color: string default=slate;
 }
 
-// ── Todo PWA ──
-
 entity[name="Todo"] {
   id: uuid! auto;
   title: string!;
@@ -153,8 +139,6 @@ entity[name="Todo"] {
   due: date;
   created: datetime auto;
 }
-
-// ── E-Commerce Shop ──
 
 entity[name="Product"] {
   id: uuid! auto;
@@ -201,8 +185,6 @@ entity[name="CartItem"] {
   quantity: int default=1;
   created: datetime auto;
 }
-
-// ── Calibration Lab ──
 
 entity[name="Operator"] {
   id: uuid! auto;
@@ -261,8 +243,6 @@ entity[name="CalibrationOrder"] {
   invoice_number: string;
 }
 
-// ── CRM Contacts ──
-
 entity[name="Contact"] {
   id: uuid! auto;
   first_name: string!;
@@ -278,60 +258,118 @@ entity[name="Contact"] {
   updated: datetime auto;
 }
 
-interface[type="api"] {
-  type: rest;
-  auth-method: @auth;
-}
-
-interface[type="web"] {
-  type: spa;
-  framework: @framework;
-}
-
-deploy {
-  target: docker-compose;
-}
-
-}
-
 entity[name="Company"] {
-
+  id: uuid! auto;
+  name: string! unique;
+  domain: string;
+  industry: string;
+  size: enum[startup, small, medium, enterprise];
+  website: string;
+  address: json;
+  created: datetime auto;
 }
 
 entity[name="Deal"] {
-
+  id: uuid! auto;
+  title: string!;
+  contact: ref(Contact)!;
+  company: ref(Company);
+  value: decimal;
+  currency: enum[USD, EUR, PLN] default=EUR;
+  stage: enum[lead, qualified, proposal, negotiation, won, lost] default=lead;
+  probability: int default=0;
+  expected_close: date;
+  assigned_to: string;
+  notes: text;
+  created: datetime auto;
+  updated: datetime auto;
 }
 
 entity[name="Activity"] {
-
+  id: uuid! auto;
+  type: enum[call, email, meeting, note, task]!;
+  contact: ref(Contact);
+  deal: ref(Deal);
+  subject: string!;
+  description: text;
+  due_date: datetime;
+  completed: bool default=false;
+  assigned_to: string;
+  created: datetime auto;
 }
 
 entity[name="User"] {
-
+  id: uuid! auto;
+  name: string!;
+  email: email unique;
+  role: enum[admin, manager, operator];
+  active: bool default=true;
 }
 
 entity[name="Station"] {
-
+  id: uuid! auto;
+  name: string!;
+  address: text;
+  manager: ref(User);
 }
 
 entity[name="Qualification"] {
-
+  name: string!;
+  level: enum[basic, advanced, instructor];
+  valid_until: date;
+  certificate_file: pdf;
 }
 
 entity[name="Device"] {
-
+  id: uuid! auto;
+  serial: string! unique;
+  model: string!;
+  manufacturer: string!;
+  device_type: enum[scba, mask, cylinder, regulator, harness];
+  station: ref(Station);
+  purchase_date: date;
+  warranty_until: date;
+  photo: image;
+  barcode: string unique;
+  status: enum[ready, in_use, failed, retired, overdue] default=ready;
+  last_inspection: date;
+  next_inspection: date computed;
+  total_uses: int default=0;
 }
 
 entity[name="Inspection"] {
-
+  id: uuid! auto;
+  device: ref(Device);
+  operator: ref(Operator);
+  scenario_id: oql;
+  started_at: datetime auto;
+  completed_at: datetime;
+  result: enum[pass, fail, incomplete, cancelled];
+  measurements: json;
+  notes: text;
+  report_pdf: pdf computed;
+  signed_by: ref(Operator);
 }
 
 entity[name="CylinderFill"] {
-
+  id: uuid! auto;
+  cylinder: ref(Device);
+  filled_at: datetime auto;
+  pressure_bar: decimal(10,1);
+  operator: ref(Operator);
+  quality_check: bool;
+  air_quality_cert: pdf;
 }
 
 entity[name="Exercise"] {
-
+  id: uuid! auto;
+  operator: ref(Operator);
+  date: date!;
+  type: enum[training, live_exercise, annual_mandatory];
+  duration_minutes: int;
+  equipment_used: [Device];
+  pass: bool;
+  notes: text;
 }
 
 interface[type="cli"] {
@@ -342,47 +380,90 @@ interface[type="cli"] page[name="doql"] {
 }
 
 workflow[name="install"] {
-  trigger: """"""""""manual"""""""""";
+  trigger: manual;
+  step-1: run cmd=pip install -e .[dev];
 }
 
-workflow[name="test"] {
-  trigger: """"""""""manual"""""""""";
+workflow[name="quality"] {
+  trigger: manual;
+  step-1: run cmd=pyqual run;
 }
 
-workflow[name="lint"] {
-  trigger: """"""""""manual"""""""""";
+workflow[name="quality:fix"] {
+  trigger: manual;
+  step-1: run cmd=pyqual run --fix;
 }
 
-workflow[name="fmt"] {
-  trigger: """"""""""manual"""""""""";
+workflow[name="quality:report"] {
+  trigger: manual;
+  step-1: run cmd=pyqual report;
 }
 
 workflow[name="build"] {
-  trigger: """"""""""manual"""""""""";
+  trigger: manual;
+  step-1: run cmd=python -m build;
 }
 
 workflow[name="clean"] {
-  trigger: """"""""""manual"""""""""";
+  trigger: manual;
+  step-1: run cmd=rm -rf build/ dist/ *.egg-info;
+}
+
+workflow[name="structure"] {
+  trigger: manual;
+  step-1: run cmd=echo "📁 Analyzing project structure..."
+python3 -m doql.cli adopt {{.PWD}} --output app.doql.css --force
+echo "🎨 Exporting to LESS format..."
+doql export --format less -o {{.DOQL_OUTPUT}}
+echo "✅ Structure generated: app.doql.css + {{.DOQL_OUTPUT}}";
 }
 
 workflow[name="doql:adopt"] {
-  trigger: """"""""""manual"""""""""";
+  trigger: manual;
+  step-1: run cmd=python3 -m doql.cli adopt {{.PWD}} --output app.doql.css --force;
+  step-2: run cmd=echo "✅ Captured in app.doql.css";
+}
+
+workflow[name="doql:export"] {
+  trigger: manual;
+  step-1: run cmd=if [ ! -f "app.doql.css" ]; then
+echo "❌ app.doql.css not found. Run: task structure"
+exit 1
+fi;
+  step-2: run cmd=doql export --format less -o {{.DOQL_OUTPUT}};
+  step-3: run cmd=echo "✅ Exported to {{.DOQL_OUTPUT}}";
 }
 
 workflow[name="doql:validate"] {
-  trigger: """"""""""manual"""""""""";
+  trigger: manual;
+  step-1: run cmd=if [ ! -f "{{.DOQL_OUTPUT}}" ]; then
+echo "❌ {{.DOQL_OUTPUT}} not found. Run: task doql:adopt"
+exit 1
+fi;
+  step-2: run cmd=python3 -m doql.cli validate;
 }
 
 workflow[name="doql:doctor"] {
-  trigger: """"""""""manual"""""""""";
+  trigger: manual;
+  step-1: run cmd=python3 -m doql.cli doctor {{.PWD}};
 }
 
 workflow[name="doql:build"] {
-  trigger: """"""""""manual"""""""""";
+  trigger: manual;
+  step-1: run cmd=if [ ! -f "{{.DOQL_OUTPUT}}" ]; then
+echo "❌ {{.DOQL_OUTPUT}} not found. Run: task doql:adopt"
+exit 1
+fi;
+  step-2: run cmd=# Regenerate LESS from CSS if CSS exists
+if [ -f "app.doql.css" ]; then
+doql export --format less -o {{.DOQL_OUTPUT}}
+fi;
+  step-3: run cmd=python3 -m doql.cli build app.doql.css --out build/;
 }
 
 workflow[name="help"] {
-  trigger: """"""""""manual"""""""""";
+  trigger: manual;
+  step-1: run cmd=task --list;
 }
 
 deploy {
@@ -390,6 +471,6 @@ deploy {
 }
 
 environment[name="local"] {
-  runtime: docker;
-  env_file: """""""""".env"""""""""";
+  runtime: docker-compose;
+  env_file: .env;
 }

@@ -1,38 +1,23 @@
-# code2llm/evolution | 498 func | 107f | 2026-04-18
+# code2llm/evolution | 514 func | 107f | 2026-04-18
 
-NEXT[6] (ranked by impact):
-  [1] !  SPLIT-FUNC      scan_environments  CC=20  fan=17
-      WHY: CC=20 exceeds 15
-      EFFORT: ~1h  IMPACT: 340
+NEXT[2] (ranked by impact):
+  [1] !! SPLIT           doql/cli/commands/workspace.py
+      WHY: 538L, 1 classes, max CC=10
+      EFFORT: ~4h  IMPACT: 5380
 
   [2] !  SPLIT-FUNC      _map_workflow  CC=16  fan=20
       WHY: CC=16 exceeds 15
       EFFORT: ~1h  IMPACT: 320
 
-  [3] !  SPLIT-FUNC      _extract_makefile_workflows  CC=15  fan=17
-      WHY: CC=15 exceeds 15
-      EFFORT: ~1h  IMPACT: 255
 
-  [4] !  SPLIT-FUNC      _cmd_list  CC=15  fan=15
-      WHY: CC=15 exceeds 15
-      EFFORT: ~1h  IMPACT: 225
-
-  [5] !  SPLIT-FUNC      _cmd_run  CC=15  fan=13
-      WHY: CC=15 exceeds 15
-      EFFORT: ~1h  IMPACT: 195
-
-  [6] !  SPLIT-FUNC      _extract_fields  CC=15  fan=13
-      WHY: CC=15 exceeds 15
-      EFFORT: ~1h  IMPACT: 195
-
-
-RISKS[0]: none
+RISKS[1]:
+  ⚠ Splitting doql/cli/commands/workspace.py may break 23 import paths
 
 METRICS-TARGET:
-  CC̄:          3.7 → ≤2.6
-  max-CC:      20 → ≤10
-  god-modules: 0 → 0
-  high-CC(≥15): 6 → ≤3
+  CC̄:          3.6 → ≤2.5
+  max-CC:      16 → ≤8
+  god-modules: 1 → 0
+  high-CC(≥15): 1 → ≤0
   hub-types:   0 → ≤0
 
 PATTERNS (language parser shared logic):
@@ -60,4 +45,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=3.7 → now CC̄=3.7
+  prev CC̄=3.7 → now CC̄=3.6
