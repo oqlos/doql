@@ -29,7 +29,7 @@ class Operator(Base):
     id = Column(String(36), primary_key=True)
     name = Column(String(255))
     personal_id = Column(String(255), unique=True, nullable=True)
-    station = Column(String(255), ForeignKey("stations.id"), nullable=True)
+    station = Column(String(255), nullable=True)
     qualifications = Column(String(255), nullable=True)
     hire_date = Column(Date, nullable=True)
     active = Column(Boolean, nullable=True, default=True)
@@ -53,7 +53,7 @@ class Device(Base):
     model = Column(String(255))
     manufacturer = Column(String(255))
     device_type = Column(String(255), nullable=True)
-    station = Column(String(255), ForeignKey("stations.id"), nullable=True)
+    station = Column(String(255), nullable=True)
     purchase_date = Column(Date, nullable=True)
     warranty_until = Column(Date, nullable=True)
     photo = Column(String(512), nullable=True)
@@ -72,15 +72,15 @@ class Inspection(Base):
     __tablename__ = "inspections"
 
     id = Column(String(36), primary_key=True)
-    device = Column(String(255), ForeignKey("devices.id"), nullable=True)
-    operator = Column(String(255), ForeignKey("operators.id"), nullable=True)
+    device = Column(String(255), nullable=True)
+    operator = Column(String(255), nullable=True)
     scenario_id = Column(String(255), nullable=True)
     started_at = Column(DateTime, nullable=True)
     completed_at = Column(DateTime, nullable=True)
     result = Column(String(255), nullable=True)
     measurements = Column(JSON, nullable=True)
     notes = Column(Text, nullable=True)
-    signed_by = Column(String(255), ForeignKey("operators.id"), nullable=True)
+    signed_by = Column(String(255), nullable=True)
 
 
 class CylinderFill(Base):
@@ -90,7 +90,7 @@ class CylinderFill(Base):
     cylinder = Column(String(255), ForeignKey("devices.id"), nullable=True)
     filled_at = Column(DateTime, nullable=True)
     pressure_bar = Column(String(255), nullable=True)
-    operator = Column(String(255), ForeignKey("operators.id"), nullable=True)
+    operator = Column(String(255), nullable=True)
     quality_check = Column(Boolean, nullable=True)
     air_quality_cert = Column(String(512), nullable=True)
 
@@ -99,7 +99,7 @@ class Exercise(Base):
     __tablename__ = "exercises"
 
     id = Column(String(36), primary_key=True)
-    operator = Column(String(255), ForeignKey("operators.id"), nullable=True)
+    operator = Column(String(255), nullable=True)
     date = Column(Date)
     type_ = Column(String(255), nullable=True)
     duration_minutes = Column(Integer, nullable=True)
@@ -112,8 +112,8 @@ class Deployment(Base):
     __tablename__ = "deployments"
 
     id = Column(String(36), primary_key=True)
-    operator = Column(String(255), ForeignKey("operators.id"), nullable=True)
-    device = Column(String(255), ForeignKey("devices.id"), nullable=True)
+    operator = Column(String(255), nullable=True)
+    device = Column(String(255), nullable=True)
     taken_at = Column(DateTime, nullable=True)
     returned_at = Column(DateTime, nullable=True)
     incident_ref = Column(String(255), nullable=True)

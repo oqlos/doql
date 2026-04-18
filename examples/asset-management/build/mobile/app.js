@@ -54,7 +54,7 @@
       },
       {
         "name": "manager",
-        "type": "User",
+        "type": "=",
         "required": false
       }
     ]
@@ -80,7 +80,7 @@
       },
       {
         "name": "station",
-        "type": "=",
+        "type": "= ref=Station",
         "required": false
       },
       {
@@ -157,7 +157,7 @@
       },
       {
         "name": "station",
-        "type": "=",
+        "type": "= ref=Station",
         "required": false
       },
       {
@@ -238,12 +238,12 @@
       },
       {
         "name": "device",
-        "type": "=",
+        "type": "= ref=Device",
         "required": false
       },
       {
         "name": "operator",
-        "type": "=",
+        "type": "= ref=Operator",
         "required": false
       },
       {
@@ -283,7 +283,7 @@
       },
       {
         "name": "signed_by",
-        "type": "=",
+        "type": "= ref=Operator",
         "required": false
       }
     ]
@@ -299,7 +299,7 @@
       },
       {
         "name": "cylinder",
-        "type": "Device",
+        "type": "=",
         "required": false
       },
       {
@@ -314,7 +314,7 @@
       },
       {
         "name": "operator",
-        "type": "=",
+        "type": "= ref=Operator",
         "required": false
       },
       {
@@ -340,7 +340,7 @@
       },
       {
         "name": "operator",
-        "type": "=",
+        "type": "= ref=Operator",
         "required": false
       },
       {
@@ -386,12 +386,12 @@
       },
       {
         "name": "operator",
-        "type": "=",
+        "type": "= ref=Operator",
         "required": false
       },
       {
         "name": "device",
-        "type": "=",
+        "type": "= ref=Device",
         "required": false
       },
       {

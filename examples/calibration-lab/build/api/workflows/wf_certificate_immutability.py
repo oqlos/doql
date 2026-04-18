@@ -4,23 +4,23 @@ from workflows.engine import WorkflowRun, Step, engine
 # Trigger: event Calibration.signed
 
 def step_freeze_calibration_record(ctx: dict):
-    """Action: freeze calibration record"""
+    '''Action: freeze calibration record'''
     # TODO: implement freeze calibration record
     pass
 
 def step_hash_sign_certificate_pdf(ctx: dict):
-    """Action: hash + sign certificate_pdf"""
+    '''Action: hash + sign certificate_pdf'''
     # TODO: implement hash + sign certificate_pdf
     pass
 
 def step_upload_s3_with__object__lock_worm(ctx: dict):
-    """Action: upload S3 with Object Lock (WORM)"""
+    '''Action: upload S3 with Object Lock (WORM)'''
     # TODO: implement upload S3 with Object Lock (WORM)
     pass
 
-def step_(ctx: dict):
-    """Action: """
-    # TODO: implement 
+def step_audit_log__certificate_number_sealed(ctx: dict):
+    '''Action: audit_log "Certificate ${number} sealed"'''
+    # TODO: implement audit_log 'Certificate ${number} sealed'
     pass
 
 
@@ -30,20 +30,20 @@ def create(context: dict) -> WorkflowRun:
         context=context,
         steps=[
     Step(
-        name="freeze calibration record",
+        name='freeze calibration record',
         action=lambda ctx: step_freeze_calibration_record(ctx),
     ),
     Step(
-        name="hash + sign certificate_pdf",
+        name='hash + sign certificate_pdf',
         action=lambda ctx: step_hash_sign_certificate_pdf(ctx),
     ),
     Step(
-        name="upload S3 with Object Lock (WORM)",
+        name='upload S3 with Object Lock (WORM)',
         action=lambda ctx: step_upload_s3_with__object__lock_worm(ctx),
     ),
     Step(
-        name="",
-        action=lambda ctx: step_(ctx),
+        name='audit_log "Certificate ${number} sealed"',
+        action=lambda ctx: step_audit_log__certificate_number_sealed(ctx),
     ),
         ],
     )
