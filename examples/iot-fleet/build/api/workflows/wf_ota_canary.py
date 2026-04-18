@@ -4,32 +4,32 @@ from workflows.engine import WorkflowRun, Step, engine
 # Trigger: manual
 
 def step_select(ctx: dict):
-    """Action: select"""
+    '''Action: select'''
     # TODO: implement select
     pass
 
 def step_push_update(ctx: dict):  # target: canary
-    """Action: push_update"""
+    '''Action: push_update'''
     # TODO: implement push_update
     pass
 
 def step_wait(ctx: dict):
-    """Action: wait"""
+    '''Action: wait'''
     # TODO: implement wait
     pass
 
 def step_push_update(ctx: dict):  # target: next 20%
-    """Action: push_update"""
+    '''Action: push_update'''
     # TODO: implement push_update
     pass
 
 def step_push_update(ctx: dict):  # target: remaining
-    """Action: push_update"""
+    '''Action: push_update'''
     # TODO: implement push_update
     pass
 
 def step_rollback(ctx: dict):
-    """Action: rollback"""
+    '''Action: rollback'''
     # TODO: implement rollback
     pass
 
@@ -40,27 +40,27 @@ def create(context: dict) -> WorkflowRun:
         context=context,
         steps=[
     Step(
-        name="select",
+        name='select',
         action=lambda ctx: step_select(ctx),
     ),
     Step(
-        name="push_update",
+        name='push_update',
         action=lambda ctx: step_push_update(ctx),
     ),
     Step(
-        name="wait",
+        name='wait',
         action=lambda ctx: step_wait(ctx),
     ),
     Step(
-        name="push_update",
+        name='push_update',
         action=lambda ctx: step_push_update(ctx),
     ),
     Step(
-        name="push_update",
+        name='push_update',
         action=lambda ctx: step_push_update(ctx),
     ),
     Step(
-        name="rollback",
+        name='rollback',
         action=lambda ctx: step_rollback(ctx),
     ),
         ],

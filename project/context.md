@@ -38,13 +38,13 @@
 - **Functions**: 15
 - **File**: `pyodide-bridge.js`
 
-### doql.adopt.scanner.interfaces
-- **Functions**: 14
-- **File**: `interfaces.py`
-
 ### doql.parsers.extractors
 - **Functions**: 14
 - **File**: `extractors.py`
+
+### doql.adopt.scanner.interfaces
+- **Functions**: 14
+- **File**: `interfaces.py`
 
 ### doql.lsp_server
 - **Functions**: 13
@@ -212,16 +212,14 @@ and estimated file counts per i
 ### doql.lsp_server.completion
 - **Calls**: server.feature, ls.workspace.get_text_document, doql.lsp_server._parse_doc, lsp.CompletionList, lsp.CompletionOptions, items.append, items.append, lsp.CompletionItem
 
+### doql.cli.commands.workspace._cmd_list
+- **Calls**: None.resolve, doql.cli.commands.workspace._discover_local, doql.cli.commands.workspace._filter_projects, doql.cli.commands.workspace._print_project_table, doql.cli.commands.workspace._print, root.exists, doql.cli.commands.workspace._print, doql.cli.commands.workspace._print
+
+### doql.cli.commands.workspace._cmd_validate
+- **Calls**: doql.cli.commands.workspace._cmd_analyze, None.resolve, _tf_discover, doql.cli.commands.workspace._print, _tf_validate, None.expanduser, len, doql.cli.commands.workspace._print
+
 ### doql.exporters.markdown.sections._workflow_section
 - **Calls**: lines.append, None.join, doql.exporters.markdown.sections._h, lines.append, lines.append, lines.append, lines.append, enumerate
-
-### doql.generators.i18n_gen.generate
-> Generate i18n translation files.
-- **Calls**: None.write_text, print, None.write_text, print, doql.generators.i18n_gen._gen_translations, path.write_text, print, json.dumps
-
-### doql.generators.report_gen.generate
-> Generate report scripts into *out* directory.
-- **Calls**: None.write_text, print, print, script.write_text, print, crontab_lines.append, None.write_text, print
 
 ## Process Flows
 
@@ -293,15 +291,18 @@ hover [doql.lsp_server]
 - **Methods**: 4
 - **Key Methods**: doql.cli.commands.doctor.DoctorReport.add, doql.cli.commands.doctor.DoctorReport.ok, doql.cli.commands.doctor.DoctorReport.warnings, doql.cli.commands.doctor.DoctorReport.failures
 
-### doql.cli.commands.doctor.Check
-- **Methods**: 0
-
 ### doql.cli.context.BuildContext
 > Build context for doql commands.
 - **Methods**: 0
 
+### doql.cli.commands.doctor.Check
+- **Methods**: 0
+
 ### doql.cli.commands.workspace.DoqlProject
 > Minimal project descriptor (used when taskfile is not installed).
+- **Methods**: 0
+
+### doql.plugins.Plugin
 - **Methods**: 0
 
 ### doql.parsers.css_utils.CssBlock
@@ -310,9 +311,6 @@ hover [doql.lsp_server]
 
 ### doql.parsers.css_utils.ParsedSelector
 > Decomposed CSS selector.
-- **Methods**: 0
-
-### doql.plugins.Plugin
 - **Methods**: 0
 
 ### doql.parsers.models.DoqlParseError
@@ -504,9 +502,9 @@ Functions exposed as public API (no underscore prefix):
 - `doql.cli.commands.publish.cmd_publish` - 17 calls
 - `doql.generators.workflow_gen.generate` - 16 calls
 - `doql.parsers.validators.validate` - 16 calls
-- `doql.importers.yaml_importer.import_yaml` - 15 calls
 - `doql.lsp_server.definition` - 15 calls
 - `doql.cli.commands.validate.cmd_validate` - 15 calls
+- `doql.importers.yaml_importer.import_yaml` - 15 calls
 - `doql.parsers.blocks.split_blocks` - 15 calls
 - `doql.cli.commands.plan.cmd_plan` - 14 calls
 - `doql.cli.commands.import_cmd.cmd_import` - 14 calls
@@ -521,9 +519,9 @@ Functions exposed as public API (no underscore prefix):
 - `doql.cli.commands.generate.cmd_generate` - 11 calls
 - `doql.generators.document_gen.generate` - 11 calls
 - `doql.generators.api_gen.models.gen_models` - 11 calls
-- `doql.adopt.scanner.entities.scan_entities` - 11 calls
 - `doql.exporters.markdown.export_markdown` - 10 calls
 - `doql.generators.web_gen.generate` - 10 calls
+- `doql.adopt.scanner.entities.scan_entities` - 10 calls
 - `doql.parsers.extractors.extract_val` - 10 calls
 
 ## System Interactions

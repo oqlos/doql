@@ -212,7 +212,7 @@
       },
       {
         "name": "result",
-        "type": "\"ready\"",
+        "type": "ready",
         "required": false
       },
       {

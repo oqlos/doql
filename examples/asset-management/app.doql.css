@@ -1,0 +1,228 @@
+app {
+  name: "Mask Inspection Manager";
+  version: "1.0.0";
+  domain: asset-management;
+  languages: pl, en, de;
+}
+
+entity[name="User"] {
+  id: uuid! auto;
+  name: string!;
+  email: email unique;
+  role: enum[admin, manager, operator];
+  active: bool default=true;
+}
+
+entity[name="Station"] {
+  id: uuid! auto;
+  name: string!;
+  address: text;
+  manager: User ref=User;
+}
+
+entity[name="Operator"] {
+  id: uuid! auto;
+  name: string!;
+  personal_id: string unique;
+  station: = ref=Station;
+  qualifications: [Qualification];
+  hire_date: date;
+  active: bool default=true;
+}
+
+entity[name="Qualification"] {
+  name: string!;
+  level: enum[basic, advanced, instructor];
+  valid_until: date;
+  certificate_file: pdf;
+}
+
+entity[name="Device"] {
+  id: uuid! auto;
+  serial: string! unique;
+  model: string!;
+  manufacturer: string!;
+  device_type: enum[scba, mask, cylinder, regulator, harness];
+  station: = ref=Station;
+  purchase_date: date;
+  warranty_until: date;
+  photo: image;
+  barcode: string unique;
+  status: enum[ready, in_use, failed, retired, overdue] default=ready;
+  last_inspection: date;
+  next_inspection: date computed;
+  total_uses: int default=0;
+  formula: last_inspection + inspection_interval;
+  when-device_type: cylinder;
+  result: ready;
+  when: last_inspection IS NULL;
+  indexes: serial, barcode, status, next_inspection;
+  audit: "full";
+}
+
+entity[name="Inspection"] {
+  id: uuid! auto;
+  device: = ref=Device;
+  operator: = ref=Operator;
+  scenario_id: oql;
+  started_at: datetime auto;
+  completed_at: datetime;
+  result: enum[pass, fail, incomplete, cancelled];
+  measurements: json;
+  notes: text;
+  report_pdf: pdf computed;
+  signed_by: = ref=Operator;
+}
+
+entity[name="CylinderFill"] {
+  id: uuid! auto;
+  cylinder: Device ref=Device;
+  filled_at: datetime auto;
+  pressure_bar: decimal(10,1);
+  operator: = ref=Operator;
+  quality_check: bool;
+  air_quality_cert: pdf;
+}
+
+entity[name="Exercise"] {
+  id: uuid! auto;
+  operator: = ref=Operator;
+  date: date!;
+  type: enum[training, live_exercise, annual_mandatory];
+  duration_minutes: int;
+  equipment_used: [Device];
+  pass: bool;
+  notes: text;
+}
+
+entity[name="Deployment"] {
+  id: uuid! auto;
+  operator: = ref=Operator;
+  device: = ref=Device;
+  taken_at: datetime auto;
+  returned_at: datetime;
+  incident_ref: string;
+  condition_on_return: enum[ok, damaged, lost];
+}
+
+interface[type="api"] {
+  type: rest;
+}
+
+interface[type="web"] {
+  type: spa;
+  framework: react;
+}
+interface[type="web"] page[name="dashboard"] {
+  layout: "widgets";
+}
+interface[type="web"] page[name="devices"] {
+  layout: "crud";
+  from: "Device";
+}
+interface[type="web"] page[name="inspections"] {
+  layout: "list-with-filters";
+  from: "Inspection";
+}
+interface[type="web"] page[name="operators"] {
+  layout: "crud";
+  from: "Operator";
+}
+interface[type="web"] page[name="reports"] {
+  layout: "grid";
+}
+interface[type="web"] page[name="cylinder_filling"] {
+  layout: "workflow";
+  from: "CylinderFill";
+}
+
+interface[type="mobile"] {
+  type: pwa;
+}
+
+interface[type="desktop"] {
+  type: tauri;
+}
+
+integration[name="notifications_email"] {
+  type: "smtp";
+  type: smtp;
+  config: env.SMTP_*;
+  templates: templates/email/;
+}
+
+integration[name="notifications_slack"] {
+  type: "webhook";
+  type: webhook;
+  webhook: env.SLACK_WEBHOOK;
+}
+
+integration[name="notifications_push"] {
+  type: "fcm";
+  type: fcm;
+  config: env.FCM_*;
+}
+
+integration[name="storage"] {
+  type: "s3-compatible";
+  type: s3-compatible;
+  bucket: env.S3_BUCKET;
+  config: env.S3_*;
+}
+
+integration[name="auth"] {
+  type: "";
+  provider: internal;
+  sso: [google, microsoft];
+  mfa: totp;
+}
+
+integration[name="reports"] {
+  type: "";
+  generator: weasyprint;
+  templates: templates/reports/;
+  signed: true;
+}
+
+integration[name="barcode_printer"] {
+  type: "zebra_zpl";
+  type: zebra_zpl;
+  endpoint: env.LABEL_PRINTER_URL;
+  fallback: save_pdf;
+}
+
+workflow[name="daily_overdue_check"] {
+  trigger: "schedule "0 8 * * *"";
+}
+
+workflow[name="inspection_fail_handling"] {
+  trigger: "event Inspection.completed WHERE result=fail";
+}
+
+workflow[name="annual_exercise_reminder"] {
+  trigger: "schedule "0 9 1 1 *"";
+}
+
+workflow[name="cylinder_filling_audit"] {
+  trigger: "schedule "monthly"";
+}
+
+role[name="operator"] {
+
+}
+
+role[name="station_manager"] {
+
+}
+
+role[name="auditor"] {
+
+}
+
+role[name="admin"] {
+
+}
+
+deploy {
+  target: docker-compose;
+}
