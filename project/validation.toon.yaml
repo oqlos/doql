@@ -1,9 +1,9 @@
-# vallm batch | 280f | 161✓ 14⚠ 2✗ | 2026-04-18
+# vallm batch | 291f | 171✓ 16⚠ 3✗ | 2026-04-18
 
 SUMMARY:
-  scanned: 280  passed: 161 (57.5%)  warnings: 14  errors: 2  unsupported: 116
+  scanned: 291  passed: 171 (58.8%)  warnings: 16  errors: 3  unsupported: 116
 
-WARNINGS[14]{path,score}:
+WARNINGS[16]{path,score}:
   vscode-doql/src/extension.ts,0.78
     issues[2]{rule,severity,message,line}:
       js.import.resolvable,warning,Module 'vscode' not found,2
@@ -22,14 +22,22 @@ WARNINGS[14]{path,score}:
     issues[2]{rule,severity,message,line}:
       complexity.cyclomatic,warning,test_api_boot_and_health has cyclomatic complexity 17 (max: 15),66
       complexity.cyclomatic,warning,test_build_produces_expected_targets has cyclomatic complexity 33 (max: 15),169
+  doql/adopt/scanner/deploy.py,0.97
+    issues[2]{rule,severity,message,line}:
+      complexity.cyclomatic,warning,scan_deploy has cyclomatic complexity 20 (max: 15),10
+      complexity.lizard_cc,warning,scan_deploy: CC=20 exceeds limit 15,10
+  doql/adopt/scanner/utils.py,0.97
+    issues[2]{rule,severity,message,line}:
+      complexity.cyclomatic,warning,normalize_sql_type has cyclomatic complexity 16 (max: 15),81
+      complexity.lizard_cc,warning,normalize_sql_type: CC=16 exceeds limit 15,81
+  doql/adopt/scanner/workflows.py,0.97
+    issues[2]{rule,severity,message,line}:
+      complexity.cyclomatic,warning,_extract_taskfile_workflows has cyclomatic complexity 16 (max: 15),112
+      complexity.lizard_cc,warning,_extract_taskfile_workflows: CC=16 exceeds limit 15,112
   doql/cli/commands/adopt.py,0.97
     issues[2]{rule,severity,message,line}:
       complexity.cyclomatic,warning,cmd_adopt has cyclomatic complexity 23 (max: 15),9
       complexity.lizard_cc,warning,cmd_adopt: CC=17 exceeds limit 15,9
-  doql/cli/commands/workspace.py,0.97
-    issues[2]{rule,severity,message,line}:
-      complexity.cyclomatic,warning,_cmd_analyze has cyclomatic complexity 23 (max: 15),195
-      complexity.lizard_cc,warning,_cmd_analyze: CC=23 exceeds limit 15,195
   doql/exporters/css/renderers.py,0.97
     issues[2]{rule,severity,message,line}:
       complexity.cyclomatic,warning,_render_interface has cyclomatic complexity 17 (max: 15),171
@@ -57,16 +65,18 @@ WARNINGS[14]{path,score}:
     issues[1]{rule,severity,message,line}:
       complexity.maintainability,warning,Low maintainability index: 16.5 (threshold: 20),
 
-ERRORS[2]{path,score}:
+ERRORS[3]{path,score}:
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py,0.83
     issues[2]{rule,severity,message,line}:
       python.import.resolvable,error,Module '_shared.base' not found,22
       python.import.resolvable,error,Module '_shared.readme' not found,23
-  doql/adopt/scanner.py,0.89
-    issues[3]{rule,severity,message,line}:
-      python.import.resolvable,error,Module 'tomli' not found,73
-      python.import.resolvable,error,Module 'tomli' not found,299
-      python.import.resolvable,error,Module 'tomli' not found,237
+  doql/adopt/scanner/interfaces.py,0.88
+    issues[2]{rule,severity,message,line}:
+      python.import.resolvable,error,Module 'tomli' not found,80
+      python.import.resolvable,error,Module 'tomli' not found,159
+  doql/adopt/scanner/metadata.py,0.93
+    issues[1]{rule,severity,message,line}:
+      python.import.resolvable,error,Module 'tomli' not found,36
 
 UNSUPPORTED[4]{bucket,count}:
   *.md,40

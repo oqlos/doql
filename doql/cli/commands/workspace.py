@@ -192,72 +192,88 @@ def _cmd_list(args: argparse.Namespace) -> int:
     return 0
 
 
-def _cmd_analyze(args: argparse.Namespace) -> int:
-    root = Path(args.root).expanduser().resolve()
-    if not root.exists():
-        _print(f"[red]Error:[/] Path not found: {root}")
-        return 1
+def _analyze_workflow_issues(content: str) -> list[str]:
+    """Detect empty workflows in doql content."""
+    issues = []
+    for wf_match in re.finditer(
+        r'workflow\[name="([^"]+)"\]\s*\{([^}]*)\}',
+        content, re.DOTALL,
+    ):
+        wf_name, wf_body = wf_match.group(1), wf_match.group(2)
+        if 'step-1:' not in wf_body and 'step-' not in wf_body:
+            issues.append(f"Empty workflow '{wf_name}'")
+    return issues
 
-    projects = _discover_local(root, max_depth=args.depth)
 
-    rows = []
-    for p in projects:
-        issues = []
-        recs = []
-        if not p.has_doql:
-            issues.append("Missing app.doql.css")
-        else:
-            # Detect empty workflows
-            try:
-                content = (p.path / "app.doql.css").read_text()
-            except OSError:
-                content = ""
-            for wf_match in re.finditer(
-                r'workflow\[name="([^"]+)"\]\s*\{([^}]*)\}',
-                content, re.DOTALL,
-            ):
-                wf_name, wf_body = wf_match.group(1), wf_match.group(2)
-                if 'step-1:' not in wf_body and 'step-' not in wf_body:
-                    issues.append(f"Empty workflow '{wf_name}'")
-            if 'app {' not in content:
-                issues.append("Missing app { } section")
-            if 'deploy {' not in content:
-                recs.append("Consider adding deploy { } section")
-            if not p.doql_databases and p.doql_entities:
-                recs.append("Has entities but no database section")
+def _analyze_content_issues(content: str) -> list[str]:
+    """Detect structural issues in doql content."""
+    issues = []
+    if 'app {' not in content:
+        issues.append("Missing app { } section")
+    return issues
 
-        rows.append({
-            'path': str(p.path),
-            'name': p.name,
-            'app_name': p.doql_app_name,
-            'app_version': p.doql_app_version,
-            'workflows': len(p.doql_workflows),
-            'entities': len(p.doql_entities),
-            'databases': len(p.doql_databases),
-            'interfaces': len(p.doql_interfaces),
-            'has_taskfile': p.has_taskfile,
-            'issues': issues,
-            'recommendations': recs,
-        })
 
-    if args.output:
-        fieldnames = [
-            'path', 'name', 'app_name', 'app_version',
-            'workflows', 'entities', 'databases', 'interfaces',
-            'has_taskfile', 'issues', 'recommendations',
-        ]
-        with open(args.output, 'w', newline='', encoding='utf-8') as f:
-            w = csv.DictWriter(f, fieldnames=fieldnames)
-            w.writeheader()
-            for r in rows:
-                r = dict(r)
-                r['issues'] = ' | '.join(r['issues'])
-                r['recommendations'] = ' | '.join(r['recommendations'])
-                w.writerow(r)
-        _print(f"[green]Wrote CSV:[/] {args.output}  ({len(rows)} rows)")
-        return 0
+def _analyze_content_recs(content: str, project: DoqlProject) -> list[str]:
+    """Generate recommendations based on doql content."""
+    recs = []
+    if 'deploy {' not in content:
+        recs.append("Consider adding deploy { } section")
+    if not project.doql_databases and project.doql_entities:
+        recs.append("Has entities but no database section")
+    return recs
 
-    # Stdout table
+
+def _analyze_project(project: DoqlProject) -> dict:
+    """Analyze a single project and return analysis row."""
+    issues = []
+    recs = []
+    
+    if not project.has_doql:
+        issues.append("Missing app.doql.css")
+    else:
+        try:
+            content = (project.path / "app.doql.css").read_text()
+        except OSError:
+            content = ""
+        issues.extend(_analyze_workflow_issues(content))
+        issues.extend(_analyze_content_issues(content))
+        recs.extend(_analyze_content_recs(content, project))
+
+    return {
+        'path': str(project.path),
+        'name': project.name,
+        'app_name': project.doql_app_name,
+        'app_version': project.doql_app_version,
+        'workflows': len(project.doql_workflows),
+        'entities': len(project.doql_entities),
+        'databases': len(project.doql_databases),
+        'interfaces': len(project.doql_interfaces),
+        'has_taskfile': project.has_taskfile,
+        'issues': issues,
+        'recommendations': recs,
+    }
+
+
+def _output_csv(rows: list[dict], output_path: str) -> None:
+    """Write analysis results to CSV file."""
+    fieldnames = [
+        'path', 'name', 'app_name', 'app_version',
+        'workflows', 'entities', 'databases', 'interfaces',
+        'has_taskfile', 'issues', 'recommendations',
+    ]
+    with open(output_path, 'w', newline='', encoding='utf-8') as f:
+        w = csv.DictWriter(f, fieldnames=fieldnames)
+        w.writeheader()
+        for r in rows:
+            r = dict(r)
+            r['issues'] = ' | '.join(r['issues'])
+            r['recommendations'] = ' | '.join(r['recommendations'])
+            w.writerow(r)
+    _print(f"[green]Wrote CSV:[/] {output_path}  ({len(rows)} rows)")
+
+
+def _output_table(rows: list[dict]) -> None:
+    """Print analysis results as formatted table."""
     if _HAS_RICH:
         table = Table(title=f"doql analysis — {len(rows)} projects", box=box.ROUNDED)
         table.add_column("#", style="dim", width=4)
@@ -296,6 +312,22 @@ def _cmd_analyze(args: argparse.Namespace) -> int:
     else:
         for r in rows:
             print(r)
+
+
+def _cmd_analyze(args: argparse.Namespace) -> int:
+    root = Path(args.root).expanduser().resolve()
+    if not root.exists():
+        _print(f"[red]Error:[/] Path not found: {root}")
+        return 1
+
+    projects = _discover_local(root, max_depth=args.depth)
+    rows = [_analyze_project(p) for p in projects]
+
+    if args.output:
+        _output_csv(rows, args.output)
+        return 0
+
+    _output_table(rows)
     return 0
 
 

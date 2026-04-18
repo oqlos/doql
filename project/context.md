@@ -4,18 +4,14 @@
 
 - **Project**: /home/tom/github/oqlos/doql
 - **Primary Language**: python
-- **Languages**: python: 106, shell: 3, javascript: 3, typescript: 1
+- **Languages**: python: 116, shell: 3, javascript: 3, typescript: 1
 - **Analysis Mode**: static
-- **Total Functions**: 459
+- **Total Functions**: 472
 - **Total Classes**: 27
-- **Modules**: 113
-- **Entry Points**: 145
+- **Modules**: 123
+- **Entry Points**: 146
 
 ## Architecture by Module
-
-### doql.adopt.scanner
-- **Functions**: 35
-- **File**: `scanner.py`
 
 ### doql.parsers.registry
 - **Functions**: 24
@@ -25,6 +21,11 @@
 - **Functions**: 22
 - **File**: `yaml_importer.py`
 
+### doql.cli.commands.workspace
+- **Functions**: 17
+- **Classes**: 1
+- **File**: `workspace.py`
+
 ### playground.pyodide-bridge
 - **Functions**: 15
 - **File**: `pyodide-bridge.js`
@@ -32,6 +33,10 @@
 ### doql.exporters.css.renderers
 - **Functions**: 15
 - **File**: `renderers.py`
+
+### doql.adopt.scanner.interfaces
+- **Functions**: 14
+- **File**: `interfaces.py`
 
 ### doql.parsers.extractors
 - **Functions**: 14
@@ -49,11 +54,6 @@
 - **Functions**: 12
 - **Classes**: 2
 - **File**: `doctor.py`
-
-### doql.cli.commands.workspace
-- **Functions**: 11
-- **Classes**: 1
-- **File**: `workspace.py`
 
 ### doql.generators.integrations_gen
 - **Functions**: 11
@@ -91,9 +91,9 @@
 - **Functions**: 8
 - **File**: `mobile_gen.py`
 
-### doql.exporters.markdown.sections
-- **Functions**: 7
-- **File**: `sections.py`
+### doql.adopt.scanner.utils
+- **Functions**: 8
+- **File**: `utils.py`
 
 ## Key Entry Points
 
@@ -232,9 +232,9 @@ Key execution flows identified:
 ```
 cmd_adopt [doql.cli.commands.adopt]
   └─ →> scan_project
-      └─> _scan_metadata
+      └─ →> scan_metadata
           └─> _parse_pyproject
-      └─> _scan_env
+      └─ →> scan_databases
 ```
 
 ### Flow 2: _cmd_list
@@ -311,15 +311,15 @@ cmd_export [doql.cli.commands.export]
 > Minimal project descriptor (used when taskfile is not installed).
 - **Methods**: 0
 
-### doql.plugins.Plugin
-- **Methods**: 0
-
 ### doql.parsers.css_utils.CssBlock
 > Single CSS-like rule: selector + key-value declarations.
 - **Methods**: 0
 
 ### doql.parsers.css_utils.ParsedSelector
 > Decomposed CSS selector.
+- **Methods**: 0
+
+### doql.plugins.Plugin
 - **Methods**: 0
 
 ### doql.parsers.models.DoqlParseError
@@ -396,6 +396,24 @@ Returns:
 > Register `workspace` subcommands on the main doql parser.
 - **Output to**: sub.add_parser, ws.add_subparsers, ws_sub.add_parser, _add_common, p.add_argument
 
+### doql.adopt.scanner.metadata._parse_pyproject
+> Extract metadata from pyproject.toml (stdlib tomllib).
+- **Output to**: data.get, project.get, project.get, project.get, scripts.items
+
+### doql.adopt.scanner.metadata._parse_package_json
+> Extract metadata from package.json.
+- **Output to**: json.loads, data.get, data.get, path.read_text
+
+### doql.adopt.scanner.metadata._parse_goal_yaml
+> Extract metadata from goal.yaml if present.
+- **Output to**: yaml.safe_load, path.read_text
+
+### doql.adopt.scanner.workflows._parse_makefile_deps
+> Split the ``deps`` portion of ``target: dep1 dep2 ## comment``.
+
+Strips trailing ``## help`` comment
+- **Output to**: deps_raw.split, text.split, tok.startswith
+
 ### doql.parsers.css_tokenizer._parse_declarations
 > Extract property: value pairs from a CSS block body (top-level only).
 - **Output to**: body.splitlines, line.strip, re.match, line.count, line.count
@@ -419,6 +437,10 @@ Examples:
 ### doql.parsers.css_parser._detect_format
 > Detect format from file extension.
 - **Output to**: path.name.lower, name.endswith, name.endswith
+
+### doql.parsers.css_transformers._convert_indent_to_braces
+> Convert indent-based SASS blocks to brace-delimited CSS.
+- **Output to**: line.rstrip, doql.parsers.css_transformers._is_selector_line, indent_stack.pop, result_lines.append, len
 
 ### doql.parsers.extractors._extract_page_from_format1
 > Extract pages using PAGE keyword format.
@@ -452,32 +474,6 @@ Examples:
 > Parse a .doql / .doql.css / .doql.less / .doql.sass file into a DoqlSpec.
 - **Output to**: doql.parsers._is_css_format, doql.parsers.parse_text, path.exists, DoqlParseError, doql.parsers.css_parser.parse_css_file
 
-### doql.parsers.parse_text
-> Parse .doql source text into a DoqlSpec (in-memory, no disk I/O).
-
-Uses error recovery: malformed bl
-- **Output to**: DoqlSpec, doql.parsers.extractors.collect_env_refs, doql.parsers.blocks.split_blocks, doql.parsers.blocks.apply_block, spec.parse_errors.append
-
-### doql.parsers.parse_env
-> Parse a .env file into a dict. Missing file → empty dict.
-- **Output to**: None.splitlines, path.exists, line.strip, path.read_text, line.startswith
-
-### doql.parsers.css_transformers._convert_indent_to_braces
-> Convert indent-based SASS blocks to brace-delimited CSS.
-- **Output to**: line.rstrip, doql.parsers.css_transformers._is_selector_line, indent_stack.pop, result_lines.append, len
-
-### doql.parsers.css_utils._parse_list
-> Parse '[a, b, c]' or 'a, b, c' into a list.
-- **Output to**: None.strip, None.strip, val.strip, val.split, v.strip
-
-### doql.parsers.css_utils._parse_selector
-> Parse a CSS-like selector into structured form.
-
-Examples:
-    "app" → type="app"
-    'entity[name="
-- **Output to**: None.split, ParsedSelector, re.match, re.finditer, selector.strip
-
 ## Behavioral Patterns
 
 ### recursion__clean
@@ -502,38 +498,38 @@ Functions exposed as public API (no underscore prefix):
 - `doql.generators.api_gen.alembic.gen_initial_migration` - 23 calls
 - `doql.cli.commands.init.cmd_init` - 22 calls
 - `doql.cli.commands.run.cmd_run` - 22 calls
+- `doql.adopt.scanner.databases.scan_databases` - 22 calls
 - `doql.generators.mobile_gen.generate` - 21 calls
-- `doql.lsp_server.document_symbols` - 19 calls
+- `doql.adopt.scanner.deploy.scan_deploy` - 21 calls
 - `doql.cli.lockfile.spec_section_hashes` - 19 calls
+- `doql.lsp_server.document_symbols` - 19 calls
 - `doql.cli.commands.export.cmd_export` - 19 calls
 - `doql.cli.commands.doctor.cmd_doctor` - 19 calls
 - `doql.cli.sync.determine_regeneration_set` - 18 calls
+- `doql.adopt.scanner.integrations.scan_integrations` - 18 calls
 - `doql.lsp_server.hover` - 17 calls
 - `doql.cli.commands.publish.cmd_publish` - 17 calls
 - `doql.generators.workflow_gen.generate` - 16 calls
+- `doql.adopt.scanner.environments.scan_environments` - 16 calls
 - `doql.parsers.validators.validate` - 16 calls
-- `doql.lsp_server.definition` - 15 calls
 - `doql.importers.yaml_importer.import_yaml` - 15 calls
+- `doql.lsp_server.definition` - 15 calls
 - `doql.cli.commands.validate.cmd_validate` - 15 calls
 - `doql.parsers.blocks.split_blocks` - 15 calls
 - `doql.cli.commands.plan.cmd_plan` - 14 calls
 - `doql.cli.commands.import_cmd.cmd_import` - 14 calls
 - `doql.generators.export_ts_sdk.run` - 14 calls
+- `doql.adopt.scanner.roles.scan_roles` - 14 calls
 - `doql.parsers.extractors.extract_entity_fields` - 14 calls
-- `doql.adopt.scanner.scan_project` - 13 calls
 - `doql.lsp_server.completion` - 12 calls
 - `doql.generators.i18n_gen.generate` - 12 calls
 - `doql.generators.report_gen.generate` - 12 calls
+- `doql.adopt.scanner.scan_project` - 12 calls
 - `doql.cli.commands.generate.cmd_generate` - 11 calls
 - `doql.generators.document_gen.generate` - 11 calls
 - `doql.generators.api_gen.models.gen_models` - 11 calls
+- `doql.adopt.scanner.entities.scan_entities` - 11 calls
 - `doql.exporters.markdown.export_markdown` - 10 calls
-- `doql.generators.web_gen.generate` - 10 calls
-- `doql.parsers.extractors.extract_val` - 10 calls
-- `doql.parsers.parse_env` - 10 calls
-- `plugins.doql-plugin-fleet.doql_plugin_fleet.generate` - 9 calls
-- `doql.cli.commands.render.cmd_render` - 9 calls
-- `doql.cli.commands.query.cmd_query` - 9 calls
 
 ## System Interactions
 

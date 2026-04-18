@@ -19,7 +19,7 @@ flowchart TD
         doql__cli__commands__plan___print_data_sources["_print_data_sources"]
         doql__cli__commands__plan___print_documents["_print_documents"]
         doql__cli__commands__plan___print_api_clients["_print_api_clients"]
-        ...["+52 more"]
+        ...["+58 more"]
     end
 
     subgraph Core
@@ -28,17 +28,17 @@ flowchart TD
         plugins__doql_plugin_erp__doql_plugin_erp___odoo_client_module["_odoo_client_module"]
         plugins__doql_plugin_erp__doql_plugin_erp__generate["generate"]
         plugins__doql_plugin_iso17025__doql_plugin_iso17025__traceability__generate["generate"]
-        plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate["generate"]
         plugins__doql_plugin_iso17025__doql_plugin_iso17025__certificate__generate["generate"]
         plugins__doql_plugin_iso17025__doql_plugin_iso17025__migration__generate["generate"]
+        plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate["generate"]
         plugins__doql_plugin_iso17025__doql_plugin_iso17025__uncertainty__generate["generate"]
         plugins__doql_plugin_iso17025__doql_plugin_iso17025__drift_monitor__generate["generate"]
-        playground__pyodide_bridge__pyodide["pyodide"]
-        playground__pyodide_bridge__debounceTimer["debounceTimer"]
-        playground__pyodide_bridge__initElements["initElements"]
-        playground__pyodide_bridge__isReady["isReady"]
-        playground__pyodide_bridge__debouncedBuild["debouncedBuild"]
-        ...["+120 more"]
+        playground__renderers__renderFatal["renderFatal"]
+        playground__renderers__renderDiagnostics["renderDiagnostics"]
+        playground__renderers__loc["loc"]
+        playground__renderers__renderAst["renderAst"]
+        playground__renderers__renderEnv["renderEnv"]
+        ...["+119 more"]
     end
 
     subgraph Exporters
@@ -50,4 +50,4 @@ flowchart TD
         doql__generators__api_gen__export_openapi["export_openapi"]
     end
 
-    class doql__usage,plugins__doql_plugin_gxp__doql_plugin_gxp__generate,plugins__doql_plugin_erp__doql_plugin_erp___odoo_client_module,plugins__doql_plugin_erp__doql_plugin_erp__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__traceability__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__certificate__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__migration__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__uncertainty__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__drift_monitor__generate entry
+    class doql__usage,plugins__doql_plugin_gxp__doql_plugin_gxp__generate,plugins__doql_plugin_erp__doql_plugin_erp___odoo_client_module,plugins__doql_plugin_erp__doql_plugin_erp__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__traceability__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__certificate__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__migration__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__uncertainty__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__drift_monitor__generate entry
