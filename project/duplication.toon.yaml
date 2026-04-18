@@ -1,12 +1,12 @@
-# redup/duplication | 13 groups | 110f 13200L | 2026-04-17
+# redup/duplication | 13 groups | 111f 13212L | 2026-04-18
 
 SUMMARY:
-  files_scanned: 110
-  total_lines:   13200
+  files_scanned: 111
+  total_lines:   13212
   dup_groups:    13
   dup_fragments: 58
   saved_lines:   813
-  scan_ms:       5713
+  scan_ms:       7314
 
 HOTSPOTS[7] (files with most duplication):
   plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py  dup=382L  groups=2  frags=5  (2.9%)

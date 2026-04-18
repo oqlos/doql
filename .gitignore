@@ -1,5 +1,7 @@
 # Build artifacts
 build/
+.pyqual
+build
 .doql
 .env.example
 vscode-doql/.env.example

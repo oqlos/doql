@@ -1,9 +1,9 @@
-# code2llm | 113f 13489L | python:105,shell:3,javascript:3,typescript:1 | 2026-04-17
+# code2llm | 114f 13501L | python:106,shell:3,javascript:3,typescript:1 | 2026-04-18
 # CC̄=3.9 | critical:14/459 | dups:0 | cycles:0
 
 HEALTH[14]:
   🟡 CC    cmd_adopt CC=23 (limit:15)
-  🟡 CC    _render_interface CC=16 (limit:15)
+  🟡 CC    _render_interface CC=17 (limit:15)
   🟡 CC    _cmd_list CC=15 (limit:15)
   🟡 CC    _cmd_analyze CC=23 (limit:15)
   🟡 CC    _cmd_run CC=15 (limit:15)
@@ -21,15 +21,15 @@ REFACTOR[1]:
   1. split 14 high-CC methods  (CC>15)
 
 PIPELINES[132]:
-  [1] Src [generate]: generate → _tenant_module
+  [1] Src [generate]: generate → _audit_log_module
       PURITY: 100% pure
-  [2] Src [generate]: generate → _audit_log_module
+  [2] Src [generate]: generate → _odoo_client_module
       PURITY: 100% pure
   [3] Src [generate]: generate
       PURITY: 100% pure
-  [4] Src [generate]: generate → _odoo_client_module
+  [4] Src [generate]: generate → generate_readme
       PURITY: 100% pure
-  [5] Src [generate]: generate → generate_readme
+  [5] Src [generate]: generate
       PURITY: 100% pure
 
 LAYERS:
@@ -43,7 +43,7 @@ LAYERS:
   │ infra_gen                  321L  0C    5m  CC=8      ←0
   │ !! css_mappers                319L  0C   14m  CC=17     ←1
   │ workflow_gen               315L  0C    7m  CC=11     ←0
-  │ !! renderers                  280L  0C   15m  CC=16     ←1
+  │ !! renderers                  283L  0C   15m  CC=17     ←1
   │ yaml_importer              267L  0C   22m  CC=3      ←1
   │ registry                   267L  0C   24m  CC=6      ←1
   │ models                     219L  20C    0m  CC=0.0    ←0
@@ -116,6 +116,7 @@ LAYERS:
   │ emitter                     13L  0C    1m  CC=1      ←1
   │ markdown_exporter           12L  0C    0m  CC=0.0    ←0
   │ __init__                    10L  0C    0m  CC=0.0    ←0
+  │ __main__                     9L  0C    0m  CC=0.0    ←0
   │ common                       9L  0C    0m  CC=0.0    ←0
   │ __init__                     7L  0C    0m  CC=0.0    ←0
   │ __init__                     6L  0C    0m  CC=0.0    ←0

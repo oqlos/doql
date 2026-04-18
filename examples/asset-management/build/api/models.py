@@ -64,14 +64,8 @@ class Device(Base):
     formula = Column(String(255), nullable=True)
     when_device_type = Column(String(255), nullable=True)
     result = Column(String(255), nullable=True)
-    when_device_type = Column(String(255), nullable=True)
-    result = Column(String(255), nullable=True)
-    result = Column(String(255), nullable=True)
     when = Column(String(255), nullable=True)
-    result = Column(String(255), nullable=True)
-    when = Column(String(255), nullable=True)
-    result = Column(String(255), nullable=True)
-    result = Column(String(255), nullable=True)
+    indexes = Column(String(255), nullable=True)
 
 
 class Inspection(Base):

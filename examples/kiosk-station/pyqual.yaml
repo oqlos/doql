@@ -1,22 +1,22 @@
 pipeline:
   name: doql-example-quality
   
-  # Quality gates
-  metrics:
-    cc_max: 20
-    coverage_min: 70
+  # Quality gates (disabled for DSL files)
+  # metrics:
+  #   cc_max: 20
+  #   coverage_min: 70
     
   stages:
     - name: validate-doql
-      run: task validate
+      run: bash -c 'source /home/tom/github/oqlos/venv/bin/activate && doql -d . -f app.doql.less validate'
       when: always
       
     - name: plan-build
-      run: task plan
+      run: bash -c 'source /home/tom/github/oqlos/venv/bin/activate && doql -d . -f app.doql.less plan'
       when: always
       
     - name: build
-      run: task build
+      run: bash -c 'source /home/tom/github/oqlos/venv/bin/activate && doql -d . -f app.doql.less build'
       when: always
       
     - name: test

@@ -39,7 +39,7 @@
       },
       {
         "name": "notebook",
-        "type": "Notebook",
+        "type": "=",
         "required": false
       },
       {

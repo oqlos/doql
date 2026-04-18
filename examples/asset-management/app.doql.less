@@ -85,7 +85,7 @@ entity[name="Inspection"] {
 
 entity[name="CylinderFill"] {
   id: uuid! auto;
-  cylinder: WHERE device_type=cylinder ref=Device;
+  cylinder: Device ref;
   filled_at: datetime auto;
   pressure_bar: decimal(10,1);
   operator: Operator ref=Operator;

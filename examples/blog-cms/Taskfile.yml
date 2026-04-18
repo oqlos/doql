@@ -32,6 +32,11 @@ tasks:
     desc: Merge-friendly sync (preserves custom code)
     cmds:
       - doql sync -f app.doql.less
+
+  pyqual:
+    desc: Run quality gate checks via pyqual
+    cmds:
+      - bash -c 'source /home/tom/github/oqlos/venv/bin/activate && pyqual run'
   
   run-api:
     desc: Run API target

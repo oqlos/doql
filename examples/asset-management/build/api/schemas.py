@@ -108,14 +108,8 @@ class DeviceCreate(BaseModel):
     formula: Optional[str] = None
     when_device_type: Optional[str] = None
     result: Optional[str] = None
-    when_device_type: Optional[str] = None
-    result: Optional[str] = None
-    result: Optional[str] = None
     when: Optional[str] = None
-    result: Optional[str] = None
-    when: Optional[str] = None
-    result: Optional[str] = None
-    result: Optional[str] = None
+    indexes: Optional[str] = None
 
 class DeviceResponse(BaseModel):
     model_config = {'from_attributes': True}
@@ -135,14 +129,8 @@ class DeviceResponse(BaseModel):
     formula: Optional[str] = None
     when_device_type: Optional[str] = None
     result: Optional[str] = None
-    when_device_type: Optional[str] = None
-    result: Optional[str] = None
-    result: Optional[str] = None
     when: Optional[str] = None
-    result: Optional[str] = None
-    when: Optional[str] = None
-    result: Optional[str] = None
-    result: Optional[str] = None
+    indexes: Optional[str] = None
 
 class DeviceUpdate(BaseModel):
     serial: Optional[str] = None
@@ -160,14 +148,8 @@ class DeviceUpdate(BaseModel):
     formula: Optional[str] = None
     when_device_type: Optional[str] = None
     result: Optional[str] = None
-    when_device_type: Optional[str] = None
-    result: Optional[str] = None
-    result: Optional[str] = None
     when: Optional[str] = None
-    result: Optional[str] = None
-    when: Optional[str] = None
-    result: Optional[str] = None
-    result: Optional[str] = None
+    indexes: Optional[str] = None
 
 
 class InspectionCreate(BaseModel):

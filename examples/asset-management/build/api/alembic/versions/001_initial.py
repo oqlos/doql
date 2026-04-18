@@ -58,14 +58,8 @@ def upgrade():
         sa.Column("formula", sa.String(255), nullable=True),
         sa.Column("when_device_type", sa.String(255), nullable=True),
         sa.Column("result", sa.String(255), nullable=True),
-        sa.Column("when_device_type", sa.String(255), nullable=True),
-        sa.Column("result", sa.String(255), nullable=True),
-        sa.Column("result", sa.String(255), nullable=True),
         sa.Column("when", sa.String(255), nullable=True),
-        sa.Column("result", sa.String(255), nullable=True),
-        sa.Column("when", sa.String(255), nullable=True),
-        sa.Column("result", sa.String(255), nullable=True),
-        sa.Column("result", sa.String(255), nullable=True),
+        sa.Column("indexes", sa.String(255), nullable=True),
     )
     op.create_table(
         "inspections",

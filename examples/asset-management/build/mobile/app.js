@@ -80,7 +80,7 @@
       },
       {
         "name": "station",
-        "type": "Station",
+        "type": "=",
         "required": false
       },
       {
@@ -157,7 +157,7 @@
       },
       {
         "name": "station",
-        "type": "Station",
+        "type": "=",
         "required": false
       },
       {
@@ -207,37 +207,12 @@
       },
       {
         "name": "when-device_type",
-        "type": "scba",
-        "required": false
-      },
-      {
-        "name": "result",
-        "type": "12 months",
-        "required": false
-      },
-      {
-        "name": "when-device_type",
         "type": "cylinder",
         "required": false
       },
       {
         "name": "result",
-        "type": "60 months",
-        "required": false
-      },
-      {
-        "name": "result",
-        "type": "6 months",
-        "required": false
-      },
-      {
-        "name": "when",
-        "type": "next_inspection < today",
-        "required": false
-      },
-      {
-        "name": "result",
-        "type": "\"overdue\"",
+        "type": "\"ready\"",
         "required": false
       },
       {
@@ -246,13 +221,8 @@
         "required": false
       },
       {
-        "name": "result",
-        "type": "\"failed\"",
-        "required": false
-      },
-      {
-        "name": "result",
-        "type": "\"ready\"",
+        "name": "indexes",
+        "type": "serial, barcode, status, next_inspection",
         "required": false
       }
     ]
@@ -268,12 +238,12 @@
       },
       {
         "name": "device",
-        "type": "Device",
+        "type": "=",
         "required": false
       },
       {
         "name": "operator",
-        "type": "Operator",
+        "type": "=",
         "required": false
       },
       {
@@ -313,7 +283,7 @@
       },
       {
         "name": "signed_by",
-        "type": "Operator",
+        "type": "=",
         "required": false
       }
     ]
@@ -329,7 +299,7 @@
       },
       {
         "name": "cylinder",
-        "type": "WHERE device_type=cylinder",
+        "type": "Device",
         "required": false
       },
       {
@@ -344,7 +314,7 @@
       },
       {
         "name": "operator",
-        "type": "Operator",
+        "type": "=",
         "required": false
       },
       {
@@ -370,7 +340,7 @@
       },
       {
         "name": "operator",
-        "type": "Operator",
+        "type": "=",
         "required": false
       },
       {
@@ -416,12 +386,12 @@
       },
       {
         "name": "operator",
-        "type": "Operator",
+        "type": "=",
         "required": false
       },
       {
         "name": "device",
-        "type": "Device",
+        "type": "=",
         "required": false
       },
       {
