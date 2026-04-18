@@ -2,14 +2,14 @@
 
 ## Overview
 
-- **Project**: /home/tom/github/oqlos/doql
+- **Project**: .
 - **Primary Language**: python
 - **Languages**: python: 117, shell: 3, javascript: 3, typescript: 1
 - **Analysis Mode**: static
-- **Total Functions**: 514
+- **Total Functions**: 515
 - **Total Classes**: 27
 - **Modules**: 124
-- **Entry Points**: 153
+- **Entry Points**: 0
 
 ## Architecture by Module
 
@@ -38,13 +38,13 @@
 - **Functions**: 15
 - **File**: `pyodide-bridge.js`
 
-### doql.parsers.extractors
-- **Functions**: 14
-- **File**: `extractors.py`
-
 ### doql.adopt.scanner.interfaces
 - **Functions**: 14
 - **File**: `interfaces.py`
+
+### doql.parsers.extractors
+- **Functions**: 14
+- **File**: `extractors.py`
 
 ### doql.lsp_server
 - **Functions**: 13
@@ -71,6 +71,10 @@
 - **Functions**: 10
 - **File**: `plan.py`
 
+### doql.adopt.scanner.workflows
+- **Functions**: 10
+- **File**: `workflows.py`
+
 ### doql.parsers.validators
 - **Functions**: 10
 - **File**: `validators.py`
@@ -82,10 +86,6 @@
 ### doql.exporters.css
 - **Functions**: 9
 - **File**: `__init__.py`
-
-### doql.adopt.scanner.workflows
-- **Functions**: 9
-- **File**: `workflows.py`
 
 ### doql.exporters.markdown.sections
 - **Functions**: 8
@@ -99,191 +99,9 @@
 
 Main execution flows into the system:
 
-### doql.parsers.css_mappers._map_workflow
-> Map CSS block to Workflow definition.
-- **Calls**: sel.attributes.get, next, block.declarations.items, Workflow, spec.workflows.append, key.startswith, doql.parsers.css_parser._parse_selector, block.declarations.get
-
-### doql.cli.commands.workspace.register_parser
-> Register `workspace` subcommands on the main doql parser.
-- **Calls**: sub.add_parser, ws.add_subparsers, ws_sub.add_parser, _add_common, p.add_argument, p.add_argument, p.set_defaults, ws_sub.add_parser
-
-### doql.cli.sync.cmd_sync
-> Selective rebuild — only regenerate sections that changed since last build.
-- **Calls**: doql.cli.context.build_context, doql.cli.context.load_spec, doql.cli.lockfile.read_lockfile, doql.cli.lockfile.spec_section_hashes, doql.cli.lockfile.diff_sections, doql.cli.sync.determine_regeneration_set, print, print
-
-### doql.generators.desktop_gen.generate
-> Generate desktop (Tauri) layer files into *out* directory.
-- **Calls**: next, None.write_text, None.write_text, None.write_text, None.write_text, None.write_text, print, print
-
-### doql.cli.commands.init.cmd_init
-> Create new project from template.
-
-With --list-templates, shows available templates and exits.
-- **Calls**: getattr, pathlib.Path, target.exists, print, doql.cli.context.scaffold_from_template, print, print, print
-
-### doql.cli.commands.run.cmd_run
-> Run project locally in dev mode.
-
-With -f <file>: build on-the-fly into .doql/ and run target.
-Without -f: use existing project build/ directory.
-With
-- **Calls**: getattr, getattr, getattr, subprocess.call, None.resolve, doql.cli.commands.run._workspace_for_file, workspace.mkdir, print
-
-### doql.generators.mobile_gen.generate
-> Generate mobile PWA into *out* directory.
-- **Calls**: next, out.mkdir, None.write_text, None.write_text, None.write_text, None.write_text, None.write_text, doql.generators.mobile_gen._gen_icons
-
-### doql.lsp_server.document_symbols
-- **Calls**: server.feature, ls.workspace.get_text_document, doql.lsp_server._parse_doc, doql.lsp_server._find_line_col, lsp.Range, _mkrange, symbols.append, _mkrange
-
-### doql.cli.commands.export.cmd_export
-> Export project specification to various formats.
-- **Calls**: None.resolve, getattr, doql_parser.parse_file, getattr, doql.parsers.detect_doql_file, open, print, pathlib.Path
-
-### doql.cli.commands.doctor.cmd_doctor
-> Run comprehensive project health check.
-- **Calls**: None.resolve, getattr, getattr, print, DoctorReport, doql.cli.commands.doctor._check_parse, doql.cli.commands.doctor._check_env, doql.cli.commands.doctor._check_files
-
-### doql.lsp_server.hover
-- **Calls**: server.feature, ls.workspace.get_text_document, doql.lsp_server._word_at, doql.lsp_server._parse_doc, lsp.Hover, None.join, lsp.Hover, lsp.Hover
-
-### doql.cli.commands.publish.cmd_publish
-> Publish project artifacts to registries.
-- **Calls**: doql.cli.context.build_context, doql.cli.context.load_spec, getattr, getattr, print, print, list, print
-
-### doql.generators.workflow_gen.generate
-> Generate workflow engine modules.
-- **Calls**: wf_dir.mkdir, None.write_text, None.write_text, print, None.write_text, print, None.write_text, print
-
-### doql.parsers.validators.validate
-> Validate a parsed DoqlSpec against env vars and internal consistency.
-- **Calls**: issues.extend, issues.extend, issues.extend, issues.extend, issues.extend, doql.parsers.validators._validate_app_name, doql.parsers.validators._validate_env_refs, doql.parsers.validators._validate_document_partials
-
-### doql.lsp_server.definition
-- **Calls**: server.feature, ls.workspace.get_text_document, doql.lsp_server._word_at, re.compile, pattern.search, None.count, None.find, lsp.Location
-
-### doql.cli.commands.validate.cmd_validate
-> Validate .doql file and .env configuration.
-
-Returns:
-    0 if validation passes, 1 if there are errors
-- **Calls**: None.resolve, getattr, print, sum, sum, print, doql.parsers.detect_doql_file, doql_parser.parse_file
-
-### doql.cli.commands.workspace._cmd_fix
-- **Calls**: None.resolve, _tf_discover, doql.cli.commands.workspace._print, doql.cli.commands.workspace._print, doql.cli.commands.workspace._print, _tf_filter, _tf_fix, None.expanduser
-
-### doql.cli.commands.plan.cmd_plan
-> Show dry-run plan of what would be generated.
-
-Displays project overview including entities, data sources, interfaces,
-and estimated file counts per i
-- **Calls**: None.resolve, doql_parser.parse_file, doql.cli.commands.plan._print_header, doql.cli.commands.plan._print_entities, doql.cli.commands.plan._print_data_sources, doql.cli.commands.plan._print_documents, doql.cli.commands.plan._print_api_clients, doql.cli.commands.plan._print_summary
-
-### doql.cli.commands.import_cmd.cmd_import
-> Import a YAML spec file and convert to DOQL format.
-- **Calls**: None.resolve, getattr, doql.importers.yaml_importer.import_yaml_file, print, source.exists, print, None.resolve, None.replace
-
-### doql.generators.export_ts_sdk.run
-> Write TypeScript SDK to the given stream.
-- **Calls**: out.write, out.write, out.write, name.lower, out.write, out.write, out.write, out.write
-
-### doql.parsers.css_transformers._is_selector_line
-> Determine if a line is a CSS selector or a property.
-- **Calls**: None.endswith, None.startswith, re.match, re.match, stripped.split, None.strip, stripped.lstrip, stripped.lstrip
-
-### doql.parsers.registry._handle_data
-- **Calls**: doql.parsers.registry.register, None.strip, spec.data_sources.append, doql.parsers.extractors.extract_val, DataSource, header.split, doql.parsers.extractors.extract_val, doql.parsers.extractors.extract_val
-
-### doql.cli.commands.adopt.cmd_adopt
-> Scan *target* directory, produce app.doql.css.
-- **Calls**: None.resolve, print, doql.adopt.scanner.scan_project, doql.cli.commands.adopt._print_scan_summary, target.is_dir, print, output.exists, print
-
-### doql.cli.commands.workspace._cmd_run
-> Run `doql <action>` in each project with app.doql.css.
-- **Calls**: None.resolve, doql.cli.commands.workspace._select_run_projects, doql.cli.commands.workspace._print, enumerate, doql.cli.commands.workspace._print_run_summary, doql.cli.commands.workspace._print, doql.cli.commands.workspace._print_dry_run_commands, doql.cli.commands.workspace._execute_single_project
-
-### doql.parsers.registry._handle_api_client
-- **Calls**: doql.parsers.registry.register, None.strip, doql.parsers.extractors.extract_val, spec.api_clients.append, ApiClient, header.split, doql.parsers.extractors.extract_val, doql.parsers.extractors.extract_val
-
-### doql.parsers.css_mappers._map_data_source
-> Map CSS block to DataSource definition.
-- **Calls**: sel.attributes.get, DataSource, spec.data_sources.append, block.declarations.get, block.declarations.get, block.declarations.get, block.declarations.get, block.declarations.get
-
-### doql.lsp_server.completion
-- **Calls**: server.feature, ls.workspace.get_text_document, doql.lsp_server._parse_doc, lsp.CompletionList, lsp.CompletionOptions, items.append, items.append, lsp.CompletionItem
-
-### doql.cli.commands.workspace._cmd_list
-- **Calls**: None.resolve, doql.cli.commands.workspace._discover_local, doql.cli.commands.workspace._filter_projects, doql.cli.commands.workspace._print_project_table, doql.cli.commands.workspace._print, root.exists, doql.cli.commands.workspace._print, doql.cli.commands.workspace._print
-
-### doql.cli.commands.workspace._cmd_validate
-- **Calls**: doql.cli.commands.workspace._cmd_analyze, None.resolve, _tf_discover, doql.cli.commands.workspace._print, _tf_validate, None.expanduser, len, doql.cli.commands.workspace._print
-
-### doql.exporters.markdown.sections._workflow_section
-- **Calls**: lines.append, None.join, doql.exporters.markdown.sections._h, lines.append, lines.append, lines.append, lines.append, enumerate
-
 ## Process Flows
 
 Key execution flows identified:
-
-### Flow 1: _map_workflow
-```
-_map_workflow [doql.parsers.css_mappers]
-```
-
-### Flow 2: register_parser
-```
-register_parser [doql.cli.commands.workspace]
-```
-
-### Flow 3: cmd_sync
-```
-cmd_sync [doql.cli.sync]
-  └─ →> build_context
-      └─ →> detect_doql_file
-  └─ →> load_spec
-  └─ →> read_lockfile
-```
-
-### Flow 4: generate
-```
-generate [doql.generators.desktop_gen]
-```
-
-### Flow 5: cmd_init
-```
-cmd_init [doql.cli.commands.init]
-  └─ →> scaffold_from_template
-```
-
-### Flow 6: cmd_run
-```
-cmd_run [doql.cli.commands.run]
-```
-
-### Flow 7: document_symbols
-```
-document_symbols [doql.lsp_server]
-  └─> _parse_doc
-  └─> _find_line_col
-```
-
-### Flow 8: cmd_export
-```
-cmd_export [doql.cli.commands.export]
-  └─ →> detect_doql_file
-```
-
-### Flow 9: cmd_doctor
-```
-cmd_doctor [doql.cli.commands.doctor]
-```
-
-### Flow 10: hover
-```
-hover [doql.lsp_server]
-  └─> _word_at
-  └─> _parse_doc
-```
 
 ## Key Classes
 
@@ -291,11 +109,11 @@ hover [doql.lsp_server]
 - **Methods**: 4
 - **Key Methods**: doql.cli.commands.doctor.DoctorReport.add, doql.cli.commands.doctor.DoctorReport.ok, doql.cli.commands.doctor.DoctorReport.warnings, doql.cli.commands.doctor.DoctorReport.failures
 
-### doql.cli.context.BuildContext
-> Build context for doql commands.
+### doql.cli.commands.doctor.Check
 - **Methods**: 0
 
-### doql.cli.commands.doctor.Check
+### doql.cli.context.BuildContext
+> Build context for doql commands.
 - **Methods**: 0
 
 ### doql.cli.commands.workspace.DoqlProject
@@ -403,37 +221,17 @@ Returns:
 > Extract metadata from goal.yaml if present.
 - **Output to**: yaml.safe_load, path.read_text
 
-### doql.adopt.scanner.workflows._parse_makefile_deps
-> Split the ``deps`` portion of ``target: dep1 dep2 ## comment``.
-
-Strips trailing ``## help`` comment
-- **Output to**: deps_raw.split, text.split, tok.startswith
-
 ### doql.parsers.css_tokenizer._parse_declarations
 > Extract property: value pairs from a CSS block body (top-level only).
 
 Handles multi-line declaratio
 - **Output to**: body.splitlines, line.strip, re.match, doql.parsers.css_utils._strip_quotes, line.count
 
-### doql.parsers.css_parser._parse_selector
-> Parse a CSS-like selector into structured form.
+### doql.adopt.scanner.workflows._parse_makefile_deps
+> Split the ``deps`` portion of ``target: dep1 dep2 ## comment``.
 
-Examples:
-    "app" → type="app"
-    'entity[name="
-- **Output to**: None.split, ParsedSelector, re.match, re.finditer, selector.strip
-
-### doql.parsers.css_parser.parse_css_file
-> Parse a .doql.css / .doql.less / .doql.sass file into DoqlSpec.
-- **Output to**: path.read_text, doql.parsers.css_parser.parse_css_text, path.exists, DoqlParseError, doql.parsers.css_parser._detect_format
-
-### doql.parsers.css_parser.parse_css_text
-> Parse CSS-like DOQL source text into a DoqlSpec.
-- **Output to**: doql.parsers.css_utils._strip_comments, doql.parsers.css_tokenizer._tokenise_css, doql.parsers.css_parser._map_to_spec, doql.parsers.extractors.collect_env_refs, doql.parsers.css_transformers._resolve_less_vars
-
-### doql.parsers.css_parser._detect_format
-> Detect format from file extension.
-- **Output to**: path.name.lower, name.endswith, name.endswith
+Strips trailing ``## help`` comment
+- **Output to**: deps_raw.split, text.split, tok.startswith
 
 ### doql.parsers.extractors._extract_page_from_format1
 > Extract pages using PAGE keyword format.
@@ -467,17 +265,27 @@ Examples:
 > Check if a path uses one of the CSS-like DOQL formats.
 - **Output to**: path.name.lower, any, name.endswith
 
-## Behavioral Patterns
+### doql.parsers.parse_file
+> Parse a .doql / .doql.css / .doql.less / .doql.sass file into a DoqlSpec.
+- **Output to**: doql.parsers._is_css_format, doql.parsers.parse_text, path.exists, DoqlParseError, doql.parsers.css_parser.parse_css_file
 
-### recursion__clean
-- **Type**: recursion
-- **Confidence**: 0.90
-- **Functions**: doql.utils.clean._clean
+### doql.parsers.parse_text
+> Parse .doql source text into a DoqlSpec (in-memory, no disk I/O).
 
-### recursion__tokenise_css
-- **Type**: recursion
-- **Confidence**: 0.90
-- **Functions**: doql.parsers.css_tokenizer._tokenise_css
+Uses error recovery: malformed bl
+- **Output to**: DoqlSpec, doql.parsers.extractors.collect_env_refs, doql.parsers.blocks.split_blocks, doql.parsers.blocks.apply_block, spec.parse_errors.append
+
+### doql.parsers.parse_env
+> Parse a .env file into a dict. Missing file → empty dict.
+- **Output to**: None.splitlines, path.exists, line.strip, path.read_text, line.startswith
+
+### doql.parsers.css_parser._parse_selector
+> Parse a CSS-like selector into structured form.
+
+Examples:
+    "app" → type="app"
+    'entity[name="
+- **Output to**: None.split, ParsedSelector, re.match, re.finditer, selector.strip
 
 ## Public API Surface
 
@@ -502,9 +310,9 @@ Functions exposed as public API (no underscore prefix):
 - `doql.cli.commands.publish.cmd_publish` - 17 calls
 - `doql.generators.workflow_gen.generate` - 16 calls
 - `doql.parsers.validators.validate` - 16 calls
+- `doql.importers.yaml_importer.import_yaml` - 15 calls
 - `doql.lsp_server.definition` - 15 calls
 - `doql.cli.commands.validate.cmd_validate` - 15 calls
-- `doql.importers.yaml_importer.import_yaml` - 15 calls
 - `doql.parsers.blocks.split_blocks` - 15 calls
 - `doql.cli.commands.plan.cmd_plan` - 14 calls
 - `doql.cli.commands.import_cmd.cmd_import` - 14 calls
@@ -530,36 +338,6 @@ How components interact:
 
 ```mermaid
 graph TD
-    _map_workflow --> get
-    _map_workflow --> next
-    _map_workflow --> items
-    _map_workflow --> Workflow
-    _map_workflow --> append
-    register_parser --> add_parser
-    register_parser --> add_subparsers
-    register_parser --> _add_common
-    register_parser --> add_argument
-    cmd_sync --> build_context
-    cmd_sync --> load_spec
-    cmd_sync --> read_lockfile
-    cmd_sync --> spec_section_hashes
-    cmd_sync --> diff_sections
-    generate --> next
-    generate --> write_text
-    cmd_init --> getattr
-    cmd_init --> Path
-    cmd_init --> exists
-    cmd_init --> print
-    cmd_init --> scaffold_from_templa
-    cmd_run --> getattr
-    cmd_run --> call
-    cmd_run --> resolve
-    generate --> mkdir
-    document_symbols --> feature
-    document_symbols --> get_text_document
-    document_symbols --> _parse_doc
-    document_symbols --> _find_line_col
-    document_symbols --> Range
 ```
 
 ## Reverse Engineering Guidelines
