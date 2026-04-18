@@ -157,9 +157,18 @@ def _convert_indent_to_braces(lines: list[str]) -> list[str]:
         # If it ends with ; it's a property
         if stripped.endswith(';'):
             return False
-        # If no colon, likely a selector
+        # If no colon, check if it looks like a selector
+        # Must match pattern: word[...] (e.g., workflow[name="x"])
+        # Plain words like 'fi', 'done' are NOT selectors
+        # But known single-word selectors (app, deploy, entity, workflow, etc.) ARE selectors
         if ':' not in stripped:
-            return True
+            if bool(re.match(r'^[\w\-]+\[', stripped)):
+                return True
+            # Known single-word DOQL selectors
+            known_selectors = {'app', 'deploy', 'database', 'entity', 'interface', 
+                              'workflow', 'role', 'template', 'document', 'report',
+                              'integration', 'webhook', 'api-client', 'data-source'}
+            return stripped.split()[0] in known_selectors
         # Check for selector patterns like workflow[name="..."]
         if '[' in stripped and ']' in stripped:
             after_bracket = stripped.split(']')[-1].strip()
@@ -168,13 +177,21 @@ def _convert_indent_to_braces(lines: list[str]) -> list[str]:
         return False
     
     def find_block_end(start_idx: int, start_indent: int) -> int:
-        """Find end of current block (line with same or less indent)."""
+        """Find end of step value (next step-N, next selector, or end of block)."""
         for j in range(start_idx + 1, len(lines)):
             line = lines[j].rstrip()
             if not line:
                 continue
             indent = len(lines[j]) - len(lines[j].lstrip())
-            if indent <= start_indent:
+            stripped = line.lstrip()
+            # Next step-N ends current step
+            if is_step_line(line):
+                return j
+            # Selector at same or lower indent level ends current step
+            if indent <= start_indent and is_selector_starter(line):
+                return j
+            # Closing brace at same level ends current step  
+            if indent <= start_indent and stripped == '}':
                 return j
         return len(lines)
     

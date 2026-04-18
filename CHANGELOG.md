@@ -221,6 +221,15 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
   not exist`).
 
 
+## [0.1.1] - 2026-04-18
+
+### Other
+- Update Taskfile.yml
+- Update VERSION
+- Update doql/__init__.py
+- Update doql/parsers/css_transformers.py
+- Update pyqual.yaml
+
 ## [0.0.3] - 2026-04-18
 
 ### Docs
