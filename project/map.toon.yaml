@@ -1,8 +1,8 @@
-# doql | 123f 13448L | shell:3,python:116,javascript:3,typescript:1 | 2026-04-18
+# doql | 123f 13448L | python:116,shell:3,javascript:3,typescript:1 | 2026-04-18
 # stats: 472 func | 0 cls | 123 mod | CC̄=3.9 | critical:11 | cycles:0
 # alerts[5]: fan-out _discover_local=20; CC cmd_adopt=23; CC scan_deploy=20; CC _map_interface=17; CC _render_interface=17
 # hotspots[5]: _discover_local fan=20; _diagnostics_for fan=17; _extract_makefile_workflows fan=17; cmd_export fan=16; cmd_doctor fan=16
-# evolution: baseline
+# evolution: CC̄ 3.9→3.9 (flat 0.0)
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
 M[123]:
   doql/__init__.py,7
@@ -401,18 +401,6 @@ D:
     _discover_local(project_root)
     discover_plugins(project_root)
     run_plugins(spec;env_vars;build_dir;project_root)
-  playground/renderers.js:
-    e: escapeHtml,renderFatal,renderDiagnostics,loc,renderAst,renderEnv,refs,keys,marker,renderFiles
-    escapeHtml()
-    renderFatal()
-    renderDiagnostics()
-    loc()
-    renderAst()
-    renderEnv()
-    refs()
-    keys()
-    marker()
-    renderFiles()
   playground/pyodide-bridge.js:
     i: ./renderers.js
     e: pyodide,buildFn,debounceTimer,initElements,isReady,debouncedBuild,executeBuild,r,_loadPyodide,_installDoql,_createBuildFunction,resp,src,bootPyodide,version
@@ -431,6 +419,18 @@ D:
     src()
     bootPyodide()
     version()
+  playground/renderers.js:
+    e: escapeHtml,renderFatal,renderDiagnostics,loc,renderAst,renderEnv,refs,keys,marker,renderFiles
+    escapeHtml()
+    renderFatal()
+    renderDiagnostics()
+    loc()
+    renderAst()
+    renderEnv()
+    refs()
+    keys()
+    marker()
+    renderFiles()
   doql/cli/commands/query.py:
     e: cmd_query
     cmd_query(args)
@@ -511,13 +511,6 @@ D:
     _parse_field_type(ftype_raw)
     extract_entity_fields(body)
     collect_env_refs(text)
-  doql/parsers/__init__.py:
-    e: _is_css_format,detect_doql_file,parse_file,parse_text,parse_env
-    _is_css_format(path)
-    detect_doql_file(root)
-    parse_file(path)
-    parse_text(text)
-    parse_env(path)
   doql/parsers/registry.py:
     e: register,get_handler,list_registered,_handle_app,_handle_version,_handle_domain,_handle_languages,_handle_entity,_handle_data,_handle_template,_handle_document,_handle_report,_handle_database,_handle_api_client,_handle_webhook,_handle_interface,_handle_integration,_handle_workflow,_handle_roles,_handle_role,_handle_import_block,_handle_scenarios,_handle_tests,_handle_deploy
     register(keyword)
@@ -555,6 +548,13 @@ D:
     _validate_entity_refs(spec)
     _validate_interfaces(spec)
     validate(spec;env_vars;project_root)
+  doql/parsers/__init__.py:
+    e: _is_css_format,detect_doql_file,parse_file,parse_text,parse_env
+    _is_css_format(path)
+    detect_doql_file(root)
+    parse_file(path)
+    parse_text(text)
+    parse_env(path)
   playground/app.js:
     i: ./pyodide-bridge.js
     e: TAB_NAMES,activateTab,tabFromHash,name,initial,key,updateStats,lines,chars
@@ -696,6 +696,10 @@ D:
     _webhook_module()
     _readme(spec)
     generate(spec;env_vars;out;project_root)
+  plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py:
+    e: _readme,generate
+    _readme(spec)
+    generate(spec;env_vars;out;project_root)
   vscode-doql/src/extension.ts:
     i: path,vscode
     e: activate,config,serverPath,deactivate
@@ -703,10 +707,6 @@ D:
     config()
     serverPath()
     deactivate()
-  plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py:
-    e: _readme,generate
-    _readme(spec)
-    generate(spec;env_vars;out;project_root)
   doql/cli/commands/kiosk.py:
     e: cmd_kiosk
     cmd_kiosk(args)
@@ -756,19 +756,19 @@ D:
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/traceability.py:
     e: generate
     generate()
+  plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py:
+    e: generate
+    generate(spec;env_vars;out;project_root)
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/certificate.py:
     e: generate
     generate()
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/migration.py:
     e: generate
     generate()
-  plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py:
-    e: generate
-    generate(spec;env_vars;out;project_root)
-  plugins/doql-plugin-iso17025/doql_plugin_iso17025/uncertainty.py:
+  plugins/doql-plugin-iso17025/doql_plugin_iso17025/drift_monitor.py:
     e: generate
     generate()
-  plugins/doql-plugin-iso17025/doql_plugin_iso17025/drift_monitor.py:
+  plugins/doql-plugin-iso17025/doql_plugin_iso17025/uncertainty.py:
     e: generate
     generate()
   doql/cli/main.py:
@@ -819,14 +819,14 @@ D:
   doql/adopt/emitter.py:
     e: emit_css
     emit_css(spec;output)
+  doql/__init__.py:
   project.sh:
   tree.sh:
-  doql/__init__.py:
   plugins/_shared/__init__.py:
   playground/serve.sh:
   doql/cli/__init__.py:
-  doql/importers/__init__.py:
   doql/parser.py:
+  doql/importers/__init__.py:
   doql/cli/__main__.py:
   doql/cli/commands/__init__.py:
   doql/exporters/css_exporter.py:

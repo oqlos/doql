@@ -1,6 +1,8 @@
 """Markdown section renderers — one per DoqlSpec model type."""
 from __future__ import annotations
 
+from typing import Any
+
 from ...parsers.models import Entity, Interface, Workflow, Document, Report
 
 
@@ -85,23 +87,35 @@ def _workflow_section(w: Workflow) -> str:
     return "".join(lines)
 
 
-def _document_section(d: Document) -> str:
-    lines = [_h(3, f"Document: {d.name}")]
-    lines.append(f"- **Type:** {d.type}\n")
-    if d.template:
-        lines.append(f"- **Template:** {d.template}\n")
-    if d.output:
-        lines.append(f"- **Output:** {d.output}\n")
+def _config_section(name: str, title_prefix: str, fields: list[tuple[str, str, Any]]) -> str:
+    """Generic config object section formatter.
+    
+    Args:
+        name: Object name
+        title_prefix: Prefix for header (e.g., "Document", "Report")
+        fields: List of (label, attr_name, value) tuples
+    """
+    lines = [_h(3, f"{title_prefix}: {name}")]
+    for label, _, value in fields:
+        if value:
+            lines.append(f"- **{label}:** {value}\n")
     lines.append("\n")
     return "".join(lines)
+
+
+def _document_section(d: Document) -> str:
+    """Format Document as markdown section."""
+    return _config_section(d.name, "Document", [
+        ("Type", "type", d.type),
+        ("Template", "template", d.template),
+        ("Output", "output", d.output),
+    ])
 
 
 def _report_section(r: Report) -> str:
-    lines = [_h(3, f"Report: {r.name}")]
-    lines.append(f"- **Output:** {r.output}\n")
-    if r.schedule:
-        lines.append(f"- **Schedule:** {r.schedule}\n")
-    if r.template:
-        lines.append(f"- **Template:** {r.template}\n")
-    lines.append("\n")
-    return "".join(lines)
+    """Format Report as markdown section."""
+    return _config_section(r.name, "Report", [
+        ("Output", "output", r.output),
+        ("Schedule", "schedule", r.schedule),
+        ("Template", "template", r.template),
+    ])

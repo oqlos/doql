@@ -168,9 +168,8 @@ def _render_webhook(wh: Webhook) -> list[str]:
     return lines
 
 
-def _render_interface(iface: Interface) -> list[str]:
-    selector = f'interface[type="{iface.name}"]'
-    lines = [f'{selector} {{\n']
+def _build_interface_props(iface: Interface) -> list[str]:
+    """Build property lines for interface block."""
     props = []
     if iface.type != iface.name:
         props.append(_prop("type", iface.type, quote_str=False))
@@ -189,23 +188,35 @@ def _render_interface(iface: Interface) -> list[str]:
             props.append(_prop(f"hardware-{k}", v, quote_str=False))
     if iface.target:
         props.append(_prop("target", iface.target))
-    lines.append(_indent(props))
+    return props
+
+
+def _build_page_props(p) -> list[str]:
+    """Build property lines for page block."""
+    pprops = []
+    if p.layout:
+        pprops.append(_prop("layout", p.layout))
+    if getattr(p, 'from_entity', None):
+        pprops.append(_prop("from", p.from_entity))
+    if p.path:
+        pprops.append(_prop("path", p.path))
+    if p.public:
+        pprops.append(_prop("public", True))
+    if p.features:
+        pprops.append(_prop("features", ", ".join(p.features), quote_str=False))
+    return pprops
+
+
+def _render_interface(iface: Interface) -> list[str]:
+    """Render Interface as CSS block with nested page blocks."""
+    selector = f'interface[type="{iface.name}"]'
+    lines = [f'{selector} {{\n']
+    lines.append(_indent(_build_interface_props(iface)))
     lines.append("}\n")
-    # Pages as nested blocks
+
     for p in iface.pages:
         lines.append(f'{selector} page[name="{p.name}"] {{\n')
-        pprops = []
-        if p.layout:
-            pprops.append(_prop("layout", p.layout))
-        if hasattr(p, 'from_entity') and p.from_entity:
-            pprops.append(_prop("from", p.from_entity))
-        if p.path:
-            pprops.append(_prop("path", p.path))
-        if p.public:
-            pprops.append(_prop("public", True))
-        if p.features:
-            pprops.append(_prop("features", ", ".join(p.features), quote_str=False))
-        lines.append(_indent(pprops))
+        lines.append(_indent(_build_page_props(p)))
         lines.append("}\n")
     return lines
 

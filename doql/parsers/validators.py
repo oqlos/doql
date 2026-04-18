@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import pathlib
-from typing import Optional
+from typing import Any, Optional
 
 from .models import DoqlSpec, ValidationIssue
 
@@ -55,34 +55,53 @@ def _validate_data_source_files(spec: DoqlSpec, project_root: pathlib.Path) -> l
     return issues
 
 
-def _validate_document_templates(spec: DoqlSpec, project_root: pathlib.Path) -> list[ValidationIssue]:
-    """Validate DOCUMENT template files exist."""
+def _validate_file_refs(
+    items: list[Any],
+    project_root: pathlib.Path,
+    item_type: str,
+    name_attr: str,
+    file_attr: str,
+    error_msg: str,
+) -> list[ValidationIssue]:
+    """Generic file reference validator.
+    
+    Args:
+        items: List of objects to validate
+        project_root: Root path for resolving relative paths
+        item_type: Type label for error messages (e.g., "DOCUMENT", "TEMPLATE")
+        name_attr: Attribute name for item name
+        file_attr: Attribute name for file path
+        error_msg: Error message template (e.g., "Template not found: {file}")
+    """
     issues: list[ValidationIssue] = []
-    for doc in spec.documents:
-        if doc.template:
-            tpath = project_root / doc.template
-            if not tpath.exists():
+    for item in items:
+        file_path = getattr(item, file_attr, None)
+        if file_path:
+            fpath = project_root / file_path
+            if not fpath.exists():
+                name = getattr(item, name_attr, "unknown")
                 issues.append(ValidationIssue(
-                    f"DOCUMENT {doc.name}",
-                    f"Template not found: {doc.template}",
+                    f"{item_type} {name}",
+                    error_msg.format(file=file_path),
                     "warning",
                 ))
     return issues
+
+
+def _validate_document_templates(spec: DoqlSpec, project_root: pathlib.Path) -> list[ValidationIssue]:
+    """Validate DOCUMENT template files exist."""
+    return _validate_file_refs(
+        spec.documents, project_root, "DOCUMENT", "name", "template",
+        "Template not found: {file}"
+    )
 
 
 def _validate_template_files(spec: DoqlSpec, project_root: pathlib.Path) -> list[ValidationIssue]:
     """Validate TEMPLATE files exist."""
-    issues: list[ValidationIssue] = []
-    for tmpl in spec.templates:
-        if tmpl.file:
-            tpath = project_root / tmpl.file
-            if not tpath.exists():
-                issues.append(ValidationIssue(
-                    f"TEMPLATE {tmpl.name}",
-                    f"File not found: {tmpl.file}",
-                    "warning",
-                ))
-    return issues
+    return _validate_file_refs(
+        spec.templates, project_root, "TEMPLATE", "name", "file",
+        "File not found: {file}"
+    )
 
 
 def _validate_document_partials(spec: DoqlSpec) -> list[ValidationIssue]:

@@ -109,6 +109,21 @@ def _parse_makefile_deps(deps_raw: str) -> list[str]:
     ]
 
 
+def _build_taskfile_steps(task: dict) -> list[WorkflowStep]:
+    """Build workflow steps from Taskfile task commands."""
+    steps: list[WorkflowStep] = []
+    for cmd in task.get("cmds") or []:
+        if isinstance(cmd, str) and cmd.strip():
+            steps.append(WorkflowStep(action="run", params={"cmd": cmd.strip()}))
+    return steps
+
+
+def _extract_taskfile_schedule(task: dict) -> str | None:
+    """Extract schedule from Taskfile task if present."""
+    schedule = task.get("schedule")
+    return schedule if isinstance(schedule, str) else None
+
+
 def _extract_taskfile_workflows(path: Path, spec: DoqlSpec) -> None:
     """Parse a Taskfile.yml into :class:`Workflow` entries."""
     data = load_yaml(path)
@@ -125,12 +140,8 @@ def _extract_taskfile_workflows(path: Path, spec: DoqlSpec) -> None:
         if task_name in seen:
             continue
 
-        steps: list[WorkflowStep] = []
-        for cmd in task.get("cmds") or []:
-            if isinstance(cmd, str) and cmd.strip():
-                steps.append(WorkflowStep(action="run", params={"cmd": cmd.strip()}))
-        # Taskfile schedule (cron string) → workflow schedule
-        schedule = task.get("schedule") if isinstance(task.get("schedule"), str) else None
+        steps = _build_taskfile_steps(task)
+        schedule = _extract_taskfile_schedule(task)
 
         if not steps and not schedule:
             continue

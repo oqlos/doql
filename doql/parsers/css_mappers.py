@@ -102,36 +102,64 @@ def _map_data_source(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock")
     spec.data_sources.append(ds)
 
 
+def _map_config_block(
+    spec: "DoqlSpec",
+    sel: "ParsedSelector", 
+    block: "CssBlock",
+    model_class: type,
+    list_attr: str,
+    defaults: dict[str, str],
+    list_fields: dict[str, str],
+) -> None:
+    """Generic config block mapper for Template/Document/Report.
+    
+    Args:
+        spec: DoqlSpec to append to
+        sel: Parsed CSS selector
+        block: CSS block with declarations
+        model_class: Model class to instantiate (Template, Document, Report)
+        list_attr: Attribute name on spec to append to (templates, documents, reports)
+        defaults: Default values for model fields
+        list_fields: Field names that should be parsed as lists (field_name -> parse_key)
+    """
+    name = sel.attributes.get('name', '')
+    kwargs: dict[str, Any] = {'name': name}
+    
+    for field, default in defaults.items():
+        kwargs[field] = block.declarations.get(field, default)
+    
+    for field, parse_key in list_fields.items():
+        list_str = block.declarations.get(parse_key)
+        if list_str:
+            from .css_utils import _parse_list
+            kwargs[field] = _parse_list(list_str)
+    
+    obj = model_class(**kwargs)
+    getattr(spec, list_attr).append(obj)
+
+
 def _map_template(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") -> None:
     """Map CSS block to Template definition."""
     from .models import Template
-    name = sel.attributes.get('name', '')
-    tpl = Template(
-        name=name,
-        type=block.declarations.get('type', 'html'),
-        file=block.declarations.get('file', ''),
+    _map_config_block(
+        spec, sel, block,
+        model_class=Template,
+        list_attr='templates',
+        defaults={'type': 'html', 'file': ''},
+        list_fields={'variables': 'vars'},
     )
-    vars_str = block.declarations.get('vars')
-    if vars_str:
-        from .css_utils import _parse_list
-        tpl.variables = _parse_list(vars_str)
-    spec.templates.append(tpl)
 
 
 def _map_document(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") -> None:
     """Map CSS block to Document definition."""
     from .models import Document
-    name = sel.attributes.get('name', '')
-    doc = Document(
-        name=name,
-        type=block.declarations.get('type', 'pdf'),
-        template=block.declarations.get('template', ''),
+    _map_config_block(
+        spec, sel, block,
+        model_class=Document,
+        list_attr='documents',
+        defaults={'type': 'pdf', 'template': ''},
+        list_fields={'partials': 'partials'},
     )
-    partials = block.declarations.get('partials')
-    if partials:
-        from .css_utils import _parse_list
-        doc.partials = _parse_list(partials)
-    spec.documents.append(doc)
 
 
 def _map_report(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") -> None:
@@ -147,37 +175,35 @@ def _map_report(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") -> N
     spec.reports.append(report)
 
 
-def _map_interface(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") -> None:
-    """Map CSS block to Interface definition.
-
-    Handles both top-level ``interface[type="api"] { … }`` blocks and
-    compound selectors like ``interface[type="web"] page[name="dash"] { … }``.
-    """
-    from .models import Interface, Page
-    from .css_utils import _parse_selector
-    itype = sel.attributes.get('type') or sel.attributes.get('name', '')
-    if not itype:
-        return
-
-    # Find or create interface (lookup by name = selector attribute value)
-    existing = next((i for i in spec.interfaces if i.name == itype), None)
+def _find_or_create_interface(spec: "DoqlSpec", name: str) -> "Interface":
+    """Find existing interface by name or create new one."""
+    from .models import Interface
+    existing = next((i for i in spec.interfaces if i.name == name), None)
     if existing is None:
-        iface = Interface(name=itype, type=itype)
+        iface = Interface(name=name, type=name)
         spec.interfaces.append(iface)
-    else:
-        iface = existing
+        return iface
+    return existing
 
-    # Compound selector → route the sub-element
-    # Strip CSS child combinator '>' from chain before inspection
+
+def _handle_interface_chain(iface: "Interface", sel: "ParsedSelector", block: "CssBlock") -> bool:
+    """Handle compound selector chains (e.g., interface page { }).
+    
+    Returns True if chain was handled (sub-element routed).
+    """
+    from .css_utils import _parse_selector
     chain = [p for p in sel.chain[1:] if p != '>']
-    if chain:
-        sub = _parse_selector(chain[0])
-        if sub.type == 'page':
-            _add_interface_page(iface, sub, block)
-        # endpoint, feature, widget, menu, sync, card – informational
-        return
+    if not chain:
+        return False
+    sub = _parse_selector(chain[0])
+    if sub.type == 'page':
+        _add_interface_page(iface, sub, block)
+    # endpoint, feature, widget, menu, sync, card – informational (no-op)
+    return True
 
-    # Top-level interface block → apply / back-fill properties
+
+def _apply_interface_properties(iface: "Interface", block: "CssBlock") -> None:
+    """Apply top-level interface block declarations."""
     declared_type = block.declarations.get('type')
     if declared_type:
         iface.type = declared_type
@@ -188,11 +214,33 @@ def _map_interface(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") -
     if block.declarations.get('pwa', '').lower() == 'true':
         iface.pwa = True
 
-    # Nested children (rare – if tokenizer ever nests them)
+
+def _apply_nested_interface_children(iface: "Interface", block: "CssBlock") -> None:
+    """Apply nested children (rare – if tokenizer ever nests them)."""
+    from .css_utils import _parse_selector
     for child in block.children:
         child_sel = _parse_selector(child.selector)
         if child_sel.type == 'page':
             _add_interface_page(iface, child_sel, child)
+
+
+def _map_interface(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") -> None:
+    """Map CSS block to Interface definition.
+
+    Handles both top-level ``interface[type="api"] { … }`` blocks and
+    compound selectors like ``interface[type="web"] page[name="dash"] { … }``.
+    """
+    itype = sel.attributes.get('type') or sel.attributes.get('name', '')
+    if not itype:
+        return
+
+    iface = _find_or_create_interface(spec, itype)
+
+    if _handle_interface_chain(iface, sel, block):
+        return
+
+    _apply_interface_properties(iface, block)
+    _apply_nested_interface_children(iface, block)
 
 
 def _add_interface_page(

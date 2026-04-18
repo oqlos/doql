@@ -1,7 +1,7 @@
 """Markdown section writers — write spec sections to a stream."""
 from __future__ import annotations
 
-from typing import IO
+from typing import IO, Any, Callable
 
 from ...parsers.models import DoqlSpec
 from .sections import (
@@ -34,44 +34,40 @@ def _write_data_sources(spec: DoqlSpec, out: IO[str]) -> None:
         out.write("\n")
 
 
+def _write_section(
+    spec: DoqlSpec,
+    out: IO[str],
+    attr_name: str,
+    title: str,
+    formatter: Callable[[Any], str],
+) -> None:
+    """Generic section writer — reduces duplication across entity/interface/document/report/workflow."""
+    items = getattr(spec, attr_name, None)
+    if items:
+        out.write(_h(2, title))
+        for item in items:
+            out.write(formatter(item))
+
+
+# Specific writers use the generic implementation
 def _write_entities(spec: DoqlSpec, out: IO[str]) -> None:
-    """Write entities section."""
-    if spec.entities:
-        out.write(_h(2, "Entities"))
-        for e in spec.entities:
-            out.write(_entity_section(e))
+    _write_section(spec, out, "entities", "Entities", _entity_section)
 
 
 def _write_interfaces(spec: DoqlSpec, out: IO[str]) -> None:
-    """Write interfaces section."""
-    if spec.interfaces:
-        out.write(_h(2, "Interfaces"))
-        for iface in spec.interfaces:
-            out.write(_interface_section(iface))
+    _write_section(spec, out, "interfaces", "Interfaces", _interface_section)
 
 
 def _write_documents(spec: DoqlSpec, out: IO[str]) -> None:
-    """Write documents section."""
-    if spec.documents:
-        out.write(_h(2, "Documents"))
-        for d in spec.documents:
-            out.write(_document_section(d))
+    _write_section(spec, out, "documents", "Documents", _document_section)
 
 
 def _write_reports(spec: DoqlSpec, out: IO[str]) -> None:
-    """Write reports section."""
-    if spec.reports:
-        out.write(_h(2, "Reports"))
-        for r in spec.reports:
-            out.write(_report_section(r))
+    _write_section(spec, out, "reports", "Reports", _report_section)
 
 
 def _write_workflows(spec: DoqlSpec, out: IO[str]) -> None:
-    """Write workflows section."""
-    if spec.workflows:
-        out.write(_h(2, "Workflows"))
-        for w in spec.workflows:
-            out.write(_workflow_section(w))
+    _write_section(spec, out, "workflows", "Workflows", _workflow_section)
 
 
 def _write_roles(spec: DoqlSpec, out: IO[str]) -> None:

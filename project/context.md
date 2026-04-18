@@ -114,13 +114,13 @@ Main execution flows into the system:
 > Selective rebuild — only regenerate sections that changed since last build.
 - **Calls**: doql.cli.context.build_context, doql.cli.context.load_spec, doql.cli.lockfile.read_lockfile, doql.cli.lockfile.spec_section_hashes, doql.cli.lockfile.diff_sections, doql.cli.sync.determine_regeneration_set, print, print
 
-### doql.cli.commands.workspace._cmd_run
-> Run `doql <action>` in each project with app.doql.css.
-- **Calls**: None.resolve, doql.cli.commands.workspace._discover_local, doql.cli.commands.workspace._print, enumerate, doql.cli.commands.workspace._print, re.compile, doql.cli.commands.workspace._print, doql.cli.commands.workspace._print
-
 ### doql.generators.desktop_gen.generate
 > Generate desktop (Tauri) layer files into *out* directory.
 - **Calls**: next, None.write_text, None.write_text, None.write_text, None.write_text, None.write_text, print, print
+
+### doql.cli.commands.workspace._cmd_run
+> Run `doql <action>` in each project with app.doql.css.
+- **Calls**: None.resolve, doql.cli.commands.workspace._discover_local, doql.cli.commands.workspace._print, enumerate, doql.cli.commands.workspace._print, re.compile, doql.cli.commands.workspace._print, doql.cli.commands.workspace._print
 
 ### doql.cli.commands.init.cmd_init
 > Create new project from template.
@@ -258,16 +258,16 @@ cmd_sync [doql.cli.sync]
   └─ →> read_lockfile
 ```
 
-### Flow 5: _cmd_run
+### Flow 5: generate
+```
+generate [doql.generators.desktop_gen]
+```
+
+### Flow 6: _cmd_run
 ```
 _cmd_run [doql.cli.commands.workspace]
   └─> _discover_local
   └─> _print
-```
-
-### Flow 6: generate
-```
-generate [doql.generators.desktop_gen]
 ```
 
 ### Flow 7: cmd_init
@@ -466,13 +466,17 @@ Examples:
 > Extract clean base type from type string.
 - **Output to**: re.split
 
-### doql.parsers._is_css_format
-> Check if a path uses one of the CSS-like DOQL formats.
-- **Output to**: path.name.lower, any, name.endswith
+### doql.parsers.css_utils._parse_list
+> Parse '[a, b, c]' or 'a, b, c' into a list.
+- **Output to**: None.strip, None.strip, val.strip, val.split, v.strip
 
-### doql.parsers.parse_file
-> Parse a .doql / .doql.css / .doql.less / .doql.sass file into a DoqlSpec.
-- **Output to**: doql.parsers._is_css_format, doql.parsers.parse_text, path.exists, DoqlParseError, doql.parsers.css_parser.parse_css_file
+### doql.parsers.css_utils._parse_selector
+> Parse a CSS-like selector into structured form.
+
+Examples:
+    "app" → type="app"
+    'entity[name="
+- **Output to**: None.split, ParsedSelector, re.match, re.finditer, selector.strip
 
 ## Behavioral Patterns
 
@@ -554,12 +558,12 @@ graph TD
     cmd_sync --> read_lockfile
     cmd_sync --> spec_section_hashes
     cmd_sync --> diff_sections
+    generate --> next
+    generate --> write_text
     _cmd_run --> resolve
     _cmd_run --> _discover_local
     _cmd_run --> _print
     _cmd_run --> enumerate
-    generate --> next
-    generate --> write_text
     cmd_init --> getattr
     cmd_init --> Path
     cmd_init --> exists

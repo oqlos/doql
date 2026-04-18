@@ -7,6 +7,7 @@ from __future__ import annotations
 import shutil
 import sys
 import tempfile
+from typing import Callable
 
 from .. import parser as doql_parser
 from ..generators import api_gen, web_gen, mobile_gen, desktop_gen, infra_gen, document_gen, report_gen, i18n_gen, integrations_gen, workflow_gen, ci_gen
@@ -64,48 +65,43 @@ def run_document_generators(spec, env_vars, ctx: BuildContext) -> None:
     document_gen.generate(spec, env_vars, doc_dir, project_root=ctx.root)
 
 
+def _run_conditional_generator(
+    ctx: BuildContext,
+    condition: bool,
+    label: str,
+    output_path: str,
+    generate_fn: Callable,
+    spec,
+    env_vars,
+) -> None:
+    """Generic generator runner — reduces duplication across report/i18n/integration/workflow gens."""
+    if not condition:
+        return
+    print(f"🛠  Generating {label}...")
+    out_dir = ctx.build_dir / output_path
+    out_dir.mkdir(parents=True, exist_ok=True)
+    generate_fn(spec, env_vars, out_dir)
+
+
 def run_report_generators(spec, env_vars, ctx: BuildContext) -> None:
     """Run report generators if reports are defined."""
-    if not spec.reports:
-        return
-    
-    print("🛠  Generating reports...")
-    rpt_dir = ctx.build_dir / "reports"
-    rpt_dir.mkdir(parents=True, exist_ok=True)
-    report_gen.generate(spec, env_vars, rpt_dir)
+    _run_conditional_generator(ctx, spec.reports, "reports", "reports", report_gen.generate, spec, env_vars)
 
 
 def run_i18n_generators(spec, env_vars, ctx: BuildContext) -> None:
     """Run i18n generators if languages are defined."""
-    if not spec.languages:
-        return
-    
-    print("🛠  Generating i18n...")
-    i18n_dir = ctx.build_dir / "i18n"
-    i18n_dir.mkdir(parents=True, exist_ok=True)
-    i18n_gen.generate(spec, env_vars, i18n_dir)
+    _run_conditional_generator(ctx, spec.languages, "i18n", "i18n", i18n_gen.generate, spec, env_vars)
 
 
 def run_integration_generators(spec, env_vars, ctx: BuildContext) -> None:
     """Run integration generators if integrations are defined."""
-    if not (spec.integrations or spec.api_clients or spec.webhooks):
-        return
-    
-    print("🛠  Generating integrations...")
-    svc_dir = ctx.build_dir / "api" / "services"
-    svc_dir.mkdir(parents=True, exist_ok=True)
-    integrations_gen.generate(spec, env_vars, svc_dir)
+    has_integrations = bool(spec.integrations or spec.api_clients or spec.webhooks)
+    _run_conditional_generator(ctx, has_integrations, "integrations", "api/services", integrations_gen.generate, spec, env_vars)
 
 
 def run_workflow_generators(spec, env_vars, ctx: BuildContext) -> None:
     """Run workflow generators if workflows are defined."""
-    if not spec.workflows:
-        return
-    
-    print("🛠  Generating workflows...")
-    wf_dir = ctx.build_dir / "api" / "workflows"
-    wf_dir.mkdir(parents=True, exist_ok=True)
-    workflow_gen.generate(spec, env_vars, wf_dir)
+    _run_conditional_generator(ctx, spec.workflows, "workflows", "api/workflows", workflow_gen.generate, spec, env_vars)
 
 
 def run_ci_generator(spec, env_vars, ctx: BuildContext) -> None:

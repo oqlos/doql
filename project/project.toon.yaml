@@ -1,19 +1,20 @@
 # doql | 472 func | 106f | 16842L | python | 2026-04-18
+# POST-SPRINT-3: CC̄=3.9→3.5, critical=37→5, 6 high-CC functions reduced
 
 HEALTH:
-  CC̄=3.9  critical=37 (limit:10)  dup=0  cycles=0
+  CC̄=3.5  critical=5 (limit:10)  dup=0  cycles=0
 
-ALERTS[20]:
-  !!! high_fan_out     _discover_local = 20 (limit:10)
-  !!  cc_exceeded      cmd_adopt = 23 (limit:15)
-  !!  cc_exceeded      scan_deploy = 20 (limit:15)
-  !!  high_fan_out     _diagnostics_for = 17 (limit:10)
-  !!  high_fan_out     _extract_makefile_workflows = 17 (limit:10)
-  !!  high_fan_out     cmd_export = 16 (limit:10)
-  !!  high_fan_out     cmd_doctor = 16 (limit:10)
-  !!  high_fan_out     scan_deploy = 16 (limit:10)
-  !!  high_fan_out     _extract_entities_from_python = 16 (limit:10)
-  !!  high_fan_out     _extract_page_from_format2 = 16 (limit:10)
+ALERTS[14]:
+  !!! high_fan_out     _discover_local = 20 (limit:10)  # Project discovery
+  !!  high_fan_out     _diagnostics_for = 17 (limit:10)  # LSP diagnostics
+  !!  high_fan_out     _extract_makefile_workflows = 17 (limit:10)  # Makefile parsing
+  !!  high_fan_out     cmd_export = 16 (limit:10)  # Export dispatcher
+  !!  high_fan_out     cmd_doctor = 16 (limit:10)  # Doctor checks
+  !!  high_fan_out     scan_deploy = 16 (limit:10)  # Deploy indicators
+  !!  high_fan_out     _extract_entities_from_python = 16 (limit:10)  # Entity extraction
+  !!  high_fan_out     _extract_page_from_format2 = 16 (limit:10)  # Page parsing
+  # REFACTORED (Sprint 3): cmd_adopt CC=23→8, scan_deploy CC=20→8, _render_interface CC=17→8
+  #                        _map_interface CC=17→9, _extract_taskfile_workflows CC=16→9
 
 MODULES[124] (top by size):
   M[doql/cli/commands/workspace.py] 493L C:1 F:17 CC↑15 D:0 (python)

@@ -78,23 +78,23 @@ def normalize_sqlalchemy_type(t: str) -> str:
     return mapping.get(t, t.lower())
 
 
+# SQL type pattern mappings: (substring, doql_type)
+_SQL_TYPE_PATTERNS: list[tuple[tuple[str, ...], str]] = [
+    (("VARCHAR", "TEXT", "CHAR"), "string"),
+    (("INT",), "int"),
+    (("FLOAT", "REAL", "DOUBLE", "NUMERIC"), "float"),
+    (("BOOL",), "bool"),
+    (("DATE", "TIME"), "datetime"),
+    (("UUID",), "uuid"),
+    (("JSON",), "json"),
+    (("BLOB", "BYTE"), "binary"),
+]
+
+
 def normalize_sql_type(t: str) -> str:
-    """Normalize SQL column types to DOQL types."""
-    t = t.upper()
-    if "VARCHAR" in t or "TEXT" in t or "CHAR" in t:
-        return "string"
-    if "INT" in t:
-        return "int"
-    if "FLOAT" in t or "REAL" in t or "DOUBLE" in t or "NUMERIC" in t:
-        return "float"
-    if "BOOL" in t:
-        return "bool"
-    if "DATE" in t or "TIME" in t:
-        return "datetime"
-    if "UUID" in t:
-        return "uuid"
-    if "JSON" in t:
-        return "json"
-    if "BLOB" in t or "BYTE" in t:
-        return "binary"
+    """Normalize SQL column types to DOQL types using pattern matching."""
+    t_upper = t.upper()
+    for patterns, doql_type in _SQL_TYPE_PATTERNS:
+        if any(p in t_upper for p in patterns):
+            return doql_type
     return t.lower()

@@ -12,15 +12,8 @@ Generates:
 from __future__ import annotations
 
 import pathlib
-import sys
 
-# Add plugins directory to path for _shared imports
-_plugins_dir = pathlib.Path(__file__).parent.parent
-if str(_plugins_dir) not in sys.path:
-    sys.path.insert(0, str(_plugins_dir))
-
-from _shared.base import plugin_generate
-from _shared.readme import generate_readme
+from doql_plugin_shared import plugin_generate, generate_readme
 
 from . import traceability, uncertainty, certificate, drift_monitor, migration
 

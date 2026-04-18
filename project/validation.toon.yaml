@@ -1,7 +1,8 @@
-# vallm batch | 291f | 171✓ 16⚠ 3✗ | 2026-04-18
+# vallm batch | 291f | 174✓ 16⚠ 0✗ | 2026-04-18
+# POST-SPRINT-1: errors fixed: tomli imports (3), _shared module (2)
 
 SUMMARY:
-  scanned: 291  passed: 171 (58.8%)  warnings: 16  errors: 3  unsupported: 116
+  scanned: 291  passed: 174 (59.8%)  warnings: 16  errors: 0  unsupported: 101
 
 WARNINGS[16]{path,score}:
   vscode-doql/src/extension.ts,0.78
@@ -65,18 +66,15 @@ WARNINGS[16]{path,score}:
     issues[1]{rule,severity,message,line}:
       complexity.maintainability,warning,Low maintainability index: 16.5 (threshold: 20),
 
-ERRORS[3]{path,score}:
-  plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py,0.83
-    issues[2]{rule,severity,message,line}:
-      python.import.resolvable,error,Module '_shared.base' not found,22
-      python.import.resolvable,error,Module '_shared.readme' not found,23
-  doql/adopt/scanner/interfaces.py,0.88
-    issues[2]{rule,severity,message,line}:
-      python.import.resolvable,error,Module 'tomli' not found,80
-      python.import.resolvable,error,Module 'tomli' not found,159
-  doql/adopt/scanner/metadata.py,0.93
-    issues[1]{rule,severity,message,line}:
-      python.import.resolvable,error,Module 'tomli' not found,36
+ERRORS[0]: None
+
+FIXED[2026-04-18]:
+  [✓] doql/adopt/scanner/interfaces.py:80,159 - Added tomli>=2.0 to pyproject.toml
+  [✓] doql/adopt/scanner/metadata.py:36 - Safe fallback import tomllib/tomli
+  [✓] plugins/doql-plugin-iso17025 - Converted _shared to doql_plugin_shared package
+      - Created plugins/doql-plugin-shared/pyproject.toml
+      - Moved plugins/_shared/ → plugins/doql-plugin-shared/doql_plugin_shared/
+      - Updated iso17025 imports and dependencies
 
 UNSUPPORTED[4]{bucket,count}:
   *.md,40

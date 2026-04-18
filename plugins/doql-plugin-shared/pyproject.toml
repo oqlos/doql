@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "doql-plugin-shared"
+version = "0.1.0"
+description = "Shared utilities for doql plugins"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [
+  { name = "Softreck", email = "hello@softreck.dev" },
+]
+keywords = ["doql", "plugins", "shared"]
+dependencies = []
+
+[project.entry-points."doql_plugins"]
+# No direct entry point — this is a library package
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["doql_plugin_shared*"]

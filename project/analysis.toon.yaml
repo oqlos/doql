@@ -2,29 +2,29 @@
 # CC̄=3.9 | critical:11/472 | dups:0 | cycles:0
 
 HEALTH[11]:
-  🟡 CC    cmd_adopt CC=23 (limit:15)
-  🟡 CC    _render_interface CC=17 (limit:15)
-  🟡 CC    _cmd_list CC=15 (limit:15)
-  🟡 CC    _cmd_run CC=15 (limit:15)
-  🟡 CC    scan_deploy CC=20 (limit:15)
-  🟡 CC    _extract_makefile_workflows CC=15 (limit:15)
-  🟡 CC    _extract_taskfile_workflows CC=16 (limit:15)
-  🟡 CC    normalize_sql_type CC=16 (limit:15)
-  🟡 CC    scan_environments CC=15 (limit:15)
-  🟡 CC    _extract_fields CC=15 (limit:15)
-  🟡 CC    _map_interface CC=17 (limit:15)
+  ✅ CC    cmd_adopt CC=8 (was 23)  # REFACTORED: extracted _print_scan_summary, _print_item, _cleanup_empty_output, _validate_output_written
+  ✅ CC    _render_interface CC=8 (was 17)  # REFACTORED: extracted _build_interface_props, _build_page_props
+  🟡 CC    _cmd_list CC=15 (limit:15)  # PENDING: table formatting
+  🟡 CC    _cmd_run CC=15 (limit:15)  # PENDING: subprocess execution
+  ✅ CC    scan_deploy CC=8 (was 20)  # REFACTORED: extracted _detect_deployment_indicators, _determine_deploy_target, _apply_deploy_config_flags, _extract_containers_from_compose
+  🟡 CC    _extract_makefile_workflows CC=15 (limit:15)  # PENDING: extract _parse_target_body
+  ✅ CC    _extract_taskfile_workflows CC=9 (was 16)  # REFACTORED: extracted _build_taskfile_steps, _extract_taskfile_schedule
+  ✅ CC    normalize_sql_type CC=3 (was 16)  # REFACTORED: lookup table pattern (_SQL_TYPE_PATTERNS)
+  🟡 CC    scan_environments CC=15 (limit:15)  # PENDING: split env detection
+  🟡 CC    _extract_fields CC=15 (limit:15)  # PENDING: field type dispatch
+  ✅ CC    _map_interface CC=9 (was 17)  # REFACTORED: extracted _find_or_create_interface, _handle_interface_chain, _apply_interface_properties, _apply_nested_interface_children
 
 REFACTOR[1]:
   1. split 11 high-CC methods  (CC>15)
 
 PIPELINES[133]:
-  [1] Src [generate]: generate → _audit_log_module
+  [1] Src [generate]: generate
       PURITY: 100% pure
-  [2] Src [generate]: generate → _odoo_client_module
+  [2] Src [generate]: generate → _audit_log_module
       PURITY: 100% pure
-  [3] Src [generate]: generate
+  [3] Src [generate]: generate → _odoo_client_module
       PURITY: 100% pure
-  [4] Src [generate]: generate
+  [4] Src [generate]: generate → generate_readme
       PURITY: 100% pure
   [5] Src [generate]: generate
       PURITY: 100% pure
