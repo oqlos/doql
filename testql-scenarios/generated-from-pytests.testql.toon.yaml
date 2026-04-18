@@ -1,0 +1,13 @@
+# SCENARIO: Auto-generated from Python Tests
+# TYPE: integration
+# GENERATED: true
+
+LOG[8]{message}:
+  "Test: test_fastapi_dependency_alone_does_not_create_api_interface"
+  "Test: test_fastapi_with_main_py_creates_api"
+  "Test: test_api_entry_point_in_scripts_creates_api"
+  "Test: test_api_boot_and_health"
+  "Test: test_fastapi_dependency_alone_does_not_create_api_interface"
+  "Test: test_fastapi_with_main_py_creates_api"
+  "Test: test_api_entry_point_in_scripts_creates_api"
+  "Test: test_api_boot_and_health"

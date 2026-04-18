@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import re
 
-from .css_utils import CssBlock, _strip_comments
+from .css_utils import CssBlock, _strip_comments, _strip_quotes
 
 
 def _tokenise_css(text: str) -> list[CssBlock]:
@@ -76,5 +76,6 @@ def _parse_declarations(body: str) -> dict[str, str]:
             continue
         m = re.match(r'^(@?[\w\-]+)\s*:\s*(.+?)\s*;?\s*$', line)
         if m:
-            decls[m.group(1)] = m.group(2).rstrip(';').strip()
+            # Strip quotes to prevent quote explosion on re-export
+            decls[m.group(1)] = _strip_quotes(m.group(2).rstrip(';').strip())
     return decls

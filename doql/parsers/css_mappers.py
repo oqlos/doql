@@ -278,7 +278,7 @@ def _map_integration(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock")
 
 def _map_workflow(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") -> None:
     """Map CSS block to Workflow definition."""
-    from .css_utils import _parse_selector
+    from .css_utils import _parse_selector, _strip_quotes
     from .models import Workflow, WorkflowStep
     name = sel.attributes.get('name', '')
     # Check if workflow already exists (steps are separate blocks)
@@ -286,20 +286,52 @@ def _map_workflow(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") ->
     if existing is None:
         wf = Workflow(
             name=name,
-            trigger=block.declarations.get('trigger', ''),
+            trigger=_strip_quotes(block.declarations.get('trigger', '')),
         )
         spec.workflows.append(wf)
     else:
         wf = existing
+        if not wf.trigger and block.declarations.get('trigger'):
+            wf.trigger = _strip_quotes(block.declarations.get('trigger', ''))
 
-    # Parse child steps
+    # Parse inline step-N declarations (e.g., step-1: run cmd=pytest -q;)
+    for key, val in block.declarations.items():
+        if key.startswith('step-'):
+            step_text = _strip_quotes(val)
+            # Parse action (first word)
+            space_idx = step_text.find(' ')
+            if space_idx == -1:
+                # Single word action with no params/target
+                wf.steps.append(WorkflowStep(action=step_text, target=None, params={}))
+                continue
+            action = step_text[:space_idx]
+            rest = step_text[space_idx + 1:]
+            target = None
+            params = {}
+            # Check if rest starts with cmd= - capture everything after as cmd value
+            if rest.startswith('cmd='):
+                params['cmd'] = rest[4:].rstrip(';')
+                target = 'cmd'
+            else:
+                # Parse remaining parts
+                parts = rest.split()
+                for part in parts:
+                    if '=' in part:
+                        k, v = part.split('=', 1)
+                        params[k] = v.rstrip(';')
+                    elif target is None:
+                        target = part.rstrip(';')
+            step = WorkflowStep(action=action, target=target, params=params)
+            wf.steps.append(step)
+
+    # Parse child steps (nested blocks)
     for child in block.children:
         child_sel = _parse_selector(child.selector)
         if child_sel.type == 'step':
             step = WorkflowStep(
-                action=child.declarations.get('action', ''),
-                target=child.declarations.get('target'),
-                params=dict(child.declarations),
+                action=_strip_quotes(child.declarations.get('action', '')),
+                target=_strip_quotes(child.declarations.get('target', '')),
+                params={k: _strip_quotes(v) for k, v in child.declarations.items()},
             )
             wf.steps.append(step)
 

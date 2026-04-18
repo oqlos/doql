@@ -34,6 +34,7 @@ dependencies = [
   "costs>=0.1.20",
   "pfix>=0.1.60",
   "tomli>=2.0; python_version < '3.11'",
+  "testql>=0.1.1",
 ]
 
 [project.optional-dependencies]

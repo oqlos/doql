@@ -1,0 +1,202 @@
+// LESS format — define @variables here as needed
+
+app {
+  name: "doql";
+  version: "0.0.2";
+}
+
+entity[name="Post"] {
+
+}
+
+entity[name="Author"] {
+
+}
+
+entity[name="Category"] {
+
+}
+
+entity[name="Comment"] {
+
+}
+
+entity[name="MediaFile"] {
+
+}
+
+entity[name="Node"] {
+
+}
+
+entity[name="Telemetry"] {
+
+}
+
+entity[name="Deployment"] {
+
+}
+
+entity[name="FirmwareBuild"] {
+
+}
+
+entity[name="OTAUpdate"] {
+
+}
+
+entity[name="Notebook"] {
+
+}
+
+entity[name="Note"] {
+
+}
+
+entity[name="Tag"] {
+
+}
+
+entity[name="Todo"] {
+
+}
+
+entity[name="Product"] {
+
+}
+
+entity[name="Customer"] {
+
+}
+
+entity[name="Order"] {
+
+}
+
+entity[name="CartItem"] {
+
+}
+
+entity[name="Operator"] {
+
+}
+
+entity[name="Instrument"] {
+
+}
+
+entity[name="ReferenceStandard"] {
+
+}
+
+entity[name="Calibration"] {
+
+}
+
+entity[name="CalibrationOrder"] {
+
+}
+
+entity[name="Contact"] {
+
+}
+
+entity[name="Company"] {
+
+}
+
+entity[name="Deal"] {
+
+}
+
+entity[name="Activity"] {
+
+}
+
+entity[name="User"] {
+
+}
+
+entity[name="Station"] {
+
+}
+
+entity[name="Qualification"] {
+
+}
+
+entity[name="Device"] {
+
+}
+
+entity[name="Inspection"] {
+
+}
+
+entity[name="CylinderFill"] {
+
+}
+
+entity[name="Exercise"] {
+
+}
+
+interface[type="cli"] {
+  framework: click;
+}
+interface[type="cli"] page[name="doql"] {
+
+}
+
+workflow[name="install"] {
+  trigger: """"""""""manual"""""""""";
+}
+
+workflow[name="test"] {
+  trigger: """"""""""manual"""""""""";
+}
+
+workflow[name="lint"] {
+  trigger: """"""""""manual"""""""""";
+}
+
+workflow[name="fmt"] {
+  trigger: """"""""""manual"""""""""";
+}
+
+workflow[name="build"] {
+  trigger: """"""""""manual"""""""""";
+}
+
+workflow[name="clean"] {
+  trigger: """"""""""manual"""""""""";
+}
+
+workflow[name="doql:adopt"] {
+  trigger: """"""""""manual"""""""""";
+}
+
+workflow[name="doql:validate"] {
+  trigger: """"""""""manual"""""""""";
+}
+
+workflow[name="doql:doctor"] {
+  trigger: """"""""""manual"""""""""";
+}
+
+workflow[name="doql:build"] {
+  trigger: """"""""""manual"""""""""";
+}
+
+workflow[name="help"] {
+  trigger: """"""""""manual"""""""""";
+}
+
+deploy {
+  target: docker;
+}
+
+environment[name="local"] {
+  runtime: docker;
+  env_file: """""""""".env"""""""""";
+}

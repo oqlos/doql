@@ -242,7 +242,9 @@ def _render_workflow(w: Workflow) -> list[str]:
         props.append(_prop("condition", w.condition))
     for i, s in enumerate(w.steps, 1):
         val_parts = [s.action]
-        if s.target:
+        # Only add target as separate word if it's not a key in params
+        # (e.g., 'cmd' target with cmd=... param should only show cmd=value)
+        if s.target and s.target not in s.params:
             val_parts.append(s.target)
         if s.params:
             val_parts.extend(f"{k}={v}" for k, v in s.params.items())
