@@ -178,8 +178,9 @@ workflow[name="clean"] {
 
 workflow[name="doql:adopt"] {
   trigger: "manual";
-  step-1: run cmd=python -m doql.cli adopt {{.PWD}} --output {{.DOQL_OUTPUT}};
-  step-2: run cmd=echo "✅ Project structure captured in {{.DOQL_OUTPUT}}";
+  step-1: run cmd=python3 -m doql.cli adopt {{.PWD}} --output app.doql.css --force;
+  step-2: run cmd=doql export --format less -o {{.DOQL_OUTPUT}};
+  step-3: run cmd=echo "✅ Project structure captured in {{.DOQL_OUTPUT}}";
 }
 
 workflow[name="doql:validate"] {
@@ -188,12 +189,12 @@ workflow[name="doql:validate"] {
   echo "❌ {{.DOQL_OUTPUT}} not found. Run: task doql:adopt"
   exit 1
 fi;
-  step-2: run cmd=python -m doql.cli validate {{.DOQL_OUTPUT}};
+  step-2: run cmd=python3 -m doql.cli validate;
 }
 
 workflow[name="doql:doctor"] {
   trigger: "manual";
-  step-1: run cmd=python -m doql.cli doctor {{.PWD}};
+  step-1: run cmd=python3 -m doql.cli doctor {{.PWD}};
 }
 
 workflow[name="doql:build"] {
@@ -202,7 +203,11 @@ workflow[name="doql:build"] {
   echo "❌ {{.DOQL_OUTPUT}} not found. Run: task doql:adopt"
   exit 1
 fi;
-  step-2: run cmd=python -m doql.cli build {{.DOQL_OUTPUT}} --out build/;
+  step-2: run cmd=# Regenerate LESS from CSS if CSS exists
+if [ -f "app.doql.css" ]; then
+  doql export --format less -o {{.DOQL_OUTPUT}}
+fi;
+  step-3: run cmd=python3 -m doql.cli build app.doql.css --out build/;
 }
 
 workflow[name="help"] {
