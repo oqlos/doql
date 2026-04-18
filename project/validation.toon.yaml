@@ -1,7 +1,7 @@
-# vallm batch | 300f | 175✓ 12⚠ 3✗ | 2026-04-18
+# vallm batch | 302f | 176✓ 12⚠ 3✗ | 2026-04-18
 
 SUMMARY:
-  scanned: 300  passed: 175 (58.3%)  warnings: 12  errors: 3  unsupported: 121
+  scanned: 302  passed: 176 (58.3%)  warnings: 12  errors: 3  unsupported: 122
 
 WARNINGS[12]{path,score}:
   vscode-doql/src/extension.ts,0.78
@@ -62,7 +62,7 @@ ERRORS[3]{path,score}:
       python.import.resolvable,error,Module 'tomli' not found,36
 
 UNSUPPORTED[4]{bucket,count}:
-  *.md,40
+  *.md,41
   *.txt,1
   *.yml,16
   other,64

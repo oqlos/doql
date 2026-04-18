@@ -15,9 +15,9 @@ PIPELINES[140]:
       PURITY: 100% pure
   [3] Src [generate]: generate
       PURITY: 100% pure
-  [4] Src [generate]: generate
+  [4] Src [generate]: generate → generate_readme
       PURITY: 100% pure
-  [5] Src [generate]: generate → _audit_log_module
+  [5] Src [generate]: generate
       PURITY: 100% pure
 
 LAYERS:
