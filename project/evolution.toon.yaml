@@ -1,45 +1,35 @@
-# code2llm/evolution | 472 func | 106f | 2026-04-18
+# code2llm/evolution | 498 func | 107f | 2026-04-18
 
-NEXT[6] (remaining high-CC functions):
-  # ✅ COMPLETED Sprint 3 (6 functions fixed):
-  #   cmd_adopt CC=23→8, scan_deploy CC=20→8, _render_interface CC=17→8
-  #   _map_interface CC=17→9, _extract_taskfile_workflows CC=16→9, normalize_sql_type CC=16→3
-
-  [1] !  SPLIT-FUNC      _cmd_list  CC=15  fan=15
-      WHY: CC=15 exceeds 15 - table formatting logic
-      EFFORT: ~1h  IMPACT: 225
-
-  [2] !  SPLIT-FUNC      _cmd_run  CC=15  fan=13
-      WHY: CC=15 exceeds 15 - subprocess execution logic
-      EFFORT: ~1h  IMPACT: 195
-
-  [3] !  SPLIT-FUNC      _extract_fields  CC=15  fan=13
-      WHY: CC=15 exceeds 15 - field type dispatch
-      EFFORT: ~1h  IMPACT: 195
-
-  [4] !  SPLIT-FUNC      _extract_makefile_workflows  CC=15  fan=17
-      WHY: CC=15 exceeds 15 - makefile parsing complexity
+NEXT[5] (ranked by impact):
+  [1] !  SPLIT-FUNC      _extract_makefile_workflows  CC=15  fan=17
+      WHY: CC=15 exceeds 15
       EFFORT: ~1h  IMPACT: 255
 
-  [5] !  SPLIT-FUNC      scan_environments  CC=15  fan=10
-      WHY: CC=15 exceeds 15 - env detection complexity
-      EFFORT: ~1h  IMPACT: 150
+  [2] !  SPLIT-FUNC      _cmd_list  CC=15  fan=15
+      WHY: CC=15 exceeds 15
+      EFFORT: ~1h  IMPACT: 225
 
-  [6] !  SPLIT-FUNC      normalize_sql_type  CC=16→3 ✅ DONE
-      WHY: Reduced via lookup table — see HISTORY
+  [3] !  SPLIT-FUNC      _cmd_run  CC=15  fan=13
+      WHY: CC=15 exceeds 15
+      EFFORT: ~1h  IMPACT: 195
+
+  [4] !  SPLIT-FUNC      _extract_fields  CC=15  fan=13
+      WHY: CC=15 exceeds 15
+      EFFORT: ~1h  IMPACT: 195
+
+  [5] !  SPLIT-FUNC      scan_environments  CC=15  fan=10
+      WHY: CC=15 exceeds 15
+      EFFORT: ~1h  IMPACT: 150
 
 
 RISKS[0]: none
 
 METRICS-TARGET:
-  CC̄:          3.5 (was 3.9) → target ≤2.7  # 6 high-CC functions reduced
-  max-CC:      15 (was 23) → target ≤11  # cmd_adopt reduced to 8
-  god-modules: 0 → target 0 ✓
-  high-CC(≥15): 5 (was 11) → target ≤5 ✓ ACHIEVED
-  hub-types:   0 → target ≤0 ✓
-
-CURRENT STATUS (post-Sprint 3):
-  Remaining CC≥15: _cmd_list, _cmd_run, _extract_fields, _extract_makefile_workflows, scan_environments
+  CC̄:          3.7 → ≤2.6
+  max-CC:      15 → ≤7
+  god-modules: 0 → 0
+  high-CC(≥15): 5 → ≤2
+  hub-types:   0 → ≤0
 
 PATTERNS (language parser shared logic):
   _extract_declarations() in base.py — unified extraction for:
@@ -66,9 +56,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=3.9 → now CC̄=3.5
-  2026-04-18: Sprint 1 complete — 3 import errors fixed
-  2026-04-18: Sprint 2 complete — 6 duplications removed (~97L saved)
-  2026-04-18: Sprint 3 complete — 6 high-CC functions reduced:
-    - cmd_adopt: 23→8, scan_deploy: 20→8, _render_interface: 17→8
-    - _map_interface: 17→9, _extract_taskfile_workflows: 16→9, normalize_sql_type: 16→3
+  prev CC̄=3.9) → now CC̄=3.7

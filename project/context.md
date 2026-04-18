@@ -4,12 +4,12 @@
 
 - **Project**: /home/tom/github/oqlos/doql
 - **Primary Language**: python
-- **Languages**: python: 116, shell: 3, javascript: 3, typescript: 1
+- **Languages**: python: 117, shell: 3, javascript: 3, typescript: 1
 - **Analysis Mode**: static
-- **Total Functions**: 472
+- **Total Functions**: 498
 - **Total Classes**: 27
-- **Modules**: 123
-- **Entry Points**: 146
+- **Modules**: 124
+- **Entry Points**: 152
 
 ## Architecture by Module
 
@@ -21,6 +21,14 @@
 - **Functions**: 22
 - **File**: `yaml_importer.py`
 
+### doql.parsers.css_mappers
+- **Functions**: 19
+- **File**: `css_mappers.py`
+
+### doql.exporters.css.renderers
+- **Functions**: 17
+- **File**: `renderers.py`
+
 ### doql.cli.commands.workspace
 - **Functions**: 17
 - **Classes**: 1
@@ -30,10 +38,6 @@
 - **Functions**: 15
 - **File**: `pyodide-bridge.js`
 
-### doql.exporters.css.renderers
-- **Functions**: 15
-- **File**: `renderers.py`
-
 ### doql.adopt.scanner.interfaces
 - **Functions**: 14
 - **File**: `interfaces.py`
@@ -41,10 +45,6 @@
 ### doql.parsers.extractors
 - **Functions**: 14
 - **File**: `extractors.py`
-
-### doql.parsers.css_mappers
-- **Functions**: 14
-- **File**: `css_mappers.py`
 
 ### doql.lsp_server
 - **Functions**: 13
@@ -54,6 +54,10 @@
 - **Functions**: 12
 - **Classes**: 2
 - **File**: `doctor.py`
+
+### doql.exporters.markdown.writers
+- **Functions**: 11
+- **File**: `writers.py`
 
 ### doql.generators.integrations_gen
 - **Functions**: 11
@@ -67,9 +71,9 @@
 - **Functions**: 10
 - **File**: `plan.py`
 
-### doql.exporters.markdown.writers
+### doql.parsers.validators
 - **Functions**: 10
-- **File**: `writers.py`
+- **File**: `validators.py`
 
 ### playground.app
 - **Functions**: 9
@@ -79,9 +83,9 @@
 - **Functions**: 9
 - **File**: `__init__.py`
 
-### doql.parsers.validators
-- **Functions**: 9
-- **File**: `validators.py`
+### doql.exporters.markdown.sections
+- **Functions**: 8
+- **File**: `sections.py`
 
 ### doql.generators.web_gen
 - **Functions**: 8
@@ -91,17 +95,9 @@
 - **Functions**: 8
 - **File**: `mobile_gen.py`
 
-### doql.adopt.scanner.utils
-- **Functions**: 8
-- **File**: `utils.py`
-
 ## Key Entry Points
 
 Main execution flows into the system:
-
-### doql.cli.commands.adopt.cmd_adopt
-> Scan *target* directory, produce app.doql.css.
-- **Calls**: None.resolve, print, doql.adopt.scanner.scan_project, len, len, len, len, len
 
 ### doql.cli.commands.workspace._cmd_list
 - **Calls**: None.resolve, doql.cli.commands.workspace._discover_local, doql.cli.commands.workspace._print, root.exists, doql.cli.commands.workspace._print, doql.cli.commands.workspace._print, Table, table.add_column
@@ -114,13 +110,13 @@ Main execution flows into the system:
 > Selective rebuild — only regenerate sections that changed since last build.
 - **Calls**: doql.cli.context.build_context, doql.cli.context.load_spec, doql.cli.lockfile.read_lockfile, doql.cli.lockfile.spec_section_hashes, doql.cli.lockfile.diff_sections, doql.cli.sync.determine_regeneration_set, print, print
 
-### doql.generators.desktop_gen.generate
-> Generate desktop (Tauri) layer files into *out* directory.
-- **Calls**: next, None.write_text, None.write_text, None.write_text, None.write_text, None.write_text, print, print
-
 ### doql.cli.commands.workspace._cmd_run
 > Run `doql <action>` in each project with app.doql.css.
 - **Calls**: None.resolve, doql.cli.commands.workspace._discover_local, doql.cli.commands.workspace._print, enumerate, doql.cli.commands.workspace._print, re.compile, doql.cli.commands.workspace._print, doql.cli.commands.workspace._print
+
+### doql.generators.desktop_gen.generate
+> Generate desktop (Tauri) layer files into *out* directory.
+- **Calls**: next, None.write_text, None.write_text, None.write_text, None.write_text, None.write_text, print, print
 
 ### doql.cli.commands.init.cmd_init
 > Create new project from template.
@@ -197,6 +193,10 @@ and estimated file counts per i
 ### doql.parsers.registry._handle_data
 - **Calls**: doql.parsers.registry.register, None.strip, spec.data_sources.append, doql.parsers.extractors.extract_val, DataSource, header.split, doql.parsers.extractors.extract_val, doql.parsers.extractors.extract_val
 
+### doql.cli.commands.adopt.cmd_adopt
+> Scan *target* directory, produce app.doql.css.
+- **Calls**: None.resolve, print, doql.adopt.scanner.scan_project, doql.cli.commands.adopt._print_scan_summary, target.is_dir, print, output.exists, print
+
 ### doql.parsers.registry._handle_api_client
 - **Calls**: doql.parsers.registry.register, None.strip, doql.parsers.extractors.extract_val, spec.api_clients.append, ApiClient, header.split, doql.parsers.extractors.extract_val, doql.parsers.extractors.extract_val
 
@@ -206,6 +206,9 @@ and estimated file counts per i
 
 ### doql.lsp_server.completion
 - **Calls**: server.feature, ls.workspace.get_text_document, doql.lsp_server._parse_doc, lsp.CompletionList, lsp.CompletionOptions, items.append, items.append, lsp.CompletionItem
+
+### doql.exporters.markdown.sections._workflow_section
+- **Calls**: lines.append, None.join, doql.exporters.markdown.sections._h, lines.append, lines.append, lines.append, lines.append, enumerate
 
 ### doql.cli.commands.workspace._cmd_validate
 - **Calls**: doql.cli.commands.workspace._cmd_analyze, None.resolve, _tf_discover, doql.cli.commands.workspace._print, _tf_validate, None.expanduser, len, doql.cli.commands.workspace._print
@@ -218,38 +221,23 @@ and estimated file counts per i
 > Generate report scripts into *out* directory.
 - **Calls**: None.write_text, print, print, script.write_text, print, crontab_lines.append, None.write_text, print
 
-### doql.cli.commands.generate.cmd_generate
-> Generate a single document/artifact.
-
-The artifact name must match a DOCUMENT defined in the .doql file.
-- **Calls**: None.resolve, doql_parser.parse_file, next, print, print, print, print, print
-
 ## Process Flows
 
 Key execution flows identified:
 
-### Flow 1: cmd_adopt
-```
-cmd_adopt [doql.cli.commands.adopt]
-  └─ →> scan_project
-      └─ →> scan_metadata
-          └─> _parse_pyproject
-      └─ →> scan_databases
-```
-
-### Flow 2: _cmd_list
+### Flow 1: _cmd_list
 ```
 _cmd_list [doql.cli.commands.workspace]
   └─> _discover_local
   └─> _print
 ```
 
-### Flow 3: register_parser
+### Flow 2: register_parser
 ```
 register_parser [doql.cli.commands.workspace]
 ```
 
-### Flow 4: cmd_sync
+### Flow 3: cmd_sync
 ```
 cmd_sync [doql.cli.sync]
   └─ →> build_context
@@ -258,40 +246,45 @@ cmd_sync [doql.cli.sync]
   └─ →> read_lockfile
 ```
 
-### Flow 5: generate
-```
-generate [doql.generators.desktop_gen]
-```
-
-### Flow 6: _cmd_run
+### Flow 4: _cmd_run
 ```
 _cmd_run [doql.cli.commands.workspace]
   └─> _discover_local
   └─> _print
 ```
 
-### Flow 7: cmd_init
+### Flow 5: generate
+```
+generate [doql.generators.desktop_gen]
+```
+
+### Flow 6: cmd_init
 ```
 cmd_init [doql.cli.commands.init]
   └─ →> scaffold_from_template
 ```
 
-### Flow 8: cmd_run
+### Flow 7: cmd_run
 ```
 cmd_run [doql.cli.commands.run]
 ```
 
-### Flow 9: document_symbols
+### Flow 8: document_symbols
 ```
 document_symbols [doql.lsp_server]
   └─> _parse_doc
   └─> _find_line_col
 ```
 
-### Flow 10: cmd_export
+### Flow 9: cmd_export
 ```
 cmd_export [doql.cli.commands.export]
   └─ →> detect_doql_file
+```
+
+### Flow 10: cmd_doctor
+```
+cmd_doctor [doql.cli.commands.doctor]
 ```
 
 ## Key Classes
@@ -386,6 +379,10 @@ Returns:
 > Parse the .doql file and report errors.
 - **Output to**: report.add, doql_parser.parse_file, report.add, report.add, len
 
+### doql.cli.commands.adopt._validate_output_written
+> Check that output file was written successfully.
+- **Output to**: print, print, output.exists, output.stat
+
 ### doql.cli.commands.workspace._parse_doql
 - **Output to**: re.findall, re.findall, re.findall, re.findall, re.search
 
@@ -466,17 +463,9 @@ Examples:
 > Extract clean base type from type string.
 - **Output to**: re.split
 
-### doql.parsers.css_utils._parse_list
-> Parse '[a, b, c]' or 'a, b, c' into a list.
-- **Output to**: None.strip, None.strip, val.strip, val.split, v.strip
-
-### doql.parsers.css_utils._parse_selector
-> Parse a CSS-like selector into structured form.
-
-Examples:
-    "app" → type="app"
-    'entity[name="
-- **Output to**: None.split, ParsedSelector, re.match, re.finditer, selector.strip
+### doql.parsers._is_css_format
+> Check if a path uses one of the CSS-like DOQL formats.
+- **Output to**: path.name.lower, any, name.endswith
 
 ## Behavioral Patterns
 
@@ -495,7 +484,6 @@ Examples:
 Functions exposed as public API (no underscore prefix):
 
 - `doql.cli.main.create_parser` - 67 calls
-- `doql.cli.commands.adopt.cmd_adopt` - 41 calls
 - `doql.cli.commands.workspace.register_parser` - 30 calls
 - `doql.cli.sync.cmd_sync` - 23 calls
 - `doql.generators.desktop_gen.generate` - 23 calls
@@ -504,7 +492,6 @@ Functions exposed as public API (no underscore prefix):
 - `doql.cli.commands.run.cmd_run` - 22 calls
 - `doql.adopt.scanner.databases.scan_databases` - 22 calls
 - `doql.generators.mobile_gen.generate` - 21 calls
-- `doql.adopt.scanner.deploy.scan_deploy` - 21 calls
 - `doql.cli.lockfile.spec_section_hashes` - 19 calls
 - `doql.lsp_server.document_symbols` - 19 calls
 - `doql.cli.commands.export.cmd_export` - 19 calls
@@ -525,6 +512,7 @@ Functions exposed as public API (no underscore prefix):
 - `doql.generators.export_ts_sdk.run` - 14 calls
 - `doql.adopt.scanner.roles.scan_roles` - 14 calls
 - `doql.parsers.extractors.extract_entity_fields` - 14 calls
+- `doql.cli.commands.adopt.cmd_adopt` - 13 calls
 - `doql.lsp_server.completion` - 12 calls
 - `doql.generators.i18n_gen.generate` - 12 calls
 - `doql.generators.report_gen.generate` - 12 calls
@@ -534,6 +522,7 @@ Functions exposed as public API (no underscore prefix):
 - `doql.generators.api_gen.models.gen_models` - 11 calls
 - `doql.adopt.scanner.entities.scan_entities` - 11 calls
 - `doql.exporters.markdown.export_markdown` - 10 calls
+- `doql.generators.web_gen.generate` - 10 calls
 
 ## System Interactions
 
@@ -541,10 +530,6 @@ How components interact:
 
 ```mermaid
 graph TD
-    cmd_adopt --> resolve
-    cmd_adopt --> print
-    cmd_adopt --> scan_project
-    cmd_adopt --> len
     _cmd_list --> resolve
     _cmd_list --> _discover_local
     _cmd_list --> _print
@@ -558,12 +543,12 @@ graph TD
     cmd_sync --> read_lockfile
     cmd_sync --> spec_section_hashes
     cmd_sync --> diff_sections
-    generate --> next
-    generate --> write_text
     _cmd_run --> resolve
     _cmd_run --> _discover_local
     _cmd_run --> _print
     _cmd_run --> enumerate
+    generate --> next
+    generate --> write_text
     cmd_init --> getattr
     cmd_init --> Path
     cmd_init --> exists
@@ -571,6 +556,10 @@ graph TD
     cmd_init --> scaffold_from_templa
     cmd_run --> getattr
     cmd_run --> call
+    cmd_run --> resolve
+    generate --> mkdir
+    document_symbols --> feature
+    document_symbols --> get_text_document
 ```
 
 ## Reverse Engineering Guidelines

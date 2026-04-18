@@ -1,10 +1,9 @@
-# vallm batch | 291f | 174✓ 16⚠ 0✗ | 2026-04-18
-# POST-SPRINT-1: errors fixed: tomli imports (3), _shared module (2)
+# vallm batch | 293f | 173✓ 10⚠ 3✗ | 2026-04-18
 
 SUMMARY:
-  scanned: 291  passed: 174 (59.8%)  warnings: 16  errors: 0  unsupported: 101
+  scanned: 293  passed: 173 (59.0%)  warnings: 10  errors: 3  unsupported: 116
 
-WARNINGS[16]{path,score}:
+WARNINGS[10]{path,score}:
   vscode-doql/src/extension.ts,0.78
     issues[2]{rule,severity,message,line}:
       js.import.resolvable,warning,Module 'vscode' not found,2
@@ -23,36 +22,12 @@ WARNINGS[16]{path,score}:
     issues[2]{rule,severity,message,line}:
       complexity.cyclomatic,warning,test_api_boot_and_health has cyclomatic complexity 17 (max: 15),66
       complexity.cyclomatic,warning,test_build_produces_expected_targets has cyclomatic complexity 33 (max: 15),169
-  doql/adopt/scanner/deploy.py,0.97
-    issues[2]{rule,severity,message,line}:
-      complexity.cyclomatic,warning,scan_deploy has cyclomatic complexity 20 (max: 15),10
-      complexity.lizard_cc,warning,scan_deploy: CC=20 exceeds limit 15,10
-  doql/adopt/scanner/utils.py,0.97
-    issues[2]{rule,severity,message,line}:
-      complexity.cyclomatic,warning,normalize_sql_type has cyclomatic complexity 16 (max: 15),81
-      complexity.lizard_cc,warning,normalize_sql_type: CC=16 exceeds limit 15,81
-  doql/adopt/scanner/workflows.py,0.97
-    issues[2]{rule,severity,message,line}:
-      complexity.cyclomatic,warning,_extract_taskfile_workflows has cyclomatic complexity 16 (max: 15),112
-      complexity.lizard_cc,warning,_extract_taskfile_workflows: CC=16 exceeds limit 15,112
-  doql/cli/commands/adopt.py,0.97
-    issues[2]{rule,severity,message,line}:
-      complexity.cyclomatic,warning,cmd_adopt has cyclomatic complexity 23 (max: 15),9
-      complexity.lizard_cc,warning,cmd_adopt: CC=17 exceeds limit 15,9
-  doql/exporters/css/renderers.py,0.97
-    issues[2]{rule,severity,message,line}:
-      complexity.cyclomatic,warning,_render_interface has cyclomatic complexity 17 (max: 15),171
-      complexity.lizard_cc,warning,_render_interface: CC=17 exceeds limit 15,171
   doql/generators/mobile_gen.py,0.97
     issues[1]{rule,severity,message,line}:
       complexity.lizard_length,warning,_gen_style_css: 148 lines exceeds limit 100,250
   doql/generators/workflow_gen.py,0.97
     issues[1]{rule,severity,message,line}:
       complexity.lizard_length,warning,_gen_engine: 102 lines exceeds limit 100,19
-  doql/parsers/css_mappers.py,0.97
-    issues[2]{rule,severity,message,line}:
-      complexity.cyclomatic,warning,_map_interface has cyclomatic complexity 17 (max: 15),150
-      complexity.lizard_cc,warning,_map_interface: CC=17 exceeds limit 15,150
   plugins/doql-plugin-fleet/doql_plugin_fleet/device_registry.py,0.97
     issues[1]{rule,severity,message,line}:
       complexity.lizard_length,warning,_device_registry_module: 124 lines exceeds limit 100,7
@@ -66,15 +41,17 @@ WARNINGS[16]{path,score}:
     issues[1]{rule,severity,message,line}:
       complexity.maintainability,warning,Low maintainability index: 16.5 (threshold: 20),
 
-ERRORS[0]: None
-
-FIXED[2026-04-18]:
-  [✓] doql/adopt/scanner/interfaces.py:80,159 - Added tomli>=2.0 to pyproject.toml
-  [✓] doql/adopt/scanner/metadata.py:36 - Safe fallback import tomllib/tomli
-  [✓] plugins/doql-plugin-iso17025 - Converted _shared to doql_plugin_shared package
-      - Created plugins/doql-plugin-shared/pyproject.toml
-      - Moved plugins/_shared/ → plugins/doql-plugin-shared/doql_plugin_shared/
-      - Updated iso17025 imports and dependencies
+ERRORS[3]{path,score}:
+  plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py,0.86
+    issues[1]{rule,severity,message,line}:
+      python.import.resolvable,error,Module 'doql_plugin_shared' not found,16
+  doql/adopt/scanner/interfaces.py,0.88
+    issues[2]{rule,severity,message,line}:
+      python.import.resolvable,error,Module 'tomli' not found,80
+      python.import.resolvable,error,Module 'tomli' not found,159
+  doql/adopt/scanner/metadata.py,0.93
+    issues[1]{rule,severity,message,line}:
+      python.import.resolvable,error,Module 'tomli' not found,36
 
 UNSUPPORTED[4]{bucket,count}:
   *.md,40

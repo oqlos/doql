@@ -1,46 +1,40 @@
-# code2llm | 124f 13643L | python:116,shell:3,javascript:3,typescript:1 | 2026-04-18
-# CC̄=3.9 | critical:11/472 | dups:0 | cycles:0
+# code2llm | 125f 13871L | python:117,shell:3,javascript:3,typescript:1 | 2026-04-18
+# CC̄=3.7 | critical:5/498 | dups:0 | cycles:0
 
-HEALTH[11]:
-  ✅ CC    cmd_adopt CC=8 (was 23)  # REFACTORED: extracted _print_scan_summary, _print_item, _cleanup_empty_output, _validate_output_written
-  ✅ CC    _render_interface CC=8 (was 17)  # REFACTORED: extracted _build_interface_props, _build_page_props
-  🟡 CC    _cmd_list CC=15 (limit:15)  # PENDING: table formatting
-  🟡 CC    _cmd_run CC=15 (limit:15)  # PENDING: subprocess execution
-  ✅ CC    scan_deploy CC=8 (was 20)  # REFACTORED: extracted _detect_deployment_indicators, _determine_deploy_target, _apply_deploy_config_flags, _extract_containers_from_compose
-  🟡 CC    _extract_makefile_workflows CC=15 (limit:15)  # PENDING: extract _parse_target_body
-  ✅ CC    _extract_taskfile_workflows CC=9 (was 16)  # REFACTORED: extracted _build_taskfile_steps, _extract_taskfile_schedule
-  ✅ CC    normalize_sql_type CC=3 (was 16)  # REFACTORED: lookup table pattern (_SQL_TYPE_PATTERNS)
-  🟡 CC    scan_environments CC=15 (limit:15)  # PENDING: split env detection
-  🟡 CC    _extract_fields CC=15 (limit:15)  # PENDING: field type dispatch
-  ✅ CC    _map_interface CC=9 (was 17)  # REFACTORED: extracted _find_or_create_interface, _handle_interface_chain, _apply_interface_properties, _apply_nested_interface_children
+HEALTH[5]:
+  🟡 CC    _cmd_list CC=15 (limit:15)
+  🟡 CC    _cmd_run CC=15 (limit:15)
+  🟡 CC    _extract_makefile_workflows CC=15 (limit:15)
+  🟡 CC    scan_environments CC=15 (limit:15)
+  🟡 CC    _extract_fields CC=15 (limit:15)
 
 REFACTOR[1]:
-  1. split 11 high-CC methods  (CC>15)
+  1. split 5 high-CC methods  (CC>15)
 
-PIPELINES[133]:
-  [1] Src [generate]: generate
+PIPELINES[139]:
+  [1] Src [generate]: generate → _tenant_module
       PURITY: 100% pure
-  [2] Src [generate]: generate → _audit_log_module
+  [2] Src [generate]: generate
       PURITY: 100% pure
-  [3] Src [generate]: generate → _odoo_client_module
+  [3] Src [generate]: generate → _audit_log_module
       PURITY: 100% pure
   [4] Src [generate]: generate → generate_readme
       PURITY: 100% pure
-  [5] Src [generate]: generate
+  [5] Src [generate]: generate → _odoo_client_module
       PURITY: 100% pure
 
 LAYERS:
-  doql/                           CC̄=4.2    ←in:4  →out:4
+  doql/                           CC̄=3.9    ←in:4  →out:4
   │ !! workspace                  493L  1C   17m  CC=15     ←0
   │ mobile_gen                 462L  0C    8m  CC=5      ←1
+  │ css_mappers                367L  0C   19m  CC=9      ←1
   │ lsp_server                 364L  0C   13m  CC=14     ←0
   │ integrations_gen           336L  0C   11m  CC=8      ←0
   │ interfaces                 324L  0C   14m  CC=11     ←1
   │ doctor                     321L  2C   12m  CC=13     ←0
   │ infra_gen                  321L  0C    5m  CC=8      ←0
-  │ !! css_mappers                319L  0C   14m  CC=17     ←1
   │ workflow_gen               315L  0C    7m  CC=11     ←0
-  │ !! renderers                  283L  0C   15m  CC=17     ←1
+  │ renderers                  294L  0C   17m  CC=10     ←1
   │ yaml_importer              267L  0C   22m  CC=3      ←1
   │ registry                   267L  0C   24m  CC=6      ←1
   │ models                     219L  20C    0m  CC=0.0    ←0
@@ -48,32 +42,34 @@ LAYERS:
   │ extractors                 205L  0C   14m  CC=6      ←3
   │ __init__                   200L  0C    8m  CC=6      ←0
   │ document_gen               182L  0C    4m  CC=6      ←0
-  │ css_transformers           179L  0C    7m  CC=10     ←1
+  │ css_transformers           179L  0C    8m  CC=10     ←1
   │ __init__                   178L  0C    5m  CC=3      ←1
   │ !! entities                   171L  0C    5m  CC=15     ←1
+  │ validators                 169L  0C   10m  CC=6      ←0
   │ i18n_gen                   168L  0C    3m  CC=6      ←0
   │ pages                      163L  0C    3m  CC=13     ←1
   │ main                       159L  0C    2m  CC=1      ←0
   │ run                        157L  0C    4m  CC=12     ←0
+  │ !! workflows                  155L  0C    6m  CC=15     ←1
   │ alembic                    154L  0C    3m  CC=12     ←1
   │ auth                       154L  0C    1m  CC=7      ←1
   │ __init__                   153L  0C    5m  CC=6      ←4
   │ publish                    151L  0C    5m  CC=8      ←0
-  │ validators                 150L  0C    9m  CC=6      ←0
-  │ !! workflows                  144L  0C    4m  CC=16     ←1
   │ css_parser                 144L  0C    6m  CC=7      ←2
   │ report_gen                 142L  0C    2m  CC=9      ←0
   │ config                     122L  0C    6m  CC=1      ←1
+  │ sections                   121L  0C    8m  CC=9      ←2
   │ sync                       119L  0C    3m  CC=11     ←0
   │ plan                       115L  0C   10m  CC=4      ←0
   │ routes                     115L  0C    7m  CC=2      ←1
   │ ci_gen                     112L  0C    2m  CC=1      ←0
   │ pwa                        109L  0C    3m  CC=1      ←1
   │ __init__                   107L  0C    9m  CC=5      ←3
-  │ sections                   107L  0C    7m  CC=9      ←2
-  │ writers                    105L  0C   10m  CC=5      ←1
+  │ deploy                     107L  0C    8m  CC=5      ←1
+  │ writers                    101L  0C   11m  CC=5      ←1
   │ plugins                    101L  1C    4m  CC=8      ←0
-  │ !! utils                      100L  0C    8m  CC=16     ←5
+  │ utils                      100L  0C    8m  CC=5      ←5
+  │ adopt                       93L  0C    5m  CC=7      ←0
   │ lockfile                    88L  0C    4m  CC=12     ←2
   │ common                      84L  0C    5m  CC=6      ←5
   │ schemas                     83L  0C    5m  CC=10     ←1
@@ -83,11 +79,10 @@ LAYERS:
   │ main                        74L  0C    2m  CC=2      ←1
   │ parser                      74L  0C    0m  CC=0.0    ←0
   │ css_utils                   71L  2C    4m  CC=4      ←3
-  │ !! adopt                       68L  0C    1m  CC=23     ←0
   │ metadata                    68L  0C    4m  CC=6      ←1
+  │ codegen                     67L  0C    2m  CC=2      ←0
   │ export                      66L  0C    1m  CC=14     ←0
   │ context                     66L  1C    4m  CC=5      ←6
-  │ !! deploy                      63L  0C    1m  CC=20     ←1
   │ databases                   58L  0C    2m  CC=14     ←1
   │ __init__                    58L  0C    1m  CC=1      ←1
   │ core                        57L  0C    3m  CC=1      ←1
@@ -154,7 +149,7 @@ LAYERS:
   │ drift_monitor               78L  0C    1m  CC=1      ←0
   │ migration                   74L  0C    1m  CC=1      ←0
   │ ota                         72L  0C    1m  CC=1      ←1
-  │ __init__                    46L  0C    1m  CC=1      ←0
+  │ __init__                    39L  0C    1m  CC=1      ←0
   │ readme                      37L  0C    1m  CC=3      ←1
   │ base                        29L  0C    1m  CC=3      ←1
   │ __init__                    11L  0C    0m  CC=0.0    ←0
@@ -166,15 +161,15 @@ LAYERS:
   │
 
 COUPLING:
-                                                    doql.cli                doql.exporters                          doql               doql.generators                  doql.parsers                    doql.adopt               plugins._shared  plugins.doql-plugin-iso17025                doql.importers                    doql.utils
+                                                    doql.cli                doql.exporters                          doql               doql.generators                  doql.parsers                    doql.adopt  plugins.doql-plugin-iso17025    plugins.doql-plugin-shared                doql.importers                    doql.utils
                       doql.cli                            ──                            14                             4                             4                                                           2                                                                                         1                                !! fan-out
                 doql.exporters                           ←14                            ──                                                                                                                      ←1                                                                                                                       1  hub
                           doql                            ←4                                                          ──                                                           4                                                                                                                                                      
                doql.generators                            ←4                                                                                        ──                                                                                                                                                                                    
                   doql.parsers                                                                                        ←4                                                          ──                                                                                                                                                      
                     doql.adopt                            ←2                             1                                                                                                                      ──                                                                                                                        
-               plugins._shared                                                                                                                                                                                                                ──                            ←2                                                            
-  plugins.doql-plugin-iso17025                                                                                                                                                                                                                 2                            ──                                                            
+  plugins.doql-plugin-iso17025                                                                                                                                                                                                                ──                             2                                                            
+    plugins.doql-plugin-shared                                                                                                                                                                                                                ←2                            ──                                                            
                 doql.importers                            ←1                                                                                                                                                                                                                                              ──                              
                     doql.utils                                                          ←1                                                                                                                                                                                                                                              ──
   CYCLES: none

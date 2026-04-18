@@ -1,24 +1,23 @@
-# redup/duplication | 7 groups remaining | 121f 13347L | 2026-04-18
-# POST-SPRINT-2: Fixed 6 duplication groups, saved ~97 lines
+# redup/duplication | 12 groups | 122f 13571L | 2026-04-18
 
 SUMMARY:
-  files_scanned: 121
-  total_lines:   13250 (was 13347, saved 97)
-  dup_groups:    7 (was 13, reduced by 6)
-  dup_fragments: 32 (was 58)
-  saved_lines:   716 (was 813, recovered 97)
-  scan_ms:       5332
+  files_scanned: 122
+  total_lines:   13571
+  dup_groups:    12
+  dup_fragments: 54
+  saved_lines:   757
+  scan_ms:       5379
 
 HOTSPOTS[7] (files with most duplication):
-  plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py  dup=382L  groups=2  frags=5  (2.9%)
-  plugins/doql-plugin-erp/doql_plugin_erp/__init__.py  dup=317L  groups=2  frags=5  (2.4%)
+  plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py  dup=382L  groups=2  frags=5  (2.8%)
+  plugins/doql-plugin-erp/doql_plugin_erp/__init__.py  dup=317L  groups=2  frags=5  (2.3%)
   doql/generators/mobile_gen.py  dup=148L  groups=1  frags=1  (1.1%)
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/certificate.py  dup=129L  groups=1  frags=1  (1.0%)
   plugins/doql-plugin-fleet/doql_plugin_fleet/device_registry.py  dup=124L  groups=1  frags=1  (0.9%)
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/uncertainty.py  dup=120L  groups=1  frags=1  (0.9%)
   doql/generators/integrations_gen.py  dup=113L  groups=1  frags=3  (0.8%)
 
-DUPLICATES[13] (ranked by impact):
+DUPLICATES[12] (ranked by impact):
   [ea3eb19d82437e63] !! STRU  gen_alembic_ini  L=40 N=13 saved=480 sim=1.00
       doql/generators/api_gen/alembic.py:13-52  (gen_alembic_ini)
       doql/generators/web_gen/config.py:46-60  (_gen_vite_config)
@@ -57,22 +56,22 @@ DUPLICATES[13] (ranked by impact):
       plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py:133-251  (_e_signature_module)
       plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py:254-312  (_audit_middleware)
       plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py:315-366  (_migration_audit)
-  [8bb162faf94e98c8] ✅ FIXED _write_entities  L=6 N=5 saved=24 sim=1.00
-      # REFACTORED: Extracted _write_section() generic helper
-      # 5 functions consolidated into 1 generic + 5 one-line wrappers
-  [a7b12501b8c00a12] ✅ FIXED _resolve_less_vars  L=19 N=2 saved=19 sim=1.00
-      # REFACTORED: Merged into _resolve_vars(text, prefix) with @/$ prefixes
-  [14ee1b9613cf60b7] ✅ FIXED _map_template  L=14 N=2 saved=14 sim=1.00
-      # REFACTORED: Merged into _map_config_block() generic helper
-  [0bdb0413e924de28] ✅ FIXED _validate_document_templates  L=13 N=2 saved=13 sim=1.00
-      # REFACTORED: Merged into _validate_file_refs() generic helper
   [dcc2f8e70f6321a7]   STRU  _render_data_layer  L=10 N=2 saved=10 sim=1.00
-      # NOTE: 4 layer functions share pattern but have distinct purposes
-      # Kept separate for clarity, could merge with _render_layer(type)
-  [360046efac640a5c] ✅ FIXED run_report_generators  L=9 N=2 saved=9 sim=1.00
-      # REFACTORED: 4 functions merged into _run_conditional_generator() helper
-  [896ddc322c31f8ee] ✅ FIXED _document_section  L=9 N=2 saved=9 sim=1.00
-      # REFACTORED: Merged into _config_section() generic helper
+      doql/exporters/css/__init__.py:23-32  (_render_data_layer)
+      doql/exporters/css/__init__.py:45-54  (_render_infrastructure_layer)
+  [5f48ca70777b1005]   STRU  _map_template  L=10 N=2 saved=10 sim=1.00
+      doql/parsers/css_mappers.py:141-150  (_map_template)
+      doql/parsers/css_mappers.py:153-162  (_map_document)
+  [30f08c1670d767e9]   STRU  _document_section  L=7 N=2 saved=7 sim=1.00
+      doql/exporters/markdown/sections.py:106-112  (_document_section)
+      doql/exporters/markdown/sections.py:115-121  (_report_section)
+  [9c0032ea2b7c1d5e]   STRU  run_report_generators  L=3 N=3 saved=6 sim=1.00
+      doql/cli/build.py:86-88  (run_report_generators)
+      doql/cli/build.py:91-93  (run_i18n_generators)
+      doql/cli/build.py:102-104  (run_workflow_generators)
+  [785017c94366e6c6]   STRU  _validate_document_templates  L=6 N=2 saved=6 sim=1.00
+      doql/parsers/validators.py:91-96  (_validate_document_templates)
+      doql/parsers/validators.py:99-104  (_validate_template_files)
   [4e86b74b44179336]   STRU  export_markdown_file  L=4 N=2 saved=4 sim=1.00
       doql/exporters/markdown/__init__.py:37-40  (export_markdown_file)
       doql/exporters/yaml_exporter.py:33-36  (export_yaml_file)
@@ -82,48 +81,61 @@ DUPLICATES[13] (ranked by impact):
   [563e71404cb3cb69]   STRU  export_less  L=3 N=2 saved=3 sim=1.00
       doql/exporters/css/__init__.py:93-95  (export_less)
       doql/exporters/css/__init__.py:98-100  (export_sass)
+  [b1191467b99382f4]   STRU  _resolve_less_vars  L=3 N=2 saved=3 sim=1.00
+      doql/parsers/css_transformers.py:45-47  (_resolve_less_vars)
+      doql/parsers/css_transformers.py:50-52  (_resolve_sass_vars)
 
-REFACTOR[13] (ranked by priority):
-  # ✅ COMPLETED SPRINT 2: Fixed 6 duplication groups (items [4]-[10])
-  
-  [1] ◐ extract_function   → utils/gen_alembic_ini.py (HARD — Sprint 4)
+REFACTOR[12] (ranked by priority):
+  [1] ◐ extract_function   → utils/gen_alembic_ini.py
       WHY: 13 occurrences of 40-line block across 9 files — saves 480 lines
       FILES: doql/generators/api_gen/alembic.py, doql/generators/web_gen/config.py, doql/generators/web_gen/core.py, doql/generators/web_gen/pwa.py, plugins/doql-plugin-iso17025/doql_plugin_iso17025/certificate.py +4 more
-  [2] ◐ extract_module     → plugins/utils/_readme.py (HARD — Sprint 4)
+  [2] ◐ extract_module     → plugins/utils/_readme.py
       WHY: 3 occurrences of 58-line block across 3 files — saves 116 lines
       FILES: plugins/doql-plugin-erp/doql_plugin_erp/__init__.py, plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py, plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py
-  [3] ○ extract_function   → utils/_gen_build_rs.py (HARD — 19 files across 2 packages)
+  [3] ○ extract_function   → utils/_gen_build_rs.py
       WHY: 19 occurrences of 6-line block across 11 files — saves 108 lines
-      NOTE: Requires careful testing — deferred to Sprint 2.5 or Sprint 4
-
-  # ✅ COMPLETED (Sprint 2):
-  [4] ✅ writers.py: _write_section() extracted — saves 24L
-  [5] ✅ css_transformers.py: _resolve_vars() merged — saves 19L  
-  [6] ✅ css_mappers.py: _map_config_block() extracted — saves 14L
-  [7] ✅ validators.py: _validate_file_refs() extracted — saves 13L
-  [8] ⏸️  css/__init__.py: Layer functions kept separate (clarity > DRY)
-  [9] ✅ build.py: _run_conditional_generator() extracted — saves 9L
-  [10] ✅ sections.py: _config_section() extracted — saves 9L
-  [11] ○ extract_function   → doql/exporters/utils/export_markdown_file.py
+      FILES: doql/generators/desktop_gen.py, doql/generators/integrations_gen.py, doql/generators/mobile_gen.py, doql/generators/workflow_gen.py, plugins/doql-plugin-erp/doql_plugin_erp/__init__.py +6 more
+  [4] ○ extract_function   → doql/exporters/css/utils/_render_data_layer.py
+      WHY: 2 occurrences of 10-line block across 1 files — saves 10 lines
+      FILES: doql/exporters/css/__init__.py
+  [5] ○ extract_function   → doql/parsers/utils/_map_template.py
+      WHY: 2 occurrences of 10-line block across 1 files — saves 10 lines
+      FILES: doql/parsers/css_mappers.py
+  [6] ○ extract_function   → doql/exporters/markdown/utils/_document_section.py
+      WHY: 2 occurrences of 7-line block across 1 files — saves 7 lines
+      FILES: doql/exporters/markdown/sections.py
+  [7] ○ extract_function   → doql/cli/utils/run_report_generators.py
+      WHY: 3 occurrences of 3-line block across 1 files — saves 6 lines
+      FILES: doql/cli/build.py
+  [8] ○ extract_function   → doql/parsers/utils/_validate_document_templates.py
+      WHY: 2 occurrences of 6-line block across 1 files — saves 6 lines
+      FILES: doql/parsers/validators.py
+  [9] ○ extract_function   → doql/exporters/utils/export_markdown_file.py
       WHY: 2 occurrences of 4-line block across 2 files — saves 4 lines
       FILES: doql/exporters/markdown/__init__.py, doql/exporters/yaml_exporter.py
-  [12] ○ extract_function   → doql/parsers/utils/_parse_field_ref.py
+  [10] ○ extract_function   → doql/parsers/utils/_parse_field_ref.py
       WHY: 2 occurrences of 4-line block across 1 files — saves 4 lines
       FILES: doql/parsers/extractors.py
-  [13] ○ extract_function   → doql/exporters/css/utils/export_less.py
+  [11] ○ extract_function   → doql/exporters/css/utils/export_less.py
       WHY: 2 occurrences of 3-line block across 1 files — saves 3 lines
       FILES: doql/exporters/css/__init__.py
+  [12] ○ extract_function   → doql/parsers/utils/_resolve_less_vars.py
+      WHY: 2 occurrences of 3-line block across 1 files — saves 3 lines
+      FILES: doql/parsers/css_transformers.py
 
-QUICK_WINS[8] → ALL COMPLETED (Sprint 2):
-  ✅ [3] extract_function   saved=24L  → writers.py (inlined)
-  ✅ [4] extract_function   saved=19L  → css_transformers.py (merged)
-  ✅ [5] extract_function   saved=14L  → css_mappers.py (extracted)
-  ✅ [6] extract_function   saved=13L  → validators.py (extracted)
-  ✅ [7] extract_function   saved=10L  → css/__init__.py (kept as-is)
-  ✅ [8] extract_function   saved=9L  → build.py (extracted)
-  ✅ [9] extract_function   saved=9L  → sections.py (extracted)
-  
-  Total Sprint 2 savings: ~97 lines across 6 duplication groups
+QUICK_WINS[6] (low risk, high savings — do first):
+  [3] extract_function   saved=108L  → utils/_gen_build_rs.py
+      FILES: desktop_gen.py, integrations_gen.py, mobile_gen.py +8
+  [4] extract_function   saved=10L  → doql/exporters/css/utils/_render_data_layer.py
+      FILES: __init__.py
+  [5] extract_function   saved=10L  → doql/parsers/utils/_map_template.py
+      FILES: css_mappers.py
+  [6] extract_function   saved=7L  → doql/exporters/markdown/utils/_document_section.py
+      FILES: sections.py
+  [7] extract_function   saved=6L  → doql/cli/utils/run_report_generators.py
+      FILES: build.py
+  [8] extract_function   saved=6L  → doql/parsers/utils/_validate_document_templates.py
+      FILES: validators.py
 
 DEPENDENCY_RISK[2] (duplicates spanning multiple packages):
   gen_alembic_ini  packages=2  files=9
@@ -139,19 +151,19 @@ DEPENDENCY_RISK[2] (duplicates spanning multiple packages):
       doql/generators/workflow_gen.py
       +7 more
 
-EFFORT_ESTIMATE (total ≈ 64.6h):
+EFFORT_ESTIMATE (total ≈ 62.8h):
   hard   gen_alembic_ini                     saved=480L  ~2880min
   hard   _readme                             saved=116L  ~348min
   hard   _gen_build_rs                       saved=108L  ~432min
-  medium _write_entities                     saved=24L  ~48min
-  medium _resolve_less_vars                  saved=19L  ~38min
-  easy   _map_template                       saved=14L  ~28min
-  easy   _validate_document_templates        saved=13L  ~26min
   easy   _render_data_layer                  saved=10L  ~20min
-  easy   run_report_generators               saved=9L  ~18min
-  easy   _document_section                   saved=9L  ~18min
-  ... +3 more (~22min)
+  easy   _map_template                       saved=10L  ~20min
+  easy   _document_section                   saved=7L  ~14min
+  easy   run_report_generators               saved=6L  ~12min
+  easy   _validate_document_templates        saved=6L  ~12min
+  easy   export_markdown_file                saved=4L  ~8min
+  easy   _parse_field_ref                    saved=4L  ~8min
+  ... +2 more (~12min)
 
 METRICS-TARGET:
-  dup_groups:  13 → 0
-  saved_lines: 813 lines recoverable
+  dup_groups:  12 → 0
+  saved_lines: 757 lines recoverable

@@ -1,6 +1,6 @@
 app {
   name: "doql";
-  version: "0.0.1";
+  version: "0.0.2";
 }
 
 entity[name="Post"] {
@@ -171,15 +171,43 @@ workflow[name="build"] {
   step-1: run cmd=python -m build;
 }
 
-workflow[name="health"] {
-  trigger: "manual";
-  step-1: run cmd=docker compose ps;
-  step-2: run cmd=docker compose exec app echo "Health check passed";
-}
-
 workflow[name="clean"] {
   trigger: "manual";
   step-1: run cmd=rm -rf build/ dist/ *.egg-info;
+}
+
+workflow[name="doql:adopt"] {
+  trigger: "manual";
+  step-1: run cmd=python -m doql.cli adopt {{.PWD}} --output {{.DOQL_OUTPUT}};
+  step-2: run cmd=echo "✅ Project structure captured in {{.DOQL_OUTPUT}}";
+}
+
+workflow[name="doql:validate"] {
+  trigger: "manual";
+  step-1: run cmd=if [ ! -f "{{.DOQL_OUTPUT}}" ]; then
+  echo "❌ {{.DOQL_OUTPUT}} not found. Run: task doql:adopt"
+  exit 1
+fi;
+  step-2: run cmd=python -m doql.cli validate {{.DOQL_OUTPUT}};
+}
+
+workflow[name="doql:doctor"] {
+  trigger: "manual";
+  step-1: run cmd=python -m doql.cli doctor {{.PWD}};
+}
+
+workflow[name="doql:build"] {
+  trigger: "manual";
+  step-1: run cmd=if [ ! -f "{{.DOQL_OUTPUT}}" ]; then
+  echo "❌ {{.DOQL_OUTPUT}} not found. Run: task doql:adopt"
+  exit 1
+fi;
+  step-2: run cmd=python -m doql.cli build {{.DOQL_OUTPUT}} --out build/;
+}
+
+workflow[name="help"] {
+  trigger: "manual";
+  step-1: run cmd=task --list;
 }
 
 deploy {
@@ -189,16 +217,4 @@ deploy {
 environment[name="local"] {
   runtime: docker;
   env_file: ".env";
-}
-
-workflow[name="all"] {
-  trigger: "manual";
-  step-1: run cmd=taskfile run install;
-  step-2: run cmd=taskfile run lint;
-  step-3: run cmd=taskfile run test;
-}
-
-workflow[name="help"] {
-  trigger: "manual";
-  step-1: run cmd=taskfile list;
 }
