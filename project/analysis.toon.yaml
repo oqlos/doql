@@ -1,40 +1,42 @@
-# code2llm | 125f 13871L | python:117,shell:3,javascript:3,typescript:1 | 2026-04-18
-# CC̄=3.7 | critical:5/498 | dups:0 | cycles:0
+# code2llm | 125f 14041L | python:117,shell:3,javascript:3,typescript:1 | 2026-04-18
+# CC̄=3.7 | critical:6/498 | dups:0 | cycles:0
 
-HEALTH[5]:
+HEALTH[6]:
   🟡 CC    _cmd_list CC=15 (limit:15)
   🟡 CC    _cmd_run CC=15 (limit:15)
   🟡 CC    _extract_makefile_workflows CC=15 (limit:15)
-  🟡 CC    scan_environments CC=15 (limit:15)
+  🟡 CC    scan_environments CC=20 (limit:15)
   🟡 CC    _extract_fields CC=15 (limit:15)
+  🟡 CC    _map_workflow CC=16 (limit:15)
 
 REFACTOR[1]:
-  1. split 5 high-CC methods  (CC>15)
+  1. split 6 high-CC methods  (CC>15)
 
-PIPELINES[139]:
-  [1] Src [generate]: generate → _tenant_module
+PIPELINES[140]:
+  [1] Src [generate]: generate → _audit_log_module
       PURITY: 100% pure
-  [2] Src [generate]: generate
+  [2] Src [generate]: generate → _odoo_client_module
       PURITY: 100% pure
-  [3] Src [generate]: generate → _audit_log_module
+  [3] Src [generate]: generate
       PURITY: 100% pure
   [4] Src [generate]: generate → generate_readme
       PURITY: 100% pure
-  [5] Src [generate]: generate → _odoo_client_module
+  [5] Src [generate]: generate
       PURITY: 100% pure
 
 LAYERS:
-  doql/                           CC̄=3.9    ←in:4  →out:4
+  doql/                           CC̄=4.0    ←in:4  →out:4
   │ !! workspace                  493L  1C   17m  CC=15     ←0
   │ mobile_gen                 462L  0C    8m  CC=5      ←1
-  │ css_mappers                367L  0C   19m  CC=9      ←1
+  │ !! css_mappers                399L  0C   19m  CC=16     ←1
   │ lsp_server                 364L  0C   13m  CC=14     ←0
   │ integrations_gen           336L  0C   11m  CC=8      ←0
   │ interfaces                 324L  0C   14m  CC=11     ←1
   │ doctor                     321L  2C   12m  CC=13     ←0
   │ infra_gen                  321L  0C    5m  CC=8      ←0
   │ workflow_gen               315L  0C    7m  CC=11     ←0
-  │ renderers                  294L  0C   17m  CC=10     ←1
+  │ renderers                  296L  0C   17m  CC=10     ←1
+  │ css_transformers           268L  0C    8m  CC=12     ←1
   │ yaml_importer              267L  0C   22m  CC=3      ←1
   │ registry                   267L  0C   24m  CC=6      ←1
   │ models                     219L  20C    0m  CC=0.0    ←0
@@ -42,7 +44,6 @@ LAYERS:
   │ extractors                 205L  0C   14m  CC=6      ←3
   │ __init__                   200L  0C    8m  CC=6      ←0
   │ document_gen               182L  0C    4m  CC=6      ←0
-  │ css_transformers           179L  0C    8m  CC=10     ←1
   │ __init__                   178L  0C    5m  CC=3      ←1
   │ !! entities                   171L  0C    5m  CC=15     ←1
   │ validators                 169L  0C   10m  CC=6      ←0
@@ -59,6 +60,7 @@ LAYERS:
   │ report_gen                 142L  0C    2m  CC=9      ←0
   │ config                     122L  0C    6m  CC=1      ←1
   │ sections                   121L  0C    8m  CC=9      ←2
+  │ css_tokenizer              120L  0C    2m  CC=14     ←1
   │ sync                       119L  0C    3m  CC=11     ←0
   │ plan                       115L  0C   10m  CC=4      ←0
   │ routes                     115L  0C    7m  CC=2      ←1
@@ -74,7 +76,6 @@ LAYERS:
   │ common                      84L  0C    5m  CC=6      ←5
   │ schemas                     83L  0C    5m  CC=10     ←1
   │ models                      82L  0C    2m  CC=10     ←1
-  │ css_tokenizer               80L  0C    2m  CC=12     ←1
   │ components                  76L  0C    1m  CC=2      ←1
   │ main                        74L  0C    2m  CC=2      ←1
   │ parser                      74L  0C    0m  CC=0.0    ←0
@@ -83,11 +84,11 @@ LAYERS:
   │ codegen                     67L  0C    2m  CC=2      ←0
   │ export                      66L  0C    1m  CC=14     ←0
   │ context                     66L  1C    4m  CC=5      ←6
+  │ !! environments                59L  0C    1m  CC=20     ←1
   │ databases                   58L  0C    2m  CC=14     ←1
   │ __init__                    58L  0C    1m  CC=1      ←1
   │ core                        57L  0C    3m  CC=1      ←1
   │ __init__                    53L  0C    0m  CC=0.0    ←0
-  │ !! environments                52L  0C    1m  CC=15     ←1
   │ blocks                      50L  0C    2m  CC=4      ←1
   │ deploy                      48L  0C    2m  CC=6      ←0
   │ validate                    45L  0C    1m  CC=12     ←0

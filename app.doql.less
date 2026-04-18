@@ -1,103 +1,296 @@
 // LESS format — define @variables here as needed
+// doql showcase app combining all example domains
+
+@framework: react;
+@auth: jwt;
 
 app {
   name: "doql";
   version: "0.0.2";
+  domain: env.DOMAIN;
+  languages: en, pl;
 }
 
-entity[name="Post"] {
+// ── Blog CMS ──
 
+entity[name="Post"] {
+  id: uuid! auto;
+  title: string!;
+  slug: string! unique;
+  content: text!;
+  excerpt: text;
+  author: ref(Author)!;
+  category: ref(Category);
+  tags: json;
+  featured_image: string;
+  published_at: datetime;
+  created: datetime auto;
+  updated: datetime auto;
 }
 
 entity[name="Author"] {
-
+  id: uuid! auto;
+  name: string!;
+  email: string! unique;
+  bio: text;
+  avatar: string;
+  created: datetime auto;
 }
 
 entity[name="Category"] {
-
+  id: uuid! auto;
+  name: string! unique;
+  slug: string! unique;
+  description: text;
+  parent: ref(Category);
+  sort_order: int default=0;
 }
 
 entity[name="Comment"] {
-
+  id: uuid! auto;
+  post: ref(Post)!;
+  author_name: string!;
+  author_email: string!;
+  content: text!;
+  approved: bool default=false;
+  parent: ref(Comment);
+  created: datetime auto;
 }
 
 entity[name="MediaFile"] {
-
+  id: uuid! auto;
+  filename: string!;
+  mime_type: string!;
+  size: int!;
+  url: string!;
+  alt_text: string;
+  uploaded_by: ref(Author);
+  created: datetime auto;
 }
 
-entity[name="Node"] {
+// ── IoT Fleet ──
 
+entity[name="Node"] {
+  id: uuid! auto;
+  hostname: string! unique;
+  location: geo;
+  tags: [string];
+  hardware_type: enum["rpi4", "rpi5", "jetson_nano", "x86"];
+  firmware_version: string;
+  last_seen: datetime;
+  status: enum[online, offline, updating, error] computed;
+  peripherals: json;
 }
 
 entity[name="Telemetry"] {
-
+  node: ref(Node);
+  timestamp: datetime auto;
+  cpu_load: float;
+  memory_used: float;
+  temperature_c: float;
+  data: json;
 }
 
 entity[name="Deployment"] {
-
+  name: string!;
+  scenario: oql;
+  target_filter: string;
+  schedule: cron;
+  last_run: datetime;
+  next_run: datetime computed;
+  success_rate: float computed;
 }
 
 entity[name="FirmwareBuild"] {
-
+  version: string!;
+  release_notes: text;
+  image_url: url;
+  signature: string;
+  targets: [string];
+  tested: bool;
 }
 
 entity[name="OTAUpdate"] {
-
+  firmware: ref(FirmwareBuild);
+  targets: [Node];
+  status: enum[pending, rolling, paused, completed, failed];
+  started_at: datetime;
+  progress: float computed;
 }
 
-entity[name="Notebook"] {
+// ── Notes App ──
 
+entity[name="Notebook"] {
+  id: uuid! auto;
+  name: string!;
+  color: string default=sky;
+  created: datetime auto;
 }
 
 entity[name="Note"] {
-
+  id: uuid! auto;
+  notebook: ref(Notebook);
+  title: string!;
+  body: text;
+  pinned: bool default=false;
+  created: datetime auto;
+  updated: datetime auto;
 }
 
 entity[name="Tag"] {
-
+  id: uuid! auto;
+  name: string! unique;
+  color: string default=slate;
 }
+
+// ── Todo PWA ──
 
 entity[name="Todo"] {
-
+  id: uuid! auto;
+  title: string!;
+  done: bool default=false;
+  priority: enum[low, normal, high] default=normal;
+  due: date;
+  created: datetime auto;
 }
 
-entity[name="Product"] {
+// ── E-Commerce Shop ──
 
+entity[name="Product"] {
+  id: uuid! auto;
+  name: string!;
+  slug: string! unique;
+  description: text;
+  price: decimal!;
+  currency: enum[USD, EUR, PLN] default=EUR;
+  stock: int default=0;
+  category: string;
+  images: json;
+  active: bool default=true;
+  created: datetime auto;
+  updated: datetime auto;
 }
 
 entity[name="Customer"] {
-
+  id: uuid! auto;
+  email: string! unique;
+  name: string!;
+  phone: string;
+  address: json;
+  created: datetime auto;
 }
 
 entity[name="Order"] {
-
+  id: uuid! auto;
+  customer: ref(Customer)!;
+  status: enum[pending, paid, shipped, delivered, cancelled] default=pending;
+  items: json!;
+  total: decimal!;
+  currency: enum[USD, EUR, PLN];
+  shipping_address: json;
+  payment_method: string;
+  paid_at: datetime;
+  shipped_at: datetime;
+  created: datetime auto;
 }
 
 entity[name="CartItem"] {
-
+  id: uuid! auto;
+  session_id: string!;
+  product: ref(Product)!;
+  quantity: int default=1;
+  created: datetime auto;
 }
 
-entity[name="Operator"] {
+// ── Calibration Lab ──
 
+entity[name="Operator"] {
+  id: uuid! auto;
+  name: string!;
+  email: email unique;
+  qualification: enum[technician, metrologist, quality_manager];
+  active: bool default=true;
 }
 
 entity[name="Instrument"] {
-
+  serial: string! unique;
+  manufacturer: string!;
+  model: string!;
+  category: enum[scale, pressure_gauge, thermometer, multimeter, torque];
+  range_min: decimal(20,6);
+  range_max: decimal(20,6);
+  unit: string!;
+  uncertainty_class: string;
+  owner_organization: string;
+  last_calibration: date;
+  next_calibration: date computed;
+  certificate_valid_until: date;
 }
 
 entity[name="ReferenceStandard"] {
-
+  instrument: ref(Instrument);
+  traceability_chain: text!;
+  uncertainty_budget: json;
+  certificate_pdf: pdf!;
+  valid_until: date!;
 }
 
 entity[name="Calibration"] {
-
+  id: uuid! auto;
+  instrument: ref(Instrument);
+  performed_by: ref(Operator);
+  reviewed_by: ref(Operator);
+  reference_used: ref(ReferenceStandard);
+  scenario: oql;
+  date: datetime auto;
+  measurements: json;
+  uncertainty_calculation: json;
+  result: enum[pass, fail, out_of_tolerance];
+  certificate_pdf: pdf computed;
+  certificate_number: string auto;
 }
 
 entity[name="CalibrationOrder"] {
-
+  customer: ref(Customer);
+  instruments: [Instrument];
+  received_date: date;
+  due_date: date;
+  priority: enum[normal, rush, urgent];
+  status: enum[received, in_progress, review, ready, shipped];
+  total_price: decimal(10,2);
+  invoice_number: string;
 }
 
+// ── CRM Contacts ──
+
 entity[name="Contact"] {
+  id: uuid! auto;
+  first_name: string!;
+  last_name: string!;
+  email: string unique;
+  phone: string;
+  company: ref(Company);
+  position: string;
+  tags: json;
+  notes: text;
+  source: enum[web, referral, cold, event] default=web;
+  created: datetime auto;
+  updated: datetime auto;
+}
+
+interface[type="api"] {
+  type: rest;
+  auth-method: @auth;
+}
+
+interface[type="web"] {
+  type: spa;
+  framework: @framework;
+}
+
+deploy {
+  target: docker-compose;
+}
 
 }
 

@@ -147,22 +147,19 @@ def _print(msg: str) -> None:
         print(re.sub(r'\[[^\]]+\]', '', msg))
 
 
-def _cmd_list(args: argparse.Namespace) -> int:
-    root = Path(args.root).expanduser().resolve()
-    if not root.exists():
-        _print(f"[red]Error:[/] Path not found: {root}")
-        return 1
-
-    projects = _discover_local(root, max_depth=args.depth)
-    if args.doql_only:
+def _filter_projects(
+    projects: list[DoqlProject], doql_only: bool, has_workflow: str | None
+) -> list[DoqlProject]:
+    """Apply filters to discovered projects."""
+    if doql_only:
         projects = [p for p in projects if p.has_doql]
-    if args.has_workflow:
-        projects = [p for p in projects if args.has_workflow in p.doql_workflows]
+    if has_workflow:
+        projects = [p for p in projects if has_workflow in p.doql_workflows]
+    return projects
 
-    if not projects:
-        _print("[yellow]No projects match the filters.[/]")
-        return 0
 
+def _print_project_table(projects: list[DoqlProject], root: Path) -> None:
+    """Print projects as rich table or plain text."""
     if _HAS_RICH:
         table = Table(title=f"doql projects in {root}", box=box.ROUNDED)
         table.add_column("#", style="dim", width=4)
@@ -186,6 +183,22 @@ def _cmd_list(args: argparse.Namespace) -> int:
     else:
         for p in projects:
             print(f"{p.name}\t{p.path}\tworkflows={len(p.doql_workflows)}")
+
+
+def _cmd_list(args: argparse.Namespace) -> int:
+    root = Path(args.root).expanduser().resolve()
+    if not root.exists():
+        _print(f"[red]Error:[/] Path not found: {root}")
+        return 1
+
+    projects = _discover_local(root, max_depth=args.depth)
+    projects = _filter_projects(projects, args.doql_only, args.has_workflow)
+
+    if not projects:
+        _print("[yellow]No projects match the filters.[/]")
+        return 0
+
+    _print_project_table(projects, root)
 
     _print(f"[dim]Scanned:[/] {root}  [bold]{len(projects)}[/] projects  "
            f"[cyan]{sum(1 for p in projects if p.has_doql)}[/] with app.doql.css")
@@ -379,15 +392,61 @@ def _cmd_fix(args: argparse.Namespace) -> int:
     return 0
 
 
+def _select_run_projects(
+    root: Path, max_depth: int, name_pattern: str | None
+) -> list[DoqlProject]:
+    """Discover and filter projects for run command."""
+    projects = _discover_local(root, max_depth=max_depth)
+    projects = [p for p in projects if p.has_doql]
+    if name_pattern:
+        pattern = re.compile(name_pattern, re.IGNORECASE)
+        projects = [p for p in projects if pattern.search(p.name)]
+    return projects
+
+
+def _execute_single_project(
+    project: DoqlProject, action: str, timeout: int, index: int, total: int
+) -> tuple[bool, int]:
+    """Execute doql action on a single project. Returns (success, should_break)."""
+    _print(f"\n[bold cyan]━━━ [{index}/{total}] {project.name} ━━━[/]")
+    try:
+        result = subprocess.run(
+            ["doql", action],
+            cwd=str(project.path),
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+        )
+    except subprocess.TimeoutExpired:
+        _print(f"[red]  ✗ TIMEOUT after {timeout}s[/]")
+        return False, False
+
+    if result.returncode == 0:
+        _print("[green]  ✓ OK[/]")
+        return True, False
+    else:
+        _print(f"[red]  ✗ FAILED (rc={result.returncode})[/]")
+        for line in (result.stderr or "").strip().splitlines()[-3:]:
+            _print(f"[red]    {line}[/]")
+        return False, False
+
+
+def _print_dry_run_commands(projects: list[DoqlProject], action: str) -> None:
+    """Print dry-run preview of commands."""
+    for p in projects:
+        _print(f"  cd {p.path} && doql {action}")
+
+
+def _print_run_summary(success: int, total: int) -> int:
+    """Print run summary and return exit code."""
+    _print(f"\n[bold]Summary: [green]{success}[/]/{total}[/]")
+    return 0 if success == total else 1
+
+
 def _cmd_run(args: argparse.Namespace) -> int:
     """Run `doql <action>` in each project with app.doql.css."""
     root = Path(args.root).expanduser().resolve()
-    projects = _discover_local(root, max_depth=args.depth)
-    projects = [p for p in projects if p.has_doql]
-
-    if args.name:
-        pattern = re.compile(args.name, re.IGNORECASE)
-        projects = [p for p in projects if pattern.search(p.name)]
+    projects = _select_run_projects(root, args.depth, args.name)
 
     if not projects:
         _print("[yellow]No projects with app.doql.css match the filters[/]")
@@ -396,32 +455,18 @@ def _cmd_run(args: argparse.Namespace) -> int:
     _print(f"[bold]Running 'doql {args.action}' in {len(projects)} project(s)[/]")
 
     if args.dry_run:
-        for p in projects:
-            _print(f"  cd {p.path} && doql {args.action}")
+        _print_dry_run_commands(projects, args.action)
         return 0
 
     success = 0
     for i, p in enumerate(projects, 1):
-        _print(f"\n[bold cyan]━━━ [{i}/{len(projects)}] {p.name} ━━━[/]")
-        result = subprocess.run(
-            ["doql", args.action],
-            cwd=str(p.path),
-            capture_output=True,
-            text=True,
-            timeout=args.timeout,
-        )
-        if result.returncode == 0:
-            _print("[green]  ✓ OK[/]")
+        ok, _ = _execute_single_project(p, args.action, args.timeout, i, len(projects))
+        if ok:
             success += 1
-        else:
-            _print(f"[red]  ✗ FAILED (rc={result.returncode})[/]")
-            for line in (result.stderr or '').strip().splitlines()[-3:]:
-                _print(f"[red]    {line}[/]")
-            if args.fail_fast:
-                break
+        elif args.fail_fast:
+            break
 
-    _print(f"\n[bold]Summary: [green]{success}[/]/{len(projects)}[/]")
-    return 0 if success == len(projects) else 1
+    return _print_run_summary(success, len(projects))
 
 
 def cmd_workspace(args: argparse.Namespace) -> int:

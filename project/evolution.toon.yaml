@@ -1,34 +1,38 @@
 # code2llm/evolution | 498 func | 107f | 2026-04-18
 
-NEXT[5] (ranked by impact):
-  [1] !  SPLIT-FUNC      _extract_makefile_workflows  CC=15  fan=17
+NEXT[6] (ranked by impact):
+  [1] !  SPLIT-FUNC      scan_environments  CC=20  fan=17
+      WHY: CC=20 exceeds 15
+      EFFORT: ~1h  IMPACT: 340
+
+  [2] !  SPLIT-FUNC      _map_workflow  CC=16  fan=20
+      WHY: CC=16 exceeds 15
+      EFFORT: ~1h  IMPACT: 320
+
+  [3] !  SPLIT-FUNC      _extract_makefile_workflows  CC=15  fan=17
       WHY: CC=15 exceeds 15
       EFFORT: ~1h  IMPACT: 255
 
-  [2] !  SPLIT-FUNC      _cmd_list  CC=15  fan=15
+  [4] !  SPLIT-FUNC      _cmd_list  CC=15  fan=15
       WHY: CC=15 exceeds 15
       EFFORT: ~1h  IMPACT: 225
 
-  [3] !  SPLIT-FUNC      _cmd_run  CC=15  fan=13
+  [5] !  SPLIT-FUNC      _cmd_run  CC=15  fan=13
       WHY: CC=15 exceeds 15
       EFFORT: ~1h  IMPACT: 195
 
-  [4] !  SPLIT-FUNC      _extract_fields  CC=15  fan=13
+  [6] !  SPLIT-FUNC      _extract_fields  CC=15  fan=13
       WHY: CC=15 exceeds 15
       EFFORT: ~1h  IMPACT: 195
-
-  [5] !  SPLIT-FUNC      scan_environments  CC=15  fan=10
-      WHY: CC=15 exceeds 15
-      EFFORT: ~1h  IMPACT: 150
 
 
 RISKS[0]: none
 
 METRICS-TARGET:
   CC̄:          3.7 → ≤2.6
-  max-CC:      15 → ≤7
+  max-CC:      20 → ≤10
   god-modules: 0 → 0
-  high-CC(≥15): 5 → ≤2
+  high-CC(≥15): 6 → ≤3
   hub-types:   0 → ≤0
 
 PATTERNS (language parser shared logic):
@@ -56,4 +60,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=3.9) → now CC̄=3.7
+  prev CC̄=3.7 → now CC̄=3.7

@@ -148,7 +148,7 @@ Content outside the markers is preserved when regenerating. Enable this with `sy
 
 ```
 doql/
-├── tree├── project├── doql/        ├── doql_plugin_shared/            ├── metrics        ├── doql_plugin_fleet/            ├── readme            ├── device_registry            ├── ota            ├── base            ├── migration            ├── tenant            ├── traceability            ├── certificate        ├── doql_plugin_iso17025/        ├── doql_plugin_gxp/            ├── migration        ├── doql_plugin_erp/    ├── serve            ├── drift_monitor            ├── uncertainty    ├── renderers    ├── pyodide-bridge        ├── extension    ├── app    ├── cli/    ├── parser    ├── importers/        ├── lockfile        ├── yaml_importer        ├── __main__    ├── lsp_server        ├── sync        ├── main            ├── render            ├── validate            ├── export            ├── plan            ├── query            ├── init            ├── doctor            ├── kiosk            ├── generate        ├── commands/            ├── adopt            ├── quadlet            ├── deploy            ├── import_cmd        ├── context            ├── run            ├── docs        ├── css_exporter    ├── exporters/        ├── yaml_exporter        ├── markdown_exporter            ├── format_convert            ├── publish            ├── helpers        ├── css/            ├── writers        ├── markdown/            ├── sections            ├── renderers        ├── docs_gen        ├── integrations_gen        ├── infra_gen        ├── ci_gen        ├── export_postman    ├── generators/        ├── document_gen        ├── desktop_gen        ├── export_ts_sdk        ├── deploy            ├── workspace        ├── i18n_gen        ├── api_gen/        ├── workflow_gen        ├── web_gen/            ├── codegen        ├── mobile_gen        ├── report_gen            ├── common            ├── pwa            ├── config            ├── components            ├── router            ├── core            ├── common            ├── pages            ├── alembic            ├── routes            ├── schemas            ├── auth            ├── database            ├── main        ├── clean    ├── utils/            ├── models    ├── adopt/        ├── naming        ├── scanner/        ├── emitter            ├── metadata            ├── databases            ├── integrations            ├── deploy            ├── interfaces            ├── workflows            ├── utils            ├── roles            ├── environments        ├── css_tokenizer        ├── blocks            ├── entities        ├── css_parser        ├── css_transformers        ├── extractors    ├── parsers/        ├── css_utils        ├── registry        ├── validators    ├── plugins        ├── css_mappers        ├── models```
+├── tree├── project├── doql/        ├── doql_plugin_shared/            ├── base        ├── doql_plugin_fleet/            ├── readme            ├── device_registry            ├── metrics            ├── ota            ├── migration            ├── tenant            ├── traceability            ├── certificate        ├── doql_plugin_erp/        ├── doql_plugin_gxp/            ├── migration        ├── doql_plugin_iso17025/    ├── serve            ├── uncertainty            ├── drift_monitor        ├── extension    ├── renderers    ├── app    ├── pyodide-bridge    ├── cli/    ├── importers/    ├── parser        ├── lockfile        ├── yaml_importer        ├── __main__    ├── lsp_server        ├── sync            ├── render        ├── main            ├── validate            ├── plan            ├── export            ├── query            ├── init            ├── doctor            ├── kiosk            ├── generate        ├── commands/            ├── adopt            ├── quadlet            ├── deploy            ├── import_cmd            ├── run        ├── context            ├── docs        ├── css_exporter    ├── exporters/        ├── yaml_exporter        ├── markdown_exporter            ├── publish            ├── format_convert            ├── helpers        ├── css/            ├── writers        ├── markdown/            ├── renderers            ├── sections        ├── docs_gen        ├── infra_gen        ├── integrations_gen        ├── ci_gen        ├── export_postman    ├── generators/        ├── document_gen            ├── workspace        ├── desktop_gen        ├── deploy        ├── export_ts_sdk        ├── i18n_gen        ├── workflow_gen        ├── api_gen/        ├── web_gen/        ├── mobile_gen            ├── codegen        ├── report_gen            ├── config            ├── pwa            ├── common            ├── components            ├── router            ├── core            ├── pages            ├── common            ├── alembic            ├── routes            ├── auth            ├── schemas            ├── database            ├── main        ├── clean            ├── models    ├── utils/    ├── adopt/        ├── naming        ├── scanner/        ├── emitter            ├── metadata            ├── databases            ├── integrations            ├── interfaces            ├── deploy            ├── workflows            ├── roles            ├── utils            ├── environments        ├── css_tokenizer            ├── entities        ├── css_parser        ├── blocks        ├── extractors        ├── css_transformers    ├── parsers/        ├── registry        ├── css_utils    ├── plugins        ├── validators        ├── css_mappers        ├── models```
 
 ## API Overview
 
@@ -185,17 +185,21 @@ doql/
 ### Functions
 
 - `usage()` — —
+- `plugin_generate(out, modules, readme_content)` — Common plugin generate() — iterates over modules dict and writes files.
 - `generate(spec, env_vars, out, project_root)` — Entry point called by doql's plugin runner.
 - `generate_readme(plugin_name, modules, description, usage_extra)` — Generate standard README.md content for a doql plugin.
-- `plugin_generate(out, modules, readme_content)` — Common plugin generate() — iterates over modules dict and writes files.
 - `generate()` — Generate traceability.py module content.
 - `generate()` — Generate certificate.py module content.
 - `generate(spec, env_vars, out, project_root)` — Entry point called by doql's plugin runner.
 - `generate(spec, env_vars, out, project_root)` — Entry point called by doql's plugin runner.
 - `generate()` — Generate migration.py module content.
 - `generate(spec, env_vars, out, project_root)` — Entry point called by doql's plugin runner.
-- `generate()` — Generate drift_monitor.py module content.
 - `generate()` — Generate uncertainty.py module content.
+- `generate()` — Generate drift_monitor.py module content.
+- `activate()` — —
+- `config()` — —
+- `serverPath()` — —
+- `deactivate()` — —
 - `escapeHtml()` — —
 - `renderFatal()` — —
 - `renderDiagnostics()` — —
@@ -206,6 +210,15 @@ doql/
 - `keys()` — —
 - `marker()` — —
 - `renderFiles()` — —
+- `TAB_NAMES()` — —
+- `activateTab()` — —
+- `tabFromHash()` — —
+- `name()` — —
+- `initial()` — —
+- `key()` — —
+- `updateStats()` — —
+- `lines()` — —
+- `chars()` — —
 - `pyodide()` — —
 - `buildFn()` — —
 - `debounceTimer()` — —
@@ -218,19 +231,6 @@ doql/
 - `src()` — —
 - `bootPyodide()` — —
 - `version()` — —
-- `activate()` — —
-- `config()` — —
-- `serverPath()` — —
-- `deactivate()` — —
-- `TAB_NAMES()` — —
-- `activateTab()` — —
-- `tabFromHash()` — —
-- `name()` — —
-- `initial()` — —
-- `key()` — —
-- `updateStats()` — —
-- `lines()` — —
-- `chars()` — —
 - `spec_section_hashes(spec, ctx)` — Compute per-section hashes for diff detection.
 - `read_lockfile(ctx)` — Read and parse lockfile if it exists.
 - `diff_sections(old_hashes, new_hashes)` — Return dict of changed/added/removed section keys.
@@ -249,12 +249,12 @@ doql/
 - `determine_regeneration_set(diff_result, spec)` — Determine which generators need to re-run based on diff.
 - `run_generators(regen, spec, env_vars, ctx)` — Run selected generators based on regen set. Returns count of generators run.
 - `cmd_sync(args)` — Selective rebuild — only regenerate sections that changed since last build.
+- `cmd_render(args)` — Render a template with DATA sources.
 - `create_parser()` — Create and configure the argument parser with all subcommands.
 - `main()` — Main entry point for doql CLI.
-- `cmd_render(args)` — Render a template with DATA sources.
 - `cmd_validate(args)` — Validate .doql file and .env configuration.
-- `cmd_export(args)` — Export project specification to various formats.
 - `cmd_plan(args)` — Show dry-run plan of what would be generated.
+- `cmd_export(args)` — Export project specification to various formats.
 - `cmd_query(args)` — Query a DATA source and output as JSON.
 - `cmd_init(args)` — Create new project from template.
 - `cmd_doctor(args)` — Run comprehensive project health check.
@@ -264,11 +264,11 @@ doql/
 - `cmd_quadlet(args)` — Manage Podman Quadlet containers.
 - `cmd_deploy(args)` — Deploy project to target environment.
 - `cmd_import(args)` — Import a YAML spec file and convert to DOQL format.
+- `cmd_run(args)` — Run project locally in dev mode.
 - `build_context(args)` — Create BuildContext from CLI arguments.
 - `load_spec(ctx)` — Parse spec and env, return (spec, env_vars).
 - `scaffold_from_template(template, target)` — Copy scaffold template to target directory.
 - `estimate_file_count(iface)` — Rough estimate of file count per interface type.
-- `cmd_run(args)` — Run project locally in dev mode.
 - `cmd_docs(args)` — Generate documentation site from .doql spec.
 - `spec_to_dict(spec)` — Convert DoqlSpec to a cleaned dictionary suitable for YAML/JSON.
 - `export_yaml(spec, out)` — Write DoqlSpec as YAML to the given stream.
@@ -281,50 +281,51 @@ doql/
 - `export_markdown(spec, out)` — Write DoqlSpec as Markdown documentation to the given stream.
 - `export_markdown_file(spec, path)` — Write DoqlSpec as Markdown to a file.
 - `generate(spec, out)` — Generate documentation files into *out* directory.
-- `generate(spec, env_vars, out)` — Generate integration service modules.
 - `generate(spec, env_vars, out)` — Generate infra layer files into *out* directory.
+- `generate(spec, env_vars, out)` — Generate integration service modules.
 - `generate(spec, env_vars, out)` — Generate CI configuration files.
 - `run(spec, out)` — Write Postman collection JSON to the given stream.
 - `generate(spec, env_vars, out, project_root)` — Generate document rendering pipeline into *out* directory.
-- `generate(spec, env_vars, out)` — Generate desktop (Tauri) layer files into *out* directory.
-- `run(spec, out)` — Write TypeScript SDK to the given stream.
-- `run(ctx, target_env)` — Deploy the built application.
 - `cmd_workspace(args)` — Dispatch to the right workspace subcommand.
 - `register_parser(sub)` — Register `workspace` subcommands on the main doql parser.
+- `generate(spec, env_vars, out)` — Generate desktop (Tauri) layer files into *out* directory.
+- `run(ctx, target_env)` — Deploy the built application.
+- `run(spec, out)` — Write TypeScript SDK to the given stream.
 - `generate(spec, env_vars, out)` — Generate i18n translation files.
 - `generate(spec, env_vars, out)` — Generate workflow engine modules.
+- `generate(spec, env_vars, out)` — Generate mobile PWA into *out* directory.
 - `write_code_block(content, path)` — Write a code block to file, creating parent directories if needed.
 - `generate_file_from_template(template_name, variables, output_path)` — Generate a file from a template with variable substitution.
-- `generate(spec, env_vars, out)` — Generate mobile PWA into *out* directory.
 - `generate(spec, env_vars, out)` — Generate report scripts into *out* directory.
+- `generate(spec, env_vars, out)` — Generate React + Vite + TailwindCSS frontend into *out* directory.
 - `sa_type(f)` — Get SQLAlchemy type for a field.
 - `py_type(f)` — Get Python/Pydantic type for a field.
 - `py_default(f)` — Get default value assignment for a field.
 - `safe_name(name)` — Return a valid Python identifier from *name*.
 - `snake(name)` — Convert CamelCase to snake_case.
-- `generate(spec, env_vars, out)` — Generate React + Vite + TailwindCSS frontend into *out* directory.
 - `gen_alembic_ini()` — Generate alembic.ini configuration file.
 - `gen_alembic_env()` — Generate alembic/env.py migration environment.
 - `gen_initial_migration(spec)` — Generate initial Alembic migration with all tables.
 - `gen_routes(spec)` — Generate CRUD routes for all entities in the spec.
-- `gen_schemas(spec)` — Generate Pydantic schemas from DoqlSpec using delegation pattern.
 - `gen_auth(spec)` — Generate JWT authentication module.
+- `gen_schemas(spec)` — Generate Pydantic schemas from DoqlSpec using delegation pattern.
 - `gen_database(spec, env_vars)` — Generate database.py with SQLAlchemy engine and session.
 - `gen_main(spec)` — Generate FastAPI main application file.
 - `gen_requirements(has_auth)` — Generate requirements.txt with pinned dependencies.
 - `gen_models(spec)` — Generate SQLAlchemy ORM models from DoqlSpec.
 - `snake(name)` — Convert CamelCase to snake_case (also handles spaces).
 - `kebab(name)` — Convert CamelCase or snake_case to kebab-case.
+- `emit_css(spec, output)` — Write *spec* as `app.doql.css` to *output* path.
 - `generate(spec, env_vars, out)` — Generate API layer files into *out* directory.
 - `export_openapi(spec, out)` — Write OpenAPI 3.1 JSON to the given stream.
-- `emit_css(spec, output)` — Write *spec* as `app.doql.css` to *output* path.
 - `scan_metadata(root, spec)` — Extract app name, version, domain from config files.
-- `scan_databases(root, spec)` — Detect database setup from docker-compose, .env, config files.
 - `scan_project(root)` — Scan *root* directory and return a reverse-engineered DoqlSpec.
+- `scan_databases(root, spec)` — Detect database setup from docker-compose, .env, config files.
 - `scan_integrations(root, spec)` — Detect external integrations from .env and code.
-- `scan_deploy(root, spec)` — Detect deployment infrastructure.
 - `scan_interfaces(root, spec)` — Detect service interfaces from project structure.
+- `scan_deploy(root, spec)` — Detect deployment infrastructure.
 - `scan_workflows(root, spec)` — Promote Makefile / Taskfile.yml targets to ``WORKFLOW`` blocks.
+- `scan_roles(root, spec)` — Detect roles from env vars or code patterns.
 - `load_yaml(path)` — Safely load a YAML file.
 - `find_compose(root)` — Find docker-compose file.
 - `find_dockerfiles(root)` — Find all Dockerfiles.
@@ -333,13 +334,12 @@ doql/
 - `normalize_python_type(t)` — Normalize Python type annotations to DOQL types.
 - `normalize_sqlalchemy_type(t)` — Normalize SQLAlchemy Column types to DOQL types.
 - `normalize_sql_type(t)` — Normalize SQL column types to DOQL types using pattern matching.
-- `scan_roles(root, spec)` — Detect roles from env vars or code patterns.
 - `scan_environments(root, spec)` — Detect environments from .env files and docker-compose variants.
-- `split_blocks(text)` — Split .doql text into (keyword, rest_of_header, body, start_line) blocks.
-- `apply_block(spec, keyword, header, body)` — Apply a single parsed block to *spec* using the registry dispatch.
 - `scan_entities(root, spec)` — Detect entities from Python models / schemas or SQL files.
 - `parse_css_file(path)` — Parse a .doql.css / .doql.less / .doql.sass file into DoqlSpec.
 - `parse_css_text(text, format)` — Parse CSS-like DOQL source text into a DoqlSpec.
+- `split_blocks(text)` — Split .doql text into (keyword, rest_of_header, body, start_line) blocks.
+- `apply_block(spec, keyword, header, body)` — Apply a single parsed block to *spec* using the registry dispatch.
 - `extract_val(body, key)` — Extract 'key: value' from an indented block body.
 - `extract_list(body, key)` — Extract 'key: [a, b, c]' or 'key: value' from body.
 - `extract_yaml_list(body, key)` — Extract YAML-style list items under a key: header.
@@ -353,9 +353,9 @@ doql/
 - `register(keyword)` — Decorator to register a block handler for a keyword.
 - `get_handler(keyword)` — Get the handler for a keyword, or None if not registered.
 - `list_registered()` — Return list of registered keywords.
-- `validate(spec, env_vars, project_root)` — Validate a parsed DoqlSpec against env vars and internal consistency.
 - `discover_plugins(project_root)` — Discover all plugins — entry-point + local.
 - `run_plugins(spec, env_vars, build_dir, project_root)` — Run all discovered plugins. Returns count of plugins executed.
+- `validate(spec, env_vars, project_root)` — Validate a parsed DoqlSpec against env vars and internal consistency.
 
 
 ## Project Structure
@@ -488,7 +488,7 @@ doql/
 ## Requirements
 
 - Python >= >=3.10
-- click >=8.1- pydantic >=2.0- pyyaml >=6.0- jinja2 >=3.1- rich >=13.0- httpx >=0.25- goal >=2.1.0- costs >=0.1.20- pfix >=0.1.60- tomli >=2.0; python_version < '3.11'
+- click >=8.1- pydantic >=2.0- pyyaml >=6.0- jinja2 >=3.1- rich >=13.0- httpx >=0.25- goal >=2.1.0- costs >=0.1.20- pfix >=0.1.60- tomli >=2.0; python_version < '3.11'- testql >=0.1.1
 
 ## Contributing
 

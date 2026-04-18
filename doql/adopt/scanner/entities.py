@@ -92,46 +92,50 @@ def _extract_entities_from_python(path: Path, spec: DoqlSpec, seen: set[str]) ->
         seen.add(name)
 
 
+def _extract_annotation_fields(
+    stripped: str, entity: Entity
+) -> EntityField | None:
+    """Extract field from type annotation pattern: field_name: type = ..."""
+    field_match = re.match(r"\s+(\w+)\s*:\s*([\w\[\], |]+)", stripped)
+    if not field_match:
+        return None
+    fname = field_match.group(1)
+    ftype = field_match.group(2).strip()
+    if fname.startswith("_") or fname in ("model_config", "Config"):
+        return None
+    ef = EntityField(name=fname, type=normalize_python_type(ftype))
+    ef.required = not ("Optional" in ftype or "None" in ftype)
+    return ef
+
+
+def _extract_sqlalchemy_fields(stripped: str, entity: Entity) -> None:
+    """Extract field from SQLAlchemy Column pattern: field_name = Column(...)"""
+    col_match = re.match(r"\s+(\w+)\s*=\s*Column\(\s*(\w+)", stripped)
+    if not col_match:
+        return
+    fname = col_match.group(1)
+    ftype = col_match.group(2)
+    if not fname.startswith("_"):
+        entity.fields.append(
+            EntityField(name=fname, type=normalize_sqlalchemy_type(ftype))
+        )
+
+
 def _extract_fields(text: str, start: int, entity: Entity) -> None:
     """Extract field definitions from a Python class body."""
-    # Get the indented block after the class definition
     lines = text[start:].split("\n")
     for line in lines[1:]:
         stripped = line.strip()
         if not stripped or stripped.startswith("#") or stripped.startswith('"""'):
             continue
-        # Check if we're still in the class body (indented)
         if line and not line[0].isspace():
             break
 
-        # Match: field_name: type = ...  or  field_name = Column(...)
-        field_match = re.match(
-            r'\s+(\w+)\s*:\s*([\w\[\], |]+)', stripped
-        )
-        if field_match:
-            fname = field_match.group(1)
-            ftype = field_match.group(2).strip()
-            if fname.startswith("_") or fname in ("model_config", "Config"):
-                continue
-            ef = EntityField(name=fname, type=normalize_python_type(ftype))
-            if "Optional" in ftype or "None" in ftype:
-                ef.required = False
-            else:
-                ef.required = True
-            entity.fields.append(ef)
-
-        # Match SQLAlchemy Column
-        col_match = re.match(
-            r'\s+(\w+)\s*=\s*Column\(\s*(\w+)', stripped
-        )
-        if col_match and not field_match:
-            fname = col_match.group(1)
-            ftype = col_match.group(2)
-            if not fname.startswith("_"):
-                entity.fields.append(EntityField(
-                    name=fname,
-                    type=normalize_sqlalchemy_type(ftype),
-                ))
+        annotation_field = _extract_annotation_fields(stripped, entity)
+        if annotation_field:
+            entity.fields.append(annotation_field)
+        else:
+            _extract_sqlalchemy_fields(stripped, entity)
 
 
 def _extract_entities_from_sql(path: Path, spec: DoqlSpec, seen: set[str]) -> None:

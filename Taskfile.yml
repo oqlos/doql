@@ -35,21 +35,6 @@ tasks:
     cmds:
       - pyqual report
 
-  test:
-    desc: Run pytest suite
-    cmds:
-      - pytest -q
-
-  lint:
-    desc: Run ruff lint check
-    cmds:
-      - ruff check .
-
-  fmt:
-    desc: Auto-format with ruff
-    cmds:
-      - ruff format .
-
   build:
     desc: Build wheel + sdist
     cmds:
@@ -70,12 +55,32 @@ tasks:
   # Doql Self-Integration (doql analyzing itself)
   # ─────────────────────────────────────────────────────────────────────────────
 
+  structure:
+    desc: Generate project structure (app.doql.css + app.doql.less)
+    cmds:
+      - |
+        echo "📁 Analyzing project structure..."
+        python3 -m doql.cli adopt {{.PWD}} --output app.doql.css --force
+        echo "🎨 Exporting to LESS format..."
+        doql export --format less -o {{.DOQL_OUTPUT}}
+        echo "✅ Structure generated: app.doql.css + {{.DOQL_OUTPUT}}"
+
   doql:adopt:
-    desc: Reverse-engineer doql project structure
+    desc: Reverse-engineer doql project structure (CSS only)
     cmds:
       - python3 -m doql.cli adopt {{.PWD}} --output app.doql.css --force
+      - echo "✅ Captured in app.doql.css"
+
+  doql:export:
+    desc: Export to LESS format
+    cmds:
+      - |
+        if [ ! -f "app.doql.css" ]; then
+          echo "❌ app.doql.css not found. Run: task structure"
+          exit 1
+        fi
       - doql export --format less -o {{.DOQL_OUTPUT}}
-      - echo "✅ Project structure captured in {{.DOQL_OUTPUT}}"
+      - echo "✅ Exported to {{.DOQL_OUTPUT}}"
 
   doql:validate:
     desc: Validate app.doql.less syntax

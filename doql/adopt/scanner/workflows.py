@@ -34,6 +34,48 @@ def scan_workflows(root: Path, spec: DoqlSpec) -> None:
             break
 
 
+# Makefile target regex - see _extract_makefile_workflows for details
+_TARGET_RE = re.compile(
+    r"^([a-zA-Z_][a-zA-Z0-9_-]*)[ \t]*:(?!=)[ \t]*([^\n]*)\n((?:\t[^\n]+\n?)*)",
+    re.MULTILINE,
+)
+
+
+def _is_valid_target(name: str, deps_raw: str, seen: set[str]) -> bool:
+    """Validate that a target name is acceptable (not skip target, not seen, not var)."""
+    if name.startswith(".") or name.lower() in _MAKEFILE_SKIP_TARGETS:
+        return False
+    if name in seen:
+        return False
+    if deps_raw.lstrip().startswith("="):
+        return False
+    return True
+
+
+def _build_steps_from_body(body: str, deps_raw: str) -> list[WorkflowStep]:
+    """Build workflow steps from Makefile command body and dependencies."""
+    steps: list[WorkflowStep] = []
+    for line in body.splitlines():
+        cmd = line.strip()
+        if cmd.startswith("@"):
+            cmd = cmd[1:]
+        if cmd:
+            steps.append(WorkflowStep(action="run", params={"cmd": cmd}))
+    # Promote prerequisites to explicit depend steps
+    deps = _parse_makefile_deps(deps_raw)
+    if deps and not steps:
+        for dep in deps:
+            steps.append(WorkflowStep(action="depend", params={"target": dep}))
+    return steps
+
+
+def _create_workflow(name: str, steps: list[WorkflowStep]) -> Workflow | None:
+    """Create a Workflow if steps exist, otherwise return None."""
+    if not steps:
+        return None
+    return Workflow(name=name, trigger="manual", steps=steps)
+
+
 def _extract_makefile_workflows(path: Path, spec: DoqlSpec) -> None:
     """Parse a Makefile into :class:`Workflow` entries."""
     try:
@@ -41,60 +83,21 @@ def _extract_makefile_workflows(path: Path, spec: DoqlSpec) -> None:
     except OSError:
         return
 
-    # Match:  target: [deps]\n\t<cmds...>
-    # ``[ \t]*`` — horizontal whitespace only. Using ``\s*`` here would
-    # consume the newline + tab and slurp the first command into the ``deps``
-    # capture group.
-    # ``(?!=)`` — negative lookahead: reject ``VAR := value`` / ``VAR ?= value``
-    # variable assignments, which otherwise match because ``:`` is part of the
-    # operator. Plain ``VAR = value`` is already rejected (no colon).
-    target_re = re.compile(
-        r"^([a-zA-Z_][a-zA-Z0-9_-]*)[ \t]*:(?!=)[ \t]*([^\n]*)\n((?:\t[^\n]+\n?)*)",
-        re.MULTILINE,
-    )
     seen: set[str] = {w.name for w in spec.workflows}
 
-    for match in target_re.finditer(content):
+    for match in _TARGET_RE.finditer(content):
         name = match.group(1)
         deps_raw = match.group(2)
         body = match.group(3)
-        if name.startswith(".") or name.lower() in _MAKEFILE_SKIP_TARGETS:
-            continue
-        if name in seen:
-            continue
 
-        # Second-line defence: reject any capture where the "deps" looks like
-        # a variable value (contains ``=`` before whitespace). Covers the
-        # odd ``VAR=value`` style some Makefiles use without a space.
-        if deps_raw.lstrip().startswith("="):
+        if not _is_valid_target(name, deps_raw, seen):
             continue
 
-        steps: list[WorkflowStep] = []
-        for line in body.splitlines():
-            cmd = line.strip()
-            if cmd.startswith("@"):
-                cmd = cmd[1:]
-            if cmd:
-                steps.append(WorkflowStep(action="run", params={"cmd": cmd}))
-
-        # Promote prerequisites to explicit ``depend`` steps so a target like
-        # ``install: install-backend install-frontend`` round-trips as a
-        # meaningful workflow rather than an empty block.
-        deps = _parse_makefile_deps(deps_raw)
-        if deps and not steps:
-            for dep in deps:
-                steps.append(WorkflowStep(action="depend", params={"target": dep}))
-
-        if not steps:
-            # Truly empty target (no deps, no commands) — skip.
-            continue
-
-        spec.workflows.append(Workflow(
-            name=name,
-            trigger="manual",
-            steps=steps,
-        ))
-        seen.add(name)
+        steps = _build_steps_from_body(body, deps_raw)
+        workflow = _create_workflow(name, steps)
+        if workflow:
+            spec.workflows.append(workflow)
+            seen.add(name)
 
 
 def _parse_makefile_deps(deps_raw: str) -> list[str]:

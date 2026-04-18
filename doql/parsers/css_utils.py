@@ -33,15 +33,16 @@ def _strip_comments(text: str) -> str:
     (e.g. ``scenarios/*.oql``) is NOT treated as a comment opener.
     """
     text = re.sub(r'(?<![^\s])/\*.*?\*/', '', text, flags=re.DOTALL)
-    text = re.sub(r'//[^\n]*', '', text)
+    text = re.sub(r'(?<![^\s])//[^\n]*', '', text)
     return text
 
 
 def _strip_quotes(val: str) -> str:
-    """Strip surrounding quotes from a value."""
-    if len(val) >= 2 and val[0] in ('"', "'") and val[-1] == val[0]:
-        return val[1:-1]
-    return val
+    """Strip surrounding quotes from a value (removes ALL outer quote pairs)."""
+    result = val
+    while len(result) >= 2 and result[0] in ('"', "'") and result[-1] == result[0]:
+        result = result[1:-1]
+    return result
 
 
 def _parse_list(val: str) -> list[str]:
