@@ -102,6 +102,14 @@ def _is_selector_line(stripped: str) -> bool:
     if stripped.lstrip().startswith('- '):
         return False
 
+    # DOQL step-N declarations are always properties (even without trailing ;)
+    if re.match(r'^step-\d+:', stripped.lstrip()):
+        return False
+
+    # DOQL property-like declarations (trigger:, schedule:, etc.)
+    if re.match(r'^(trigger|schedule|condition|env_file|runtime|target|framework|name|version|type)\s*:', stripped.lstrip()):
+        return False
+
     # Detect selectors: lines without colon or with [] attributes
     if ':' not in stripped:
         return True
@@ -129,35 +137,99 @@ def _convert_indent_to_braces(lines: list[str]) -> list[str]:
     """Convert indent-based SASS blocks to brace-delimited CSS."""
     result_lines: list[str] = []
     indent_stack: list[int] = []
-
-    for line in lines:
+    
+    def is_step_line(line: str) -> bool:
+        return re.match(r'^step-\d+:', line.lstrip()) is not None
+    
+    def is_selector_starter(line: str) -> bool:
+        # Check if line looks like a selector (workflow[name="..."], deploy, etc.)
+        stripped = line.strip()
+        if not stripped:
+            return False
+        # Selectors typically don't have ':' after the main name
+        if stripped.endswith(':'):
+            return False
+        if is_step_line(line):
+            return False
+        # Known properties
+        if re.match(r'^(trigger|schedule|condition|env_file|runtime|target|framework|name|version|type)\s*:', stripped):
+            return False
+        # If it ends with ; it's a property
+        if stripped.endswith(';'):
+            return False
+        # If no colon, likely a selector
+        if ':' not in stripped:
+            return True
+        # Check for selector patterns like workflow[name="..."]
+        if '[' in stripped and ']' in stripped:
+            after_bracket = stripped.split(']')[-1].strip()
+            if ':' not in after_bracket and not after_bracket.startswith('{'):
+                return True
+        return False
+    
+    def find_block_end(start_idx: int, start_indent: int) -> int:
+        """Find end of current block (line with same or less indent)."""
+        for j in range(start_idx + 1, len(lines)):
+            line = lines[j].rstrip()
+            if not line:
+                continue
+            indent = len(lines[j]) - len(lines[j].lstrip())
+            if indent <= start_indent:
+                return j
+        return len(lines)
+    
+    i = 0
+    while i < len(lines):
+        line = lines[i]
         stripped = line.rstrip()
         if not stripped:
+            i += 1
             continue
-
+        
         current_indent = len(line) - len(line.lstrip())
-
+        
         # Close blocks that have ended
         while indent_stack and current_indent <= indent_stack[-1]:
             indent_stack.pop()
             result_lines.append('  ' * len(indent_stack) + '}')
-
-        is_selector = _is_selector_line(stripped)
-
-        if is_selector and not stripped.endswith(';'):
+        
+        # Handle step-N declarations (collect multi-line values)
+        if is_step_line(line):
+            # Find end of this step's value (next step or end of block)
+            block_end = find_block_end(i, current_indent)
+            
+            # Collect all lines for this step
+            step_lines = [stripped.lstrip()]
+            for j in range(i + 1, block_end):
+                step_lines.append(lines[j])
+            
+            # Join and add semicolon if needed
+            step_value = '\n'.join(step_lines).rstrip()
+            if not step_value.endswith(';'):
+                step_value += ';'
+            result_lines.append('  ' * len(indent_stack) + step_value)
+            
+            i = block_end
+            continue
+        
+        # Handle selectors (workflow[name="..."], deploy, etc.)
+        if is_selector_starter(line):
             result_lines.append('  ' * len(indent_stack) + stripped.lstrip() + ' {')
             indent_stack.append(current_indent)
         else:
+            # Regular property
             prop_line = stripped.lstrip()
             if not prop_line.endswith(';'):
                 prop_line += ';'
             result_lines.append('  ' * len(indent_stack) + prop_line)
-
+        
+        i += 1
+    
     # Close remaining open blocks
     while indent_stack:
         indent_stack.pop()
         result_lines.append('  ' * len(indent_stack) + '}')
-
+    
     return result_lines
 
 

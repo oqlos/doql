@@ -221,6 +221,18 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
   not exist`).
 
 
+## [0.0.3] - 2026-04-18
+
+### Docs
+- Update README.md
+
+### Other
+- Update doql/adopt/scanner/__init__.py
+- Update doql/adopt/scanner/environments.py
+- Update doql/generators/workflow_gen.py
+- Update doql/parsers/css_mappers.py
+- Update doql/parsers/css_transformers.py
+
 ## [0.0.2] - 2026-04-17
 
 ### Docs

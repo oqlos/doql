@@ -138,7 +138,7 @@ def _gen_workflow_module(wf: Workflow, spec: DoqlSpec) -> str:
         step_name = _step_fn_name(step.action)
         steps_code.append(
             f'    Step(\n'
-            f'        name="{step.action}",\n'
+            f'        name={repr(step.action)},\n'
             f'        action=lambda ctx: step_{step_name}(ctx),\n'
             f'    ),'
         )
@@ -149,8 +149,8 @@ def _gen_workflow_module(wf: Workflow, spec: DoqlSpec) -> str:
         target_comment = f"  # target: {step.target}" if step.target else ""
         step_functions.append(
             f'def step_{step_name}(ctx: dict):{target_comment}\n'
-            f'    """Action: {step.action}"""\n'
-            f'    # TODO: implement {step.action}\n'
+            f"    '''Action: {step.action}'''\n"
+            f'    # TODO: implement {step.action.replace(chr(34), chr(39))}\n'
             f'    pass\n'
         )
 

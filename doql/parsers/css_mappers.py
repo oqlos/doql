@@ -146,7 +146,7 @@ def _map_template(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") ->
         model_class=Template,
         list_attr='templates',
         defaults={'type': 'html', 'file': ''},
-        list_fields={'variables': 'vars'},
+        list_fields={'vars': 'vars'},
     )
 
 

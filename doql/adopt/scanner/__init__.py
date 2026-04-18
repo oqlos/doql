@@ -47,9 +47,9 @@ def scan_project(root: str | Path) -> DoqlSpec:
 
     scan_metadata(root, spec)
     scan_databases(root, spec)
-    scan_interfaces(root, spec)
+    scan_environments(root, spec)  # must run before interfaces to populate env_refs for auth detection
     scan_deploy(root, spec)
-    scan_environments(root, spec)
+    scan_interfaces(root, spec)
     scan_integrations(root, spec)
     scan_entities(root, spec)
     scan_roles(root, spec)

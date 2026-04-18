@@ -9,10 +9,17 @@ from .utils import find_compose, load_yaml
 
 def scan_environments(root: Path, spec: DoqlSpec) -> None:
     """Detect environments from .env files and docker-compose variants."""
-    # Local environment (always present)
     local_env = Environment(name="local")
     if (root / ".env").exists():
         local_env.env_file = ".env"
+        # Extract keys to env_refs
+        text = (root / ".env").read_text(errors="ignore")
+        for line in text.splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                key = line.split("=", 1)[0].strip()
+                if key not in spec.env_refs:
+                    spec.env_refs.append(key)
     local_env.runtime = spec.deploy.target if spec.deploy else "docker-compose"
     spec.environments.append(local_env)
 
