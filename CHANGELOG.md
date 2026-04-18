@@ -221,6 +221,11 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
   not exist`).
 
 
+## [0.1.2] - 2026-04-18
+
+### Docs
+- Update README.md
+
 ## [0.1.1] - 2026-04-18
 
 ### Other
