@@ -1,4 +1,4 @@
-"""Workflow scanning — Makefile and Taskfile.yml targets."""
+"""Workflow scanning — Makefile, Taskfile.yml, and Python CLI commands."""
 from __future__ import annotations
 
 import re
@@ -14,9 +14,19 @@ _MAKEFILE_SKIP_TARGETS = {
     "all", "default", ".phony", ".default", "help",
 }
 
+# CLI commands that should become workflows automatically
+_CLI_WORKFLOW_COMMANDS = {
+    "analyze": {"tools": "code2llm,redup,vallm", "desc": "Run project analysis tools"},
+    "test": {"desc": "Run test suite"},
+    "lint": {"desc": "Run linting"},
+    "format": {"desc": "Format code"},
+    "build": {"desc": "Build project"},
+    "deploy": {"desc": "Deploy application"},
+}
+
 
 def scan_workflows(root: Path, spec: DoqlSpec) -> None:
-    """Promote Makefile / Taskfile.yml targets to ``WORKFLOW`` blocks.
+    """Promote Makefile / Taskfile.yml targets and Python CLI commands to ``WORKFLOW`` blocks.
 
     Workflows detected here are *non-authoritative* — they mirror the shell
     automation the project already has so that a downstream ``doql build``
@@ -32,6 +42,9 @@ def scan_workflows(root: Path, spec: DoqlSpec) -> None:
         if tf_path.exists():
             _extract_taskfile_workflows(tf_path, spec)
             break
+
+    # Scan Python CLI commands for workflow candidates
+    _extract_python_cli_workflows(root, spec)
 
 
 # Makefile target regex - see _extract_makefile_workflows for details
@@ -156,3 +169,107 @@ def _extract_taskfile_workflows(path: Path, spec: DoqlSpec) -> None:
             steps=steps,
         ))
         seen.add(str(task_name))
+
+
+def _extract_python_cli_workflows(root: Path, spec: DoqlSpec) -> None:
+    """Scan Python CLI source files for click commands and create workflows.
+
+    Detects commands like 'analyze', 'test', 'build' from CLI modules and
+    creates corresponding workflow definitions that run these commands.
+    """
+    seen: set[str] = {w.name for w in spec.workflows}
+    
+    # Find CLI Python files
+    cli_candidates: list[Path] = []
+    
+    # Common CLI file patterns
+    for pattern in ["cli.py", "cli/*.py", "commands/*.py", "cmd/*.py"]:
+        if "*" in pattern:
+            parent, _ = pattern.split("/*")
+            if (root / parent).is_dir():
+                cli_candidates.extend((root / parent).rglob("*.py"))
+        else:
+            if (root / pattern).exists():
+                cli_candidates.append(root / pattern)
+    
+    # Also check inside package directories (e.g., sumd/cli.py)
+    for pkg_dir in root.iterdir():
+        if pkg_dir.is_dir() and not pkg_dir.name.startswith((".", "_")):
+            cli_file = pkg_dir / "cli.py"
+            if cli_file.exists():
+                cli_candidates.append(cli_file)
+    
+    # Detect CLI command name from pyproject.toml scripts
+    cli_command = None
+    pyproj = root / "pyproject.toml"
+    if pyproj.exists():
+        try:
+            import tomllib
+        except ImportError:
+            import tomli as tomllib  # type: ignore[no-redef]
+        try:
+            with open(pyproj, "rb") as f:
+                data = tomllib.load(f)
+            scripts = data.get("project", {}).get("scripts", {})
+            for name in scripts.keys():
+                if name not in ("api", "server"):
+                    cli_command = name
+                    break
+        except Exception:
+            pass
+    
+    if not cli_command:
+        cli_command = root.name  # fallback to directory name
+    
+    # Scan each CLI file for click commands
+    for cli_file in set(cli_candidates):  # deduplicate
+        try:
+            content = cli_file.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        
+        # Check if this is a click-based CLI
+        if "click" not in content.lower():
+            continue
+        
+        # Find @click.command() decorated functions
+        # Pattern matches: @cli.command() followed by other decorators then def
+        command_pattern = re.compile(
+            r'@\w+\.command(?:\([^)]*\))?[\r\n]+(?:[^\r\n]*[\r\n]+)*?def\s+([a-z_][a-z0-9_]*)',
+            re.MULTILINE | re.IGNORECASE
+        )
+        
+        for match in command_pattern.finditer(content):
+            cmd_name = match.group(1)
+            
+            # Skip common internal commands
+            if cmd_name in ("main", "cli", "run", "start"):
+                continue
+            
+            # Skip if already have this workflow
+            if cmd_name in seen:
+                continue
+            
+            # Check if this command should become a workflow
+            if cmd_name in _CLI_WORKFLOW_COMMANDS:
+                wf_config = _CLI_WORKFLOW_COMMANDS[cmd_name]
+                
+                steps: list[WorkflowStep] = []
+                tools = wf_config.get("tools", "")
+                
+                # Build command
+                if cmd_name == "analyze":
+                    cmd_str = f"echo \"🔬 Running project analysis...\""
+                    steps.append(WorkflowStep(action="run", params={"cmd": cmd_str}))
+                    cmd_str = f"{cli_command} analyze . --tools {tools}"
+                    steps.append(WorkflowStep(action="run", params={"cmd": cmd_str}))
+                else:
+                    cmd_str = f"{cli_command} {cmd_name}"
+                    steps.append(WorkflowStep(action="run", params={"cmd": cmd_str}))
+                
+                spec.workflows.append(Workflow(
+                    name=cmd_name,
+                    trigger="manual",
+                    steps=steps,
+                ))
+                seen.add(cmd_name)
