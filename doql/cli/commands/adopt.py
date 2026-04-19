@@ -1,4 +1,4 @@
-"""doql adopt — reverse-engineer an existing project into app.doql.css."""
+"""doql adopt — reverse-engineer an existing project into app.doql.css/.less/.sass."""
 from __future__ import annotations
 
 import argparse
@@ -60,16 +60,17 @@ def _validate_output_written(output: Path) -> bool:
 
 
 def cmd_adopt(args: argparse.Namespace) -> int:
-    """Scan *target* directory, produce app.doql.css."""
+    """Scan *target* directory, produce app.doql.{css|less|sass}."""
     from doql.adopt.scanner import scan_project
-    from doql.adopt.emitter import emit_css
+    from doql.adopt.emitter import emit_spec
 
     target = Path(args.target).resolve()
     if not target.is_dir():
         print(f"❌ Not a directory: {target}", file=sys.stderr)
         return 1
 
-    output = target / (args.output or "app.doql.css")
+    fmt = getattr(args, "format", "css")
+    output = target / (args.output or f"app.doql.{fmt}")
 
     if output.exists() and not args.force:
         print(f"⚠️  {output.name} already exists. Use --force to overwrite.")
@@ -81,7 +82,7 @@ def cmd_adopt(args: argparse.Namespace) -> int:
     _print_scan_summary(spec)
 
     try:
-        emit_css(spec, output)
+        emit_spec(spec, output, fmt=fmt)
     except Exception as exc:
         print(f"❌ Failed to render {output.name}: {exc}", file=sys.stderr)
         _cleanup_empty_output(output)

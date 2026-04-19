@@ -118,9 +118,11 @@ def create_parser() -> argparse.ArgumentParser:
     s.set_defaults(func=cmd_docs)
 
     # adopt
-    s = sub.add_parser("adopt", help="Reverse-engineer existing project → app.doql.css")
+    s = sub.add_parser("adopt", help="Reverse-engineer existing project → app.doql.css/.less/.sass")
     s.add_argument("target", help="Project directory to scan")
-    s.add_argument("-o", "--output", help="Output filename (default: app.doql.css)")
+    s.add_argument("-o", "--output", help="Output filename (default: app.doql.{fmt})")
+    s.add_argument("-f", "--format", choices=["css", "less", "sass"], default="css",
+                   help="Output format (default: css)")
     s.add_argument("--force", action="store_true", help="Overwrite existing file")
     s.set_defaults(func=cmd_adopt)
 

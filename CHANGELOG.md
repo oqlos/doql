@@ -221,6 +221,31 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
   not exist`).
 
 
+## [0.1.3] - 2026-04-19
+
+### Docs
+- Update README.md
+- Update SUMD.md
+- Update SUMR.md
+- Update plugins/doql-plugin-erp/SUMD.md
+- Update plugins/doql-plugin-erp/SUMR.md
+- Update plugins/doql-plugin-fleet/SUMD.md
+- Update plugins/doql-plugin-fleet/SUMR.md
+- Update plugins/doql-plugin-gxp/SUMD.md
+- Update plugins/doql-plugin-gxp/SUMR.md
+- Update plugins/doql-plugin-iso17025/SUMD.md
+- ... and 3 more files
+
+### Test
+- Update tests/test_adopt.py
+
+### Other
+- Update doql/adopt/emitter.py
+- Update doql/cli/commands/adopt.py
+- Update doql/cli/main.py
+- Update project/map.toon.yaml
+- Update sumd.json
+
 ## [0.1.2] - 2026-04-18
 
 ### Docs

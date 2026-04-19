@@ -190,7 +190,7 @@ def test_cmd_adopt_returns_nonzero_on_render_failure(tmp_path: Path, monkeypatch
     def _boom(*_a, **_kw):
         raise RuntimeError("simulated render failure")
 
-    monkeypatch.setattr("doql.adopt.emitter.emit_css", _boom)
+    monkeypatch.setattr("doql.adopt.emitter.emit_spec", _boom)
     rc = cmd_adopt(_make_args(tmp_path))
     assert rc == 1
 
