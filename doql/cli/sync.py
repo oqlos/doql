@@ -48,35 +48,38 @@ def determine_regeneration_set(diff_result: dict, spec) -> Set[str]:
     return regen
 
 
+def _run_interface_generators(regen: Set[str], spec, env_vars, ctx) -> int:
+    """Run api/web/infra generators for any of those that are in *regen*. Returns count."""
+    targets = regen & {"api", "web", "infra"}
+    if not targets:
+        return 0
+    from .build import should_generate_interface
+    from ..generators import api_gen, web_gen, infra_gen
+    gen_map = {"api": api_gen.generate, "web": web_gen.generate, "infra": infra_gen.generate}
+    count = 0
+    for name in targets:
+        if name == "infra" or should_generate_interface(name, spec):
+            target_dir = ctx.build_dir / name
+            target_dir.mkdir(parents=True, exist_ok=True)
+            print(f"🛠  Generating {name}...")
+            gen_map[name](spec, env_vars, target_dir)
+            count += 1
+    return count
+
+
 def run_generators(regen: Set[str], spec, env_vars, ctx) -> int:
     """Run selected generators based on regen set. Returns count of generators run."""
-    count = 0
-
-    if "api" in regen or "web" in regen or "infra" in regen:
-        targets = regen & {"api", "web", "infra"}
-        for name in targets:
-            from .build import should_generate_interface
-            if name == "infra" or should_generate_interface(name, spec):
-                from ..generators import api_gen, web_gen, infra_gen
-                gen_map = {"api": api_gen.generate, "web": web_gen.generate, "infra": infra_gen.generate}
-                target_dir = ctx.build_dir / name
-                target_dir.mkdir(parents=True, exist_ok=True)
-                print(f"🛠  Generating {name}...")
-                gen_map[name](spec, env_vars, target_dir)
-                count += 1
+    count = _run_interface_generators(regen, spec, env_vars, ctx)
 
     if "documents" in regen:
         run_document_generators(spec, env_vars, ctx)
         count += 1
-
     if "reports" in regen:
         run_report_generators(spec, env_vars, ctx)
         count += 1
-
     if "i18n" in regen:
         run_i18n_generators(spec, env_vars, ctx)
         count += 1
-
     if "integrations" in regen:
         run_integration_generators(spec, env_vars, ctx)
         count += 1

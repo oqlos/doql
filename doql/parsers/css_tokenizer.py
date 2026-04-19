@@ -10,6 +10,16 @@ import re
 from .css_utils import CssBlock, _strip_comments, _strip_quotes
 
 
+def _make_css_block(selector: str, body: str, line_num: int) -> CssBlock:
+    """Build a CssBlock from selector + raw body text."""
+    return CssBlock(
+        selector=selector,
+        declarations=_parse_declarations(body),
+        children=_tokenise_css(body) if '{' in body else [],
+        line=line_num,
+    )
+
+
 def _tokenise_css(text: str) -> list[CssBlock]:
     """Parse CSS-like text into flat CssBlock list."""
     blocks: list[CssBlock] = []
@@ -42,12 +52,7 @@ def _tokenise_css(text: str) -> list[CssBlock]:
         if ch == '}':
             depth -= 1
             if depth == 0:
-                block = CssBlock(
-                    selector=current_selector,
-                    declarations=_parse_declarations(current_body),
-                    children=_tokenise_css(current_body) if '{' in current_body else [],
-                    line=line_num,
-                )
+                block = _make_css_block(current_selector, current_body, line_num)
                 blocks.append(block)
                 current_selector = ''
                 current_body = ''

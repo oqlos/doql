@@ -4,6 +4,18 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [0.1.9] - 2026-04-19
+
+### Other
+- Update doql/adopt/scanner/entities.py
+- Update doql/adopt/scanner/interfaces.py
+- Update doql/adopt/scanner/roles.py
+- Update doql/adopt/scanner/workflows.py
+- Update doql/cli/sync.py
+- Update doql/generators/workflow_gen.py
+- Update doql/parsers/css_tokenizer.py
+- Update doql/parsers/css_transformers.py
+
 ## [0.1.8] - 2026-04-19
 
 ### Other

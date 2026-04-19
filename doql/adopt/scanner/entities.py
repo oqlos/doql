@@ -58,6 +58,14 @@ def scan_entities(root: Path, spec: DoqlSpec) -> None:
             _extract_entities_from_sql(sql, spec, seen)
 
 
+def _classify_bases(bases_raw: str) -> tuple[bool, bool]:
+    """Return (is_persistent, is_dto_base) from a raw class bases string."""
+    base_tokens = {
+        b.split("[", 1)[0].strip() for b in bases_raw.split(",") if b.strip()
+    }
+    return bool(base_tokens & set(_PERSISTENT_BASES)), bool(base_tokens & set(_DTO_BASES))
+
+
 def _extract_entities_from_python(path: Path, spec: DoqlSpec, seen: set[str]) -> None:
     """Extract entity names from Python class definitions.
 
@@ -72,25 +80,13 @@ def _extract_entities_from_python(path: Path, spec: DoqlSpec, seen: set[str]) ->
 
     for m in re.finditer(r'class\s+(\w+)\s*\((.*?)\)\s*:', text):
         name = m.group(1)
-        bases_raw = m.group(2)
         if name in seen or name.startswith("_"):
             continue
-
-        # Tokenise the comma-separated base list so "Base" does not match
-        # "BaseModel" (subclass of Pydantic), only an actual ``Base`` parent.
-        base_tokens = {
-            b.split("[", 1)[0].strip() for b in bases_raw.split(",") if b.strip()
-        }
-        is_persistent = bool(base_tokens & set(_PERSISTENT_BASES))
-        is_dto_base = bool(base_tokens & set(_DTO_BASES))
-
+        is_persistent, is_dto_base = _classify_bases(m.group(2))
         if not (is_persistent or is_dto_base):
             continue
-
-        # Filter out obvious DTOs unless they inherit from a persistent base.
         if not is_persistent and _is_dto_name(name):
             continue
-
         entity = Entity(name=name)
         _extract_fields(text, m.end(), entity)
         spec.entities.append(entity)

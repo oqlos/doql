@@ -140,6 +140,20 @@ def _extract_taskfile_schedule(task: dict) -> str | None:
     return schedule if isinstance(schedule, str) else None
 
 
+def _build_workflow_from_task(task_name: str, task: dict) -> "Workflow | None":
+    """Build a Workflow from a Taskfile task dict, or return None if no steps/schedule."""
+    steps = _build_taskfile_steps(task)
+    schedule = _extract_taskfile_schedule(task)
+    if not steps and not schedule:
+        return None
+    return Workflow(
+        name=str(task_name),
+        trigger="schedule" if schedule else "manual",
+        schedule=schedule,
+        steps=steps,
+    )
+
+
 def _extract_taskfile_workflows(path: Path, spec: DoqlSpec) -> None:
     """Parse a Taskfile.yml into :class:`Workflow` entries."""
     data = load_yaml(path)
@@ -151,24 +165,12 @@ def _extract_taskfile_workflows(path: Path, spec: DoqlSpec) -> None:
 
     seen: set[str] = {w.name for w in spec.workflows}
     for task_name, task in tasks.items():
-        if not isinstance(task, dict):
+        if not isinstance(task, dict) or task_name in seen:
             continue
-        if task_name in seen:
-            continue
-
-        steps = _build_taskfile_steps(task)
-        schedule = _extract_taskfile_schedule(task)
-
-        if not steps and not schedule:
-            continue
-
-        spec.workflows.append(Workflow(
-            name=str(task_name),
-            trigger="schedule" if schedule else "manual",
-            schedule=schedule,
-            steps=steps,
-        ))
-        seen.add(str(task_name))
+        wf = _build_workflow_from_task(task_name, task)
+        if wf is not None:
+            spec.workflows.append(wf)
+            seen.add(str(task_name))
 
 
 _CLICK_CMD_RE = re.compile(

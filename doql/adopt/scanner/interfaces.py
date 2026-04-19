@@ -209,29 +209,33 @@ def _detect_web_framework(root: Path) -> str | None:
     return None
 
 
+def _scan_pages_dir(pdir, page_seen: set) -> list:
+    """Yield Page objects from a directory of page components."""
+    pages = []
+    for entry in sorted(pdir.iterdir()):
+        name = entry.stem
+        if entry.is_file() and entry.suffix in (".jsx", ".tsx", ".vue", ".svelte", ".js"):
+            if name.lower() not in ("index", "main", "_app", "_layout", "layout"):
+                kebab = camel_to_kebab(name)
+                if kebab not in page_seen:
+                    pages.append(Page(name=kebab))
+                    page_seen.add(kebab)
+        elif entry.is_dir() and not name.startswith(("_", ".")):
+            kebab = camel_to_kebab(name)
+            if kebab not in page_seen:
+                pages.append(Page(name=kebab))
+                page_seen.add(kebab)
+    return pages
+
+
 def _extract_web_pages(root: Path) -> list[Page]:
     """Extract page names from src/pages/, src/views/, etc."""
-    pages: list[Page] = []
     page_seen: set[str] = set()
-    
     for pages_dir in ("src/pages", "src/views", "pages", "views", "src/routes"):
         pdir = root / pages_dir
         if pdir.is_dir():
-            for entry in sorted(pdir.iterdir()):
-                name = entry.stem
-                if entry.is_file() and entry.suffix in (".jsx", ".tsx", ".vue", ".svelte", ".js"):
-                    if name.lower() not in ("index", "main", "_app", "_layout", "layout"):
-                        kebab = camel_to_kebab(name)
-                        if kebab not in page_seen:
-                            pages.append(Page(name=kebab))
-                            page_seen.add(kebab)
-                elif entry.is_dir() and not name.startswith(("_", ".")):
-                    kebab = camel_to_kebab(name)
-                    if kebab not in page_seen:
-                        pages.append(Page(name=kebab))
-                        page_seen.add(kebab)
-            break
-    return pages
+            return _scan_pages_dir(pdir, page_seen)
+    return []
 
 
 def _scan_web_frontend(root: Path, spec: DoqlSpec) -> None:

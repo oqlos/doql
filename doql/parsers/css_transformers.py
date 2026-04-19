@@ -92,44 +92,36 @@ def _expand_includes(lines: list[str], mixins: dict[str, list[str]]) -> list[str
     return expanded
 
 
+_DOQL_PROP_RE = re.compile(
+    r'^(step-\d+|trigger|schedule|condition|env_file|runtime|target|framework|name|version|type)\s*:'
+)
+
+
+def _is_doql_property_decl(stripped: str) -> bool:
+    """Return True if stripped looks like a DOQL property declaration."""
+    return bool(_DOQL_PROP_RE.match(stripped.lstrip()))
+
+
 def _is_selector_line(stripped: str) -> bool:
     """Determine if a line is a CSS selector or a property."""
-    # Lines ending with ; are properties
     if stripped.rstrip().endswith(';'):
         return False
-
-    # Lines with list syntax are properties
     if stripped.lstrip().startswith('- '):
         return False
-
-    # DOQL step-N declarations are always properties (even without trailing ;)
-    if re.match(r'^step-\d+:', stripped.lstrip()):
+    if _is_doql_property_decl(stripped):
         return False
-
-    # DOQL property-like declarations (trigger:, schedule:, etc.)
-    if re.match(r'^(trigger|schedule|condition|env_file|runtime|target|framework|name|version|type)\s*:', stripped.lstrip()):
-        return False
-
-    # Detect selectors: lines without colon or with [] attributes
     if ':' not in stripped:
         return True
-
-    # Check if part after [] is a property
     if '[' in stripped and ']' in stripped:
         after_bracket = stripped.split(']')[-1].strip()
         if ':' not in after_bracket:
             return True
-
-    # Complex selector detection
     parts = stripped.split(':', 1)
     if len(parts) < 2:
         return True
-
     after_colon = parts[1].strip()
-    # If after colon looks like a selector pattern, it's a selector
     if after_colon and not re.match(r'^[\w\[\]="\.\-\*\s{]+$', after_colon):
         return False
-
     return False
 
 
@@ -148,24 +140,24 @@ def _is_step_line(line: str) -> bool:
     return re.match(r'^step-\d+:', line.lstrip()) is not None
 
 
+def _has_bracket_selector(stripped: str) -> bool:
+    """Return True if stripped has an attribute-selector bracket pattern."""
+    if '[' not in stripped or ']' not in stripped:
+        return False
+    after_bracket = stripped.split(']')[-1].strip()
+    return ':' not in after_bracket and not after_bracket.startswith('{')
+
+
 def _is_selector_starter(line: str) -> bool:
     """Return True if *line* looks like a DOQL selector (not a property)."""
     stripped = line.strip()
     if not stripped or stripped.endswith(':') or stripped.endswith(';'):
         return False
-    if _is_step_line(line):
-        return False
-    if _DOQL_PROPERTY_PREFIXES.match(stripped):
+    if _is_step_line(line) or _DOQL_PROPERTY_PREFIXES.match(stripped):
         return False
     if ':' not in stripped:
-        if re.match(r'^[\w\-]+\[', stripped):
-            return True
-        return stripped.split()[0] in _DOQL_KNOWN_SELECTORS
-    if '[' in stripped and ']' in stripped:
-        after_bracket = stripped.split(']')[-1].strip()
-        if ':' not in after_bracket and not after_bracket.startswith('{'):
-            return True
-    return False
+        return bool(re.match(r'^[\w\-]+\[', stripped)) or stripped.split()[0] in _DOQL_KNOWN_SELECTORS
+    return _has_bracket_selector(stripped)
 
 
 def _find_step_block_end(lines: list[str], start_idx: int, start_indent: int) -> int:
