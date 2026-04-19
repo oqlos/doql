@@ -67,6 +67,20 @@ def _check_parse(root: pathlib.Path, doql_file: pathlib.Path, report: DoctorRepo
     return spec
 
 
+def _find_missing_env_refs(spec, env_vars: dict) -> list[str]:
+    """Return list of env var names referenced in spec but not resolved."""
+    missing = []
+    for ref in spec.env_refs:
+        if ref in env_vars:
+            continue
+        if ref.endswith("_") and any(k.startswith(ref) for k in env_vars):
+            continue
+        if ref in os.environ:
+            continue
+        missing.append(ref)
+    return missing
+
+
 def _check_env(root: pathlib.Path, spec: DoqlSpec, report: DoctorReport) -> dict[str, str]:
     """Check .env file presence and variable coverage."""
     env_file = root / ".env"
@@ -79,16 +93,7 @@ def _check_env(root: pathlib.Path, spec: DoqlSpec, report: DoctorReport) -> dict
     else:
         report.add("env-file", "ok", "No .env required")
 
-    missing = []
-    for ref in spec.env_refs:
-        if ref in env_vars:
-            continue
-        if ref.endswith("_") and any(k.startswith(ref) for k in env_vars):
-            continue
-        if ref in os.environ:
-            continue
-        missing.append(ref)
-
+    missing = _find_missing_env_refs(spec, env_vars)
     if missing:
         report.add("env-vars", "warn", f"Missing env vars: {', '.join(missing)}")
     elif spec.env_refs:
@@ -101,9 +106,8 @@ def _collect_missing_files(root: pathlib.Path, spec: DoqlSpec) -> list[str]:
     """Return list of missing file descriptions from spec references."""
     missing: list[str] = []
     for ds in spec.data_sources:
-        if ds.file and not pathlib.PurePosixPath(ds.file).is_absolute():
-            if not (root / ds.file).exists():
-                missing.append(f"DATA {ds.name}: {ds.file}")
+        if ds.file and not pathlib.PurePosixPath(ds.file).is_absolute() and not (root / ds.file).exists():
+            missing.append(f"DATA {ds.name}: {ds.file}")
     for tmpl in spec.templates:
         if tmpl.file and not (root / tmpl.file).exists():
             missing.append(f"TEMPLATE {tmpl.name}: {tmpl.file}")
@@ -111,7 +115,6 @@ def _collect_missing_files(root: pathlib.Path, spec: DoqlSpec) -> list[str]:
         if doc.template and not (root / doc.template).exists():
             missing.append(f"DOCUMENT {doc.name}: {doc.template}")
     return missing
-
 
 def _check_files(root: pathlib.Path, spec: DoqlSpec, report: DoctorReport) -> None:
     """Check that referenced files exist."""
@@ -162,15 +165,13 @@ def _check_interfaces(spec: DoqlSpec, report: DoctorReport) -> None:
         report.add("interfaces", "ok", f"{len(spec.interfaces)} interface(s) configured")
 
 
-def _check_tools(spec: DoqlSpec, report: DoctorReport) -> None:
-    """Check required tools are available on PATH."""
-    tools: list[tuple[str, str]] = []  # (binary, reason)
-
+def _collect_required_tools(spec) -> list[tuple[str, str]]:
+    """Return list of (binary, reason) pairs for tools required by this spec."""
+    tools: list[tuple[str, str]] = []
     if spec.deploy.target in ("docker-compose", "compose"):
         tools.append(("docker", "deploy target is docker-compose"))
     if spec.deploy.target in ("quadlet", "podman"):
         tools.append(("podman", "deploy target uses podman"))
-
     for iface in spec.interfaces:
         if iface.name == "web":
             tools.append(("node", "web interface needs Node.js"))
@@ -179,9 +180,13 @@ def _check_tools(spec: DoqlSpec, report: DoctorReport) -> None:
             tools.append(("cargo", "Tauri desktop needs Rust"))
         if iface.name == "api":
             tools.append(("python3", "API backend needs Python"))
+    return tools
 
+
+def _check_tools(spec: DoqlSpec, report: DoctorReport) -> None:
+    """Check required tools are available on PATH."""
     checked: set[str] = set()
-    for binary, reason in tools:
+    for binary, reason in _collect_required_tools(spec):
         if binary in checked:
             continue
         checked.add(binary)
@@ -229,6 +234,31 @@ def _ssh_run(host: str, cmd: str | list[str]) -> tuple[int, str, str] | None:
         return None
 
 
+def _check_remote_ssh(host: str, report: DoctorReport) -> bool:
+    """Check SSH connectivity; returns True if reachable."""
+    res = _ssh_run(host, ["echo", "ok"])
+    if res is None:
+        report.add("remote:ssh", "fail", f"SSH to {host} timed out / ssh not found")
+        return False
+    rc, _, stderr = res
+    if rc != 0:
+        report.add("remote:ssh", "fail", f"SSH to {host} failed: {stderr}")
+        return False
+    report.add("remote:ssh", "ok", f"SSH to {host} reachable")
+    return True
+
+
+def _check_remote_runtime(host: str, runtime: str, report: DoctorReport) -> None:
+    check_cmd = "podman --version" if runtime in ("quadlet", "podman") else "docker --version"
+    res = _ssh_run(host, check_cmd)
+    if res is None:
+        report.add("remote:runtime", "warn", "Could not check remote runtime")
+    elif res[0] == 0:
+        report.add("remote:runtime", "ok", res[1])
+    else:
+        report.add("remote:runtime", "warn", f"{check_cmd} not available on remote")
+
+
 def _check_remote(spec: DoqlSpec, env_name: str, report: DoctorReport) -> None:
     """Run remote diagnostics via SSH for a specific environment."""
     env = next((e for e in spec.environments if e.name == env_name), None)
@@ -239,28 +269,10 @@ def _check_remote(spec: DoqlSpec, env_name: str, report: DoctorReport) -> None:
         report.add("remote", "skip", f"No ssh_host for '{env_name}'")
         return
 
-    # SSH connectivity
-    res = _ssh_run(env.ssh_host, ["echo", "ok"])
-    if res is None:
-        report.add("remote:ssh", "fail", f"SSH to {env.ssh_host} timed out / ssh not found")
+    if not _check_remote_ssh(env.ssh_host, report):
         return
-    rc, _, stderr = res
-    if rc != 0:
-        report.add("remote:ssh", "fail", f"SSH to {env.ssh_host} failed: {stderr}")
-        return
-    report.add("remote:ssh", "ok", f"SSH to {env.ssh_host} reachable")
+    _check_remote_runtime(env.ssh_host, env.runtime, report)
 
-    # Check remote runtime
-    check_cmd = "podman --version" if env.runtime in ("quadlet", "podman") else "docker --version"
-    res = _ssh_run(env.ssh_host, check_cmd)
-    if res is None:
-        report.add("remote:runtime", "warn", "Could not check remote runtime")
-    elif res[0] == 0:
-        report.add("remote:runtime", "ok", res[1])
-    else:
-        report.add("remote:runtime", "warn", f"{check_cmd} not available on remote")
-
-    # Disk space
     res = _ssh_run(env.ssh_host, "df -h / | tail -1 | awk '{print $4}'")
     if res is not None and res[0] == 0:
         report.add("remote:disk", "ok", f"Free space: {res[1]}")

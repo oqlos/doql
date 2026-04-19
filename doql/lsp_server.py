@@ -210,6 +210,25 @@ def completion(ls: LanguageServer, params: lsp.CompletionParams):
 
 
 @server.feature(lsp.TEXT_DOCUMENT_HOVER)
+def _hover_field(ent, f) -> lsp.Hover:
+    """Return hover info for a field."""
+    details = [f"**{ent.name}.{f.name}**", f"type: `{f.type}`"]
+    if f.ref:
+        details.append(f"ref: `{f.ref}`")
+    if f.unique:
+        details.append("unique")
+    if f.required:
+        details.append("required")
+    if f.computed:
+        details.append(f"computed: `{f.computed}`")
+    return lsp.Hover(
+        contents=lsp.MarkupContent(
+            kind=lsp.MarkupKind.Markdown,
+            value="\n\n".join(details),
+        )
+    )
+
+
 def _hover_entity(spec, word) -> lsp.Hover | None:
     """Return hover info if *word* matches an entity name or field."""
     for ent in spec.entities:
@@ -226,21 +245,7 @@ def _hover_entity(spec, word) -> lsp.Hover | None:
             )
         for f in ent.fields:
             if f.name == word:
-                details = [f"**{ent.name}.{f.name}**", f"type: `{f.type}`"]
-                if f.ref:
-                    details.append(f"ref: `{f.ref}`")
-                if f.unique:
-                    details.append("unique")
-                if f.required:
-                    details.append("required")
-                if f.computed:
-                    details.append(f"computed: `{f.computed}`")
-                return lsp.Hover(
-                    contents=lsp.MarkupContent(
-                        kind=lsp.MarkupKind.Markdown,
-                        value="\n\n".join(details),
-                    )
-                )
+                return _hover_field(ent, f)
     return None
 
 

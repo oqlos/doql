@@ -4,6 +4,12 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [0.1.10] - 2026-04-19
+
+### Other
+- Update doql/cli/commands/doctor.py
+- Update doql/lsp_server.py
+
 ## [0.1.9] - 2026-04-19
 
 ### Other
