@@ -69,6 +69,26 @@ def _consume_pending(decls: dict, pending_key: str, pending_value: str) -> tuple
     return None, ""
 
 
+def _process_decl_line(
+    stripped: str, pending_key: str | None, pending_value: str, decls: dict
+) -> tuple[str | None, str]:
+    """Process one stripped declaration line; return updated (pending_key, pending_value)."""
+    m = re.match(r'^(@?[\w\-]+)\s*:\s*(.+)$', stripped)
+    if m and pending_key is None:
+        key, val = m.group(1), m.group(2).rstrip(';').strip()
+        if stripped.rstrip().endswith(';'):
+            decls[key] = _strip_quotes(val)
+        else:
+            pending_key = key
+            pending_value = val
+    elif pending_key is not None:
+        pending_value += "\n" + stripped
+
+    if pending_key is not None and pending_value.rstrip().endswith(';'):
+        pending_key, pending_value = _consume_pending(decls, pending_key, pending_value)
+    return pending_key, pending_value
+
+
 def _parse_declarations(body: str) -> dict[str, str]:
     """Extract property: value pairs from a CSS block body (top-level only).
 
@@ -91,20 +111,9 @@ def _parse_declarations(body: str) -> dict[str, str]:
         if not stripped or stripped.startswith('/*') or stripped in ('{', '}'):
             continue
 
-        m = re.match(r'^(@?[\w\-]+)\s*:\s*(.+)$', stripped)
-
-        if m and pending_key is None:
-            key, val = m.group(1), m.group(2).rstrip(';').strip()
-            if stripped.rstrip().endswith(';'):
-                decls[key] = _strip_quotes(val)
-            else:
-                pending_key = key
-                pending_value = val
-        elif pending_key is not None:
-            pending_value += "\n" + stripped
-
-        if pending_key is not None and pending_value.rstrip().endswith(';'):
-            pending_key, pending_value = _consume_pending(decls, pending_key, pending_value)
+        pending_key, pending_value = _process_decl_line(
+            stripped, pending_key, pending_value, decls
+        )
 
     if pending_key is not None:
         decls[pending_key] = _strip_quotes(pending_value.strip())

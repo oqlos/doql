@@ -97,23 +97,25 @@ def _check_env(root: pathlib.Path, spec: DoqlSpec, report: DoctorReport) -> dict
     return env_vars
 
 
-def _check_files(root: pathlib.Path, spec: DoqlSpec, report: DoctorReport) -> None:
-    """Check that referenced files exist."""
+def _collect_missing_files(root: pathlib.Path, spec: DoqlSpec) -> list[str]:
+    """Return list of missing file descriptions from spec references."""
     missing: list[str] = []
-
     for ds in spec.data_sources:
         if ds.file and not pathlib.PurePosixPath(ds.file).is_absolute():
             if not (root / ds.file).exists():
                 missing.append(f"DATA {ds.name}: {ds.file}")
-
     for tmpl in spec.templates:
         if tmpl.file and not (root / tmpl.file).exists():
             missing.append(f"TEMPLATE {tmpl.name}: {tmpl.file}")
-
     for doc in spec.documents:
         if doc.template and not (root / doc.template).exists():
             missing.append(f"DOCUMENT {doc.name}: {doc.template}")
+    return missing
 
+
+def _check_files(root: pathlib.Path, spec: DoqlSpec, report: DoctorReport) -> None:
+    """Check that referenced files exist."""
+    missing = _collect_missing_files(root, spec)
     if missing:
         for m in missing:
             report.add("files", "fail", f"Not found: {m}")

@@ -78,6 +78,15 @@ def _field_input(f: EntityField) -> str:
     )
 
 
+def _build_interface_body(visible_fields: list) -> str:
+    """Return TypeScript interface field list, ensuring `id` is always present."""
+    fields = []
+    if not any(f.name == "id" for f in visible_fields):
+        fields.append("id: any")
+    fields.extend(f"{f.name}: any" for f in visible_fields)
+    return "; ".join(fields)
+
+
 def _gen_entity_page(ent: Entity) -> str:
     """Generate CRUD page for an entity."""
     slug = _kebab(ent.name) + "s"
@@ -87,13 +96,7 @@ def _gen_entity_page(ent: Entity) -> str:
     cells = " ".join(f'<td className="p-2 text-sm">{{String(item.{f.name} ?? "")}}</td>' for f in visible_fields[:8])
     form_init = ", ".join(f"{f.name}: ''" for f in form_fields)
     inputs = "\n".join(filter(None, (_field_input(f) for f in form_fields)))
-
-    # Always include `id` in the TS interface
-    interface_fields = []
-    if not any(f.name == "id" for f in visible_fields):
-        interface_fields.append("id: any")
-    interface_fields.extend(f"{f.name}: any" for f in visible_fields)
-    interface_body = "; ".join(interface_fields)
+    interface_body = _build_interface_body(visible_fields)
 
     return textwrap.dedent(f"""\
         import React from 'react';

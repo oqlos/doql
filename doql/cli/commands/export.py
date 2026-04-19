@@ -18,44 +18,36 @@ ALL_FORMATS = [
 ]
 
 
+_EXPORTERS = {
+    "openapi":        lambda spec, out: api_gen.export_openapi(spec, out),
+    "postman":        lambda spec, out: export_postman.run(spec, out),
+    "typescript-sdk": lambda spec, out: export_ts_sdk.run(spec, out),
+    "yaml":           lambda spec, out: export_yaml(spec, out),
+    "markdown":       lambda spec, out: export_markdown(spec, out),
+    "css":            lambda spec, out: export_css(spec, out),
+    "less":           lambda spec, out: export_less(spec, out),
+    "sass":           lambda spec, out: export_sass(spec, out),
+}
+
+
 def cmd_export(args: argparse.Namespace) -> int:
     """Export project specification to various formats."""
     root = pathlib.Path(getattr(args, "dir", None) or ".").resolve()
     explicit_file = getattr(args, "file", None)
-    if explicit_file:
-        doql_file = root / explicit_file
-    else:
-        doql_file = detect_doql_file(root)
+    doql_file = (root / explicit_file) if explicit_file else detect_doql_file(root)
 
     fmt = args.format
-    spec = doql_parser.parse_file(doql_file)
+    exporter = _EXPORTERS.get(fmt)
+    if exporter is None:
+        print(f"❌ Unknown format: {fmt}", file=sys.stderr)
+        return 1
 
+    spec = doql_parser.parse_file(doql_file)
     out_path = getattr(args, "output", None)
-    if out_path:
-        out = open(out_path, "w", encoding="utf-8")
-    else:
-        out = sys.stdout
+    out = open(out_path, "w", encoding="utf-8") if out_path else sys.stdout
 
     try:
-        if fmt == "openapi":
-            api_gen.export_openapi(spec, out)
-        elif fmt == "postman":
-            export_postman.run(spec, out)
-        elif fmt == "typescript-sdk":
-            export_ts_sdk.run(spec, out)
-        elif fmt == "yaml":
-            export_yaml(spec, out)
-        elif fmt == "markdown":
-            export_markdown(spec, out)
-        elif fmt == "css":
-            export_css(spec, out)
-        elif fmt == "less":
-            export_less(spec, out)
-        elif fmt == "sass":
-            export_sass(spec, out)
-        else:
-            print(f"❌ Unknown format: {fmt}", file=sys.stderr)
-            return 1
+        exporter(spec, out)
     finally:
         if out_path:
             out.close()

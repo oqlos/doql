@@ -210,20 +210,14 @@ def completion(ls: LanguageServer, params: lsp.CompletionParams):
 
 
 @server.feature(lsp.TEXT_DOCUMENT_HOVER)
-def hover(ls: LanguageServer, params: lsp.HoverParams):
-    doc = ls.workspace.get_text_document(params.text_document.uri)
-    word = _word_at(doc.source, params.position)
-    if not word:
-        return None
-
-    spec = _parse_doc(doc.source)
-    if not spec:
-        return None
-
-    # Entity hover
+def _hover_entity(spec, word) -> lsp.Hover | None:
+    """Return hover info if *word* matches an entity name or field."""
     for ent in spec.entities:
         if ent.name == word:
-            fields = "\n".join(f"- `{f.name}`: {f.type}" + (" (unique)" if f.unique else "") for f in ent.fields)
+            fields = "\n".join(
+                f"- `{f.name}`: {f.type}" + (" (unique)" if f.unique else "")
+                for f in ent.fields
+            )
             return lsp.Hover(
                 contents=lsp.MarkupContent(
                     kind=lsp.MarkupKind.Markdown,
@@ -247,8 +241,23 @@ def hover(ls: LanguageServer, params: lsp.HoverParams):
                         value="\n\n".join(details),
                     )
                 )
+    return None
 
-    # Keyword hover
+
+def hover(ls: LanguageServer, params: lsp.HoverParams):
+    doc = ls.workspace.get_text_document(params.text_document.uri)
+    word = _word_at(doc.source, params.position)
+    if not word:
+        return None
+
+    spec = _parse_doc(doc.source)
+    if not spec:
+        return None
+
+    result = _hover_entity(spec, word)
+    if result:
+        return result
+
     if word in KEYWORDS:
         return lsp.Hover(
             contents=lsp.MarkupContent(

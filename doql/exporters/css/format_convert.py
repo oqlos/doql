@@ -1,46 +1,38 @@
 """CSS ↔ LESS / SASS format conversion."""
 from __future__ import annotations
+import re
+
+
+def _unquote_simple_value(full_prop: str, val: str) -> str:
+    """Return the LESS property line, removing quotes for simple scalar values."""
+    if ' ' in val or ',' in val or '(' in val or ')' in val:
+        return f'{full_prop}: "{val}";'
+    if val.startswith(('env.', '$', '@')):
+        return f'{full_prop}: {val};'
+    if val in ('true', 'false', 'null'):
+        return f'{full_prop}: {val};'
+    if val.replace('.', '', 1).replace('-', '', 1).isdigit():
+        return f'{full_prop}: {val};'
+    return f'{full_prop}: {val};'
 
 
 def _css_to_less(css_text: str) -> str:
     """Convert CSS output to LESS format.
-    
+
     LESS uses @variables and doesn't require quotes for simple string values.
     """
-    import re
-    
     header = "// LESS format — define @variables here as needed\n\n"
-    
+
+    def _sub(match):
+        return _unquote_simple_value(match.group(1), match.group(2))
+
     lines = []
     for line in css_text.splitlines():
-        # Skip empty lines at start (we'll add our own header)
         if not lines and not line.strip():
             continue
-            
-        # Convert property lines - remove quotes from simple string values
-        # Match: property: "simple-value"; -> property: simple-value;
-        # But keep quotes for: values with spaces, special chars, or env.
-        def unquote_simple_values(match):
-            full_prop = match.group(1)  # includes indentation
-            val = match.group(2)
-            
-            # Keep quotes for complex values
-            if ' ' in val or ',' in val or '(' in val or ')' in val:
-                return f'{full_prop}: "{val}";'
-            if val.startswith('env.') or val.startswith('$') or val.startswith('@'):
-                return f'{full_prop}: {val};'
-            if val in ('true', 'false', 'null'):
-                return f'{full_prop}: {val};'
-            if val.replace('.', '', 1).replace('-', '', 1).isdigit():
-                return f'{full_prop}: {val};'
-            
-            # Simple value - remove quotes
-            return f'{full_prop}: {val};'
-        
-        # Pattern: property: "value"; (with optional indentation)
-        line = re.sub(r'^(\s*[\w\-@]+):\s*"([^"]+)"\s*;?$', unquote_simple_values, line)
+        line = re.sub(r'^(\s*[\w\-@]+):\s*"([^"]+)"\s*;?$', _sub, line)
         lines.append(line)
-    
+
     return header + '\n'.join(lines) + '\n'
 
 

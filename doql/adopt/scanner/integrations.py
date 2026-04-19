@@ -6,30 +6,21 @@ from pathlib import Path
 from ...parsers.models import DoqlSpec, Integration
 
 
+_ENV_INTEGRATIONS: list[tuple[list[str], str, str]] = [
+    (["SMTP", "EMAIL", "MAIL"], "email",   "smtp"),
+    (["SLACK"],                  "slack",   "webhook"),
+    (["STRIPE"],                 "stripe",  "payment"),
+    (["S3", "MINIO", "STORAGE"], "storage", "s3"),
+    (["MQTT"],                   "mqtt",    "mqtt"),
+    (["MODBUS"],                 "modbus",  "hardware"),
+    (["NLP"],                    "nlp",     "api"),
+    (["GITHUB"],                 "github",  "scm"),
+]
+
+
 def scan_integrations(root: Path, spec: DoqlSpec) -> None:
     """Detect external integrations from .env and code."""
     env_text = " ".join(spec.env_refs).upper()
-
-    if "SMTP" in env_text or "EMAIL" in env_text or "MAIL" in env_text:
-        spec.integrations.append(Integration(name="email", type="smtp"))
-
-    if "SLACK" in env_text:
-        spec.integrations.append(Integration(name="slack", type="webhook"))
-
-    if "STRIPE" in env_text:
-        spec.integrations.append(Integration(name="stripe", type="payment"))
-
-    if "S3" in env_text or "MINIO" in env_text or "STORAGE" in env_text:
-        spec.integrations.append(Integration(name="storage", type="s3"))
-
-    if "MQTT" in env_text:
-        spec.integrations.append(Integration(name="mqtt", type="mqtt"))
-
-    if "MODBUS" in env_text:
-        spec.integrations.append(Integration(name="modbus", type="hardware"))
-
-    if "NLP" in env_text:
-        spec.integrations.append(Integration(name="nlp", type="api"))
-
-    if "GITHUB" in env_text:
-        spec.integrations.append(Integration(name="github", type="scm"))
+    for keywords, name, itype in _ENV_INTEGRATIONS:
+        if any(kw in env_text for kw in keywords):
+            spec.integrations.append(Integration(name=name, type=itype))
