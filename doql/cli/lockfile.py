@@ -11,6 +11,11 @@ from .. import __version__
 from .context import BuildContext
 
 
+def _simple_items_hash(items, key_prefix: str, val_fn, h_fn) -> dict:
+    """Hash a flat list of spec items into {key_prefix:name -> hash} entries."""
+    return {f"{key_prefix}:{item.name}": h_fn(val_fn(item)) for item in items}
+
+
 def spec_section_hashes(spec, ctx: BuildContext) -> dict:
     """Compute per-section hashes for diff detection."""
     def _h(data: str) -> str:
@@ -19,39 +24,29 @@ def spec_section_hashes(spec, ctx: BuildContext) -> dict:
     hashes = {
         "spec_file": hashlib.sha256(ctx.doql_file.read_bytes()).hexdigest(),
     }
-    
+
     # Entity hashes
     for e in spec.entities:
-        key = f"entity:{e.name}"
         fields_str = "|".join(f"{f.name}:{f.type}:{f.required}:{f.unique}:{f.ref}" for f in e.fields)
-        hashes[key] = _h(fields_str)
-    
+        hashes[f"entity:{e.name}"] = _h(fields_str)
+
     # Interface hashes
     for i in spec.interfaces:
-        key = f"interface:{i.name}"
         pages_str = "|".join(p.name for p in i.pages)
-        hashes[key] = _h(f"{i.type}:{pages_str}")
-    
-    # Document hashes
-    for d in spec.documents:
-        hashes[f"document:{d.name}"] = _h(f"{d.type}:{d.template}:{d.output}")
-    
-    # Report hashes
-    for r in spec.reports:
-        hashes[f"report:{r.name}"] = _h(f"{r.schedule}:{r.output}:{r.template}")
-    
-    # Integration hashes
-    for ig in spec.integrations:
-        hashes[f"integration:{ig.name}"] = _h(ig.name)
-    
-    # Roles
+        hashes[f"interface:{i.name}"] = _h(f"{i.type}:{pages_str}")
+
+    hashes.update(_simple_items_hash(spec.documents, "document",
+                                     lambda d: f"{d.type}:{d.template}:{d.output}", _h))
+    hashes.update(_simple_items_hash(spec.reports, "report",
+                                     lambda r: f"{r.schedule}:{r.output}:{r.template}", _h))
+    hashes.update(_simple_items_hash(spec.integrations, "integration",
+                                     lambda ig: ig.name, _h))
+
     if spec.roles:
         hashes["roles"] = _h("|".join(r.name if hasattr(r, 'name') else str(r) for r in spec.roles))
-    
-    # Languages
     if spec.languages:
         hashes["languages"] = _h("|".join(spec.languages))
-    
+
     return hashes
 
 

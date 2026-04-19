@@ -4,6 +4,15 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [0.1.8] - 2026-04-19
+
+### Other
+- Update doql/cli/commands/doctor.py
+- Update doql/cli/commands/run.py
+- Update doql/cli/commands/validate.py
+- Update doql/cli/lockfile.py
+- Update doql/generators/api_gen/alembic.py
+
 ## [0.1.7] - 2026-04-19
 
 ### Other

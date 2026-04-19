@@ -9,6 +9,17 @@ from ... import parser as doql_parser
 from ...parsers import detect_doql_file
 
 
+def _print_issues(issues: list) -> int:
+    """Print issues and return 1 if any errors, else 0."""
+    errors = sum(1 for i in issues if i.severity == "error")
+    warnings = sum(1 for i in issues if i.severity == "warning")
+    for issue in issues:
+        level = "❌" if issue.severity == "error" else "⚠️ "
+        print(f"{level} {issue.path}: {issue.message}")
+    print(f"\n  {errors} error(s), {warnings} warning(s)")
+    return 1 if errors > 0 else 0
+
+
 def cmd_validate(args: argparse.Namespace) -> int:
     """Validate .doql file and .env configuration.
     
@@ -34,12 +45,4 @@ def cmd_validate(args: argparse.Namespace) -> int:
         print("✅ Everything looks good.")
         return 0
 
-    errors = sum(1 for i in issues if i.severity == "error")
-    warnings = sum(1 for i in issues if i.severity == "warning")
-    
-    for issue in issues:
-        level = "❌" if issue.severity == "error" else "⚠️ "
-        print(f"{level} {issue.path}: {issue.message}")
-    
-    print(f"\n  {errors} error(s), {warnings} warning(s)")
-    return 1 if errors > 0 else 0
+    return _print_issues(issues)

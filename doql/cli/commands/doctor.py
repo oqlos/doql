@@ -137,6 +137,14 @@ def _check_databases(spec: DoqlSpec, report: DoctorReport) -> None:
             report.add(f"db:{db.name}", "warn", f"{db.type} has no url configured")
 
 
+def _warn_unknown_entity_refs(iface, entity_names: set, report: DoctorReport) -> None:
+    """Warn if interface references entities that don't exist in the spec."""
+    for ename in iface.entities:
+        if ename not in entity_names:
+            report.add(f"interface:{iface.name}", "warn",
+                       f"References unknown entity '{ename}'")
+
+
 def _check_interfaces(spec: DoqlSpec, report: DoctorReport) -> None:
     """Check interface consistency."""
     if not spec.interfaces:
@@ -144,10 +152,7 @@ def _check_interfaces(spec: DoqlSpec, report: DoctorReport) -> None:
         return
     entity_names = {e.name for e in spec.entities}
     for iface in spec.interfaces:
-        for ename in iface.entities:
-            if ename not in entity_names:
-                report.add(f"interface:{iface.name}", "warn",
-                           f"References unknown entity '{ename}'")
+        _warn_unknown_entity_refs(iface, entity_names, report)
         if iface.name != "api" and not iface.pages:
             report.add(f"interface:{iface.name}", "warn", "No pages defined")
 
@@ -208,6 +213,22 @@ def _check_environments(spec: DoqlSpec, report: DoctorReport) -> None:
         report.add(f"env:{env.name}", "ok", ", ".join(parts))
 
 
+def _ssh_run(host: str, cmd: str | list[str]) -> tuple[int, str, str] | None:
+    """Run an SSH command; return (returncode, stdout, stderr) or None on timeout/not-found."""
+    if isinstance(cmd, str):
+        remote_args = [cmd]
+    else:
+        remote_args = cmd
+    try:
+        result = subprocess.run(
+            ["ssh", "-o", "ConnectTimeout=5", "-o", "BatchMode=yes", host] + remote_args,
+            capture_output=True, text=True, timeout=10,
+        )
+        return result.returncode, result.stdout.strip(), result.stderr.strip()
+    except (subprocess.TimeoutExpired, FileNotFoundError):
+        return None
+
+
 def _check_remote(spec: DoqlSpec, env_name: str, report: DoctorReport) -> None:
     """Run remote diagnostics via SSH for a specific environment."""
     env = next((e for e in spec.environments if e.name == env_name), None)
@@ -219,48 +240,30 @@ def _check_remote(spec: DoqlSpec, env_name: str, report: DoctorReport) -> None:
         return
 
     # SSH connectivity
-    try:
-        result = subprocess.run(
-            ["ssh", "-o", "ConnectTimeout=5", "-o", "BatchMode=yes",
-             env.ssh_host, "echo ok"],
-            capture_output=True, text=True, timeout=10,
-        )
-        if result.returncode == 0:
-            report.add("remote:ssh", "ok", f"SSH to {env.ssh_host} reachable")
-        else:
-            report.add("remote:ssh", "fail",
-                        f"SSH to {env.ssh_host} failed: {result.stderr.strip()}")
-            return  # no point checking further
-    except (subprocess.TimeoutExpired, FileNotFoundError):
+    res = _ssh_run(env.ssh_host, ["echo", "ok"])
+    if res is None:
         report.add("remote:ssh", "fail", f"SSH to {env.ssh_host} timed out / ssh not found")
         return
+    rc, _, stderr = res
+    if rc != 0:
+        report.add("remote:ssh", "fail", f"SSH to {env.ssh_host} failed: {stderr}")
+        return
+    report.add("remote:ssh", "ok", f"SSH to {env.ssh_host} reachable")
 
     # Check remote runtime
-    runtime = env.runtime
-    check_cmd = "podman --version" if runtime in ("quadlet", "podman") else "docker --version"
-    try:
-        result = subprocess.run(
-            ["ssh", "-o", "ConnectTimeout=5", env.ssh_host, check_cmd],
-            capture_output=True, text=True, timeout=10,
-        )
-        if result.returncode == 0:
-            report.add("remote:runtime", "ok", result.stdout.strip())
-        else:
-            report.add("remote:runtime", "warn", f"{check_cmd} not available on remote")
-    except (subprocess.TimeoutExpired, FileNotFoundError):
+    check_cmd = "podman --version" if env.runtime in ("quadlet", "podman") else "docker --version"
+    res = _ssh_run(env.ssh_host, check_cmd)
+    if res is None:
         report.add("remote:runtime", "warn", "Could not check remote runtime")
+    elif res[0] == 0:
+        report.add("remote:runtime", "ok", res[1])
+    else:
+        report.add("remote:runtime", "warn", f"{check_cmd} not available on remote")
 
     # Disk space
-    try:
-        result = subprocess.run(
-            ["ssh", "-o", "ConnectTimeout=5", env.ssh_host,
-             "df -h / | tail -1 | awk '{print $4}'"],
-            capture_output=True, text=True, timeout=10,
-        )
-        if result.returncode == 0:
-            report.add("remote:disk", "ok", f"Free space: {result.stdout.strip()}")
-    except (subprocess.TimeoutExpired, FileNotFoundError):
-        pass
+    res = _ssh_run(env.ssh_host, "df -h / | tail -1 | awk '{print $4}'")
+    if res is not None and res[0] == 0:
+        report.add("remote:disk", "ok", f"Free space: {res[1]}")
 
 
 # ── main entry point ───────────────────────────────────────────

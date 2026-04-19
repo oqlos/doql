@@ -106,6 +106,41 @@ def cmd_run(args: argparse.Namespace) -> int:
     return subprocess.call(["docker", "compose", "-f", str(compose), "up", "--build"])
 
 
+def _run_api(target_dir: pathlib.Path, port: int | None) -> int:
+    api_port = port or 8000
+    req = target_dir / "requirements.txt"
+    if req.exists():
+        subprocess.call([sys.executable, "-m", "pip", "install", "-q", "-r", str(req)])
+    print(f"🚀 Starting API: http://localhost:{api_port}  (docs: http://localhost:{api_port}/docs)")
+    return subprocess.call(
+        [sys.executable, "-m", "uvicorn", "main:app", "--reload",
+         "--host", "127.0.0.1", "--port", str(api_port)],
+        cwd=target_dir,
+    )
+
+
+def _run_web(target_dir: pathlib.Path, port: int | None) -> int:
+    pkg = target_dir / "package.json"
+    if not pkg.exists():
+        print("❌ build/web/package.json not found.", file=sys.stderr)
+        return 1
+    web_port = port or 5173
+    subprocess.call(["npm", "install"], cwd=target_dir)
+    print(f"🚀 Starting Web: http://localhost:{web_port}")
+    env = {**os.environ, "PORT": str(web_port)}
+    return subprocess.call(["npm", "run", "dev", "--", "--port", str(web_port)], cwd=target_dir, env=env)
+
+
+def _run_desktop(target_dir: pathlib.Path) -> int:
+    pkg = target_dir / "package.json"
+    if not pkg.exists():
+        print("❌ build/desktop/package.json not found.", file=sys.stderr)
+        return 1
+    subprocess.call(["npm", "install"], cwd=target_dir)
+    print("🚀 Starting Desktop (Tauri)...")
+    return subprocess.call(["npm", "run", "dev"], cwd=target_dir)
+
+
 def _run_target(build_dir: pathlib.Path, target: str, port: int | None = None) -> int:
     """Run a specific interface target."""
     target_dir = build_dir / target
@@ -114,28 +149,9 @@ def _run_target(build_dir: pathlib.Path, target: str, port: int | None = None) -
         return 1
 
     if target == "api":
-        api_port = port or 8000
-        req = target_dir / "requirements.txt"
-        if req.exists():
-            subprocess.call([sys.executable, "-m", "pip", "install", "-q", "-r", str(req)])
-        print(f"🚀 Starting API: http://localhost:{api_port}  (docs: http://localhost:{api_port}/docs)")
-        return subprocess.call(
-            [sys.executable, "-m", "uvicorn", "main:app", "--reload",
-             "--host", "127.0.0.1", "--port", str(api_port)],
-            cwd=target_dir,
-        )
-
+        return _run_api(target_dir, port)
     if target == "web":
-        pkg = target_dir / "package.json"
-        if not pkg.exists():
-            print("❌ build/web/package.json not found.", file=sys.stderr)
-            return 1
-        web_port = port or 5173
-        subprocess.call(["npm", "install"], cwd=target_dir)
-        print(f"🚀 Starting Web: http://localhost:{web_port}")
-        env = {**os.environ, "PORT": str(web_port)}
-        return subprocess.call(["npm", "run", "dev", "--", "--port", str(web_port)], cwd=target_dir, env=env)
-
+        return _run_web(target_dir, port)
     if target == "mobile":
         mobile_port = port or 8091
         print(f"🚀 Starting Mobile (PWA): http://localhost:{mobile_port}")
@@ -143,15 +159,8 @@ def _run_target(build_dir: pathlib.Path, target: str, port: int | None = None) -
             [sys.executable, "-m", "http.server", str(mobile_port)],
             cwd=target_dir,
         )
-
     if target == "desktop":
-        pkg = target_dir / "package.json"
-        if not pkg.exists():
-            print("❌ build/desktop/package.json not found.", file=sys.stderr)
-            return 1
-        subprocess.call(["npm", "install"], cwd=target_dir)
-        print(f"🚀 Starting Desktop (Tauri)...")
-        return subprocess.call(["npm", "run", "dev"], cwd=target_dir)
+        return _run_desktop(target_dir)
 
     print(f"❌ Unknown target '{target}'. Use: api, web, mobile, desktop", file=sys.stderr)
     return 1

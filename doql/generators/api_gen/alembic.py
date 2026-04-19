@@ -98,6 +98,30 @@ def gen_alembic_env() -> str:
     )
 
 
+def _entity_table_columns(ent) -> list[str]:
+    """Return the sa.Column(...) lines for one entity table."""
+    cols = []
+    if not any(f.name == "id" for f in ent.fields):
+        cols.append('        sa.Column("id", sa.String(36), primary_key=True),')
+    for f in ent.fields:
+        if f.computed:
+            continue
+        sa_type_str = sa_type(f)
+        col_args = []
+        if f.name == "id":
+            col_args.append("primary_key=True")
+        if f.unique:
+            col_args.append("unique=True")
+        if not f.required and f.name != "id":
+            col_args.append("nullable=True")
+        args_str = ", ".join(col_args)
+        if args_str:
+            cols.append(f'        sa.Column("{safe_name(f.name)}", sa.{sa_type_str}, {args_str}),')
+        else:
+            cols.append(f'        sa.Column("{safe_name(f.name)}", sa.{sa_type_str}),')
+    return cols
+
+
 def gen_initial_migration(spec: DoqlSpec) -> str:
     """Generate initial Alembic migration with all tables."""
     lines = [
@@ -116,36 +140,10 @@ def gen_initial_migration(spec: DoqlSpec) -> str:
         table = snake(ent.name) + "s"
         lines.append(f'    op.create_table(')
         lines.append(f'        "{table}",')
-
-        has_id = any(f.name == "id" for f in ent.fields)
-        if not has_id:
-            lines.append(f'        sa.Column("id", sa.String(36), primary_key=True),')
-
-        for f in ent.fields:
-            if f.computed:
-                continue
-
-            sa_type_str = sa_type(f)
-            col_args = []
-            if f.name == "id":
-                col_args.append("primary_key=True")
-            if f.unique:
-                col_args.append("unique=True")
-            if not f.required and f.name != "id":
-                col_args.append("nullable=True")
-
-            args_str = ", ".join(col_args)
-            if args_str:
-                lines.append(f'        sa.Column("{safe_name(f.name)}", sa.{sa_type_str}, {args_str}),')
-            else:
-                lines.append(f'        sa.Column("{safe_name(f.name)}", sa.{sa_type_str}),')
-
+        lines.extend(_entity_table_columns(ent))
         lines.append(f'    )')
 
-    lines.append('')
-    lines.append('')
-    lines.append('def downgrade():')
-
+    lines.extend(['', '', 'def downgrade():'])
     for ent in reversed(spec.entities):
         table = snake(ent.name) + "s"
         lines.append(f'    op.drop_table("{table}")')
