@@ -1,38 +1,59 @@
-chodzi nie tylko o tworzenie systemow, aplikacji, uslug, ale tez tez o tworzenie dokumentów z uzcyiem html, szablonow, markdown, plikow danych json, baz danych sqlite, dostepu do api czy uslug itd z latwym reuzyciem danych z .json .env
+# doql TODO
 
-- przeniesć z maskservice/c2004 do maskservice/workshop wszystko co zwiazane z zarzadzaniem urzadzen w kontkescie worksop i funkcje worskopu oraz dane workshop
-- skanowanie urządzenia
-- lista urządzeń na stanie i ich lokalizacja
-- pliki zwiazane z urzadzeniem pdf, apki, archiwa, drivers, reports, certyfikaty, przegladwo
-- faktury zakupowe
+## Vision Notes
 
-Interfejs pozwalajacy na filtracje urzadzen i prezentacje oraz uruchamianie akcji na wyfiltorwanym urzadzeniu lub urzadzeniach
-mozliwosc skanowania kodi wywolywanie grup urzadzen lub pojedynczego urzadzenia
+- doql = deklaratywny język budowania usług, aplikacji, dokumentów, szablonów
+- Nie tylko systemy — też dokumenty HTML/MD, pliki JSON, bazy SQLite, dostęp do API
+- Łatwe reużycie danych z `.json`, `.env`
+- Aplikacje w formacie Docker/Quadlet/Podman/Traefik z desktop/kiosk (mobilna jak w pactown)
 
-cechy, tagi, zwiazane z kodem urzadenia lub grupy urzadzen
+## P0 — Stable release blockers
 
-logika pozwalajaca na przepisywanie ID tagow orznego typu do ID bazy danych w formacie sqlite
-aplikacja w formacie docker quadlet podman traefik z implementacja desktop dla kiosk: mobilna/desktop jak w pactown
+- [ ] `doql adopt` — end-to-end test with real project (oqlos itself)
+- [ ] `doql doctor` — add `--fix` flag for auto-remediation of fixable issues
+- [ ] pytest coverage: add `pytest-cov` + `.coveragerc`, target ≥ 50%
 
+## P1 — Quality / CC hotspots
 
+- [ ] `doql/adopt/scanner.py` (~400 lines) — split by interface detector type (FastAPI, Flask, CLI, Web)
+- [ ] `doql/parsers/css_parser.py` — remaining CC hotspots after sesja 11 refactoring
+- [ ] `doql/exporters/` — validate backward-compat shims are tested
 
-oql - imperatywny realizacji zadan
-doql - deklaratywny budowania uslug aplikacji, dokuemntow, wykorzystania templates
-iql - język deklaratywny komunikacji i testowania interfejsów
+## P2 — Features / Backlog
 
+### Language features
+- [ ] Tree-sitter parser (full `.doql` grammar, error recovery)
+- [ ] `maskservice/workshop` — migrate device management from `maskservice/c2004`:
+  - device inventory + location, scan device/barcode QR
+  - associated files (PDFs, drivers, reports, certs, invoices)
+  - tag/feature filtering + bulk actions
+  - tag ID → SQLite ID remapping logic
+- [ ] VS Code extension: `.doql.css` / `.doql.less` / `.doql.sass` syntax highlighting
 
----
+### CLI improvements
+- [ ] `doql build --watch` — file watcher for dev loop
+- [ ] `doql deploy` — `@local`/`@push`/`@remote`: add rollback support
+- [ ] `doql publish --target github` — automated GitHub Release notes from CHANGELOG
 
-chodzi nie tylko o tworzenie systemow, aplikacji, uslug, ale tez tez o tworzenie dokumentów z uzcyiem html, szablonow, markdown, plikow danych json, baz danych sqlite, dostepu do api czy uslug itd z latwym reuzyciem danych z .json .env
+## Tests
 
+- [ ] Run `testql run testql-scenarios/generated-api-smoke.testql.toon.yaml`
+- [ ] Run `testql run testql-scenarios/generated-api-integration.testql.toon.yaml`
+- [ ] Run `testql run testql-scenarios/generated-from-pytests.testql.toon.yaml`
+- [ ] Pilot w realnej firmie — zidentyfikować projekt
 
-oql - imperatywny realizacji zadan
+## ✅ Done
 
-doql - deklaratywny budowania uslug aplikacji, dokuemntow, wykorzystania templates
-
-iql - język deklaratywny komunikacji i testowania interfejsów
-
-
-
-doql powinien pozwalac na realziacje aplikacji w formacie docker quadlet podman traefik z implementacja desktop dla kiosk: mobilna/desktop jak w pactown
+- [x] `doql adopt` — reverse-engineer project into `app.doql.css` (sesja 13)
+- [x] `Environment` model — `environment[name="prod"]` with runtime/ssh_host (sesja 13)
+- [x] Generated manifests for 5 sibling projects (sesja 13)
+- [x] `doql doctor` — 9-check health diagnostic with optional `--env` remote SSH (sesja 14)
+- [x] `doql build --no-overwrite` — merge-friendly build (sesja 14)
+- [x] Deploy directives `@local`/`@push`/`@remote` (sesja 14)
+- [x] `doql publish` — PyPI, npm, Docker, GitHub targets (sesja 14)
+- [x] 130 tests passing (sesja 14)
+- [x] `css_exporter`, `markdown_exporter` split into packages (sesja 11)
+- [x] `css_tokenizer.py` extracted from `css_parser.py` (sesja 11)
+- [x] testql-scenarios generated (3 files)
+- [x] README AI cost tracking removed; version badge updated to 0.1.3
 

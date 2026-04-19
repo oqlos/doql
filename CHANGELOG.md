@@ -4,6 +4,35 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-04-19
+
+### Docs
+- Update CHANGELOG.md
+- Update README.md
+- Update SUMD.md
+- Update SUMR.md
+- Update TODO.md
+
+### Test
+- Update testql-scenarios/generated-api-smoke.testql.toon.yaml
+
+### Other
+- Update Taskfile.yml
+- Update doql/cli/main.py
+- Update project/map.toon.yaml
+- Update sumd.json
+
+## [0.1.3] - 2026-04-19
+
+### Added
+- testql-scenarios: `generated-api-smoke.testql.toon.yaml` — API smoke tests
+- testql-scenarios: `generated-api-integration.testql.toon.yaml` — API integration flows
+- testql-scenarios: `generated-from-pytests.testql.toon.yaml` — scenarios from pytest suite
+
+### Docs
+- Removed AI cost tracking badges from README
+- Version badge updated to 0.1.3
+
 ### Added (sesja 13 — doql adopt + environments)
 - **`doql adopt`** command — reverse-engineer existing project into `app.doql.css`.
   Scans `pyproject.toml`, `package.json`, `.env`, `Dockerfile`, `docker-compose.yml`,

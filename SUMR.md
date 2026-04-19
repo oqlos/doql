@@ -17,7 +17,7 @@ SUMD - Structured Unified Markdown Descriptor for AI-aware project refactorizati
 ## Metadata
 
 - **name**: `doql`
-- **version**: `0.1.2`
+- **version**: `0.1.3`
 - **python_requires**: `>=3.10`
 - **license**: Apache-2.0
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
@@ -176,12 +176,35 @@ tasks:
   install:
     desc: Install Python dependencies (editable)
     cmds:
-      - pip install -e .[dev]
+      - pip install -e plugins/doql-plugin-shared -e plugins/doql-plugin-gxp -e plugins/doql-plugin-iso17025 -e plugins/doql-plugin-fleet -e plugins/doql-plugin-erp -e .[dev]
+
+  deps:update:
+    desc: Upgrade all outdated Python packages in the active / project venv (including plugins)
+    cmds:
+      - |
+        PIP="pip"
+        [ -f "{{.PWD}}/.venv/bin/pip" ] && PIP="{{.PWD}}/.venv/bin/pip"
+        $PIP install --upgrade pip
+        OUTDATED=$($PIP list --outdated --format=columns 2>/dev/null | tail -n +3 | awk '{print $1}')
+        if [ -z "$OUTDATED" ]; then
+          echo "✅ All packages are up to date."
+        else
+          echo "📦 Upgrading: $OUTDATED"
+          echo "$OUTDATED" | xargs $PIP install --upgrade
+          echo "✅ Done."
+        fi
+        echo "🔌 Reinstalling local plugins..."
+        $PIP install -e plugins/doql-plugin-shared -e plugins/doql-plugin-gxp -e plugins/doql-plugin-iso17025 -e plugins/doql-plugin-fleet -e plugins/doql-plugin-erp -e .[dev] -q
 
   quality:
     desc: Run pyqual quality pipeline
     cmds:
       - pyqual run
+
+  test:
+    desc: Run pytest suite
+    cmds:
+      - pytest -q
 
   quality:fix:
     desc: Run pyqual with auto-fix
@@ -379,17 +402,17 @@ pfix>=0.1.60
 
 ```python
 def _parse_doc(source)  # CC=2, fan=1
-def _find_line_col(source, needle)  # CC=3, fan=3
-def _diagnostics_for(source, uri)  # CC=10, fan=17 ⚠
+def _find_line_col(source, needle)  # CC=2, fan=3
+def _diagnostics_for(source, uri)  # CC=4, fan=17
 def _word_at(source, position)  # CC=8, fan=3
 def _on_text_document_event(ls, uri)  # CC=1, fan=3
 def did_open(ls, params)  # CC=1, fan=2
 def did_change(ls, params)  # CC=1, fan=2
 def did_save(ls, params)  # CC=1, fan=2
 def completion(ls, params)  # CC=5, fan=8
-def hover(ls, params)  # CC=14, fan=9 ⚠
+def hover(ls, params)  # CC=12, fan=9 ⚠
 def definition(ls, params)  # CC=3, fan=14
-def document_symbols(ls, params)  # CC=8, fan=10
+def document_symbols(ls, params)  # CC=7, fan=10
 def main()  # CC=2, fan=5
 ```
 
@@ -417,9 +440,12 @@ class Plugin:
 - assert `response_time < 1000`
 
 **`Auto-generated API Smoke Tests`**
+- `GET /api/v1/notebooks` → `200`
+- `POST /api/v1/notebooks` → `201`
+- `GET /api/v1/notes` → `200`
 - assert `status < 500`
 - assert `response_time < 2000`
-- detectors: ConfigEndpointDetector
+- detectors: FastAPIDetector, ConfigEndpointDetector
 
 ### Integration (1)
 

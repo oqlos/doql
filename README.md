@@ -3,16 +3,67 @@
 
 ## AI Cost Tracking
 
-![AI Cost](https://img.shields.io/badge/AI%20Cost-$4.20-green) ![AI Model](https://img.shields.io/badge/AI%20Model-openrouter%2Fqwen%2Fqwen3-coder-next-lightgrey)
+![AI Cost](https://img.shields.io/badge/AI%20Cost-$4.35-green) ![AI Model](https://img.shields.io/badge/AI%20Model-openrouter%2Fqwen%2Fqwen3-coder-next-lightgrey)
 
-This project uses AI-generated code. Total cost: **$4.2000** with **28** AI commits.
+This project uses AI-generated code. Total cost: **$4.3500** with **29** AI commits.
 
 Generated on 2026-04-19 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/models/openrouter/qwen/qwen3-coder-next)
 
 ---
 
+
+
+![Version](https://img.shields.io/badge/version-0.1.4-blue) ![Python](https://img.shields.io/badge/python-3.10+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+
+
+
+---
+
 **Data wydania:** 2026-04-16  
 **Zawartość:** repo `doql/` + repo `articles/` + ten README
+
+---
+
+## Do czego można użyć doql
+
+**doql (Declarative OQL)** to generator deklaratywny, który z jednego pliku `.doql` tworzy kompletne aplikacje, dokumenty i integracje. Zamiast pisać kod — deklarujesz **co** ma powstać, a generator robi **jak**.
+
+### 10 głównych zastosowań
+
+| # | Zastosowanie | Co powstaje | Przykład w repo |
+|---|--------------|-------------|-----------------|
+| 1 | **Aplikacje SaaS** | Full-stack: API + Web + Mobile + Desktop | `examples/asset-management/` — klon Drägerware dla BHP |
+| 2 | **Laboratoria kalibracyjne** | System ISO 17025 z 4-eyes, WORM, świadectwami | `examples/calibration-lab/` — lab z zarządzaniem wzorcami |
+| 3 | **Flota IoT** | Zarządzanie urządzeniami, OTA, monitoring Prometheus | `examples/iot-fleet/` — flota Raspberry Pi z mapą |
+| 4 | **Generowanie dokumentów** | PDF, HTML, DOCX bez backendu | `examples/document-generator/` — świadectwa kalibracyjne |
+| 5 | **Stanowiska kiosk** | Tablety/Raspberry Pi w trybie fullscreen | `examples/kiosk-station/` — operator panel na hali |
+| 6 | **Prototypy full-stack** | API + web + mobile + desktop z jednego pliku | `examples/notes-app/` — notatnik wszystkie platformy |
+| 7 | **Aplikacje PWA** | Mobile-first, offline, installable | `examples/todo-pwa/` — minimalna lista zadań |
+| 8 | **Systemy CMS** | Blogi, treści, tagi, komentarze | `examples/blog-cms/` — prosty blog |
+| 9 | **CRM i pipeline** | Kontakty, leady, sprzedaż | `examples/crm-contacts/` — zarządzanie klientami |
+| 10 | **Sklepy e-commerce** | Koszyk, zamówienia, płatności | `examples/e-commerce-shop/` — sklep online |
+
+### Co generuje doql z jednej deklaracji
+
+- **API** — FastAPI, OpenAPI, SDK TypeScript
+- **Web** — React + Vite, responsywny UI
+- **Mobile** — PWA (Progressive Web App)
+- **Desktop** — Tauri v2 (Rust-based, lightweight)
+- **Dokumenty** — PDF, HTML, Markdown, DOCX
+- **Bazy danych** — SQLite, PostgreSQL ze schematem
+- **Infrastruktura** — Docker, Kubernetes, systemd
+- **Testy** — Scenariusze `.testql.toon.yaml` z integracją hardware
+
+### Formaty deklaracji
+
+```bash
+app.doql          # YAML-like, indentacja
+app.doql.css      # CSS-like: entity[name="X"] { ... }
+app.doql.less     # CSS + zmienne @primary
+app.doql.sass     # SASS + zmienne $primary
+```
+
+Wszystkie formaty są równoważne — możesz konwertować między nimi.
 
 ---
 

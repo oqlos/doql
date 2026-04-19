@@ -1,6 +1,6 @@
 # doql | 173f 22153L | python:136,css:15,less:11,shell:6,javascript:4,typescript:1 | 2026-04-19
-# stats: 584 func | 38 cls | 173 mod | CC̄=4.0 | critical:42 | cycles:0
-# alerts[5]: CC test_build_produces_expected_targets=33; CC check_api=25; CC _extract_python_cli_workflows=24; CC check_desktop=17; CC test_api_boot_and_health=17
+# stats: 584 func | 38 cls | 173 mod | CC̄=3.3 | critical:28 | cycles:0
+# alerts[5]: CC _convert_indent_to_braces=29; CC _extract_python_cli_workflows=24; CC check_api=22; CC scan_entities=16; CC test_api_boot_and_health=16
 # hotspots[5]: check_api fan=26; test_api_boot_and_health fan=26; _extract_python_cli_workflows fan=21; main fan=21; cmd_build fan=20
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods

@@ -22,7 +22,7 @@ Declarative OQL — build complete applications from a single .doql file
 ## Metadata
 
 - **name**: `doql`
-- **version**: `0.1.2`
+- **version**: `0.1.3`
 - **python_requires**: `>=3.10`
 - **license**: Apache-2.0
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
@@ -194,19 +194,33 @@ ASSERT[2]{field, operator, expected}:
 # SCENARIO: Auto-generated API Smoke Tests
 # TYPE: api
 # GENERATED: true
-# DETECTORS: ConfigEndpointDetector
+# DETECTORS: FastAPIDetector, ConfigEndpointDetector
 
 CONFIG[4]{key, value}:
   base_url, http://localhost:8101
   timeout_ms, 10000
   retry_count, 3
-  detected_frameworks, ConfigEndpointDetector
+  detected_frameworks, FastAPIDetector, ConfigEndpointDetector
+
+# REST API Endpoints (10 unique)
+API[10]{method, endpoint, expected_status}:
+  GET, /api/v1/notebooks, 200
+  POST, /api/v1/notebooks, 201
+  GET, /api/v1/notes, 200
+  POST, /api/v1/notes, 201
+  GET, /api/v1/tags, 200
+  POST, /api/v1/tags, 201
+  POST, /auth/register, 201
+  POST, /auth/login, 201
+  GET, /auth/me, 200
+  GET, /health, 200
 
 ASSERT[2]{field, operator, expected}:
   status, <, 500
   response_time, <, 2000
 
 # Summary by Framework:
+#   fastapi: 19 endpoints
 #   docker: 1 endpoints
 ```
 
@@ -253,12 +267,35 @@ tasks:
   install:
     desc: Install Python dependencies (editable)
     cmds:
-      - pip install -e .[dev]
+      - pip install -e plugins/doql-plugin-shared -e plugins/doql-plugin-gxp -e plugins/doql-plugin-iso17025 -e plugins/doql-plugin-fleet -e plugins/doql-plugin-erp -e .[dev]
+
+  deps:update:
+    desc: Upgrade all outdated Python packages in the active / project venv (including plugins)
+    cmds:
+      - |
+        PIP="pip"
+        [ -f "{{.PWD}}/.venv/bin/pip" ] && PIP="{{.PWD}}/.venv/bin/pip"
+        $PIP install --upgrade pip
+        OUTDATED=$($PIP list --outdated --format=columns 2>/dev/null | tail -n +3 | awk '{print $1}')
+        if [ -z "$OUTDATED" ]; then
+          echo "✅ All packages are up to date."
+        else
+          echo "📦 Upgrading: $OUTDATED"
+          echo "$OUTDATED" | xargs $PIP install --upgrade
+          echo "✅ Done."
+        fi
+        echo "🔌 Reinstalling local plugins..."
+        $PIP install -e plugins/doql-plugin-shared -e plugins/doql-plugin-gxp -e plugins/doql-plugin-iso17025 -e plugins/doql-plugin-fleet -e plugins/doql-plugin-erp -e .[dev] -q
 
   quality:
     desc: Run pyqual quality pipeline
     cmds:
       - pyqual run
+
+  test:
+    desc: Run pytest suite
+    cmds:
+      - pytest -q
 
   quality:fix:
     desc: Run pyqual with auto-fix
@@ -423,7 +460,7 @@ pipeline:
 ```yaml
 project:
   name: doql
-  version: 0.1.2
+  version: 0.1.3
   env: local
 ```
 
@@ -495,9 +532,9 @@ pip install -e .[dev]
 ### `project/map.toon.yaml`
 
 ```toon markpact:analysis path=project/map.toon.yaml
-# doql | 173f 22145L | python:136,css:15,less:11,shell:6,javascript:4,typescript:1 | 2026-04-18
-# stats: 583 func | 38 cls | 173 mod | CC̄=4.0 | critical:42 | cycles:0
-# alerts[5]: CC test_build_produces_expected_targets=33; CC check_api=25; CC _extract_python_cli_workflows=24; CC check_desktop=17; CC test_api_boot_and_health=17
+# doql | 173f 22153L | python:136,css:15,less:11,shell:6,javascript:4,typescript:1 | 2026-04-19
+# stats: 584 func | 38 cls | 173 mod | CC̄=3.3 | critical:28 | cycles:0
+# alerts[5]: CC _convert_indent_to_braces=29; CC _extract_python_cli_workflows=24; CC check_api=22; CC scan_entities=16; CC test_api_boot_and_health=16
 # hotspots[5]: check_api fan=26; test_api_boot_and_health fan=26; _extract_python_cli_workflows fan=21; main fan=21; cmd_build fan=20
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
@@ -506,7 +543,7 @@ M[173]:
   app.doql.less,110
   doql/__init__.py,8
   doql/adopt/__init__.py,11
-  doql/adopt/emitter.py,14
+  doql/adopt/emitter.py,19
   doql/adopt/scanner/__init__.py,59
   doql/adopt/scanner/databases.py,59
   doql/adopt/scanner/deploy.py,108
@@ -523,7 +560,7 @@ M[173]:
   doql/cli/__main__.py,10
   doql/cli/build.py,195
   doql/cli/commands/__init__.py,54
-  doql/cli/commands/adopt.py,94
+  doql/cli/commands/adopt.py,95
   doql/cli/commands/deploy.py,49
   doql/cli/commands/docs.py,22
   doql/cli/commands/doctor.py,322
@@ -542,7 +579,7 @@ M[173]:
   doql/cli/commands/workspace.py,539
   doql/cli/context.py,67
   doql/cli/lockfile.py,89
-  doql/cli/main.py,160
+  doql/cli/main.py,162
   doql/cli/sync.py,120
   doql/cli.py,63
   doql/exporters/__init__.py,2
@@ -679,8 +716,9 @@ D:
   doql/__init__.py:
   doql/adopt/__init__.py:
   doql/adopt/emitter.py:
-    e: emit_css
+    e: emit_css,emit_spec
     emit_css(spec;output)
+    emit_spec(spec;output;fmt)
   doql/adopt/scanner/__init__.py:
     e: scan_project
     scan_project(root)
@@ -798,7 +836,7 @@ D:
     e: cmd_docs
     cmd_docs(args)
   doql/cli/commands/doctor.py:
-    e: Check,DoctorReport,_check_parse,_check_env,_check_files,_check_databases,_check_interfaces,_check_tools,_check_deploy,_check_environments,_check_remote,cmd_doctor,_print_report
+    e: _check_parse,_check_env,_check_files,_check_databases,_check_interfaces,_check_tools,_check_deploy,_check_environments,_check_remote,cmd_doctor,_print_report,Check,DoctorReport
     Check:
     DoctorReport: add(3),ok(0),warnings(0),failures(0)
     _check_parse(root;doql_file;report)
@@ -865,7 +903,7 @@ D:
     e: cmd_validate
     cmd_validate(args)
   doql/cli/commands/workspace.py:
-    e: DoqlProject,_is_project,_parse_doql,_discover_local,_print,_filter_projects,_print_project_table,_cmd_list,_analyze_workflow_issues,_analyze_content_issues,_analyze_content_recs,_analyze_project,_output_csv,_output_table,_cmd_analyze,_cmd_validate,_cmd_fix,_select_run_projects,_execute_single_project,_print_dry_run_commands,_print_run_summary,_cmd_run,cmd_workspace,register_parser
+    e: _is_project,_parse_doql,_discover_local,_print,_filter_projects,_print_project_table,_cmd_list,_analyze_workflow_issues,_analyze_content_issues,_analyze_content_recs,_analyze_project,_output_csv,_output_table,_cmd_analyze,_cmd_validate,_cmd_fix,_select_run_projects,_execute_single_project,_print_dry_run_commands,_print_run_summary,_cmd_run,cmd_workspace,register_parser,DoqlProject
     DoqlProject:  # Minimal project descriptor (used when taskfile is not instal
     _is_project(d)
     _parse_doql(content)
@@ -891,7 +929,7 @@ D:
     cmd_workspace(args)
     register_parser(sub)
   doql/cli/context.py:
-    e: BuildContext,build_context,load_spec,scaffold_from_template,estimate_file_count
+    e: build_context,load_spec,scaffold_from_template,estimate_file_count,BuildContext
     BuildContext:  # Build context for doql commands.
     build_context(args)
     load_spec(ctx)
@@ -1258,7 +1296,7 @@ D:
     _convert_indent_to_braces(lines)
     _sass_to_css(text)
   doql/parsers/css_utils.py:
-    e: CssBlock,ParsedSelector,_strip_comments,_strip_quotes,_parse_list,_parse_selector
+    e: _strip_comments,_strip_quotes,_parse_list,_parse_selector,CssBlock,ParsedSelector
     CssBlock:  # Single CSS-like rule: selector + key-value declarations.
     ParsedSelector:  # Decomposed CSS selector.
     _strip_comments(text)
@@ -1342,7 +1380,7 @@ D:
     _validate_interfaces(spec)
     validate(spec;env_vars;project_root)
   doql/plugins.py:
-    e: Plugin,_discover_entry_points,_discover_local,discover_plugins,run_plugins
+    e: _discover_entry_points,_discover_local,discover_plugins,run_plugins,Plugin
     Plugin:
     _discover_entry_points()
     _discover_local(project_root)
@@ -1426,7 +1464,7 @@ D:
     generate_readme(plugin_name;modules;description;usage_extra)
   tests/__init__.py:
   tests/env_manager.py:
-    e: CheckResult,TargetReport,ExampleReport,_find_free_port,_has_module,_run,check_api,check_web,check_mobile,check_desktop,check_infra,process_example,render_text,render_json,main
+    e: _find_free_port,_has_module,_run,check_api,check_web,check_mobile,check_desktop,check_infra,process_example,render_text,render_json,main,CheckResult,TargetReport,ExampleReport
     CheckResult: icon(0)
     TargetReport: ok(0)
     ExampleReport: ok(0)
@@ -1443,7 +1481,7 @@ D:
     render_json(reports)
     main(argv)
   tests/playground_e2e.py:
-    e: _QuietHandler,serve,main
+    e: serve,main,_QuietHandler
     _QuietHandler: log_message(0)
     serve()
     main()
@@ -1489,7 +1527,7 @@ D:
     test_iot_fleet_less_has_entities()
     test_notes_app_sass_has_all_interfaces()
   tests/test_exporters.py:
-    e: sample_spec,TestYamlExporter,TestMarkdownExporter,TestCssExporter,TestYamlImporter,test_yaml_roundtrip_real_example,test_css_export_real_example,test_markdown_export_real_example
+    e: sample_spec,test_yaml_roundtrip_real_example,test_css_export_real_example,test_markdown_export_real_example,TestYamlExporter,TestMarkdownExporter,TestCssExporter,TestYamlImporter
     TestYamlExporter: test_export_basic_fields(1),test_export_entities(1),test_export_interfaces(1),test_export_workflows(1),test_export_roles(1),test_export_deploy(1),test_clean_removes_empty_and_none(0)
     TestMarkdownExporter: test_export_has_title(1),test_export_has_entities(1),test_export_has_interfaces(1),test_export_has_workflows(1),test_export_has_roles(1),test_export_has_deploy(1),test_export_minimal_spec(0)
     TestCssExporter: test_export_app_block(1),test_export_entity_block(1),test_export_interface_and_pages(1),test_export_workflow(1),test_export_roles(1),test_export_deploy_no_duplicate(1),test_export_less_format(1),test_export_sass_format(1)
@@ -1560,17 +1598,17 @@ D:
 
 ```python
 def _parse_doc(source)  # CC=2, fan=1
-def _find_line_col(source, needle)  # CC=3, fan=3
-def _diagnostics_for(source, uri)  # CC=10, fan=17 ⚠
+def _find_line_col(source, needle)  # CC=2, fan=3
+def _diagnostics_for(source, uri)  # CC=4, fan=17
 def _word_at(source, position)  # CC=8, fan=3
 def _on_text_document_event(ls, uri)  # CC=1, fan=3
 def did_open(ls, params)  # CC=1, fan=2
 def did_change(ls, params)  # CC=1, fan=2
 def did_save(ls, params)  # CC=1, fan=2
 def completion(ls, params)  # CC=5, fan=8
-def hover(ls, params)  # CC=14, fan=9 ⚠
+def hover(ls, params)  # CC=12, fan=9 ⚠
 def definition(ls, params)  # CC=3, fan=14
-def document_symbols(ls, params)  # CC=8, fan=10
+def document_symbols(ls, params)  # CC=7, fan=10
 def main()  # CC=2, fan=5
 ```
 
@@ -1598,9 +1636,12 @@ class Plugin:
 - assert `response_time < 1000`
 
 **`Auto-generated API Smoke Tests`**
+- `GET /api/v1/notebooks` → `200`
+- `POST /api/v1/notebooks` → `201`
+- `GET /api/v1/notes` → `200`
 - assert `status < 500`
 - assert `response_time < 2000`
-- detectors: ConfigEndpointDetector
+- detectors: FastAPIDetector, ConfigEndpointDetector
 
 ### Integration (1)
 

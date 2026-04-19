@@ -18,12 +18,35 @@ tasks:
   install:
     desc: Install Python dependencies (editable)
     cmds:
-      - pip install -e .[dev]
+      - pip install -e plugins/doql-plugin-shared -e plugins/doql-plugin-gxp -e plugins/doql-plugin-iso17025 -e plugins/doql-plugin-fleet -e plugins/doql-plugin-erp -e .[dev]
+
+  deps:update:
+    desc: Upgrade all outdated Python packages in the active / project venv (including plugins)
+    cmds:
+      - |
+        PIP="pip"
+        [ -f "{{.PWD}}/.venv/bin/pip" ] && PIP="{{.PWD}}/.venv/bin/pip"
+        $PIP install --upgrade pip
+        OUTDATED=$($PIP list --outdated --format=columns 2>/dev/null | tail -n +3 | awk '{print $1}')
+        if [ -z "$OUTDATED" ]; then
+          echo "✅ All packages are up to date."
+        else
+          echo "📦 Upgrading: $OUTDATED"
+          echo "$OUTDATED" | xargs $PIP install --upgrade
+          echo "✅ Done."
+        fi
+        echo "🔌 Reinstalling local plugins..."
+        $PIP install -e plugins/doql-plugin-shared -e plugins/doql-plugin-gxp -e plugins/doql-plugin-iso17025 -e plugins/doql-plugin-fleet -e plugins/doql-plugin-erp -e .[dev] -q
 
   quality:
     desc: Run pyqual quality pipeline
     cmds:
       - pyqual run
+
+  test:
+    desc: Run pytest suite
+    cmds:
+      - pytest -q
 
   quality:fix:
     desc: Run pyqual with auto-fix
