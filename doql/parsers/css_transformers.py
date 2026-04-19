@@ -133,68 +133,70 @@ def _is_selector_line(stripped: str) -> bool:
     return False
 
 
+_DOQL_KNOWN_SELECTORS = {
+    'app', 'deploy', 'database', 'entity', 'interface',
+    'workflow', 'role', 'template', 'document', 'report',
+    'integration', 'webhook', 'api-client', 'data-source',
+}
+
+_DOQL_PROPERTY_PREFIXES = re.compile(
+    r'^(trigger|schedule|condition|env_file|runtime|target|framework|name|version|type)\s*:'
+)
+
+
+def _is_step_line(line: str) -> bool:
+    return re.match(r'^step-\d+:', line.lstrip()) is not None
+
+
+def _is_selector_starter(line: str) -> bool:
+    """Return True if *line* looks like a DOQL selector (not a property)."""
+    stripped = line.strip()
+    if not stripped or stripped.endswith(':') or stripped.endswith(';'):
+        return False
+    if _is_step_line(line):
+        return False
+    if _DOQL_PROPERTY_PREFIXES.match(stripped):
+        return False
+    if ':' not in stripped:
+        if re.match(r'^[\w\-]+\[', stripped):
+            return True
+        return stripped.split()[0] in _DOQL_KNOWN_SELECTORS
+    if '[' in stripped and ']' in stripped:
+        after_bracket = stripped.split(']')[-1].strip()
+        if ':' not in after_bracket and not after_bracket.startswith('{'):
+            return True
+    return False
+
+
+def _find_step_block_end(lines: list[str], start_idx: int, start_indent: int) -> int:
+    """Find end of a step-N item: next step/selector/brace at same/lower indent."""
+    for j in range(start_idx + 1, len(lines)):
+        line = lines[j].rstrip()
+        if not line:
+            continue
+        indent = len(lines[j]) - len(lines[j].lstrip())
+        stripped = line.lstrip()
+        if _is_step_line(line):
+            return j
+        if indent <= start_indent and (_is_selector_starter(line) or stripped == '}'):
+            return j
+    return len(lines)
+
+
+def _close_indent_blocks(
+    result_lines: list[str], indent_stack: list[int], current_indent: int
+) -> None:
+    """Emit closing braces for all blocks whose indent exceeds *current_indent*."""
+    while indent_stack and current_indent <= indent_stack[-1]:
+        indent_stack.pop()
+        result_lines.append('  ' * len(indent_stack) + '}')
+
+
 def _convert_indent_to_braces(lines: list[str]) -> list[str]:
     """Convert indent-based SASS blocks to brace-delimited CSS."""
     result_lines: list[str] = []
     indent_stack: list[int] = []
-    
-    def is_step_line(line: str) -> bool:
-        return re.match(r'^step-\d+:', line.lstrip()) is not None
-    
-    def is_selector_starter(line: str) -> bool:
-        # Check if line looks like a selector (workflow[name="..."], deploy, etc.)
-        stripped = line.strip()
-        if not stripped:
-            return False
-        # Selectors typically don't have ':' after the main name
-        if stripped.endswith(':'):
-            return False
-        if is_step_line(line):
-            return False
-        # Known properties
-        if re.match(r'^(trigger|schedule|condition|env_file|runtime|target|framework|name|version|type)\s*:', stripped):
-            return False
-        # If it ends with ; it's a property
-        if stripped.endswith(';'):
-            return False
-        # If no colon, check if it looks like a selector
-        # Must match pattern: word[...] (e.g., workflow[name="x"])
-        # Plain words like 'fi', 'done' are NOT selectors
-        # But known single-word selectors (app, deploy, entity, workflow, etc.) ARE selectors
-        if ':' not in stripped:
-            if bool(re.match(r'^[\w\-]+\[', stripped)):
-                return True
-            # Known single-word DOQL selectors
-            known_selectors = {'app', 'deploy', 'database', 'entity', 'interface', 
-                              'workflow', 'role', 'template', 'document', 'report',
-                              'integration', 'webhook', 'api-client', 'data-source'}
-            return stripped.split()[0] in known_selectors
-        # Check for selector patterns like workflow[name="..."]
-        if '[' in stripped and ']' in stripped:
-            after_bracket = stripped.split(']')[-1].strip()
-            if ':' not in after_bracket and not after_bracket.startswith('{'):
-                return True
-        return False
-    
-    def find_block_end(start_idx: int, start_indent: int) -> int:
-        """Find end of step value (next step-N, next selector, or end of block)."""
-        for j in range(start_idx + 1, len(lines)):
-            line = lines[j].rstrip()
-            if not line:
-                continue
-            indent = len(lines[j]) - len(lines[j].lstrip())
-            stripped = line.lstrip()
-            # Next step-N ends current step
-            if is_step_line(line):
-                return j
-            # Selector at same or lower indent level ends current step
-            if indent <= start_indent and is_selector_starter(line):
-                return j
-            # Closing brace at same level ends current step  
-            if indent <= start_indent and stripped == '}':
-                return j
-        return len(lines)
-    
+
     i = 0
     while i < len(lines):
         line = lines[i]
@@ -202,51 +204,35 @@ def _convert_indent_to_braces(lines: list[str]) -> list[str]:
         if not stripped:
             i += 1
             continue
-        
+
         current_indent = len(line) - len(line.lstrip())
-        
-        # Close blocks that have ended
-        while indent_stack and current_indent <= indent_stack[-1]:
-            indent_stack.pop()
-            result_lines.append('  ' * len(indent_stack) + '}')
-        
-        # Handle step-N declarations (collect multi-line values)
-        if is_step_line(line):
-            # Find end of this step's value (next step or end of block)
-            block_end = find_block_end(i, current_indent)
-            
-            # Collect all lines for this step
-            step_lines = [stripped.lstrip()]
-            for j in range(i + 1, block_end):
-                step_lines.append(lines[j])
-            
-            # Join and add semicolon if needed
+        _close_indent_blocks(result_lines, indent_stack, current_indent)
+
+        if _is_step_line(line):
+            block_end = _find_step_block_end(lines, i, current_indent)
+            step_lines = [stripped.lstrip()] + [lines[j] for j in range(i + 1, block_end)]
             step_value = '\n'.join(step_lines).rstrip()
             if not step_value.endswith(';'):
                 step_value += ';'
             result_lines.append('  ' * len(indent_stack) + step_value)
-            
             i = block_end
             continue
-        
-        # Handle selectors (workflow[name="..."], deploy, etc.)
-        if is_selector_starter(line):
+
+        if _is_selector_starter(line):
             result_lines.append('  ' * len(indent_stack) + stripped.lstrip() + ' {')
             indent_stack.append(current_indent)
         else:
-            # Regular property
             prop_line = stripped.lstrip()
             if not prop_line.endswith(';'):
                 prop_line += ';'
             result_lines.append('  ' * len(indent_stack) + prop_line)
-        
+
         i += 1
-    
-    # Close remaining open blocks
+
     while indent_stack:
         indent_stack.pop()
         result_lines.append('  ' * len(indent_stack) + '}')
-    
+
     return result_lines
 
 

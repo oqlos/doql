@@ -4,6 +4,11 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [0.1.6] - 2026-04-19
+
+### Other
+- Update doql/parsers/css_transformers.py
+
 ## [0.1.5] - 2026-04-19
 
 ### Docs
