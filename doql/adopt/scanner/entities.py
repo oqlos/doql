@@ -33,31 +33,29 @@ def _is_dto_name(name: str) -> bool:
     return any(name.endswith(suffix) for suffix in _DTO_SUFFIXES)
 
 
+_SCAN_EXCLUDE_SEGMENTS = (".venv", "venv", "node_modules", "/build/", "/.doql/", "/dist/")
+
+
+def _is_excluded_path(path: Path) -> bool:
+    """Return True if *path* is inside a virtual-env / build / dist directory."""
+    p = str(path)
+    return any(seg in p for seg in _SCAN_EXCLUDE_SEGMENTS)
+
+
 def scan_entities(root: Path, spec: DoqlSpec) -> None:
     """Detect entities from Python models / schemas or SQL files."""
-    # Check for models.py / schemas.py in common locations
     model_files: list[Path] = []
     for pattern in ("**/models.py", "**/schemas.py", "**/models/*.py"):
         model_files.extend(root.glob(pattern))
 
     seen: set[str] = set()
     for mf in model_files:
-        mf_str = str(mf)
-        if (".venv" in mf_str or "venv" in mf_str
-                or "node_modules" in mf_str
-                or "/build/" in mf_str or mf_str.endswith("/build")
-                or "/.doql/" in mf_str or mf_str.endswith("/.doql")
-                or "/dist/" in mf_str):
-            continue
-        _extract_entities_from_python(mf, spec, seen)
+        if not _is_excluded_path(mf):
+            _extract_entities_from_python(mf, spec, seen)
 
-    # Check SQL init files
     for sql in root.rglob("*.sql"):
-        sql_str = str(sql)
-        if (".venv" in sql_str or "venv" in sql_str
-                or "/build/" in sql_str or "/.doql/" in sql_str):
-            continue
-        _extract_entities_from_sql(sql, spec, seen)
+        if not _is_excluded_path(sql):
+            _extract_entities_from_sql(sql, spec, seen)
 
 
 def _extract_entities_from_python(path: Path, spec: DoqlSpec, seen: set[str]) -> None:

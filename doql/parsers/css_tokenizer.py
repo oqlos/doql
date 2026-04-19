@@ -63,9 +63,15 @@ def _tokenise_css(text: str) -> list[CssBlock]:
     return blocks
 
 
+def _consume_pending(decls: dict, pending_key: str, pending_value: str) -> tuple[str | None, str]:
+    """Flush a completed multi-line declaration into *decls*. Returns (None, '')."""
+    decls[pending_key] = _strip_quotes(pending_value.rstrip(';').strip())
+    return None, ""
+
+
 def _parse_declarations(body: str) -> dict[str, str]:
     """Extract property: value pairs from a CSS block body (top-level only).
-    
+
     Handles multi-line declarations where value continues on next line
     until terminated with semicolon.
     """
@@ -73,48 +79,34 @@ def _parse_declarations(body: str) -> dict[str, str]:
     depth = 0
     pending_key: str | None = None
     pending_value: str = ""
-    
+
     for line in body.splitlines():
         depth += line.count('{') - line.count('}')
         if depth != 0:
-            # Inside nested block - if we have pending declaration, accumulate
             if pending_key is not None:
                 pending_value += "\n" + line
             continue
-            
+
         stripped = line.strip()
-        if not stripped or stripped.startswith('/*'):
+        if not stripped or stripped.startswith('/*') or stripped in ('{', '}'):
             continue
-            
-        # Skip lines that are just braces (block terminators)
-        if stripped in ('{', '}'):
-            continue
-            
-        # Check if this looks like a new declaration (has property: value pattern)
-        # A new declaration starts at top level and has 'key: value' pattern
+
         m = re.match(r'^(@?[\w\-]+)\s*:\s*(.+)$', stripped)
-        
+
         if m and pending_key is None:
             key, val = m.group(1), m.group(2).rstrip(';').strip()
             if stripped.rstrip().endswith(';'):
-                # Complete declaration on single line
                 decls[key] = _strip_quotes(val)
             else:
-                # Multi-line declaration starts
                 pending_key = key
                 pending_value = val
         elif pending_key is not None:
-            # Continue accumulating multi-line value
             pending_value += "\n" + stripped
-            
-        # Check if pending declaration is now complete (ends with ;)
+
         if pending_key is not None and pending_value.rstrip().endswith(';'):
-            decls[pending_key] = _strip_quotes(pending_value.rstrip(';').strip())
-            pending_key = None
-            pending_value = ""
-    
-    # Handle any remaining pending declaration (incomplete - no trailing ;)
+            pending_key, pending_value = _consume_pending(decls, pending_key, pending_value)
+
     if pending_key is not None:
         decls[pending_key] = _strip_quotes(pending_value.strip())
-        
+
     return decls

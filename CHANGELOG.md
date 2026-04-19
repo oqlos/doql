@@ -4,6 +4,17 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-04-19
+
+### Docs
+- Update README.md
+
+### Other
+- Update doql/adopt/scanner/entities.py
+- Update doql/adopt/scanner/workflows.py
+- Update doql/parsers/css_mappers.py
+- Update doql/parsers/css_tokenizer.py
+
 ## [0.1.4] - 2026-04-19
 
 ### Docs
