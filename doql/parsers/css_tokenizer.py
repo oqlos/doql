@@ -125,24 +125,13 @@ def _parse_declarations(body: str) -> dict[str, str]:
         if not stripped or stripped[:2] in ('/*', '//') or stripped in ('{', '}'):
             continue
 
-        # Fast path: use compiled regex
-        m = decl_pattern.match(stripped)
-        if m and pending_key is None:
-            key, val = m.group(1), m.group(2)
-            if stripped.rstrip().endswith(';'):
-                decls[key] = _strip_quotes(val.rstrip(';').strip())
-            else:
-                pending_key = key
-                pending_value = val
-        elif pending_key is not None:
-            pending_value += "\n" + stripped
+        # Handle multiple declarations on one line: split by semicolon first
+        statements = [s.strip() for s in stripped.split(';') if s.strip()]
 
-        if pending_key is not None and pending_value.rstrip().endswith(';'):
-            decls[pending_key] = _strip_quotes(pending_value.rstrip(';').strip())
-            pending_key = None
-            pending_value = ""
-
-    if pending_key is not None:
-        decls[pending_key] = _strip_quotes(pending_value.strip())
+        for stmt in statements:
+            m = decl_pattern.match(stmt)
+            if m:
+                key, val = m.group(1), m.group(2).strip()
+                decls[key] = _strip_quotes(val)
 
     return decls
