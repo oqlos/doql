@@ -1,0 +1,17 @@
+# doql-plugin-erp | 1f 358L | python:1 | 2026-04-20
+# stats: 6 func | 0 cls | 1 mod | CC̄=1.2 | critical:0 | cycles:0
+# alerts[5]: CC generate=2; CC _odoo_client_module=1; CC _mapping_module=1; CC _sync_module=1; CC _webhook_module=1
+# hotspots[5]: generate fan=8; _odoo_client_module fan=1; _mapping_module fan=1; _sync_module fan=1; _webhook_module fan=1
+# evolution: baseline
+# Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
+M[1]:
+  doql_plugin_erp/__init__.py,358
+D:
+  doql_plugin_erp/__init__.py:
+    e: _odoo_client_module,_mapping_module,_sync_module,_webhook_module,_readme,generate
+    _odoo_client_module()
+    _mapping_module()
+    _sync_module()
+    _webhook_module()
+    _readme(spec)
+    generate(spec;env_vars;out;project_root)

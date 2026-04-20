@@ -27,6 +27,11 @@ _PERSISTENT_BASES = (
 # name to weed out request/response wrappers.
 _DTO_BASES = ("BaseModel", "Model")
 
+# SQL reserved words that should not be treated as column names
+_SQL_RESERVED_WORDS = frozenset(
+    ("PRIMARY", "FOREIGN", "UNIQUE", "CHECK", "CONSTRAINT", "INDEX", "KEY", "NOT", "DEFAULT", "IF", "CREATE", "TABLE", "REFERENCES", "ON", "CASCADE", "SET", "NULL", "RESTRICT", "NO", "ACTION")
+)
+
 
 def _is_dto_name(name: str) -> bool:
     """Return True when *name* looks like an API DTO rather than an entity."""
@@ -139,6 +144,26 @@ def _extract_fields(text: str, start: int, entity: Entity) -> None:
             _extract_sqlalchemy_fields(stripped, entity)
 
 
+def _is_reserved_sql_keyword(col_name: str) -> bool:
+    """Return True if column name is a SQL reserved word."""
+    return col_name.upper() in _SQL_RESERVED_WORDS
+
+
+def _extract_sql_columns(body: str) -> "list[EntityField]":
+    """Extract column definitions from SQL CREATE TABLE body."""
+    fields: list[EntityField] = []
+    for col_match in re.finditer(r'["`]?(\w+)["`]?\s+([\w()]+)', body):
+        col_name = col_match.group(1)
+        col_type = col_match.group(2)
+        if _is_reserved_sql_keyword(col_name):
+            continue
+        fields.append(EntityField(
+            name=col_name,
+            type=normalize_sql_type(col_type),
+        ))
+    return fields
+
+
 def _extract_entities_from_sql(path: Path, spec: DoqlSpec, seen: set[str]) -> None:
     """Extract entities from CREATE TABLE statements."""
     try:
@@ -154,23 +179,7 @@ def _extract_entities_from_sql(path: Path, spec: DoqlSpec, seen: set[str]) -> No
         if table_name in seen:
             continue
         entity = Entity(name=snake_to_pascal(table_name))
-        body = m.group(2)
-        for col_match in re.finditer(
-            r'["`]?(\w+)["`]?\s+([\w()]+)',
-            body
-        ):
-            col_name = col_match.group(1)
-            col_type = col_match.group(2)
-            if col_name.upper() in ("PRIMARY", "FOREIGN", "UNIQUE", "CHECK",
-                                     "CONSTRAINT", "INDEX", "KEY", "NOT",
-                                     "DEFAULT", "IF", "CREATE", "TABLE",
-                                     "REFERENCES", "ON", "CASCADE", "SET",
-                                     "NULL", "RESTRICT", "NO", "ACTION"):
-                continue
-            entity.fields.append(EntityField(
-                name=col_name,
-                type=normalize_sql_type(col_type),
-            ))
+        entity.fields = _extract_sql_columns(m.group(2))
         if entity.fields:
             spec.entities.append(entity)
             seen.add(table_name)

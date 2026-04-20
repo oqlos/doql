@@ -9,6 +9,7 @@ ISO/IEC 17025:2017 compliance for doql — calibration certificates, traceabilit
 - [Configuration](#configuration)
 - [Dependencies](#dependencies)
 - [Deployment](#deployment)
+- [Code Analysis](#code-analysis)
 - [Intent](#intent)
 
 ## Metadata
@@ -18,7 +19,7 @@ ISO/IEC 17025:2017 compliance for doql — calibration certificates, traceabilit
 - **python_requires**: `>=3.10`
 - **license**: {'text': 'Apache-2.0'}
 - **ecosystem**: SUMD + DOQL + testql + taskfile
-- **generated_from**: pyproject.toml
+- **generated_from**: pyproject.toml, project/(1 analysis files)
 
 ## Architecture
 
@@ -51,6 +52,45 @@ pip install doql-plugin-iso17025
 
 # development install
 pip install -e .[dev]
+```
+
+## Code Analysis
+
+### `project/map.toon.yaml`
+
+```toon markpact:analysis path=project/map.toon.yaml
+# doql-plugin-iso17025 | 6f 551L | python:6 | 2026-04-20
+# stats: 6 func | 0 cls | 6 mod | CC̄=1.0 | critical:0 | cycles:0
+# alerts[5]: CC generate=1; fan-out generate=2; fan-out generate=1
+# hotspots[5]: generate fan=2; generate fan=1; generate fan=1; generate fan=1; generate fan=1
+# evolution: baseline
+# Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
+M[6]:
+  doql_plugin_iso17025/__init__.py,40
+  doql_plugin_iso17025/certificate.py,136
+  doql_plugin_iso17025/drift_monitor.py,79
+  doql_plugin_iso17025/migration.py,75
+  doql_plugin_iso17025/traceability.py,94
+  doql_plugin_iso17025/uncertainty.py,127
+D:
+  doql_plugin_iso17025/__init__.py:
+    e: generate
+    generate(spec;env_vars;out;project_root)
+  doql_plugin_iso17025/certificate.py:
+    e: generate
+    generate()
+  doql_plugin_iso17025/drift_monitor.py:
+    e: generate
+    generate()
+  doql_plugin_iso17025/migration.py:
+    e: generate
+    generate()
+  doql_plugin_iso17025/traceability.py:
+    e: generate
+    generate()
+  doql_plugin_iso17025/uncertainty.py:
+    e: generate
+    generate()
 ```
 
 ## Intent

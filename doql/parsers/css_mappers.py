@@ -41,47 +41,59 @@ def _map_entity(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") -> N
         _add_entity_field(entity, key, val)
 
 
+def _parse_type_flags(type_str: str) -> "tuple[EntityField, str]":
+    """Parse type flags (!, unique, computed, auto) from type string.
+
+    Returns tuple of (EntityField with flags set, cleaned type string).
+    """
+    from .models import EntityField
+    ef = EntityField(name="", type=type_str)
+    current = type_str
+
+    flags = [
+        ('!', 'required'),
+        ('unique', 'unique'),
+        ('computed', 'computed'),
+        ('auto', 'auto'),
+    ]
+    for flag, attr in flags:
+        if flag in current:
+            setattr(ef, attr, True)
+            current = current.replace(flag, '').strip()
+
+    return ef, current
+
+
 def _add_entity_field(entity: "Entity", name: str, type_str: str) -> None:
     """Parse and add a single field to an entity."""
-    from .models import EntityField
-    ef = EntityField(name=name, type=type_str)
-
-    # Parse type flags
-    current_type = type_str
-
-    if '!' in current_type:
-        ef.required = True
-        current_type = current_type.replace('!', '').strip()
-
-    if 'unique' in current_type:
-        ef.unique = True
-        current_type = current_type.replace('unique', '').strip()
-
-    if 'computed' in current_type:
-        ef.computed = True
-        current_type = current_type.replace('computed', '').strip()
-
-    if 'auto' in current_type:
-        ef.auto = True
-        current_type = current_type.replace('auto', '').strip()
-
-    # Parse ref
-    ref_match = re.search(r'(\w+)\s+ref', current_type)
-    if ref_match:
-        ef.ref = ref_match.group(1)
-        current_type = current_type.replace('ref', '').replace(ref_match.group(1), '').strip()
-        if not current_type:
-            current_type = ref_match.group(1)
-
-    # Parse default
-    default_match = re.search(r'default\s*=\s*"?([^"\s;]+)"?', current_type)
-    if default_match:
-        ef.default = default_match.group(1)
-        current_type = re.sub(r'default\s*=\s*"?[^"\s;]+"?', '', current_type).strip()
-
-    ef.type = current_type.strip().rstrip(';')
+    ef, current_type = _parse_type_flags(type_str)
+    ef.name = name
+    ef.type, ef.ref, ef.default = _parse_type_modifiers(current_type)
     if ef.type:
         entity.fields.append(ef)
+
+
+def _parse_type_modifiers(current_type: str) -> "tuple[str, str | None, str | None]":
+    """Parse ref and default modifiers from type string.
+
+    Returns tuple of (cleaned type, ref value or None, default value or None).
+    """
+    ref: str | None = None
+    default: str | None = None
+
+    ref_match = re.search(r'(\w+)\s+ref', current_type)
+    if ref_match:
+        ref = ref_match.group(1)
+        current_type = current_type.replace('ref', '').replace(ref, '').strip()
+        if not current_type:
+            current_type = ref
+
+    default_match = re.search(r'default\s*=\s*"?([^"\s;]+)"?', current_type)
+    if default_match:
+        default = default_match.group(1)
+        current_type = re.sub(r'default\s*=\s*"?[^"\s;]+"?', '', current_type).strip()
+
+    return current_type.strip().rstrip(';'), ref, default
 
 
 def _map_data_source(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") -> None:

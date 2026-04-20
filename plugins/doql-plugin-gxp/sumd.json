@@ -1,0 +1,72 @@
+{
+  "project_name": "doql-plugin-gxp",
+  "description": "21 CFR Part 11 / EU Annex 11 compliance for doql — audit log, e-signatures, immutability",
+  "sections": [
+    {
+      "name": "contents",
+      "type": "unknown",
+      "content": "- [Metadata](#metadata)\n- [Architecture](#architecture)\n- [Workflows](#workflows)\n- [Configuration](#configuration)\n- [Dependencies](#dependencies)\n- [Deployment](#deployment)\n- [Code Analysis](#code-analysis)\n- [Intent](#intent)",
+      "level": 2
+    },
+    {
+      "name": "metadata",
+      "type": "metadata",
+      "content": "- **name**: `doql-plugin-gxp`\n- **version**: `0.1.0`\n- **python_requires**: `>=3.10`\n- **license**: {'text': 'Apache-2.0'}\n- **ecosystem**: SUMD + DOQL + testql + taskfile\n- **generated_from**: pyproject.toml, project/(1 analysis files)",
+      "level": 2
+    },
+    {
+      "name": "architecture",
+      "type": "architecture",
+      "content": "```\nSUMD (description) → DOQL/source (code) → taskfile (automation) → testql (verification)\n```",
+      "level": 2
+    },
+    {
+      "name": "workflows",
+      "type": "workflows",
+      "content": "",
+      "level": 2
+    },
+    {
+      "name": "configuration",
+      "type": "configuration",
+      "content": "```yaml\nproject:\n  name: doql-plugin-gxp\n  version: 0.1.0\n  env: local\n```",
+      "level": 2
+    },
+    {
+      "name": "dependencies",
+      "type": "dependencies",
+      "content": "",
+      "level": 2
+    },
+    {
+      "name": "# runtime",
+      "type": "unknown",
+      "content": "```text markpact:deps python\ndoql>=0.1.0a1\n```",
+      "level": 2
+    },
+    {
+      "name": "deployment",
+      "type": "deployment",
+      "content": "```bash markpact:run\npip install doql-plugin-gxp\n\n# development install\npip install -e .[dev]\n```",
+      "level": 2
+    },
+    {
+      "name": "code analysis",
+      "type": "unknown",
+      "content": "",
+      "level": 2
+    },
+    {
+      "name": "# `project/map.toon.yaml`",
+      "type": "unknown",
+      "content": "```toon markpact:analysis path=project/map.toon.yaml\n# doql-plugin-gxp | 1f 428L | python:1 | 2026-04-20\n# stats: 6 func | 0 cls | 1 mod | CC̄=1.2 | critical:0 | cycles:0\n# alerts[5]: CC generate=2; CC _audit_log_module=1; CC _e_signature_module=1; CC _audit_middleware=1; CC _migration_audit=1\n# hotspots[5]: generate fan=8; _audit_log_module fan=1; _e_signature_module fan=1; _audit_middleware fan=1; _migration_audit fan=1\n# evolution: baseline\n# Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods\nM[1]:\n  doql_plugin_gxp/__init__.py,428\nD:\n  doql_plugin_gxp/__init__.py:\n    e: _audit_log_module,_e_signature_module,_audit_middleware,_migration_audit,_readme,generate\n    _audit_log_module()\n    _e_signature_module()\n    _audit_middleware()\n    _migration_audit()\n    _readme(spec)\n    generate(spec;env_vars;out;project_root)\n```",
+      "level": 2
+    },
+    {
+      "name": "intent",
+      "type": "intent",
+      "content": "21 CFR Part 11 / EU Annex 11 compliance for doql — audit log, e-signatures, immutability",
+      "level": 2
+    }
+  ]
+}

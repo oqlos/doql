@@ -1,0 +1,72 @@
+{
+  "project_name": "doql-plugin-shared",
+  "description": "Shared utilities for doql plugins",
+  "sections": [
+    {
+      "name": "contents",
+      "type": "unknown",
+      "content": "- [Metadata](#metadata)\n- [Architecture](#architecture)\n- [Workflows](#workflows)\n- [Configuration](#configuration)\n- [Dependencies](#dependencies)\n- [Deployment](#deployment)\n- [Code Analysis](#code-analysis)\n- [Intent](#intent)",
+      "level": 2
+    },
+    {
+      "name": "metadata",
+      "type": "metadata",
+      "content": "- **name**: `doql-plugin-shared`\n- **version**: `0.1.0`\n- **python_requires**: `>=3.10`\n- **license**: {'text': 'Apache-2.0'}\n- **ecosystem**: SUMD + DOQL + testql + taskfile\n- **generated_from**: pyproject.toml, project/(1 analysis files)",
+      "level": 2
+    },
+    {
+      "name": "architecture",
+      "type": "architecture",
+      "content": "```\nSUMD (description) → DOQL/source (code) → taskfile (automation) → testql (verification)\n```",
+      "level": 2
+    },
+    {
+      "name": "workflows",
+      "type": "workflows",
+      "content": "",
+      "level": 2
+    },
+    {
+      "name": "configuration",
+      "type": "configuration",
+      "content": "```yaml\nproject:\n  name: doql-plugin-shared\n  version: 0.1.0\n  env: local\n```",
+      "level": 2
+    },
+    {
+      "name": "dependencies",
+      "type": "dependencies",
+      "content": "",
+      "level": 2
+    },
+    {
+      "name": "# runtime",
+      "type": "unknown",
+      "content": "*(see pyproject.toml)*",
+      "level": 2
+    },
+    {
+      "name": "deployment",
+      "type": "deployment",
+      "content": "```bash markpact:run\npip install doql-plugin-shared\n\n# development install\npip install -e .[dev]\n```",
+      "level": 2
+    },
+    {
+      "name": "code analysis",
+      "type": "unknown",
+      "content": "",
+      "level": 2
+    },
+    {
+      "name": "# `project/map.toon.yaml`",
+      "type": "unknown",
+      "content": "```toon markpact:analysis path=project/map.toon.yaml\n# doql-plugin-shared | 3f 80L | python:3 | 2026-04-20\n# stats: 2 func | 0 cls | 3 mod | CC̄=3.0 | critical:0 | cycles:0\n# alerts[5]: CC plugin_generate=3; CC generate_readme=3; fan-out plugin_generate=4; fan-out generate_readme=1\n# hotspots[5]: plugin_generate fan=4; generate_readme fan=1\n# evolution: baseline\n# Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods\nM[3]:\n  doql_plugin_shared/__init__.py,12\n  doql_plugin_shared/base.py,30\n  doql_plugin_shared/readme.py,38\nD:\n  doql_plugin_shared/__init__.py:\n  doql_plugin_shared/base.py:\n    e: plugin_generate\n    plugin_generate(out;modules;readme_content)\n  doql_plugin_shared/readme.py:\n    e: generate_readme\n    generate_readme(plugin_name;modules;description;usage_extra)\n```",
+      "level": 2
+    },
+    {
+      "name": "intent",
+      "type": "intent",
+      "content": "Shared utilities for doql plugins",
+      "level": 2
+    }
+  ]
+}

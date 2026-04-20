@@ -1,119 +1,115 @@
-# code2llm | 125f 14282L | python:117,shell:3,javascript:3,typescript:1 | 2026-04-18
-# CC̄=3.7 | critical:3/515 | dups:0 | cycles:0
+# code2llm | 125f 14560L | python:117,shell:3,javascript:3,typescript:1 | 2026-04-20
+# CC̄=3.5 | critical:0/566 | dups:0 | cycles:0
 
-HEALTH[3]:
-  🟡 CC    _extract_python_cli_workflows CC=24 (limit:15)
-  🟡 CC    scan_entities CC=16 (limit:15)
-  🟡 CC    _map_workflow CC=16 (limit:15)
+HEALTH[0]: ok
 
-REFACTOR[1]:
-  1. split 3 high-CC methods  (CC>15)
+REFACTOR[0]: none needed
 
-PIPELINES[140]:
-  [1] Src [generate]: generate → _tenant_module
+PIPELINES[141]:
+  [1] Src [generate]: generate → _audit_log_module
       PURITY: 100% pure
   [2] Src [generate]: generate
       PURITY: 100% pure
-  [3] Src [generate]: generate → _audit_log_module
+  [3] Src [generate]: generate
       PURITY: 100% pure
-  [4] Src [generate]: generate → _odoo_client_module
+  [4] Src [renderFatal]: renderFatal → escapeHtml
       PURITY: 100% pure
-  [5] Src [generate]: generate → generate_readme
+  [5] Src [renderDiagnostics]: renderDiagnostics → escapeHtml
       PURITY: 100% pure
 
 LAYERS:
-  doql/                           CC̄=4.0    ←in:4  →out:4
-  │ !! workspace                  538L  1C   23m  CC=10     ←0
-  │ mobile_gen                 462L  0C    8m  CC=5      ←1
-  │ !! css_mappers                399L  0C   19m  CC=16     ←1
-  │ lsp_server                 364L  0C   13m  CC=14     ←0
+  doql/                           CC̄=3.8    ←in:4  →out:4
+  │ !! workspace                  544L  1C   25m  CC=10     ←0
+  │ mobile_gen                 462L  0C    8m  CC=5      ←0
+  │ css_mappers                403L  0C   22m  CC=9      ←1
+  │ infra_gen                  399L  0C    7m  CC=8      ←0
+  │ lsp_server                 378L  0C   15m  CC=10     ←0
+  │ doctor                     338L  2C   19m  CC=11     ←0
   │ integrations_gen           336L  0C   11m  CC=8      ←0
-  │ interfaces                 324L  0C   14m  CC=11     ←1
-  │ doctor                     321L  2C   12m  CC=13     ←0
-  │ infra_gen                  321L  0C    5m  CC=8      ←0
-  │ workflow_gen               315L  0C    7m  CC=11     ←0
+  │ interfaces                 328L  0C   15m  CC=9      ←1
+  │ workflow_gen               318L  0C    8m  CC=8      ←0
   │ renderers                  296L  0C   17m  CC=10     ←1
-  │ !! workflows                  275L  0C   10m  CC=24     ←1
-  │ css_transformers           268L  0C    8m  CC=12     ←1
   │ yaml_importer              267L  0C   22m  CC=3      ←1
   │ registry                   267L  0C   24m  CC=6      ←1
+  │ workflows                  263L  0C   15m  CC=9      ←1
+  │ css_transformers           246L  0C   14m  CC=11     ←1
   │ models                     219L  20C    0m  CC=0.0    ←0
   │ desktop_gen                209L  0C    7m  CC=6      ←1
   │ extractors                 205L  0C   14m  CC=6      ←3
   │ __init__                   200L  0C    8m  CC=6      ←0
   │ document_gen               182L  0C    4m  CC=6      ←0
-  │ !! entities                   182L  0C    7m  CC=16     ←1
-  │ __init__                   178L  0C    5m  CC=3      ←1
+  │ __init__                   178L  0C    5m  CC=3      ←0
+  │ entities                   176L  0C    9m  CC=9      ←1
   │ validators                 169L  0C   10m  CC=6      ←0
   │ i18n_gen                   168L  0C    3m  CC=6      ←0
-  │ pages                      163L  0C    3m  CC=13     ←1
-  │ main                       159L  0C    2m  CC=1      ←0
-  │ run                        157L  0C    4m  CC=12     ←0
-  │ alembic                    154L  0C    3m  CC=12     ←1
+  │ run                        166L  0C    7m  CC=9      ←0
+  │ pages                      166L  0C    4m  CC=10     ←1
+  │ main                       161L  0C    2m  CC=1      ←0
   │ auth                       154L  0C    1m  CC=7      ←1
   │ __init__                   153L  0C    5m  CC=6      ←4
+  │ alembic                    152L  0C    4m  CC=10     ←1
   │ publish                    151L  0C    5m  CC=8      ←0
   │ css_parser                 144L  0C    6m  CC=7      ←2
+  │ deploy                     142L  0C    4m  CC=12     ←0
   │ report_gen                 142L  0C    2m  CC=9      ←0
+  │ css_tokenizer              126L  0C    5m  CC=11     ←1
+  │ sync                       122L  0C    4m  CC=10     ←0
   │ config                     122L  0C    6m  CC=1      ←1
   │ sections                   121L  0C    8m  CC=9      ←2
-  │ css_tokenizer              120L  0C    2m  CC=14     ←1
-  │ sync                       119L  0C    3m  CC=11     ←0
   │ plan                       115L  0C   10m  CC=4      ←0
   │ routes                     115L  0C    7m  CC=2      ←1
+  │ quadlet                    112L  0C    3m  CC=9      ←0
   │ ci_gen                     112L  0C    2m  CC=1      ←0
   │ pwa                        109L  0C    3m  CC=1      ←1
-  │ __init__                   107L  0C    9m  CC=5      ←3
+  │ __init__                   107L  0C    9m  CC=5      ←2
   │ deploy                     107L  0C    8m  CC=5      ←1
   │ writers                    101L  0C   11m  CC=5      ←1
   │ plugins                    101L  1C    4m  CC=8      ←0
   │ utils                      100L  0C    8m  CC=5      ←5
-  │ adopt                       93L  0C    5m  CC=7      ←0
-  │ lockfile                    88L  0C    4m  CC=12     ←2
+  │ adopt                       94L  0C    5m  CC=7      ←0
   │ environments                86L  0C    6m  CC=7      ←1
   │ common                      84L  0C    5m  CC=6      ←5
+  │ lockfile                    83L  0C    5m  CC=9      ←2
   │ schemas                     83L  0C    5m  CC=10     ←1
   │ models                      82L  0C    2m  CC=10     ←1
   │ components                  76L  0C    1m  CC=2      ←1
-  │ format_convert              75L  0C    2m  CC=9      ←1
   │ main                        74L  0C    2m  CC=2      ←1
   │ parser                      74L  0C    0m  CC=0.0    ←0
   │ css_utils                   72L  2C    4m  CC=4      ←3
   │ metadata                    68L  0C    4m  CC=6      ←1
+  │ format_convert              67L  0C    3m  CC=9      ←1
   │ codegen                     67L  0C    2m  CC=2      ←0
-  │ export                      66L  0C    1m  CC=14     ←0
   │ context                     66L  1C    4m  CC=5      ←6
-  │ databases                   58L  0C    2m  CC=14     ←1
+  │ databases                   62L  0C    4m  CC=6      ←1
+  │ export                      58L  0C    1m  CC=7      ←0
   │ __init__                    58L  0C    1m  CC=1      ←1
   │ core                        57L  0C    3m  CC=1      ←1
   │ __init__                    53L  0C    0m  CC=0.0    ←0
   │ blocks                      50L  0C    2m  CC=4      ←1
-  │ deploy                      48L  0C    2m  CC=6      ←0
-  │ validate                    45L  0C    1m  CC=12     ←0
+  │ validate                    48L  0C    2m  CC=8      ←0
   │ import_cmd                  45L  0C    1m  CC=7      ←0
   │ init                        43L  0C    1m  CC=8      ←0
   │ router                      43L  0C    1m  CC=3      ←1
   │ database                    41L  0C    1m  CC=1      ←1
-  │ __init__                    40L  0C    2m  CC=1      ←1
+  │ __init__                    40L  0C    2m  CC=1      ←0
   │ helpers                     39L  0C    3m  CC=8      ←1
   │ naming                      37L  0C    2m  CC=1      ←0
-  │ yaml_exporter               36L  0C    3m  CC=1      ←2
-  │ integrations                35L  0C    1m  CC=13     ←1
+  │ yaml_exporter               36L  0C    3m  CC=1      ←1
   │ generate                    34L  0C    1m  CC=9      ←0
+  │ roles                       32L  0C    2m  CC=9      ←1
   │ query                       31L  0C    1m  CC=7      ←0
-  │ roles                       28L  0C    1m  CC=11     ←1
   │ render                      26L  0C    1m  CC=4      ←0
-  │ export_ts_sdk               26L  0C    1m  CC=2      ←1
-  │ export_postman              25L  0C    1m  CC=2      ←1
+  │ export_ts_sdk               26L  0C    1m  CC=2      ←0
+  │ integrations                26L  0C    1m  CC=4      ←1
+  │ export_postman              25L  0C    1m  CC=2      ←0
   │ docs_gen                    24L  0C    1m  CC=3      ←1
-  │ quadlet                     22L  0C    1m  CC=2      ←0
   │ docs                        21L  0C    1m  CC=3      ←0
   │ kiosk                       20L  0C    1m  CC=2      ←0
   │ deploy                      20L  0C    1m  CC=2      ←0
   │ clean                       20L  0C    1m  CC=9      ←1
   │ __init__                    19L  0C    0m  CC=0.0    ←0
+  │ emitter                     18L  0C    2m  CC=1      ←1
   │ css_exporter                16L  0C    0m  CC=0.0    ←0
-  │ emitter                     13L  0C    1m  CC=1      ←1
   │ markdown_exporter           12L  0C    0m  CC=0.0    ←0
   │ __init__                    10L  0C    0m  CC=0.0    ←0
   │ __main__                     9L  0C    0m  CC=0.0    ←0
@@ -159,20 +155,20 @@ LAYERS:
   │
 
 COUPLING:
-                                                    doql.cli                doql.exporters                          doql               doql.generators                  doql.parsers                    doql.adopt  plugins.doql-plugin-iso17025    plugins.doql-plugin-shared                doql.importers                    doql.utils
-                      doql.cli                            ──                            14                             4                             4                                                           2                                                                                         1                                !! fan-out
-                doql.exporters                           ←14                            ──                                                                                                                      ←1                                                                                                                       1  hub
-                          doql                            ←4                                                          ──                                                           4                                                                                                                                                      
-               doql.generators                            ←4                                                                                        ──                                                                                                                                                                                    
-                  doql.parsers                                                                                        ←4                                                          ──                                                                                                                                                      
-                    doql.adopt                            ←2                             1                                                                                                                      ──                                                                                                                        
-  plugins.doql-plugin-iso17025                                                                                                                                                                                                                ──                             2                                                            
-    plugins.doql-plugin-shared                                                                                                                                                                                                                ←2                            ──                                                            
+                                                    doql.cli                          doql                doql.exporters                  doql.parsers                    doql.adopt  plugins.doql-plugin-iso17025    plugins.doql-plugin-shared               doql.generators                doql.importers                    doql.utils
+                      doql.cli                            ──                             4                             6                                                           2                                                                                         1                             1                                !! fan-out
+                          doql                            ←4                            ──                                                           4                                                                                                                                                                                    
+                doql.exporters                            ←6                                                          ──                                                          ←1                                                                                                                                                     1  hub
+                  doql.parsers                                                          ←4                                                          ──                                                                                                                                                                                    
+                    doql.adopt                            ←2                                                           1                                                          ──                                                                                                                                                      
+  plugins.doql-plugin-iso17025                                                                                                                                                                                  ──                             2                                                                                          
+    plugins.doql-plugin-shared                                                                                                                                                                                  ←2                            ──                                                                                          
+               doql.generators                            ←1                                                                                                                                                                                                                ──                                                            
                 doql.importers                            ←1                                                                                                                                                                                                                                              ──                              
-                    doql.utils                                                          ←1                                                                                                                                                                                                                                              ──
+                    doql.utils                                                                                        ←1                                                                                                                                                                                                                ──
   CYCLES: none
-  HUB: doql.exporters/ (fan-in=15)
-  SMELL: doql.cli/ fan-out=25 → split needed
+  HUB: doql.exporters/ (fan-in=7)
+  SMELL: doql.cli/ fan-out=14 → split needed
 
 EXTERNAL:
   validation: run `vallm batch .` → validation.toon
