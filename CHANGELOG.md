@@ -4,6 +4,15 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-04-20
+
+### Docs
+- Update README.md
+- Update docs/refactoring-plan.md
+
+### Other
+- Update doql/cli/commands/doctor.py
+
 ## [1.0.1] - 2026-04-20
 
 ### Docs

@@ -197,12 +197,34 @@ def _check_tools(spec: DoqlSpec, report: DoctorReport) -> None:
             report.add(f"tool:{binary}", "warn", f"{binary} not found ({reason})")
 
 
-def _check_deploy(spec: DoqlSpec, report: DoctorReport) -> None:
-    """Check deploy configuration."""
+def _check_deploy(spec: DoqlSpec, report: DoctorReport, root: pathlib.Path) -> None:
+    """Check deploy configuration and redeploy integration."""
     if not spec.deploy.target:
         report.add("deploy", "skip", "No deploy target configured")
         return
     report.add("deploy", "ok", f"Deploy target: {spec.deploy.target}")
+
+    # Check redeploy integration (v1.0+)
+    has_redeploy = shutil.which("redeploy") is not None
+    try:
+        import redeploy
+        has_redeploy_api = True
+    except ImportError:
+        has_redeploy_api = False
+
+    if has_redeploy_api:
+        report.add("redeploy", "ok", "redeploy Python API available (doql[deploy] installed)")
+    elif has_redeploy:
+        report.add("redeploy", "ok", "redeploy CLI available on PATH")
+    else:
+        report.add("redeploy", "warn", "redeploy not found — install: pip install doql[deploy]")
+
+    # Check migration.yaml was generated
+    migration_yaml = root / "build" / "infra" / "migration.yaml"
+    if migration_yaml.exists():
+        report.add("migration.yaml", "ok", f"Found {migration_yaml}")
+    else:
+        report.add("migration.yaml", "warn", "Run 'doql build' to generate migration.yaml")
 
 
 def _check_environments(spec: DoqlSpec, report: DoctorReport) -> None:
@@ -314,7 +336,7 @@ def cmd_doctor(args: argparse.Namespace) -> int:
     _check_tools(spec, report)
 
     # 7. Deploy config
-    _check_deploy(spec, report)
+    _check_deploy(spec, report, root)
 
     # 8. Environments
     _check_environments(spec, report)
