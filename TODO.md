@@ -10,8 +10,8 @@
 ## P0 — Stable release blockers
 
 - [ ] `doql adopt` — end-to-end test with real project (oqlos itself)
-- [ ] `doql doctor` — add `--fix` flag for auto-remediation of fixable issues
-- [ ] pytest coverage: add `pytest-cov` + `.coveragerc`, target ≥ 50%
+- [x] `doql doctor` — add `--fix` flag for auto-remediation of fixable issues ✅ v1.0.3
+- [x] pytest coverage: add `pytest-cov` + `.coveragerc`, target ≥ 45% ✅ v1.0.3
 
 ## P1 — Quality / CC hotspots
 

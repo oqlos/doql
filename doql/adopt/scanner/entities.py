@@ -102,7 +102,7 @@ def _extract_annotation_fields(
     stripped: str, entity: Entity
 ) -> EntityField | None:
     """Extract field from type annotation pattern: field_name: type = ..."""
-    field_match = re.match(r"\s+(\w+)\s*:\s*([\w\[\], |]+)", stripped)
+    field_match = re.match(r"(\w+)\s*:\s*([\w\[\], |]+)", stripped)
     if not field_match:
         return None
     fname = field_match.group(1)

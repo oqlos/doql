@@ -1,4 +1,6 @@
 # Build artifacts
+.coverage
+.coveragerc
 build/
 .pyqual
 build

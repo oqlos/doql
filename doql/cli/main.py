@@ -129,6 +129,7 @@ def create_parser() -> argparse.ArgumentParser:
     # doctor
     s = sub.add_parser("doctor", help="Project health check & diagnostics")
     s.add_argument("--env", help="Run remote diagnostics for named environment")
+    s.add_argument("--fix", action="store_true", help="Apply automatic fixes for warnings")
     s.set_defaults(func=cmd_doctor)
 
     # publish

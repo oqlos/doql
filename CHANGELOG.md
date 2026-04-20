@@ -4,10 +4,29 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
-## [1.0.3] - 2026-04-20
+## [1.0.4] - 2026-04-20
+
+### Docs
+- Update CHANGELOG.md
+- Update TODO.md
 
 ### Other
-- Update doql/parsers/css_tokenizer.py
+- Update .coverage
+- Update .coveragerc
+- Update doql/adopt/scanner/entities.py
+- Update doql/cli/commands/doctor.py
+- Update doql/cli/main.py
+
+## [1.0.3] - 2026-04-20
+
+### Added
+- `doql doctor --fix` — auto-remediation for missing .env, migration.yaml hints, deprecated strategy warnings
+- `pytest-cov` integration with `.coveragerc` (target 45% coverage)
+- CSS tokenizer fix: proper handling of multiple declarations per line
+
+### Changed
+- Improved `_parse_declarations()` to split by semicolons before parsing
+- Updated P0 blockers status in TODO.md
 
 ## [1.0.2] - 2026-04-20
 
