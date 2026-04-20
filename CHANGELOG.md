@@ -4,6 +4,16 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [0.1.11] - 2026-04-20
+
+### Docs
+- Update README.md
+
+### Other
+- Update doql/cli/commands/deploy.py
+- Update doql/cli/commands/quadlet.py
+- Update doql/generators/infra_gen.py
+
 ## [0.1.10] - 2026-04-19
 
 ### Other
