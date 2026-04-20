@@ -168,10 +168,11 @@ def _check_interfaces(spec: DoqlSpec, report: DoctorReport) -> None:
 def _collect_required_tools(spec) -> list[tuple[str, str]]:
     """Return list of (binary, reason) pairs for tools required by this spec."""
     tools: list[tuple[str, str]] = []
-    if spec.deploy.target in ("docker-compose", "compose"):
-        tools.append(("docker", "deploy target is docker-compose"))
-    if spec.deploy.target in ("quadlet", "podman"):
-        tools.append(("podman", "deploy target uses podman"))
+    # Support both canonical names (v1.0+) and legacy aliases
+    if spec.deploy.target in ("docker_full", "docker-compose", "compose"):
+        tools.append(("docker", "deploy target is docker_full"))
+    if spec.deploy.target in ("podman_quadlet", "quadlet", "podman"):
+        tools.append(("podman", "deploy target uses podman_quadlet"))
     for iface in spec.interfaces:
         if iface.name == "web":
             tools.append(("node", "web interface needs Node.js"))

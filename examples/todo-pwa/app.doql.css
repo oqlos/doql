@@ -22,5 +22,5 @@ interface[type="mobile"] {
 }
 
 deploy {
-  target: docker-compose;
+  target: docker_full;  /* canonical name (was: docker-compose) */
 }

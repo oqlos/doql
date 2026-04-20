@@ -3,9 +3,9 @@
 
 ## AI Cost Tracking
 
-![AI Cost](https://img.shields.io/badge/AI%20Cost-$4.50-green) ![AI Model](https://img.shields.io/badge/AI%20Model-openrouter%2Fqwen%2Fqwen3-coder-next-lightgrey)
+![AI Cost](https://img.shields.io/badge/AI%20Cost-$4.65-green) ![AI Model](https://img.shields.io/badge/AI%20Model-openrouter%2Fqwen%2Fqwen3-coder-next-lightgrey)
 
-This project uses AI-generated code. Total cost: **$4.5000** with **30** AI commits.
+This project uses AI-generated code. Total cost: **$4.6500** with **31** AI commits.
 
 Generated on 2026-04-20 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/models/openrouter/qwen/qwen3-coder-next)
 
@@ -13,14 +13,16 @@ Generated on 2026-04-20 using [openrouter/qwen/qwen3-coder-next](https://openrou
 
 
 
-![Version](https://img.shields.io/badge/version-0.1.12-blue) ![Python](https://img.shields.io/badge/python-3.10+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![Version](https://img.shields.io/badge/version-1.0.1-blue) ![Python](https://img.shields.io/badge/python-3.10+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green) ![Status](https://img.shields.io/badge/status-stable-green)
 
 
 
 ---
 
-**Data wydania:** 2026-04-16  
-**Zawartość:** repo `doql/` + repo `articles/` + ten README
+**Data wydania:** 2026-04-20  
+**Wersja:** 1.0.0 (stable)  
+**Zawartość:** repo `doql/` + repo `articles/` + ten README  
+**Zmiany:** CSS-like syntax, redeploy integration, public API `__all__`
 
 ---
 
@@ -212,6 +214,30 @@ doql build -f app.doql.css
 # Instalacja na urządzeniu:
 scp -r build/infra pi@kiosk-01.local:/tmp/
 ssh pi@kiosk-01.local "sudo /tmp/infra/install-kiosk.sh && sudo reboot"
+```
+
+#### Deployment via redeploy (v1.0+)
+
+```bash
+# Instaluj z opcjonalnym deploy support
+cd examples/asset-management
+pip install "doql[deploy]>=1.0.0"
+
+# Build generuje migration.yaml
+doql build
+
+# Deploy z planem (dry-run)
+doql deploy --plan-only
+
+# Deploy z dry-run (bez side-effects)
+doql deploy --dry-run
+
+# Deploy produkcyjny (wymaga redeploy>=0.2.0)
+doql deploy
+
+# Deploy do Podman Quadlet (rootless)
+doql quadlet --install --dry-run
+doql quadlet --install
 ```
 
 #### Uwaga: `doql run` vs `doql -d ... run`

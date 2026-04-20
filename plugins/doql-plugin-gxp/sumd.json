@@ -5,7 +5,7 @@
     {
       "name": "contents",
       "type": "unknown",
-      "content": "- [Metadata](#metadata)\n- [Architecture](#architecture)\n- [Workflows](#workflows)\n- [Configuration](#configuration)\n- [Dependencies](#dependencies)\n- [Deployment](#deployment)\n- [Code Analysis](#code-analysis)\n- [Intent](#intent)",
+      "content": "- [Metadata](#metadata)\n- [Architecture](#architecture)\n- [Configuration](#configuration)\n- [Dependencies](#dependencies)\n- [Deployment](#deployment)\n- [Code Analysis](#code-analysis)\n- [Intent](#intent)",
       "level": 2
     },
     {
@@ -18,12 +18,6 @@
       "name": "architecture",
       "type": "architecture",
       "content": "```\nSUMD (description) → DOQL/source (code) → taskfile (automation) → testql (verification)\n```",
-      "level": 2
-    },
-    {
-      "name": "workflows",
-      "type": "workflows",
-      "content": "",
       "level": 2
     },
     {

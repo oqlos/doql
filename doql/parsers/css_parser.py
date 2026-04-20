@@ -106,8 +106,17 @@ def _apply_css_block(spec: DoqlSpec, sel: ParsedSelector, block: CssBlock) -> No
         _map_interface(spec, sel, block)
     elif t in route_map:
         route_map[t](spec, sel, block)
-    elif t in ('scenarios', 'api-client'):
+    elif t in ('scenarios', 'api-client', 'tests'):
         pass  # Informational blocks — no DoqlSpec mapping yet
+    elif t:
+        # Unknown selector type — warn for potential typos
+        from .models import ValidationIssue
+        spec.parse_errors.append(ValidationIssue(
+            path=block.selector,
+            message=f"Unknown CSS block type '{t}'. Did you mean one of: {', '.join(sorted(route_map.keys()))}?",
+            severity="warning",
+            line=block.line,
+        ))
 
 
 def parse_css_file(path: pathlib.Path) -> DoqlSpec:

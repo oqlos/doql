@@ -4,6 +4,60 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-04-20
+
+### Docs
+- Update CHANGELOG.md
+- Update README.md
+- Update docs/refactoring-plan.md
+
+### Test
+- Update tests/test_css_parser.py
+- Update tests/test_parser.py
+- Update tests/test_parser_benchmark.py
+
+### Other
+- Update VERSION
+- Update doql/__init__.py
+- Update doql/cli/commands/doctor.py
+- Update doql/parsers/css_parser.py
+- Update doql/parsers/css_tokenizer.py
+- Update doql/parsers/validators.py
+- Update examples/todo-pwa/app.doql
+- Update examples/todo-pwa/app.doql.css
+- Update plugins/doql-plugin-erp/sumd.json
+- Update plugins/doql-plugin-fleet/sumd.json
+- ... and 3 more files
+
+## [1.0.0] - 2026-04-20
+
+### Added
+- **Stable Public API** (`doql/__init__.py`) z jawny `__all__` — kontrakt semver zaczyna obowiązywać
+- **CSS-like syntax support** (`.doql.css`, `.doql.less`, `.doql.sass`) jako alternatywa dla klasycznego `.doql`
+- **Regression tests** porównujące `.doql` vs `.doql.less` dla tych samych projektów
+
+### Changed (Breaking)
+- **Nazewnictwo strategii deploymentu** zunifikowane z `redeploy`:
+  - `docker-compose` → `docker_full` (stare działa jako alias)
+  - `quadlet` → `podman_quadlet` (stare działa jako alias)
+  - `kubernetes` → `k3s`
+- **Optional dependency** `doql[deploy]` wymaga `redeploy>=0.2.0`
+
+### Deprecated
+- Klasyczny format `.doql` — parser działa, ale nowe projekty powinny używać `.doql.css` lub `.doql.less`
+
+### Migration Guide
+```bash
+# 1. Zaktualizuj dependency
+pip install "doql[deploy]>=1.0.0"
+
+# 2. Sprawdź czy projekt się parsuje
+doql validate
+
+# 3. Zbuduj i przetestuj
+doql build && doql run
+```
+
 ## [0.1.12] - 2026-04-20
 
 ### Docs

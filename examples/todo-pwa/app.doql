@@ -21,4 +21,4 @@ INTERFACE mobile:
   offline: true
 
 DEPLOY:
-  target: docker-compose
+  target: docker_full  # canonical name (was: docker-compose)

@@ -5,7 +5,7 @@
     {
       "name": "contents",
       "type": "unknown",
-      "content": "- [Metadata](#metadata)\n- [Architecture](#architecture)\n- [Workflows](#workflows)\n- [Configuration](#configuration)\n- [Dependencies](#dependencies)\n- [Deployment](#deployment)\n- [Code Analysis](#code-analysis)\n- [Intent](#intent)",
+      "content": "- [Metadata](#metadata)\n- [Architecture](#architecture)\n- [Configuration](#configuration)\n- [Deployment](#deployment)\n- [Code Analysis](#code-analysis)\n- [Intent](#intent)",
       "level": 2
     },
     {
@@ -21,27 +21,9 @@
       "level": 2
     },
     {
-      "name": "workflows",
-      "type": "workflows",
-      "content": "",
-      "level": 2
-    },
-    {
       "name": "configuration",
       "type": "configuration",
       "content": "```yaml\nproject:\n  name: doql-plugin-shared\n  version: 0.1.0\n  env: local\n```",
-      "level": 2
-    },
-    {
-      "name": "dependencies",
-      "type": "dependencies",
-      "content": "",
-      "level": 2
-    },
-    {
-      "name": "# runtime",
-      "type": "unknown",
-      "content": "*(see pyproject.toml)*",
       "level": 2
     },
     {

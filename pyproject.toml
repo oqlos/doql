@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "doql"
-version = "0.1.12"
+version = "1.0.1"
 description = "Declarative OQL — build complete applications from a single .doql file"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -15,7 +15,7 @@ authors = [
 ]
 keywords = ["dsl", "code-generation", "oqlos", "low-code", "saas", "asset-management"]
 classifiers = [
-  "Development Status :: 3 - Alpha",
+  "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.10",
@@ -57,7 +57,7 @@ lsp = [
   "lsprotocol>=2023.0.1",
 ]
 deploy = [
-  "redeploy>=0.1.2",
+  "redeploy>=0.2.0,<0.3.0",
 ]
 
 [project.scripts]

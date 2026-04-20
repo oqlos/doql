@@ -147,6 +147,36 @@ def _validate_interfaces(spec: DoqlSpec) -> list[ValidationIssue]:
     return issues
 
 
+def _validate_deploy_strategy(spec: DoqlSpec) -> list[ValidationIssue]:
+    """Warn on deprecated deploy strategy names, suggest canonical ones.
+
+    Mapping (old -> canonical per redeploy):
+        docker-compose -> docker_full
+        quadlet -> podman_quadlet
+        kubernetes -> k3s
+    """
+    issues: list[ValidationIssue] = []
+    if not spec.deploy or not spec.deploy.target:
+        return issues
+
+    target = spec.deploy.target
+    deprecated_map = {
+        "docker-compose": ("docker_full", "docker-compose"),
+        "quadlet": ("podman_quadlet", "podman quadlet"),
+        "kubernetes": ("k3s", "k3s"),
+    }
+
+    if target in deprecated_map:
+        canonical, description = deprecated_map[target]
+        issues.append(ValidationIssue(
+            "DEPLOY.target",
+            f"Deprecated strategy '{target}'. Use '{canonical}' (alias preserved for compatibility).",
+            "warning",
+        ))
+
+    return issues
+
+
 def validate(
     spec: DoqlSpec,
     env_vars: dict[str, str],
@@ -160,6 +190,7 @@ def validate(
     issues.extend(_validate_document_partials(spec))
     issues.extend(_validate_entity_refs(spec))
     issues.extend(_validate_interfaces(spec))
+    issues.extend(_validate_deploy_strategy(spec))
 
     if project_root:
         issues.extend(_validate_data_source_files(spec, project_root))

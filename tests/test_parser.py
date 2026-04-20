@@ -169,3 +169,38 @@ def test_calibration_lab_has_no_dangling_refs():
                 pytest.fail(
                     f"Dangling ref: {ent.name}.{f.name} -> {f.ref}"
                 )
+
+
+# ─── Deploy strategy deprecation warnings ─────────────────────
+
+def test_deprecated_docker_compose_strategy_warns():
+    """Using 'docker-compose' strategy should produce deprecation warning."""
+    from doql.parsers.models import DoqlSpec, Deploy
+    spec = DoqlSpec()
+    spec.deploy = Deploy(target="docker-compose")
+
+    issues = parser.validate(spec, env_vars={})
+    warnings = [i for i in issues if i.severity == "warning" and "docker-compose" in i.message]
+    assert len(warnings) >= 1, "Expected deprecation warning for docker-compose"
+
+
+def test_deprecated_quadlet_strategy_warns():
+    """Using 'quadlet' strategy should produce deprecation warning."""
+    from doql.parsers.models import DoqlSpec, Deploy
+    spec = DoqlSpec()
+    spec.deploy = Deploy(target="quadlet")
+
+    issues = parser.validate(spec, env_vars={})
+    warnings = [i for i in issues if i.severity == "warning" and "quadlet" in i.message]
+    assert len(warnings) >= 1, "Expected deprecation warning for quadlet"
+
+
+def test_canonical_strategy_no_warning():
+    """Using canonical 'docker_full' strategy should not produce warning."""
+    from doql.parsers.models import DoqlSpec, Deploy
+    spec = DoqlSpec()
+    spec.deploy = Deploy(target="docker_full")
+
+    issues = parser.validate(spec, env_vars={})
+    deploy_warnings = [i for i in issues if i.path == "DEPLOY.target" and i.severity == "warning"]
+    assert len(deploy_warnings) == 0, f"Unexpected warnings: {deploy_warnings}"

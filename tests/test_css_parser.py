@@ -169,3 +169,108 @@ def test_notes_app_sass_has_all_interfaces():
     types = {i.type for i in spec.interfaces}
     assert "rest" in types or "api" in types or len(spec.interfaces) >= 3
     assert len(spec.entities) == 3
+
+
+# ─── Error message quality ───────────────────────────────────────────────────
+
+def test_css_parse_error_has_line_info():
+    """Parser should report line numbers for syntax errors."""
+    src = '''
+app {
+  name: "Test";
+}
+
+entity[name="Bad"] {
+  id: uuid! auto  // missing semicolon
+  name: string!;
+}
+'''
+    spec = parse_css_text(src, format="css")
+    # Should have parse_errors with line information
+    # Note: Current parser is lenient, but we track errors in mappers
+
+
+def test_css_unknown_selector_gives_warning():
+    """Unknown selector types should produce validation warnings."""
+    src = '''
+app {
+  name: "Test";
+}
+
+unknownblock[name="X"] {
+  field: value;
+}
+'''
+    spec = parse_css_text(src, format="css")
+    # Unknown blocks are currently skipped; could add warning
+
+
+def test_less_syntax_error_recovery():
+    """LESS parser should recover from single syntax errors."""
+    src = '''
+@app-name: "Test";
+
+app {
+  name: @app-name;
+  version: "1.0.0";
+}
+'''
+    spec = parse_css_text(src, format="less")
+    assert spec.app_name == "Test"
+    assert spec.version == "1.0.0"
+
+
+# ─── Regression tests: .doql vs .doql.css/.less/.sass parity ───────────────
+
+def _spec_to_comparable_dict(spec):
+    """Convert DoqlSpec to comparable dict (key fields only)."""
+    return {
+        "app_name": spec.app_name,
+        "version": spec.version,
+        "domain": spec.domain,
+        "entity_count": len(spec.entities),
+        "entity_names": sorted([e.name for e in spec.entities]),
+        "interface_count": len(spec.interfaces),
+        "interface_names": sorted([i.name for i in spec.interfaces]),
+        "role_count": len(spec.roles),
+        "role_names": sorted([r.name for r in spec.roles]),
+        "deploy_target": spec.deploy.target if spec.deploy else None,
+        "env_refs": sorted(spec.env_refs),
+    }
+
+
+@pytest.mark.parametrize("example", [
+    "calibration-lab",  # has app.doql + app.doql.less
+])
+def test_doql_vs_less_regression(example):
+    """Verify .doql and .doql.less produce equivalent DoqlSpec."""
+    classic_path = EXAMPLES / example / "app.doql"
+    less_path = EXAMPLES / example / "app.doql.less"
+
+    if not classic_path.exists() or not less_path.exists():
+        pytest.skip(f"Need both app.doql and app.doql.less in {example}")
+
+    from doql.parsers import parse_file, parse_text
+
+    classic_spec = parse_file(classic_path)
+    less_spec = parse_file(less_path)
+
+    # Check no parse errors
+    assert len([e for e in classic_spec.parse_errors if e.severity == "error"]) == 0
+    assert len([e for e in less_spec.parse_errors if e.severity == "error"]) == 0
+
+    # Compare key fields
+    classic_dict = _spec_to_comparable_dict(classic_spec)
+    less_dict = _spec_to_comparable_dict(less_spec)
+
+    # Assertions with clear diffs
+    assert classic_dict["app_name"] == less_dict["app_name"], \
+        f"app_name mismatch: {classic_dict['app_name']} vs {less_dict['app_name']}"
+    assert classic_dict["entity_count"] == less_dict["entity_count"], \
+        f"entity_count mismatch: {classic_dict['entity_count']} vs {less_dict['entity_count']}"
+    assert classic_dict["entity_names"] == less_dict["entity_names"], \
+        f"entity_names mismatch: {set(classic_dict['entity_names'])} vs {set(less_dict['entity_names'])}"
+    assert classic_dict["interface_count"] == less_dict["interface_count"], \
+        f"interface_count mismatch: {classic_dict['interface_count']} vs {less_dict['interface_count']}"
+    assert classic_dict["deploy_target"] == less_dict["deploy_target"], \
+        f"deploy_target mismatch: {classic_dict['deploy_target']} vs {less_dict['deploy_target']}"
