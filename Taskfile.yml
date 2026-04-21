@@ -6,6 +6,7 @@ version: "3"
 vars:
   APP_NAME: doql
   DOQL_OUTPUT: app.doql.less
+  REDEPLOY_ROOT: "../../maskservice/redeploy"
 
 env:
   PYTHONPATH: "{{.PWD}}"
@@ -150,3 +151,18 @@ tasks:
     desc: Show available tasks
     cmds:
       - task --list
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Cross-project quality gate (doql + redeploy)
+  # Trend: redeploy catches up to doql, never the other way around.
+  # ─────────────────────────────────────────────────────────────────────────────
+
+  cross-quality:
+    desc: Run quality gates for doql (strict) and redeploy (catching up)
+    cmds:
+      - |
+        echo "🧪 doql quality gate   — cc≤12, critical=0"
+        pyqual run
+      - |
+        echo "🧪 redeploy quality gate — cc≤15, critical≤80"
+        cd "{{.REDEPLOY_ROOT}}" && make quality-check

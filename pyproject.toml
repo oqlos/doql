@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "doql"
-version = "1.0.5"
+version = "1.0.6"
 description = "Declarative OQL — build complete applications from a single .doql file"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -59,6 +59,9 @@ lsp = [
 ]
 deploy = [
   "redeploy>=0.2.0,<0.3.0",
+]
+device-adopt = [
+  "op3>=0.1.6",
 ]
 
 [project.scripts]

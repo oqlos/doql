@@ -60,9 +60,24 @@ def _validate_output_written(output: Path) -> bool:
 
 
 def cmd_adopt(args: argparse.Namespace) -> int:
-    """Scan *target* directory, produce app.doql.{css|less|sass}."""
+    """Scan *target* directory (or --from-device), produce app.doql.{css|less|sass}."""
+    from_device = getattr(args, "from_device", None)
+    if from_device:
+        return _cmd_adopt_from_device(args, from_device)
+    return _cmd_adopt_from_directory(args)
+
+
+def _cmd_adopt_from_directory(args: argparse.Namespace) -> int:
+    """Scan a local directory — the historical ``doql adopt`` behaviour."""
     from doql.adopt.scanner import scan_project
     from doql.adopt.emitter import emit_spec
+
+    if not args.target:
+        print(
+            "❌ adopt: either a target directory or --from-device USER@HOST is required.",
+            file=sys.stderr,
+        )
+        return 2
 
     target = Path(args.target).resolve()
     if not target.is_dir():
@@ -85,6 +100,63 @@ def cmd_adopt(args: argparse.Namespace) -> int:
         emit_spec(spec, output, fmt=fmt)
     except Exception as exc:
         print(f"❌ Failed to render {output.name}: {exc}", file=sys.stderr)
+        _cleanup_empty_output(output)
+        return 1
+
+    if not _validate_output_written(output):
+        return 1
+
+    return 0
+
+
+def _cmd_adopt_from_device(args: argparse.Namespace, device: str) -> int:
+    """Scan a remote device via op3 and write the resulting ``.doql.less``."""
+    # ``--from-device`` only makes sense with the LESS emitter — op3's
+    # ``LessAdapter`` is the renderer we delegate to.
+    fmt = getattr(args, "format", "less")
+    if fmt != "less":
+        print(
+            f"❌ adopt --from-device currently supports --format less only "
+            f"(got: {fmt}).",
+            file=sys.stderr,
+        )
+        return 2
+
+    try:
+        from doql.adopt.device_scanner import adopt_from_device
+    except ImportError as exc:  # pragma: no cover — defensive
+        print(f"❌ Failed to import device scanner: {exc}", file=sys.stderr)
+        return 1
+
+    # When the user specified --output we treat it as an absolute / relative
+    # path; otherwise land next to the current working directory with the
+    # default filename so the file is easy to find.
+    default_name = f"app.doql.{fmt}"
+    if args.output:
+        output = Path(args.output).resolve()
+    else:
+        output = Path.cwd() / default_name
+
+    if output.exists() and not args.force:
+        print(f"⚠️  {output.name} already exists. Use --force to overwrite.")
+        return 1
+
+    layers = list(args.layers) if args.layers else None
+
+    print(f"🔍 Scanning device {device} via op3 …")
+    try:
+        adopt_from_device(
+            target=device,
+            ssh_key=getattr(args, "ssh_key", None),
+            layers=layers,
+            output=output,
+        )
+    except RuntimeError as exc:
+        # Raised when op3 is not installed — message already contains a hint.
+        print(f"❌ {exc}", file=sys.stderr)
+        return 1
+    except Exception as exc:  # pragma: no cover — unexpected failures
+        print(f"❌ adopt --from-device failed: {exc}", file=sys.stderr)
         _cleanup_empty_output(output)
         return 1
 

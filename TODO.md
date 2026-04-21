@@ -15,9 +15,9 @@
 
 ## P1 — Quality / CC hotspots
 
-- [ ] `doql/adopt/scanner.py` (~400 lines) — split by interface detector type (FastAPI, Flask, CLI, Web)
-- [ ] `doql/parsers/css_parser.py` — remaining CC hotspots after sesja 11 refactoring
-- [ ] `doql/exporters/` — validate backward-compat shims are tested
+- [x] `doql/adopt/scanner.py` — split by interface detector type (FastAPI, Flask, CLI, Web) ✅ already done (scanner/ package)
+- [x] `doql/parsers/css_parser.py` — remaining CC hotspots ✅ already clean (154 lines, routing map)
+- [x] `doql/exporters/` — validate backward-compat shims are tested ✅ 7 tests added
 
 ## P2 — Features / Backlog
 

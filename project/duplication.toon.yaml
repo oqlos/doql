@@ -1,21 +1,21 @@
-# redup/duplication | 12 groups | 122f 14452L | 2026-04-21
+# redup/duplication | 12 groups | 128f 15337L | 2026-04-21
 
 SUMMARY:
-  files_scanned: 122
-  total_lines:   14452
+  files_scanned: 128
+  total_lines:   15337
   dup_groups:    12
   dup_fragments: 54
   saved_lines:   757
-  scan_ms:       6227
+  scan_ms:       10772
 
 HOTSPOTS[7] (files with most duplication):
-  plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py  dup=382L  groups=2  frags=5  (2.6%)
-  plugins/doql-plugin-erp/doql_plugin_erp/__init__.py  dup=317L  groups=2  frags=5  (2.2%)
+  plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py  dup=382L  groups=2  frags=5  (2.5%)
+  plugins/doql-plugin-erp/doql_plugin_erp/__init__.py  dup=317L  groups=2  frags=5  (2.1%)
   doql/generators/mobile_gen.py  dup=148L  groups=1  frags=1  (1.0%)
-  plugins/doql-plugin-iso17025/doql_plugin_iso17025/certificate.py  dup=129L  groups=1  frags=1  (0.9%)
-  plugins/doql-plugin-fleet/doql_plugin_fleet/device_registry.py  dup=124L  groups=1  frags=1  (0.9%)
+  plugins/doql-plugin-iso17025/doql_plugin_iso17025/certificate.py  dup=129L  groups=1  frags=1  (0.8%)
+  plugins/doql-plugin-fleet/doql_plugin_fleet/device_registry.py  dup=124L  groups=1  frags=1  (0.8%)
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/uncertainty.py  dup=120L  groups=1  frags=1  (0.8%)
-  doql/generators/integrations_gen.py  dup=113L  groups=1  frags=3  (0.8%)
+  doql/generators/integrations_gen.py  dup=113L  groups=1  frags=3  (0.7%)
 
 DUPLICATES[12] (ranked by impact):
   [ea3eb19d82437e63] !! STRU  gen_alembic_ini  L=40 N=13 saved=480 sim=1.00

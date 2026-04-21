@@ -23,6 +23,7 @@ from .quadlet import cmd_quadlet
 from .docs import cmd_docs
 from .import_cmd import cmd_import
 from .adopt import cmd_adopt
+from .drift import cmd_drift
 from .doctor import cmd_doctor
 from .publish import cmd_publish
 from .workspace import cmd_workspace, register_parser as register_workspace_parser
@@ -33,6 +34,7 @@ __all__ = [
     "cmd_adopt",
     "cmd_build",
     "cmd_doctor",
+    "cmd_drift",
     "cmd_publish",
     "cmd_init",
     "cmd_validate",

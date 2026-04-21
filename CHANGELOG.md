@@ -4,6 +4,32 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [1.0.6] - 2026-04-21
+
+### Docs
+- Update README.md
+- Update TODO.md
+- Update docs/README.md
+
+### Test
+- Update tests/integration/__init__.py
+- Update tests/integration/test_adopt_from_device.py
+- Update tests/integration/test_drift.py
+- Update tests/integration/test_op3_bridge.py
+
+### Other
+- Update Taskfile.yml
+- Update doql/adopt/device_scanner.py
+- Update doql/cli/commands/__init__.py
+- Update doql/cli/commands/adopt.py
+- Update doql/cli/commands/drift.py
+- Update doql/cli/main.py
+- Update doql/drift/__init__.py
+- Update doql/drift/detector.py
+- Update doql/integrations/__init__.py
+- Update doql/integrations/op3_bridge.py
+- ... and 2 more files
+
 ## [1.0.5] - 2026-04-21
 
 ### Docs

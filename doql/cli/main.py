@@ -10,8 +10,8 @@ import sys
 
 from .. import __version__
 from .commands import (
-    cmd_adopt, cmd_build, cmd_doctor, cmd_publish, cmd_init, cmd_validate, cmd_plan,
-    cmd_run, cmd_sync, cmd_deploy,
+    cmd_adopt, cmd_build, cmd_doctor, cmd_drift, cmd_publish, cmd_init, cmd_validate,
+    cmd_plan, cmd_run, cmd_sync, cmd_deploy,
     cmd_export, cmd_import, cmd_generate, cmd_render, cmd_query,
     cmd_kiosk, cmd_quadlet, cmd_docs,
     register_workspace_parser,
@@ -119,11 +119,19 @@ def create_parser() -> argparse.ArgumentParser:
 
     # adopt
     s = sub.add_parser("adopt", help="Reverse-engineer existing project → app.doql.css/.less/.sass")
-    s.add_argument("target", help="Project directory to scan")
+    s.add_argument("target", nargs="?",
+                   help="Project directory to scan (omit with --from-device)")
     s.add_argument("-o", "--output", help="Output filename (default: app.doql.{fmt})")
     s.add_argument("-f", "--format", choices=["css", "less", "sass"], default="less",
                    help="Output format (default: less)")
     s.add_argument("--force", action="store_true", help="Overwrite existing file")
+    s.add_argument("--from-device", dest="from_device", metavar="USER@HOST",
+                   help="Scan a live device via SSH using op3 (requires doql[device-adopt])")
+    s.add_argument("--ssh-key", dest="ssh_key",
+                   help="Path to SSH private key for --from-device")
+    s.add_argument("--layers", action="append", default=None,
+                   help="Op3 layer ids to probe (repeatable). Defaults to runtime + "
+                        "services + endpoints + business.health")
     s.set_defaults(func=cmd_adopt)
 
     # doctor
@@ -131,6 +139,22 @@ def create_parser() -> argparse.ArgumentParser:
     s.add_argument("--env", help="Run remote diagnostics for named environment")
     s.add_argument("--fix", action="store_true", help="Apply automatic fixes for warnings")
     s.set_defaults(func=cmd_doctor)
+
+    # drift
+    s = sub.add_parser("drift",
+                       help="Compare declared state (app.doql.less) vs. a live device scan")
+    s.add_argument("--from-device", dest="from_device", metavar="USER@HOST", required=True,
+                   help="SSH target to scan (required; uses op3 — install doql[device-adopt])")
+    s.add_argument("--file", dest="file",
+                   help="Path to intended-state file (default: app.doql.less in CWD)")
+    s.add_argument("--ssh-key", dest="ssh_key",
+                   help="Path to SSH private key")
+    s.add_argument("--layers", action="append", default=None,
+                   help="Op3 layer ids to probe (repeatable). Defaults to runtime + "
+                        "services + endpoints + business.health")
+    s.add_argument("--json", action="store_true",
+                   help="Emit a machine-readable JSON report instead of the table view")
+    s.set_defaults(func=cmd_drift)
 
     # publish
     s = sub.add_parser("publish", help="Publish artifacts (PyPI, npm, Docker, GitHub)")
