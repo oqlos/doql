@@ -363,3 +363,63 @@ def test_workflows_are_deduplicated_across_makefile_and_taskfile(tmp_path: Path)
     assert len(build_ws) == 1, "build workflow must not be duplicated"
     # Makefile runs first, so its command wins.
     assert build_ws[0].steps[0].params["cmd"] == "make-build"
+
+
+# \u2500\u2500 7. End-to-end with real project (oqlos) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+
+
+OQLOS_ROOT = Path("/home/tom/github/oqlos/oqlos")
+
+
+@pytest.mark.skipif(not OQLOS_ROOT.is_dir(), reason="oqlos workspace not present")
+def test_adopt_e2e_real_project_oqlos(tmp_path: Path) -> None:
+    """Scan the real oqlos repo and verify the emitted spec matches known
+    project structure.  This is the P0 blocker \u2014 if it breaks, the scanner
+    no longer understands our own sibling project.
+    """
+    spec = scan_project(OQLOS_ROOT)
+
+    # metadata
+    assert spec.app_name == "oqlos"
+    assert spec.version == "0.1.1"
+
+    # API interface \u2014 FastAPI + uvicorn in pyproject.toml
+    api_ifaces = [i for i in spec.interfaces if i.name == "api"]
+    assert len(api_ifaces) == 1
+    assert api_ifaces[0].framework == "fastapi"
+
+    # CLI interface \u2014 oqlctl entry-point
+    cli_ifaces = [i for i in spec.interfaces if i.name == "cli"]
+    assert len(cli_ifaces) >= 1
+
+    # deploy \u2014 docker-compose.dev.yml exists
+    assert spec.deploy is not None
+    assert spec.deploy.target == "docker-compose"
+
+    # workflows from Taskfile.yml
+    wf_names = {w.name for w in spec.workflows}
+    expected_wfs = {"test", "lint", "build", "install"}
+    assert expected_wfs <= wf_names, f"missing workflows: {expected_wfs - wf_names}"
+
+    # entities \u2014 SQLAlchemy models in oqlos/
+    entity_names = {e.name for e in spec.entities}
+    assert "Scenario" in entity_names or "ExecutionStatus" in entity_names
+
+    # environments \u2014 .env file present
+    env_names = {e.name for e in spec.environments}
+    assert "local" in env_names
+
+    # Full cmd_adopt round-trip to temp output
+    out_file = tmp_path / "oqlos_test.doql.css"
+    args = argparse.Namespace(
+        target=str(OQLOS_ROOT),
+        output=str(out_file),
+        force=True,
+        format="css",
+    )
+    rc = cmd_adopt(args)
+    assert rc == 0, f"cmd_adopt failed for real oqlos project"
+    assert out_file.exists() and out_file.stat().st_size > 0
+    text = out_file.read_text()
+    assert 'app {' in text
+    assert 'name: "oqlos"' in text

@@ -33,3 +33,6 @@ $VENV/bin/redup scan . --format toon --output ./project
 #$VENV/bin/vallm batch --parallel .
 $VENV/bin/vallm batch . --recursive --format toon --output ./project
 $VENV/bin/prefact -a -e "examples/**"
+$PIP install sumd --upgrade --quiet
+$VENV/bin/sumd .
+$VENV/bin/sumr .

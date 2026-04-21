@@ -4,6 +4,22 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [1.0.5] - 2026-04-21
+
+### Docs
+- Update README.md
+- Update TODO.md
+- Update docs/README.md
+
+### Test
+- Update tests/test_adopt.py
+- Update tests/test_exporters_shims.py
+
+### Other
+- Update project.sh
+- Update project/duplication.toon.yaml
+- Update project/validation.toon.yaml
+
 ## [1.0.4] - 2026-04-20
 
 ### Docs

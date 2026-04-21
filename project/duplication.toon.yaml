@@ -1,15 +1,15 @@
-# redup/duplication | 12 groups | 122f 14226L | 2026-04-20
+# redup/duplication | 12 groups | 122f 14452L | 2026-04-21
 
 SUMMARY:
   files_scanned: 122
-  total_lines:   14226
+  total_lines:   14452
   dup_groups:    12
   dup_fragments: 54
   saved_lines:   757
-  scan_ms:       6462
+  scan_ms:       6227
 
 HOTSPOTS[7] (files with most duplication):
-  plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py  dup=382L  groups=2  frags=5  (2.7%)
+  plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py  dup=382L  groups=2  frags=5  (2.6%)
   plugins/doql-plugin-erp/doql_plugin_erp/__init__.py  dup=317L  groups=2  frags=5  (2.2%)
   doql/generators/mobile_gen.py  dup=148L  groups=1  frags=1  (1.0%)
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/certificate.py  dup=129L  groups=1  frags=1  (0.9%)
@@ -60,8 +60,8 @@ DUPLICATES[12] (ranked by impact):
       doql/exporters/css/__init__.py:23-32  (_render_data_layer)
       doql/exporters/css/__init__.py:45-54  (_render_infrastructure_layer)
   [5f48ca70777b1005]   STRU  _map_template  L=10 N=2 saved=10 sim=1.00
-      doql/parsers/css_mappers.py:141-150  (_map_template)
-      doql/parsers/css_mappers.py:153-162  (_map_document)
+      doql/parsers/css_mappers.py:153-162  (_map_template)
+      doql/parsers/css_mappers.py:165-174  (_map_document)
   [30f08c1670d767e9]   STRU  _document_section  L=7 N=2 saved=7 sim=1.00
       doql/exporters/markdown/sections.py:106-112  (_document_section)
       doql/exporters/markdown/sections.py:115-121  (_report_section)

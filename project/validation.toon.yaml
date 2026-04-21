@@ -1,9 +1,9 @@
-# vallm batch | 315f | 0✓ 181⚠ 0✗ | 2026-04-20
+# vallm batch | 322f | 0✓ 187⚠ 0✗ | 2026-04-21
 
 SUMMARY:
-  scanned: 315  passed: 0 (0.0%)  warnings: 181  errors: 0  unsupported: 0
+  scanned: 322  passed: 0 (0.0%)  warnings: 187  errors: 0  unsupported: 0
 
-WARNINGS[181]{path,score}:
+WARNINGS[187]{path,score}:
   plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py,0.71
     issues[3]{rule,severity,message,line}:
       syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
@@ -424,6 +424,9 @@ WARNINGS[181]{path,score}:
   plugins/doql-plugin-erp/pyproject.toml,0.78
     issues[1]{rule,severity,message,line}:
       syntax.unsupported,warning,"Could not parse TOML: Download error: Language 'TOML' not available for download. Available groups: [""all""]",
+  plugins/doql-plugin-erp/sumd.json,0.78
+    issues[1]{rule,severity,message,line}:
+      syntax.unsupported,warning,"Could not parse JSON: Download error: Language 'JSON' not available for download. Available groups: [""all""]",
   plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py,0.78
     issues[1]{rule,severity,message,line}:
       syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
@@ -442,9 +445,15 @@ WARNINGS[181]{path,score}:
   plugins/doql-plugin-fleet/pyproject.toml,0.78
     issues[1]{rule,severity,message,line}:
       syntax.unsupported,warning,"Could not parse TOML: Download error: Language 'TOML' not available for download. Available groups: [""all""]",
+  plugins/doql-plugin-fleet/sumd.json,0.78
+    issues[1]{rule,severity,message,line}:
+      syntax.unsupported,warning,"Could not parse JSON: Download error: Language 'JSON' not available for download. Available groups: [""all""]",
   plugins/doql-plugin-gxp/pyproject.toml,0.78
     issues[1]{rule,severity,message,line}:
       syntax.unsupported,warning,"Could not parse TOML: Download error: Language 'TOML' not available for download. Available groups: [""all""]",
+  plugins/doql-plugin-gxp/sumd.json,0.78
+    issues[1]{rule,severity,message,line}:
+      syntax.unsupported,warning,"Could not parse JSON: Download error: Language 'JSON' not available for download. Available groups: [""all""]",
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py,0.78
     issues[1]{rule,severity,message,line}:
       syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
@@ -460,6 +469,9 @@ WARNINGS[181]{path,score}:
   plugins/doql-plugin-iso17025/pyproject.toml,0.78
     issues[1]{rule,severity,message,line}:
       syntax.unsupported,warning,"Could not parse TOML: Download error: Language 'TOML' not available for download. Available groups: [""all""]",
+  plugins/doql-plugin-iso17025/sumd.json,0.78
+    issues[1]{rule,severity,message,line}:
+      syntax.unsupported,warning,"Could not parse JSON: Download error: Language 'JSON' not available for download. Available groups: [""all""]",
   plugins/doql-plugin-shared/doql_plugin_shared/__init__.py,0.78
     issues[1]{rule,severity,message,line}:
       syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
@@ -472,6 +484,9 @@ WARNINGS[181]{path,score}:
   plugins/doql-plugin-shared/pyproject.toml,0.78
     issues[1]{rule,severity,message,line}:
       syntax.unsupported,warning,"Could not parse TOML: Download error: Language 'TOML' not available for download. Available groups: [""all""]",
+  plugins/doql-plugin-shared/sumd.json,0.78
+    issues[1]{rule,severity,message,line}:
+      syntax.unsupported,warning,"Could not parse JSON: Download error: Language 'JSON' not available for download. Available groups: [""all""]",
   project.sh,0.78
     issues[1]{rule,severity,message,line}:
       syntax.unsupported,warning,"Could not parse BASH: Download error: Language 'BASH' not available for download. Available groups: [""all""]",
@@ -518,6 +533,9 @@ WARNINGS[181]{path,score}:
     issues[1]{rule,severity,message,line}:
       syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
   tests/test_parser.py,0.78
+    issues[1]{rule,severity,message,line}:
+      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
+  tests/test_parser_benchmark.py,0.78
     issues[1]{rule,severity,message,line}:
       syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
   tests/test_plugins.py,0.78
