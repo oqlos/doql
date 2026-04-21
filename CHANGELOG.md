@@ -4,6 +4,14 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [1.0.9] - 2026-04-21
+
+### Docs
+- Update README.md
+
+### Other
+- Update doql/integrations/op3_bridge.py
+
 ## [1.0.8] - 2026-04-21
 
 ### Docs
