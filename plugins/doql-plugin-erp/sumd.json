@@ -1,11 +1,11 @@
 {
   "project_name": "doql-plugin-erp",
-  "description": "ERP integration for doql — Odoo XML-RPC client + bidirectional sync adapters",
+  "description": "SUMD - Structured Unified Markdown Descriptor for AI-aware project refactorization",
   "sections": [
     {
       "name": "contents",
       "type": "unknown",
-      "content": "- [Metadata](#metadata)\n- [Architecture](#architecture)\n- [Workflows](#workflows)\n- [Configuration](#configuration)\n- [Dependencies](#dependencies)\n- [Deployment](#deployment)\n- [Code Analysis](#code-analysis)\n- [Intent](#intent)",
+      "content": "- [Metadata](#metadata)\n- [Architecture](#architecture)\n- [Workflows](#workflows)\n- [Dependencies](#dependencies)\n- [Refactoring Analysis](#refactoring-analysis)\n- [Intent](#intent)",
       "level": 2
     },
     {
@@ -33,12 +33,6 @@
       "level": 2
     },
     {
-      "name": "configuration",
-      "type": "configuration",
-      "content": "```yaml\nproject:\n  name: doql-plugin-erp\n  version: 0.1.0\n  env: local\n```",
-      "level": 2
-    },
-    {
       "name": "dependencies",
       "type": "dependencies",
       "content": "",
@@ -51,21 +45,9 @@
       "level": 2
     },
     {
-      "name": "deployment",
-      "type": "deployment",
-      "content": "```bash markpact:run\npip install doql-plugin-erp\n\n# development install\npip install -e .[dev]\n```",
-      "level": 2
-    },
-    {
-      "name": "code analysis",
+      "name": "refactoring analysis",
       "type": "unknown",
-      "content": "",
-      "level": 2
-    },
-    {
-      "name": "# `project/map.toon.yaml`",
-      "type": "unknown",
-      "content": "```toon markpact:analysis path=project/map.toon.yaml\n# doql-plugin-erp | 2f 418L | less:1,python:1 | 2026-04-21\n# stats: 6 func | 0 cls | 2 mod | CC̄=1.2 | critical:0 | cycles:0\n# alerts[5]: CC generate=2; CC _odoo_client_module=1; CC _mapping_module=1; CC _sync_module=1; CC _webhook_module=1\n# hotspots[5]: generate fan=8; _odoo_client_module fan=1; _mapping_module fan=1; _sync_module fan=1; _webhook_module fan=1\n# evolution: baseline\n# Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods\nM[2]:\n  app.doql.less,60\n  doql_plugin_erp/__init__.py,358\nD:\n  doql_plugin_erp/__init__.py:\n    e: _odoo_client_module,_mapping_module,_sync_module,_webhook_module,_readme,generate\n    _odoo_client_module()\n    _mapping_module()\n    _sync_module()\n    _webhook_module()\n    _readme(spec)\n    generate(spec;env_vars;out;project_root)\n```",
+      "content": "*Pre-refactoring snapshot — use this section to identify targets. Generated from `project/` toon files.*",
       "level": 2
     },
     {

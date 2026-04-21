@@ -1,12 +1,11 @@
-# doql | 192f 26010L | python:150,less:16,css:15,shell:6,javascript:4,typescript:1 | 2026-04-21
-# stats: 743 func | 41 cls | 192 mod | CC̄=3.0 | critical:14 | cycles:0
-# alerts[5]: CC check_api=22; CC test_api_boot_and_health=16; CC test_build_produces_expected_targets=14; CC check_desktop=12; CC _collect_missing_files=11
+# doql | 191f 25738L | python:150,less:16,css:14,shell:6,javascript:4,typescript:1 | 2026-04-21
+# stats: 743 func | 41 cls | 191 mod | CC̄=3.8 | critical:33 | cycles:0
+# alerts[5]: CC test_build_produces_expected_targets=33; CC check_api=25; CC test_adopt_e2e_real_project_oqlos=22; CC check_desktop=17; CC test_api_boot_and_health=17
 # hotspots[5]: check_api fan=26; test_api_boot_and_health fan=26; cmd_build fan=23; main fan=21; cmd_doctor fan=17
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
-M[192]:
-  app.doql.css,166
-  app.doql.less,166
+M[191]:
+  app.doql.less,60
   doql/__init__.py,92
   doql/adopt/__init__.py,11
   doql/adopt/device_scanner.py,133

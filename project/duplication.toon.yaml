@@ -1,21 +1,21 @@
-# redup/duplication | 13 groups | 128f 15328L | 2026-04-21
+# redup/duplication | 13 groups | 129f 15937L | 2026-04-21
 
 SUMMARY:
-  files_scanned: 128
-  total_lines:   15328
+  files_scanned: 129
+  total_lines:   15937
   dup_groups:    13
   dup_fragments: 56
-  saved_lines:   767
-  scan_ms:       6716
+  saved_lines:   847
+  scan_ms:       8916
 
 HOTSPOTS[7] (files with most duplication):
-  plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py  dup=382L  groups=2  frags=5  (2.5%)
-  plugins/doql-plugin-erp/doql_plugin_erp/__init__.py  dup=317L  groups=2  frags=5  (2.1%)
-  doql/generators/mobile_gen.py  dup=148L  groups=1  frags=1  (1.0%)
+  plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py  dup=382L  groups=2  frags=5  (2.4%)
+  plugins/doql-plugin-erp/doql_plugin_erp/__init__.py  dup=317L  groups=2  frags=5  (2.0%)
+  doql/generators/mobile_gen.py  dup=148L  groups=1  frags=1  (0.9%)
+  doql/generators/ci_gen.py  dup=132L  groups=1  frags=2  (0.8%)
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/certificate.py  dup=129L  groups=1  frags=1  (0.8%)
   plugins/doql-plugin-fleet/doql_plugin_fleet/device_registry.py  dup=124L  groups=1  frags=1  (0.8%)
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/uncertainty.py  dup=120L  groups=1  frags=1  (0.8%)
-  doql/generators/integrations_gen.py  dup=113L  groups=1  frags=3  (0.7%)
 
 DUPLICATES[13] (ranked by impact):
   [ea3eb19d82437e63] !! STRU  gen_alembic_ini  L=40 N=13 saved=480 sim=1.00
@@ -56,12 +56,12 @@ DUPLICATES[13] (ranked by impact):
       plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py:133-251  (_e_signature_module)
       plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py:254-312  (_audit_middleware)
       plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py:315-366  (_migration_audit)
+  [5f642514e6b6222c] ! STRU  _gen_github_action  L=90 N=2 saved=90 sim=1.00
+      doql/generators/ci_gen.py:14-103  (_gen_github_action)
+      doql/generators/ci_gen.py:171-212  (_gen_jenkinsfile)
   [dcc2f8e70f6321a7]   STRU  _render_data_layer  L=10 N=2 saved=10 sim=1.00
       doql/exporters/css/__init__.py:23-32  (_render_data_layer)
       doql/exporters/css/__init__.py:45-54  (_render_infrastructure_layer)
-  [4a4db6adb93cda30]   STRU  build_layer_tree  L=10 N=2 saved=10 sim=1.00
-      doql/integrations/op3_bridge.py:77-86  (build_layer_tree)
-      doql/integrations/op3_bridge.py:89-101  (make_scanner)
   [5f48ca70777b1005]   STRU  _map_template  L=10 N=2 saved=10 sim=1.00
       doql/parsers/css_mappers.py:153-162  (_map_template)
       doql/parsers/css_mappers.py:165-174  (_map_document)
@@ -98,12 +98,12 @@ REFACTOR[13] (ranked by priority):
   [3] ○ extract_function   → utils/_gen_build_rs.py
       WHY: 19 occurrences of 6-line block across 11 files — saves 108 lines
       FILES: doql/generators/desktop_gen.py, doql/generators/integrations_gen.py, doql/generators/mobile_gen.py, doql/generators/workflow_gen.py, plugins/doql-plugin-erp/doql_plugin_erp/__init__.py +6 more
-  [4] ○ extract_function   → doql/exporters/css/utils/_render_data_layer.py
+  [4] ○ extract_module     → doql/generators/utils/_gen_github_action.py
+      WHY: 2 occurrences of 90-line block across 1 files — saves 90 lines
+      FILES: doql/generators/ci_gen.py
+  [5] ○ extract_function   → doql/exporters/css/utils/_render_data_layer.py
       WHY: 2 occurrences of 10-line block across 1 files — saves 10 lines
       FILES: doql/exporters/css/__init__.py
-  [5] ○ extract_function   → doql/integrations/utils/build_layer_tree.py
-      WHY: 2 occurrences of 10-line block across 1 files — saves 10 lines
-      FILES: doql/integrations/op3_bridge.py
   [6] ○ extract_function   → doql/parsers/utils/_map_template.py
       WHY: 2 occurrences of 10-line block across 1 files — saves 10 lines
       FILES: doql/parsers/css_mappers.py
@@ -132,10 +132,10 @@ REFACTOR[13] (ranked by priority):
 QUICK_WINS[7] (low risk, high savings — do first):
   [3] extract_function   saved=108L  → utils/_gen_build_rs.py
       FILES: desktop_gen.py, integrations_gen.py, mobile_gen.py +8
-  [4] extract_function   saved=10L  → doql/exporters/css/utils/_render_data_layer.py
+  [4] extract_module     saved=90L  → doql/generators/utils/_gen_github_action.py
+      FILES: ci_gen.py
+  [5] extract_function   saved=10L  → doql/exporters/css/utils/_render_data_layer.py
       FILES: __init__.py
-  [5] extract_function   saved=10L  → doql/integrations/utils/build_layer_tree.py
-      FILES: op3_bridge.py
   [6] extract_function   saved=10L  → doql/parsers/utils/_map_template.py
       FILES: css_mappers.py
   [7] extract_function   saved=7L  → doql/exporters/markdown/utils/_document_section.py
@@ -159,12 +159,12 @@ DEPENDENCY_RISK[2] (duplicates spanning multiple packages):
       doql/generators/workflow_gen.py
       +7 more
 
-EFFORT_ESTIMATE (total ≈ 63.1h):
+EFFORT_ESTIMATE (total ≈ 67.3h):
   hard   gen_alembic_ini                     saved=480L  ~2880min
   hard   _readme                             saved=116L  ~348min
   hard   _gen_build_rs                       saved=108L  ~432min
+  hard   _gen_github_action                  saved=90L  ~270min
   easy   _render_data_layer                  saved=10L  ~20min
-  easy   build_layer_tree                    saved=10L  ~20min
   easy   _map_template                       saved=10L  ~20min
   easy   _document_section                   saved=7L  ~14min
   easy   run_report_generators               saved=6L  ~12min
@@ -174,4 +174,4 @@ EFFORT_ESTIMATE (total ≈ 63.1h):
 
 METRICS-TARGET:
   dup_groups:  13 → 0
-  saved_lines: 767 lines recoverable
+  saved_lines: 847 lines recoverable

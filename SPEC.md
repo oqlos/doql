@@ -1,6 +1,6 @@
-# doql Language Specification v0.2.2
+# doql Language Specification v0.2.3
 
-> **Status:** Draft · **Last updated:** 2026-04-17 · **Wersja poprzednia:** v0.2.1
+> **Status:** Draft · **Last updated:** 2026-04-21 · **Wersja poprzednia:** v0.2.2
 
 `doql` (Declarative OQL) to język deklaratywny opisujący to, **co ma powstać** z danej deklaracji. Nie tylko aplikacje SaaS — także dokumenty, raporty PDF, szablony, bazy danych SQLite, klienty API, stanowiska kiosk.
 
@@ -26,6 +26,9 @@ Artefakt to wszystko, co generator `doql build` produkuje jako plik lub działaj
 | `INTERFACE` | UI (web/mobile/desktop/kiosk) | Dashboard, PWA, terminal |
 | `INTEGRATION` | Łączenie z zewn. usługą | SMTP, Twilio, S3 |
 | `REPORT` | Generator raportów (scheduled) | Miesięczny summary |
+| `INFRASTRUCTURE` | Kubernetes, Terraform, Docker, systemd | `k8s`, `terraform` |
+| `INGRESS` | Reverse proxy: Nginx, Traefik | `nginx`, `traefik` |
+| `CI` | CI/CD pipeline: GitHub, GitLab, Jenkins | `github`, `gitlab` |
 
 Każdy z nich ma własną gramatykę — poniżej.
 
@@ -68,6 +71,15 @@ WORKFLOW ...
 
 # — Uprawnienia
 ROLES ...
+
+# — Infrastruktura (Kubernetes, Terraform)
+INFRASTRUCTURE ...
+
+# — Ingress (Nginx, Traefik)
+INGRESS ...
+
+# — CI/CD (GitHub, GitLab, Jenkins)
+CI ...
 
 # — Wdrożenie
 DEPLOY ...
@@ -584,7 +596,132 @@ DEPLOY:
 
 ---
 
-## 13. Minimalny plik DOQL dla każdego scenariusza
+## 13. INFRASTRUCTURE — Kubernetes, Terraform, Docker
+
+`INFRASTRUCTURE` definiuje platformę deploymentu niezależnie od `DEPLOY`. Dzięki temu jeden projekt może generować zarówno `docker-compose.yml`, jak i manifesty K8s lub pliki Terraform.
+
+### 13.1 Kubernetes
+
+```css
+infrastructure[type="kubernetes"] {
+  provider: k3s;
+  namespace: doql;
+  replicas: 3;
+}
+```
+
+Generuje:
+- `infra/deployment.yaml` — Deployment + Service
+- `infra/configmap.yaml` — ConfigMap ze zmiennymi
+- `infra/ingress.yaml` — Ingress (TLS opcjonalnie)
+- `infra/kustomization.yaml` — Kustomize manifest
+
+### 13.2 Terraform (Docker provider)
+
+```css
+infrastructure[type="terraform"] {
+  provider: docker;
+}
+```
+
+Generuje:
+- `infra/main.tf` — Docker image + container resource
+- `infra/variables.tf` — zmienne `domain`, `replicas`
+- `infra/outputs.tf` — output `container_name`
+
+### 13.3 Docker Compose (legacy fallback)
+
+Jeśli brak bloku `INFRASTRUCTURE`, generator używa `DEPLOY.target` i emituje `docker-compose.yml` + `Dockerfile` (backward compatible).
+
+| Pole | Typ | Opis |
+|------|-----|------|
+| `type` | string | `kubernetes`, `terraform`, `docker-compose` |
+| `provider` | string? | `k3s`, `docker`, `aws`, `gcp` |
+| `namespace` | string? | Namespace K8s lub projekt TF |
+| `replicas` | int | Liczba replik (default: 1) |
+| `config.*` | string | Dowolne key-value (np. `cluster: prod`) |
+
+---
+
+## 14. INGRESS — Nginx, Traefik
+
+`INGRESS` definiuje reverse proxy i routing do usług.
+
+### 14.1 Nginx
+
+```css
+ingress[type="nginx"] {
+  tls: true;
+  cert_manager: letsencrypt;
+  rate_limit: 100r/m;
+}
+```
+
+Generuje:
+- `infra/nginx.conf` — konfiguracja upstream + server block
+- `infra/Dockerfile.nginx` — obraz Nginx alpine z configiem
+
+### 14.2 Traefik (K8s / Docker)
+
+Traefik jest domyślnym ingress controllerem w K8s i obsługiwany przez `docker-compose.yml` (z etykietami).
+
+| Pole | Typ | Opis |
+|------|-----|------|
+| `type` | string | `nginx`, `traefik` |
+| `tls` | bool | Włącz HTTPS (default: false) |
+| `cert_manager` | string? | `letsencrypt`, `selfsigned`, `custom` |
+| `rate_limit` | string? | np. `100r/m` |
+| `config.*` | string | Dodatkowe dyrektywy |
+
+---
+
+## 15. CI — GitHub, GitLab, Jenkins
+
+`CI` definiuje pipeline CI/CD. Można zadeklarować wiele bloków CI (np. GitHub + Jenkins dla różnych branchy).
+
+### 15.1 GitHub Actions (default)
+
+```css
+ci[type="github"] {
+  runner: ubuntu-latest;
+  stages: validate, build, test, deploy;
+}
+```
+
+Generuje: `.github/workflows/doql-ci.yml`
+
+### 15.2 GitLab CI
+
+```css
+ci[type="gitlab"] {
+  runner: docker;
+  stages: validate, build, test, deploy;
+}
+```
+
+Generuje: `.gitlab-ci.yml`
+
+### 15.3 Jenkins
+
+```css
+ci[type="jenkins"] {
+  runner: any;
+  stages: validate, build, test, deploy;
+}
+```
+
+Generuje: `Jenkinsfile` (declarative pipeline)
+
+| Pole | Typ | Opis |
+|------|-----|------|
+| `type` | string | `github`, `gitlab`, `jenkins` |
+| `runner` | string? | Label runnera / agenta |
+| `stages` | list[string] | Etapy pipeline (default: validate, build, test) |
+| `config.*` | string | Dodatkowe zmienne |
+
+---
+
+## 16. Minimalny plik DOQL dla każdego scenariusza
 
 ### Tylko dokument (np. generator CV):
 ```doql
@@ -633,7 +770,7 @@ WORKFLOW sync:
 
 ---
 
-## 14. Komendy CLI — rozszerzone
+## 17. Komendy CLI — rozszerzone
 
 | Komenda | Co robi |
 |---------|---------|
@@ -654,11 +791,13 @@ WORKFLOW sync:
 | `doql docs` | Wygeneruj stronę dokumentacji |
 | `doql adopt <dir>` | Reverse-engineer istniejącego projektu → `app.doql.css` |
 | `doql doctor` | Diagnostyka projektu (9 checks + `--env` remote SSH) |
+| `doql drift` | Porównaj zadeklarowany stan z live device scan |
+| `doql workspace` | Multi-project operations nad app.doql.css manifests |
 | `doql publish` | Publikuj artefakty (PyPI, npm, Docker, GitHub) |
 
 ---
 
-## 15. Konwencja katalogów
+## 18. Konwencja katalogów
 
 ```
 my-app/
@@ -688,11 +827,11 @@ Priorytet autodetekcji: `.doql.less` > `.doql.sass` > `.doql.css` > `.doql`
 
 ---
 
-## 16. Alternatywna składnia CSS-like
+## 19. Alternatywna składnia CSS-like
 
 Oprócz klasycznego formatu indentacyjnego, doql wspiera trzy formaty CSS-like. Wszystkie parsują się do identycznego `DoqlSpec`.
 
-### 16.1 Format `.doql.css`
+### 19.1 Format `.doql.css`
 
 ```css
 app {
@@ -718,7 +857,7 @@ deploy {
 }
 ```
 
-### 16.2 Format `.doql.less` (ze zmiennymi `@`)
+### 19.2 Format `.doql.less` (ze zmiennymi `@`)
 
 ```less
 @app-name:    "Calibration Lab";
@@ -738,7 +877,7 @@ entity[name="Instrument"] {
 
 Zmienne `@var` są rozwijane w czasie parsowania — wynikowy `DoqlSpec` nie zawiera zmiennych.
 
-### 16.3 Format `.doql.sass` (ze zmiennymi `$`, indent-based)
+### 19.3 Format `.doql.sass` (ze zmiennymi `$`, indent-based)
 
 ```sass
 $primary: "#2563eb"
@@ -754,7 +893,7 @@ entity[name="Note"]
   content: text
 ```
 
-### 16.4 Konwersja między formatami
+### 19.4 Konwersja między formatami
 
 ```bash
 # Classic → LESS
@@ -767,7 +906,7 @@ doql export --format yaml -o spec.yaml
 doql import spec.yaml -o app.doql
 ```
 
-### 16.5 Selektory CSS
+### 19.5 Selektory CSS
 
 | Selektor | Znaczenie |
 |----------|-----------|
@@ -778,10 +917,13 @@ doql import spec.yaml -o app.doql
 | `workflow[name="X"]` | WORKFLOW X |
 | `deploy` | DEPLOY |
 | `roles role[name="X"]` | ROLE X |
+| `infrastructure[type="X"]` | INFRASTRUCTURE X |
+| `ingress[type="X"]` | INGRESS X |
+| `ci[type="X"]` | CI X |
 
 ---
 
-## 17. Eksport i import
+## 20. Eksport i import
 
 ### Formaty eksportu (`doql export`)
 
@@ -805,7 +947,7 @@ doql import spec.yaml -o app.doql  # YAML → plik
 
 ---
 
-## 18. Zmiany względem v0.1
+## 21. Zmiany względem v0.1
 
 **Dodane w v0.2:**
 - Sekcja 1 (Artefakty) — jawny katalog typów artefaktów
@@ -820,9 +962,19 @@ doql import spec.yaml -o app.doql  # YAML → plik
 - Sekcja 12.2 (Quadlet) — rozszerzony
 - Sekcja 12.3 (kiosk-appliance) — nowy target deploy
 
+**Dodane w v0.2.2:**
+- Sekcja 13 (INFRASTRUCTURE) — Kubernetes, Terraform, Docker
+- Sekcja 14 (INGRESS) — Nginx, Traefik reverse proxy
+- Sekcja 15 (CI) — GitHub Actions, GitLab CI, Jenkins pipeline
+- Generatory: `deployment.yaml`, `service.yaml`, `configmap.yaml`, `kustomization.yaml` (K8s)
+- Generatory: `main.tf`, `variables.tf`, `outputs.tf` (Terraform)
+- Generatory: `nginx.conf`, `Dockerfile.nginx` (Nginx)
+- Generatory: `.gitlab-ci.yml`, `Jenkinsfile` (CI)
+- Routing CI generatora po `spec.ci_configs` z fallback do GitHub Actions
+
 **Dodane w v0.2.1:**
-- Sekcja 16 (Alternatywna składnia CSS-like) — `.doql.css`, `.doql.less`, `.doql.sass`
-- Sekcja 17 (Eksport i import) — 8 formatów eksportu, import z YAML
+- Sekcja 19 (Alternatywna składnia CSS-like) — `.doql.css`, `.doql.less`, `.doql.sass`
+- Sekcja 20 (Eksport i import) — 8 formatów eksportu, import z YAML
 - Zaktualizowana konwencja katalogów — pliki CSS-like + priorytet autodetekcji
 
 **Bez zmian od v0.1:**

@@ -1,11 +1,11 @@
 {
   "project_name": "doql-plugin-iso17025",
-  "description": "ISO/IEC 17025:2017 compliance for doql — calibration certificates, traceability, uncertainty budgets",
+  "description": "SUMD - Structured Unified Markdown Descriptor for AI-aware project refactorization",
   "sections": [
     {
       "name": "contents",
       "type": "unknown",
-      "content": "- [Metadata](#metadata)\n- [Architecture](#architecture)\n- [Workflows](#workflows)\n- [Configuration](#configuration)\n- [Dependencies](#dependencies)\n- [Deployment](#deployment)\n- [Code Analysis](#code-analysis)\n- [Intent](#intent)",
+      "content": "- [Metadata](#metadata)\n- [Architecture](#architecture)\n- [Workflows](#workflows)\n- [Dependencies](#dependencies)\n- [Refactoring Analysis](#refactoring-analysis)\n- [Intent](#intent)",
       "level": 2
     },
     {
@@ -33,12 +33,6 @@
       "level": 2
     },
     {
-      "name": "configuration",
-      "type": "configuration",
-      "content": "```yaml\nproject:\n  name: doql-plugin-iso17025\n  version: 0.1.0\n  env: local\n```",
-      "level": 2
-    },
-    {
       "name": "dependencies",
       "type": "dependencies",
       "content": "",
@@ -51,21 +45,9 @@
       "level": 2
     },
     {
-      "name": "deployment",
-      "type": "deployment",
-      "content": "```bash markpact:run\npip install doql-plugin-iso17025\n\n# development install\npip install -e .[dev]\n```",
-      "level": 2
-    },
-    {
-      "name": "code analysis",
+      "name": "refactoring analysis",
       "type": "unknown",
-      "content": "",
-      "level": 2
-    },
-    {
-      "name": "# `project/map.toon.yaml`",
-      "type": "unknown",
-      "content": "```toon markpact:analysis path=project/map.toon.yaml\n# doql-plugin-iso17025 | 7f 611L | python:6,less:1 | 2026-04-21\n# stats: 6 func | 0 cls | 7 mod | CC̄=1.0 | critical:0 | cycles:0\n# alerts[5]: CC generate=1; fan-out generate=2; fan-out generate=1\n# hotspots[5]: generate fan=2; generate fan=1; generate fan=1; generate fan=1; generate fan=1\n# evolution: baseline\n# Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods\nM[7]:\n  app.doql.less,60\n  doql_plugin_iso17025/__init__.py,40\n  doql_plugin_iso17025/certificate.py,136\n  doql_plugin_iso17025/drift_monitor.py,79\n  doql_plugin_iso17025/migration.py,75\n  doql_plugin_iso17025/traceability.py,94\n  doql_plugin_iso17025/uncertainty.py,127\nD:\n  doql_plugin_iso17025/__init__.py:\n    e: generate\n    generate(spec;env_vars;out;project_root)\n  doql_plugin_iso17025/certificate.py:\n    e: generate\n    generate()\n  doql_plugin_iso17025/drift_monitor.py:\n    e: generate\n    generate()\n  doql_plugin_iso17025/migration.py:\n    e: generate\n    generate()\n  doql_plugin_iso17025/traceability.py:\n    e: generate\n    generate()\n  doql_plugin_iso17025/uncertainty.py:\n    e: generate\n    generate()\n```",
+      "content": "*Pre-refactoring snapshot — use this section to identify targets. Generated from `project/` toon files.*",
       "level": 2
     },
     {

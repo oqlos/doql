@@ -1,11 +1,11 @@
 {
   "project_name": "doql-plugin-shared",
-  "description": "Shared utilities for doql plugins",
+  "description": "SUMD - Structured Unified Markdown Descriptor for AI-aware project refactorization",
   "sections": [
     {
       "name": "contents",
       "type": "unknown",
-      "content": "- [Metadata](#metadata)\n- [Architecture](#architecture)\n- [Workflows](#workflows)\n- [Configuration](#configuration)\n- [Deployment](#deployment)\n- [Code Analysis](#code-analysis)\n- [Intent](#intent)",
+      "content": "- [Metadata](#metadata)\n- [Architecture](#architecture)\n- [Workflows](#workflows)\n- [Refactoring Analysis](#refactoring-analysis)\n- [Intent](#intent)",
       "level": 2
     },
     {
@@ -33,27 +33,9 @@
       "level": 2
     },
     {
-      "name": "configuration",
-      "type": "configuration",
-      "content": "```yaml\nproject:\n  name: doql-plugin-shared\n  version: 0.1.0\n  env: local\n```",
-      "level": 2
-    },
-    {
-      "name": "deployment",
-      "type": "deployment",
-      "content": "```bash markpact:run\npip install doql-plugin-shared\n\n# development install\npip install -e .[dev]\n```",
-      "level": 2
-    },
-    {
-      "name": "code analysis",
+      "name": "refactoring analysis",
       "type": "unknown",
-      "content": "",
-      "level": 2
-    },
-    {
-      "name": "# `project/map.toon.yaml`",
-      "type": "unknown",
-      "content": "```toon markpact:analysis path=project/map.toon.yaml\n# doql-plugin-shared | 4f 140L | python:3,less:1 | 2026-04-21\n# stats: 2 func | 0 cls | 4 mod | CC̄=3.0 | critical:0 | cycles:0\n# alerts[5]: CC plugin_generate=3; CC generate_readme=3; fan-out plugin_generate=4; fan-out generate_readme=1\n# hotspots[5]: plugin_generate fan=4; generate_readme fan=1\n# evolution: baseline\n# Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods\nM[4]:\n  app.doql.less,60\n  doql_plugin_shared/__init__.py,12\n  doql_plugin_shared/base.py,30\n  doql_plugin_shared/readme.py,38\nD:\n  doql_plugin_shared/__init__.py:\n  doql_plugin_shared/base.py:\n    e: plugin_generate\n    plugin_generate(out;modules;readme_content)\n  doql_plugin_shared/readme.py:\n    e: generate_readme\n    generate_readme(plugin_name;modules;description;usage_extra)\n```",
+      "content": "*Pre-refactoring snapshot — use this section to identify targets. Generated from `project/` toon files.*",
       "level": 2
     },
     {

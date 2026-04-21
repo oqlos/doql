@@ -13,7 +13,7 @@ Generated on 2026-04-21 using [openrouter/qwen/qwen3-coder-next](https://openrou
 
 
 
-![Version](https://img.shields.io/badge/version-1.0.12-blue) ![Python](https://img.shields.io/badge/python-3.10+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green) ![Status](https://img.shields.io/badge/status-stable-green)
+![Version](https://img.shields.io/badge/version-1.0.13-blue) ![Python](https://img.shields.io/badge/python-3.10+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green) ![Status](https://img.shields.io/badge/status-stable-green)
 
 
 
@@ -53,7 +53,8 @@ Generated on 2026-04-21 using [openrouter/qwen/qwen3-coder-next](https://openrou
 - **Desktop** — Tauri v2 (Rust-based, lightweight)
 - **Dokumenty** — PDF, HTML, Markdown, DOCX
 - **Bazy danych** — SQLite, PostgreSQL ze schematem
-- **Infrastruktura** — Docker, Kubernetes, systemd
+- **Infrastruktura** — Docker, Kubernetes, Terraform, Nginx, systemd
+- **CI/CD** — GitHub Actions, GitLab CI, Jenkins pipeline
 - **Testy** — Scenariusze `.testql.toon.yaml` z integracją hardware
 
 ### Formaty deklaracji
@@ -76,7 +77,7 @@ Kompletny projekt **doql** — warstwa deklaratywna nad `oqlos`, która z jedneg
 
 **Kluczowe dokumenty:**
 - `README.md` — wprowadzenie, quick start, link do wszystkich sekcji
-- `SPEC.md` — pełna specyfikacja języka v0.2 (16 sekcji, wszystkie typy artefaktów)
+- `SPEC.md` — pełna specyfikacja języka v0.2.3 (21 sekcji, wszystkie typy artefaktów)
 - `GLOSSARY.md` — **jednoznaczna semantyka OQL / DOQL / IQL** (niezbędne, jeśli komunikujesz projekt publicznie)
 - `OQLOS-REQUIREMENTS.md` — lista zmian w oqlos (8 wymagań: 5 krytycznych, 3 dodane przy v0.2)
 - `ROADMAP.md` — fazy 0-3 rozwoju, ~8 tygodni do produkcji
@@ -96,11 +97,11 @@ Kompletny projekt **doql** — warstwa deklaratywna nad `oqlos`, która z jedneg
 
 **Infrastruktura projektu:**
 - `pyproject.toml` — pakowanie Python
-- `doql/cli/` — CLI z 19 komendami: init/validate/plan/build/run/deploy/sync/export/import/generate/render/query/kiosk/quadlet/docs/adopt/doctor/publish
+- `doql/cli/` — CLI z 21 komendami: init/validate/plan/build/run/deploy/sync/export/import/generate/render/query/kiosk/quadlet/docs/adopt/doctor/drift/workspace/publish
 - `doql/parsers/` — parser classic `.doql` + CSS-like parser (`.doql.css`, `.doql.less`, `.doql.sass`)
 - `doql/exporters/` — eksport do YAML, Markdown, CSS/LESS/SASS
 - `doql/importers/` — import z YAML do `.doql`
-- `doql/generators/` — generatory: API, Web, Mobile, Desktop, Infra, Documents, Reports, i18n, Workflow, CI
+- `doql/generators/` — generatory: API, Web, Mobile, Desktop, Infra (docker-compose, K8s, Terraform, Nginx, Quadlet, Kiosk), Documents, Reports, i18n, Workflow, CI (GitHub, GitLab, Jenkins)
 - `doql/scaffolds/minimal/` — szablon dla `doql init` 
 - `LICENSE` (Apache 2.0)
 - `.gitignore` 
@@ -131,6 +132,18 @@ doql --version
 ```
 
 ### Przykłady użycia CLI
+
+#### Reverse-engineer istniejącego projektu
+
+```bash
+# Zeskanuj istniejący projekt → app.doql.less
+doql adopt ./my-project --force
+
+# Zbuduj w innym folderze
+cp app.doql.less /tmp/rebuild/
+cd /tmp/rebuild
+doql build --force
+```
 
 #### Minimalny przykład — Todo PWA
 
@@ -377,9 +390,9 @@ Testy aplikacji (`.testql.toon.yaml`) → testql → Playwright-alternative z in
 ## Co dalej
 
 **Zrealizowane (Fazy 0–4):**
-- ✅ Parser `.doql` v0.2 (16 sekcji) + CSS-like parser (`.doql.css` / `.doql.less` / `.doql.sass`)
+- ✅ Parser `.doql` v0.2.3 (21 sekcji) + CSS-like parser (`.doql.css` / `.doql.less` / `.doql.sass`)
 - ✅ 10 przykładów z walidacją i budowaniem
-- ✅ Generatory: API (FastAPI), Web (React+Vite), Mobile (PWA), Desktop (Tauri v2), Infra, Documents, Reports
+- ✅ Generatory: API (FastAPI), Web (React+Vite), Mobile (PWA), Desktop (Tauri v2), Infra (docker-compose, K8s, Terraform, Nginx, Quadlet, Kiosk), Documents, Reports, CI (GitHub, GitLab, Jenkins)
 - ✅ Plugin system + 4 pluginy (GxP, ISO17025, Fleet, ERP)
 - ✅ Eksport/Import: YAML, Markdown, CSS/LESS/SASS, OpenAPI, Postman, TypeScript SDK
 - ✅ LSP server dla VS Code + playground online (Pyodide)
