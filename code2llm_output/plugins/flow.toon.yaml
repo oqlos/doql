@@ -1,0 +1,567 @@
+# doql/flow | 605 func | 12 pipelines | 15 hub-types | 2026-04-21
+
+PIPELINES[12] (Analysis:1, Core:1, Export:5, IO:4, NLP:1):
+  Doql [NLP]: argparse.Namespace → str
+              → cmd_adopt(args:argparse.Namespace) → int CC=2    pure ▶
+              → _cmd_adopt_from_directory(args:argparse.Namespace) → int CC=8    IO
+              → scan_project(root:str | Path) → DoqlSpec CC=1    pure
+              → scan_entities(root:Path, spec:DoqlSpec) → None CC=6    mutation
+              → _extract_entities_from_python(path:Path, spec:DoqlSpec, seen:set[str]) → None CC=9    IO
+              → _extract_fields(text:str, start:int, entity:Entity) → None CC=8    mutation
+              → _extract_sqlalchemy_fields(stripped:str, entity:Entity) → None CC=3    mutation
+              → normalize_sqlalchemy_type(t:str) → str  CC=1    pure ■
+              PURITY: 3/8 pure  BOTTLENECK: _extract_entities_from_python(CC=9)
+
+  Doql [IO]: pathlib.Path → bool
+              → parse_file(path:pathlib.Path) → DoqlSpec CC=3    IO ▶
+              → parse_css_file(path:pathlib.Path) → DoqlSpec CC=2    IO
+              → parse_css_text(text:str, format:str) → DoqlSpec CC=3    pure
+              → _sass_to_css(text:str) → str            CC=1    pure
+              → _convert_indent_to_braces(lines:list[str]) → list[str] CC=9    mutation
+              → _find_step_block_end(lines:list[str], start_idx:int, start_indent:int) → int CC=7    pure
+              → _is_selector_starter(line:str) → bool   CC=8    pure
+              → _is_step_line(line:str) → bool          CC=1    pure ■
+              PURITY: 5/8 pure  BOTTLENECK: _convert_indent_to_braces(CC=9)
+
+  Doql [Core]: argparse.Namespace → str
+              → cmd_adopt(args:argparse.Namespace) → int CC=2    pure ▶
+              → _cmd_adopt_from_directory(args:argparse.Namespace) → int CC=8    IO
+              → scan_project(root:str | Path) → DoqlSpec CC=1    pure
+              → scan_interfaces(root:Path, spec:DoqlSpec) → None CC=1    pure
+              → _scan_web_frontend(root:Path, spec:DoqlSpec) → None CC=6    mutation
+              → _extract_web_pages(root:Path) → list[Page] CC=3    pure
+              → _scan_pages_dir(pdir, page_seen:set) → list CC=9    mutation
+              → camel_to_kebab(name:str) → str          CC=1    pure ■
+              PURITY: 5/8 pure  BOTTLENECK: _scan_pages_dir(CC=9)
+
+  Doql [Export]: DoqlSpec → str
+              → export_css(spec:DoqlSpec, out:IO[str]) → None CC=1    IO ▶
+              → _render_css(spec:DoqlSpec) → str        CC=5    mutation
+              → _render_integration_layer(spec:DoqlSpec) → list[list[str]] CC=5    mutation
+              → _render_interface(iface:Interface) → list[str] CC=2    mutation
+              → _build_page_props(p) → list[str]        CC=6    mutation
+              → _prop(key:str, value, quote_str:bool) → str CC=8    pure ■
+              PURITY: 1/6 pure  BOTTLENECK: _prop(CC=8)
+
+  Doql [Export]: DoqlSpec → str
+              → export_less(spec:DoqlSpec, out:IO[str]) → None CC=1    IO ▶
+              → _render_css(spec:DoqlSpec) → str        CC=5    mutation
+              → _render_integration_layer(spec:DoqlSpec) → list[list[str]] CC=5    mutation
+              → _render_interface(iface:Interface) → list[str] CC=2    mutation
+              → _build_page_props(p) → list[str]        CC=6    mutation
+              → _prop(key:str, value, quote_str:bool) → str CC=8    pure ■
+              PURITY: 1/6 pure  BOTTLENECK: _prop(CC=8)
+
+  Doql [Export]: DoqlSpec → str
+              → export_sass(spec:DoqlSpec, out:IO[str]) → None CC=1    IO ▶
+              → _render_css(spec:DoqlSpec) → str        CC=5    mutation
+              → _render_integration_layer(spec:DoqlSpec) → list[list[str]] CC=5    mutation
+              → _render_interface(iface:Interface) → list[str] CC=2    mutation
+              → _build_page_props(p) → list[str]        CC=6    mutation
+              → _prop(key:str, value, quote_str:bool) → str CC=8    pure ■
+              PURITY: 1/6 pure  BOTTLENECK: _prop(CC=8)
+
+  Doql [IO]: DoqlSpec → str
+              → generate(spec:DoqlSpec, env_vars:dict[str, str], out:pathlib.Path) → None CC=2    IO ▶
+              → _write_api_files(out:pathlib.Path, spec:DoqlSpec, env_vars:dict[str, str], has_auth:bool) → None CC=3    IO
+              → gen_schemas(spec:DoqlSpec) → str        CC=2    mutation
+              → _gen_entity_schemas(ent:Entity) → list[str] CC=1    mutation
+              → _gen_update_schema(ent:Entity) → list[str] CC=7    mutation
+              → safe_name(name:str) → str               CC=2    pure ■
+              PURITY: 1/6 pure  BOTTLENECK: _gen_update_schema(CC=7)
+
+  Doql [Analysis]: argparse.Namespace → dict
+              → _cmd_validate(args:argparse.Namespace) → int CC=6    pure ▶
+              → _cmd_analyze(args:argparse.Namespace) → int CC=4    pure
+              → _discover_local(root:Path, max_depth:int) → list[DoqlProject] CC=1    mutation
+              → _walk_projects(current:Path, projects:list, max_depth:int, depth:int) → None CC=10   mutation
+              → _load_project_doql(proj:DoqlProject) → None CC=4    IO
+              → _parse_doql(content:str) → dict         CC=3    pure ■
+              PURITY: 3/6 pure  BOTTLENECK: _walk_projects(CC=10)
+
+  Doql [IO]: argparse.Namespace → dict
+              → _cmd_run(args:argparse.Namespace) → int CC=6    pure ▶
+              → _select_run_projects(root:Path, max_depth:int, name_pattern:str | None) → list[DoqlProject] CC=6    pure
+              → _discover_local(root:Path, max_depth:int) → list[DoqlProject] CC=1    mutation
+              → _walk_projects(current:Path, projects:list, max_depth:int, depth:int) → None CC=10   mutation
+              → _load_project_doql(proj:DoqlProject) → None CC=4    IO
+              → _parse_doql(content:str) → dict         CC=3    pure ■
+              PURITY: 3/6 pure  BOTTLENECK: _walk_projects(CC=10)
+
+  Doql [Export]: argparse.Namespace → Any
+              → cmd_import(args:argparse.Namespace) → int CC=7    IO ▶
+              → export_yaml_file(spec:DoqlSpec, path:pathlib.Path) → None CC=1    IO
+              → export_yaml(spec:DoqlSpec, out:IO[str]) → None CC=1    IO
+              → spec_to_dict(spec:DoqlSpec) → dict[str, Any] CC=1    pure
+              → _clean(obj:Any) → Any                   CC=9    pure ■
+              PURITY: 2/5 pure  BOTTLENECK: _clean(CC=9)
+
+  Doql [IO]: argparse.Namespace → dict
+              → cmd_run(args:argparse.Namespace) → int  CC=9    IO ▶
+              → _build_into(doql_file:pathlib.Path, workspace:pathlib.Path) → int CC=6    IO
+              → write_lockfile(spec, ctx:BuildContext) → None CC=1    IO
+              → spec_section_hashes(spec, ctx:BuildContext) → dict CC=9    IO
+              → _simple_items_hash(items, key_prefix:str, val_fn, h_fn) → dict CC=2    pure ■
+              PURITY: 1/5 pure  BOTTLENECK: cmd_run(CC=9)
+
+  Doql [Export]: DoqlSpec → str
+              → export_markdown_file(spec:DoqlSpec, path:pathlib.Path) → None CC=1    IO ▶
+              → export_markdown(spec:DoqlSpec, out:IO[str]) → None CC=1    pure
+              → _write_workflows(spec:DoqlSpec, out:IO[str]) → None CC=1    pure
+              → _write_section(spec:DoqlSpec, out:IO[str], attr_name:str, title:str, formatter:Callable[[Any], str]) → None CC=3    IO
+              → _h(level:int, text:str) → str           CC=1    pure ■
+              PURITY: 3/5 pure  BOTTLENECK: _write_section(CC=3)
+
+
+TRANSFORMS (fan-out ≥10):
+  _diagnostics_for(source:str, uri:str) → list[lsp.Diagnostic] fan=17   fan=17
+  cmd_doctor(args:argparse.Namespace) → int               fan=17   fan=17
+  _extract_page_from_format2(body:str) → list[Page]       fan=16   fan=16
+  _convert_indent_to_braces(lines:list[str]) → list[str]  fan=16   fan=16
+  _deploy_via_redeploy_api(migration_yaml:pathlib.Path, dry_run:bool, plan_only:bool) → int fan=15   fan=15
+  cmd_run(args:argparse.Namespace) → int                  fan=15   fan=15
+  definition(ls:LanguageServer, params:lsp.DefinitionParams) fan=14   fan=14
+  cmd_sync(args:argparse.Namespace) → int                 fan=14   fan=14
+  _render_rich(report:DriftReport, intended_file:Path, target:str) → None fan=14   fan=14
+  cmd_plan(args:argparse.Namespace) → int                 fan=13   fan=13
+  cmd_drift(args:argparse.Namespace) → int                fan=13   fan=13
+  _build_into(doql_file:pathlib.Path, workspace:pathlib.Path) → int fan=13   fan=13
+  cmd_publish(args:argparse.Namespace) → int              fan=13   fan=13
+  extract_entity_fields(body:str) → list[EntityField]     fan=13   fan=13
+  _scan_python_cli(root:Path, spec:DoqlSpec) → None       fan=13   fan=13
+
+CONTRACTS:
+  Pipeline: Doql
+    cmd_adopt(args:argparse.Namespace) → int
+      IN:  args:argparse.Namespace
+      OUT: int
+
+    _cmd_adopt_from_directory(args:argparse.Namespace) → int
+      IN:  args:argparse.Namespace
+      OUT: int
+      SIDE-EFFECT: IO(print, print, print)
+
+    scan_project(root:str | Path) → DoqlSpec
+      IN:  root:str | Path
+      OUT: DoqlSpec
+
+    scan_entities(root:Path, spec:DoqlSpec) → None
+      IN:  root:Path, spec:DoqlSpec
+      OUT: None
+      SIDE-EFFECT: pure
+
+    _extract_entities_from_python(path:Path, spec:DoqlSpec, seen:set[str]) → None
+      IN:  path:Path, spec:DoqlSpec, seen:set[str]
+      OUT: None
+      SIDE-EFFECT: IO(read_text)
+
+    _extract_fields(text:str, start:int, entity:Entity) → None
+      IN:  text:str, start:int, entity:Entity
+      OUT: None
+      SIDE-EFFECT: pure
+
+    _extract_sqlalchemy_fields(stripped:str, entity:Entity) → None
+      IN:  stripped:str, entity:Entity
+      OUT: None
+      SIDE-EFFECT: pure
+
+    normalize_sqlalchemy_type(t:str) → str
+      IN:  t:str
+      OUT: str
+      INVARIANT: len(output) <= len(input)
+
+  Pipeline: Doql
+    parse_file(path:pathlib.Path) → DoqlSpec
+      IN:  path:pathlib.Path
+      OUT: DoqlSpec
+      SIDE-EFFECT: IO(read_text)
+
+    parse_css_file(path:pathlib.Path) → DoqlSpec
+      IN:  path:pathlib.Path
+      OUT: DoqlSpec
+      SIDE-EFFECT: IO(read_text)
+
+    parse_css_text(text:str, format:str) → DoqlSpec
+      IN:  text:str, format:str
+      OUT: DoqlSpec
+
+    _sass_to_css(text:str) → str
+      IN:  text:str
+      OUT: str
+
+    _convert_indent_to_braces(lines:list[str]) → list[str]
+      IN:  lines:list[str]
+      OUT: list[str]
+      SIDE-EFFECT: pure
+
+    _find_step_block_end(lines:list[str], start_idx:int, start_indent:int) → int
+      IN:  lines:list[str], start_idx:int, start_indent:int
+      OUT: int
+
+    _is_selector_starter(line:str) → bool
+      IN:  line:str
+      OUT: bool
+
+    _is_step_line(line:str) → bool
+      IN:  line:str
+      OUT: bool
+
+  Pipeline: Doql
+    cmd_adopt(args:argparse.Namespace) → int
+      IN:  args:argparse.Namespace
+      OUT: int
+
+    _cmd_adopt_from_directory(args:argparse.Namespace) → int
+      IN:  args:argparse.Namespace
+      OUT: int
+      SIDE-EFFECT: IO(print, print, print)
+
+    scan_project(root:str | Path) → DoqlSpec
+      IN:  root:str | Path
+      OUT: DoqlSpec
+
+    scan_interfaces(root:Path, spec:DoqlSpec) → None
+      IN:  root:Path, spec:DoqlSpec
+      OUT: None
+
+    _scan_web_frontend(root:Path, spec:DoqlSpec) → None
+      IN:  root:Path, spec:DoqlSpec
+      OUT: None
+      SIDE-EFFECT: pure
+
+    _extract_web_pages(root:Path) → list[Page]
+      IN:  root:Path
+      OUT: list[Page]
+
+    _scan_pages_dir(pdir, page_seen:set) → list
+      IN:  pdir, page_seen:set
+      OUT: list
+      SIDE-EFFECT: pure
+
+    camel_to_kebab(name:str) → str
+      IN:  name:str
+      OUT: str
+
+  Pipeline: Doql
+    export_css(spec:DoqlSpec, out:IO[str]) → None
+      IN:  spec:DoqlSpec, out:IO[str]
+      OUT: None
+      SIDE-EFFECT: IO(write)
+
+    _render_css(spec:DoqlSpec) → str
+      IN:  spec:DoqlSpec
+      OUT: str
+      SIDE-EFFECT: pure
+
+    _render_integration_layer(spec:DoqlSpec) → list[list[str]]
+      IN:  spec:DoqlSpec
+      OUT: list[list[str]]
+      SIDE-EFFECT: pure
+
+    _render_interface(iface:Interface) → list[str]
+      IN:  iface:Interface
+      OUT: list[str]
+      SIDE-EFFECT: pure
+
+    _build_page_props(p) → list[str]
+      IN:  p
+      OUT: list[str]
+      SIDE-EFFECT: pure
+
+    _prop(key:str, value, quote_str:bool) → str
+      IN:  key:str, value, quote_str:bool
+      OUT: str
+
+  Pipeline: Doql
+    export_less(spec:DoqlSpec, out:IO[str]) → None
+      IN:  spec:DoqlSpec, out:IO[str]
+      OUT: None
+      SIDE-EFFECT: IO(write)
+
+    _render_css(spec:DoqlSpec) → str
+      IN:  spec:DoqlSpec
+      OUT: str
+      SIDE-EFFECT: pure
+
+    _render_integration_layer(spec:DoqlSpec) → list[list[str]]
+      IN:  spec:DoqlSpec
+      OUT: list[list[str]]
+      SIDE-EFFECT: pure
+
+    _render_interface(iface:Interface) → list[str]
+      IN:  iface:Interface
+      OUT: list[str]
+      SIDE-EFFECT: pure
+
+    _build_page_props(p) → list[str]
+      IN:  p
+      OUT: list[str]
+      SIDE-EFFECT: pure
+
+    _prop(key:str, value, quote_str:bool) → str
+      IN:  key:str, value, quote_str:bool
+      OUT: str
+
+  Pipeline: Doql
+    export_sass(spec:DoqlSpec, out:IO[str]) → None
+      IN:  spec:DoqlSpec, out:IO[str]
+      OUT: None
+      SIDE-EFFECT: IO(write)
+
+    _render_css(spec:DoqlSpec) → str
+      IN:  spec:DoqlSpec
+      OUT: str
+      SIDE-EFFECT: pure
+
+    _render_integration_layer(spec:DoqlSpec) → list[list[str]]
+      IN:  spec:DoqlSpec
+      OUT: list[list[str]]
+      SIDE-EFFECT: pure
+
+    _render_interface(iface:Interface) → list[str]
+      IN:  iface:Interface
+      OUT: list[str]
+      SIDE-EFFECT: pure
+
+    _build_page_props(p) → list[str]
+      IN:  p
+      OUT: list[str]
+      SIDE-EFFECT: pure
+
+    _prop(key:str, value, quote_str:bool) → str
+      IN:  key:str, value, quote_str:bool
+      OUT: str
+
+  Pipeline: Doql
+    generate(spec:DoqlSpec, env_vars:dict[str, str], out:pathlib.Path) → None
+      IN:  spec:DoqlSpec, env_vars:dict[str, str], out:pathlib.Path
+      OUT: None
+      SIDE-EFFECT: IO(write_text, print)
+
+    _write_api_files(out:pathlib.Path, spec:DoqlSpec, env_vars:dict[str, str], has_auth:bool) → None
+      IN:  out:pathlib.Path, spec:DoqlSpec, env_vars:dict[str, str], has_auth:bool
+      OUT: None
+      SIDE-EFFECT: IO(write_text, print)
+
+    gen_schemas(spec:DoqlSpec) → str
+      IN:  spec:DoqlSpec
+      OUT: str
+      SIDE-EFFECT: pure
+
+    _gen_entity_schemas(ent:Entity) → list[str]
+      IN:  ent:Entity
+      OUT: list[str]
+      SIDE-EFFECT: pure
+
+    _gen_update_schema(ent:Entity) → list[str]
+      IN:  ent:Entity
+      OUT: list[str]
+      SIDE-EFFECT: pure
+
+    safe_name(name:str) → str
+      IN:  name:str
+      OUT: str
+
+  Pipeline: Doql
+    _cmd_validate(args:argparse.Namespace) → int
+      IN:  args:argparse.Namespace
+      OUT: int
+      INVARIANT: raises on invalid input
+
+    _cmd_analyze(args:argparse.Namespace) → int
+      IN:  args:argparse.Namespace
+      OUT: int
+
+    _discover_local(root:Path, max_depth:int) → list[DoqlProject]
+      IN:  root:Path, max_depth:int
+      OUT: list[DoqlProject]
+      SIDE-EFFECT: pure
+
+    _walk_projects(current:Path, projects:list, max_depth:int, depth:int) → None
+      IN:  current:Path, projects:list, max_depth:int, depth:int
+      OUT: None
+      SIDE-EFFECT: pure
+
+    _load_project_doql(proj:DoqlProject) → None
+      IN:  proj:DoqlProject
+      OUT: None
+      SIDE-EFFECT: IO(read_text)
+
+    _parse_doql(content:str) → dict
+      IN:  content:str
+      OUT: dict
+
+  Pipeline: Doql
+    _cmd_run(args:argparse.Namespace) → int
+      IN:  args:argparse.Namespace
+      OUT: int
+
+    _select_run_projects(root:Path, max_depth:int, name_pattern:str | None) → list[DoqlProject]
+      IN:  root:Path, max_depth:int, name_pattern:str | None
+      OUT: list[DoqlProject]
+
+    _discover_local(root:Path, max_depth:int) → list[DoqlProject]
+      IN:  root:Path, max_depth:int
+      OUT: list[DoqlProject]
+      SIDE-EFFECT: pure
+
+    _walk_projects(current:Path, projects:list, max_depth:int, depth:int) → None
+      IN:  current:Path, projects:list, max_depth:int, depth:int
+      OUT: None
+      SIDE-EFFECT: pure
+
+    _load_project_doql(proj:DoqlProject) → None
+      IN:  proj:DoqlProject
+      OUT: None
+      SIDE-EFFECT: IO(read_text)
+
+    _parse_doql(content:str) → dict
+      IN:  content:str
+      OUT: dict
+
+  Pipeline: Doql
+    cmd_import(args:argparse.Namespace) → int
+      IN:  args:argparse.Namespace
+      OUT: int
+      SIDE-EFFECT: IO(print, print, print)
+
+    export_yaml_file(spec:DoqlSpec, path:pathlib.Path) → None
+      IN:  spec:DoqlSpec, path:pathlib.Path
+      OUT: None
+      SIDE-EFFECT: IO(open)
+
+    export_yaml(spec:DoqlSpec, out:IO[str]) → None
+      IN:  spec:DoqlSpec, out:IO[str]
+      OUT: None
+      SIDE-EFFECT: IO(dump)
+
+    spec_to_dict(spec:DoqlSpec) → dict[str, Any]
+      IN:  spec:DoqlSpec
+      OUT: dict[str, Any]
+
+    _clean(obj:Any) → Any
+      IN:  obj:Any
+      OUT: Any
+
+  Pipeline: Doql
+    cmd_run(args:argparse.Namespace) → int
+      IN:  args:argparse.Namespace
+      OUT: int
+      SIDE-EFFECT: IO(mkdir, print, print)
+
+    _build_into(doql_file:pathlib.Path, workspace:pathlib.Path) → int
+      IN:  doql_file:pathlib.Path, workspace:pathlib.Path
+      OUT: int
+      SIDE-EFFECT: IO(mkdir, print, print)
+
+    write_lockfile(spec, ctx:BuildContext) → None
+      IN:  spec, ctx:BuildContext
+      OUT: None
+      SIDE-EFFECT: IO(write_text, dumps)
+
+    spec_section_hashes(spec, ctx:BuildContext) → dict
+      IN:  spec, ctx:BuildContext
+      OUT: dict
+      SIDE-EFFECT: IO(read_bytes)
+
+    _simple_items_hash(items, key_prefix:str, val_fn, h_fn) → dict
+      IN:  items, key_prefix:str, val_fn, h_fn
+      OUT: dict
+
+  Pipeline: Doql
+    export_markdown_file(spec:DoqlSpec, path:pathlib.Path) → None
+      IN:  spec:DoqlSpec, path:pathlib.Path
+      OUT: None
+      SIDE-EFFECT: IO(open)
+
+    export_markdown(spec:DoqlSpec, out:IO[str]) → None
+      IN:  spec:DoqlSpec, out:IO[str]
+      OUT: None
+
+    _write_workflows(spec:DoqlSpec, out:IO[str]) → None
+      IN:  spec:DoqlSpec, out:IO[str]
+      OUT: None
+
+    _write_section(spec:DoqlSpec, out:IO[str], attr_name:str, title:str, formatter:Callable[[Any], str]) → None
+      IN:  spec:DoqlSpec, out:IO[str], attr_name:str, title:str, formatter:Callable[[Any], str]
+      OUT: None
+      SIDE-EFFECT: IO(write, write)
+
+    _h(level:int, text:str) → str
+      IN:  level:int, text:str
+      OUT: str
+
+
+DATA_TYPES (by cross-function usage) [565 annotated, 5 inferred / 605 functions]:
+  str                  consumed:227 produced:135  !! HUB-TYPE → split interface
+  DoqlSpec             consumed:207 produced:9    !! HUB-TYPE → split interface
+  pathlib.Path         consumed:90  produced:3    !! HUB-TYPE → split interface
+  int                  consumed:19  produced:49   !! HUB-TYPE → split interface
+  Path                 consumed:55  produced:0    !! HUB-TYPE → split interface
+  list[str]            consumed:14  produced:41   !! HUB-TYPE → split interface
+  dict                 consumed:27  produced:8    !! HUB-TYPE → split interface
+  bool                 consumed:15  produced:19   !! HUB-TYPE → split interface
+  dict[str, str]       consumed:28  produced:3    !! HUB-TYPE → split interface
+  argparse.Namespace   consumed:27  produced:0    !! HUB-TYPE → split interface
+  CssBlock             consumed:21  produced:1    !! HUB-TYPE → split interface
+  ParsedSelector       consumed:19  produced:2    !! HUB-TYPE → split interface
+  IO[str]              consumed:19  produced:0    !! HUB-TYPE → split interface
+  DoctorReport         consumed:14  produced:0    !! HUB-TYPE → split interface
+  Entity               consumed:11  produced:1    !! HUB-TYPE → split interface
+  str | None           consumed:4   produced:7  
+  list[ValidationIssue] consumed:0   produced:11   output-heavy
+  Interface            consumed:7   produced:2  
+  dict[str, Any]       consumed:5   produced:3  
+  LanguageServer       consumed:8   produced:0    input-heavy (read-only flow)
+
+  HUB TYPES (consumed ≥10):
+    str → 227 consumers → split into:
+      - (analyze consumers to suggest sub-interfaces)
+    DoqlSpec → 207 consumers → split into:
+      - (analyze consumers to suggest sub-interfaces)
+    pathlib.Path → 90 consumers → split into:
+      - (analyze consumers to suggest sub-interfaces)
+    int → 19 consumers → split into:
+      - (analyze consumers to suggest sub-interfaces)
+    Path → 55 consumers → split into:
+      - (analyze consumers to suggest sub-interfaces)
+    list[str] → 14 consumers → split into:
+      - (analyze consumers to suggest sub-interfaces)
+    dict → 27 consumers → split into:
+      - replace with typed alternatives (dataclass/TypedDict)
+    bool → 15 consumers → split into:
+      - (analyze consumers to suggest sub-interfaces)
+    dict[str, str] → 28 consumers → split into:
+      - (analyze consumers to suggest sub-interfaces)
+    argparse.Namespace → 27 consumers → split into:
+      - (analyze consumers to suggest sub-interfaces)
+    CssBlock → 21 consumers → split into:
+      - (analyze consumers to suggest sub-interfaces)
+    ParsedSelector → 19 consumers → split into:
+      - (analyze consumers to suggest sub-interfaces)
+    IO[str] → 19 consumers → split into:
+      - (analyze consumers to suggest sub-interfaces)
+    DoctorReport → 14 consumers → split into:
+      - (analyze consumers to suggest sub-interfaces)
+    Entity → 11 consumers → split into:
+      - (analyze consumers to suggest sub-interfaces)
+
+SIDE_EFFECTS:
+  IO:        plugin_generate, isReady, _loadPyodide, _installDoql, bootPyodide, generate, parse_intended, generate, spec_section_hashes, read_lockfile
+  Cache:     _createBuildFunction
+  Mutation:  updateStats, _diagnostics_for, completion, _hover_field, document_symbols, determine_regeneration_set, _field_line, _render_data_layer, _render_documentation_layer, _render_infrastructure_layer
+  Pure:      usage, generate, pyodide, buildFn, debounceTimer, initElements, debouncedBuild, executeBuild, r, resp
+
+  PIPELINE PURITY:
+    Doql            █░░░ 37% pure
+    Doql            ██░░ 62% pure
+    Doql            ██░░ 62% pure
+    Doql            ░░░░ 16% pure
+    Doql            ░░░░ 16% pure
+    Doql            ░░░░ 16% pure
+    Doql            ░░░░ 16% pure
+    Doql            ██░░ 50% pure
+    Doql            ██░░ 50% pure
+    Doql            █░░░ 40% pure
+    Doql            ░░░░ 20% pure
+    Doql            ██░░ 60% pure

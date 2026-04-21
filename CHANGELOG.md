@@ -4,6 +4,32 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [1.0.10] - 2026-04-21
+
+### Docs
+- Update README.md
+- Update analysis-20260421/doql_playground/context.md
+- Update code2llm_output/doql_playground/context.md
+- Update code2llm_output/plugins/context.md
+- Update docs/doql_playground/analysis.toon.yaml
+- Update docs/doql_playground/context.md
+- Update docs/doql_playground/evolution.toon.yaml
+- Update docs/plugins/context.md
+- Update examples/blog-cms/docs/index.md
+
+### Other
+- Update .redeploy/state/infra-local-9dd2f59b.yaml
+- Update analysis-20260421/doql_playground/analysis.toon.yaml
+- Update analysis-20260421/doql_playground/evolution.toon.yaml
+- Update analysis/doql_playground/analysis.toon.yaml
+- Update app.doql.less
+- Update code2llm_output/doql_playground/analysis.toon.yaml
+- Update code2llm_output/doql_playground/evolution.toon.yaml
+- Update code2llm_output/doql_playground/flow.toon.yaml
+- Update code2llm_output/plugins/evolution.toon.yaml
+- Update code2llm_output/plugins/flow.toon.yaml
+- ... and 36 more files
+
 ## [1.0.9] - 2026-04-21
 
 ### Docs

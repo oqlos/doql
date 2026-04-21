@@ -1,10 +1,10 @@
-"""Deployment scanning — Docker, docker-compose, quadlet, ansible."""
+"""Deployment scanning — Docker, docker-compose, quadlet, ansible, k8s, terraform, nginx."""
 from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
 
-from ...parsers.models import DoqlSpec, Deploy
+from ...parsers.models import DoqlSpec, Deploy, Infrastructure, Ingress
 from .utils import find_compose, find_dockerfiles, load_yaml
 
 
@@ -22,6 +22,20 @@ def _detect_deployment_indicators(root: Path) -> dict[str, Any]:
         "has_ansible": any((root / d).is_dir()
                           for d in ("ansible", "deploy/ansible", "infra/ansible")),
         "has_makefile": (root / "Makefile").exists(),
+        "has_k8s": bool(list(root.rglob("*.yaml")) + list(root.rglob("*.yml")))
+                   and any(
+                       f.name.startswith(("deployment", "service", "ingress", "configmap", "kustomization"))
+                       for f in root.rglob("*.yaml")
+                   ),
+        "has_terraform": (root / "main.tf").exists()
+                         or (root / "infra" / "main.tf").exists()
+                         or (root / "terraform" / "main.tf").exists(),
+        "has_nginx": (root / "nginx.conf").exists()
+                      or (root / "infra" / "nginx.conf").exists(),
+        "has_vite": (root / "vite.config.ts").exists()
+                     or (root / "vite.config.js").exists()
+                     or (root / "vite.config.mjs").exists(),
+        "has_doql_plugins": (root / ".doql-plugins").is_dir(),
     }
 
 
@@ -35,6 +49,10 @@ def _determine_deploy_target(indicators: dict[str, Any], deploy: Deploy, root: P
         deploy.target = "docker"
     elif indicators["has_quadlet"]:
         deploy.target = "podman-quadlet"
+    elif indicators["has_k8s"]:
+        deploy.target = "kubernetes"
+    elif indicators["has_terraform"]:
+        deploy.target = "terraform"
     elif indicators["has_makefile"]:
         deploy.target = "makefile"
 
@@ -91,6 +109,22 @@ def _detect_rootless(spec: DoqlSpec) -> bool:
     return any("ROOTLESS" in ref.upper() for ref in spec.env_refs)
 
 
+def _emit_infrastructure_blocks(indicators: dict[str, Any], spec: DoqlSpec) -> None:
+    """Emit Infrastructure and Ingress blocks from detected files."""
+    if indicators["has_k8s"]:
+        spec.infrastructures.append(Infrastructure(
+            name="k8s", type="kubernetes", provider="k3s"
+        ))
+    if indicators["has_terraform"]:
+        spec.infrastructures.append(Infrastructure(
+            name="tf", type="terraform", provider="docker"
+        ))
+    if indicators["has_nginx"]:
+        spec.ingresses.append(Ingress(
+            name="nginx", type="nginx", tls=False
+        ))
+
+
 def scan_deploy(root: Path, spec: DoqlSpec) -> None:
     """Detect deployment infrastructure."""
     indicators = _detect_deployment_indicators(root)
@@ -103,5 +137,6 @@ def scan_deploy(root: Path, spec: DoqlSpec) -> None:
         deploy.rootless = True
 
     _extract_containers_from_compose(indicators["compose"], deploy)
+    _emit_infrastructure_blocks(indicators, spec)
 
     spec.deploy = deploy

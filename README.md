@@ -13,7 +13,7 @@ Generated on 2026-04-21 using [openrouter/qwen/qwen3-coder-next](https://openrou
 
 
 
-![Version](https://img.shields.io/badge/version-1.0.9-blue) ![Python](https://img.shields.io/badge/python-3.10+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green) ![Status](https://img.shields.io/badge/status-stable-green)
+![Version](https://img.shields.io/badge/version-1.0.10-blue) ![Python](https://img.shields.io/badge/python-3.10+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green) ![Status](https://img.shields.io/badge/status-stable-green)
 
 
 
@@ -136,9 +136,9 @@ doql --version
 
 ```bash
 cd examples/todo-pwa
-doql validate -f app.doql.css   # sprawdź deklarację
-doql plan -f app.doql.css       # podgląd co zostanie wygenerowane
-doql build -f app.doql.css      # generuj kod
+doql validate                    # sprawdź deklarację
+doql plan                        # podgląd co zostanie wygenerowane
+doql build                       # generuj kod
 doql run -t api                 # uruchom API na http://localhost:8000
 doql run -t mobile              # uruchom PWA na http://localhost:8091
 ```
@@ -148,8 +148,8 @@ doql run -t mobile              # uruchom PWA na http://localhost:8091
 ```bash
 cd examples/asset-management
 cp .env.example .env
-doql validate -f app.doql.css
-doql build -f app.doql.css
+doql validate
+doql build
 
 doql run -t api        # FastAPI → http://localhost:8000/docs
 doql run -t web        # React   → http://localhost:5173
@@ -162,8 +162,8 @@ doql run               # pełny stack via docker-compose
 
 ```bash
 cd examples/calibration-lab
-doql validate -f app.doql.less
-doql build -f app.doql.less
+doql validate
+doql build
 doql run -t api        # FastAPI → http://localhost:8000/docs
 doql run -t web        # React   → http://localhost:5173
 ```
@@ -173,23 +173,20 @@ doql run -t web        # React   → http://localhost:5173
 ```bash
 cd examples/document-generator
 cp .env.example .env
-doql validate -f app.doql.less
-doql build -f app.doql.less
+doql validate
+doql build
 doql run -t web        # htmx UI → http://localhost:8080
 
-# Generowanie pojedynczego dokumentu:
-doql generate calibration_certificate \
-    --instrument-id "INST-001" \
-    --customer-id "cust-001" \
-    --operator "Jan Kowalski"
+# Generowanie pojedynczego dokumentu (nazwa musi pasować do DOCUMENT w pliku .doql):
+doql generate calibration_certificate
 ```
 
 #### CRM Contacts
 
 ```bash
 cd examples/crm-contacts
-doql validate -f app.doql.less
-doql build -f app.doql.less
+doql validate
+doql build
 doql run -t api        # FastAPI → http://localhost:8000/docs
 doql run -t web        # React   → http://localhost:5173
 ```
@@ -198,8 +195,8 @@ doql run -t web        # React   → http://localhost:5173
 
 ```bash
 cd examples/iot-fleet
-doql validate -f app.doql.less
-doql build -f app.doql.less
+doql validate
+doql build
 doql run -t api        # FastAPI → http://localhost:8000/docs
 doql run -t web        # React + Leaflet map → http://localhost:5173
 ```
@@ -208,8 +205,8 @@ doql run -t web        # React + Leaflet map → http://localhost:5173
 
 ```bash
 cd examples/kiosk-station
-doql validate -f app.doql.css
-doql build -f app.doql.css
+doql validate
+doql build
 
 # Instalacja na urządzeniu:
 scp -r build/infra pi@kiosk-01.local:/tmp/
@@ -226,17 +223,10 @@ pip install "doql[deploy]>=1.0.0"
 # Build generuje migration.yaml
 doql build
 
-# Deploy z planem (dry-run)
-doql deploy --plan-only
-
-# Deploy z dry-run (bez side-effects)
-doql deploy --dry-run
-
-# Deploy produkcyjny (wymaga redeploy>=0.2.0)
-doql deploy
+# Deploy do środowiska dev (wymaga redeploy>=0.2.0)
+doql deploy --env dev
 
 # Deploy do Podman Quadlet (rootless)
-doql quadlet --install --dry-run
 doql quadlet --install
 ```
 
@@ -345,7 +335,7 @@ Wszystkie formaty parsują się do tego samego `DoqlSpec` — można mieszać w 
 doql export --format less -o spec.doql.less
 
 # Import z YAML
-doql import spec.yaml -o app.doql
+doql import spec.yaml --format css -o app.doql
 ```
 
 Każdy example zawiera zarówno wersję `.doql` jak i wersję CSS-like (`.doql.css` / `.doql.less` / `.doql.sass`).
@@ -432,3 +422,4 @@ Premium plugins doql (komercyjne) — osobne warunki, patrz `doql/LICENSE`.
 ## License
 
 Licensed under Apache-2.0.
+## Architecture

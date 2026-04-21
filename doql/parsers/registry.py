@@ -265,3 +265,46 @@ def _handle_deploy(spec: DoqlSpec, header: str, body: str) -> None:
     if rootless_s == "true":
         rootless = True
     spec.deploy = Deploy(target=target, rootless=rootless)
+
+
+@register("INFRASTRUCTURE")
+def _handle_infrastructure(spec: DoqlSpec, header: str, body: str) -> None:
+    from .models import Infrastructure
+    name = header.split(":")[0].strip() if ":" in header else ""
+    infra = Infrastructure(
+        name=name,
+        type=extract_val(body, "type") or "docker-compose",
+        provider=extract_val(body, "provider"),
+        namespace=extract_val(body, "namespace"),
+    )
+    replicas = extract_val(body, "replicas")
+    if replicas and replicas.isdigit():
+        infra.replicas = int(replicas)
+    spec.infrastructures.append(infra)
+
+
+@register("INGRESS")
+def _handle_ingress(spec: DoqlSpec, header: str, body: str) -> None:
+    from .models import Ingress
+    name = header.split(":")[0].strip() if ":" in header else ""
+    ingress = Ingress(
+        name=name,
+        type=extract_val(body, "type") or "traefik",
+        tls=extract_val(body, "tls") == "true",
+        cert_manager=extract_val(body, "cert_manager"),
+        rate_limit=extract_val(body, "rate_limit"),
+    )
+    spec.ingresses.append(ingress)
+
+
+@register("CI")
+def _handle_ci(spec: DoqlSpec, header: str, body: str) -> None:
+    from .models import CiConfig
+    name = header.split(":")[0].strip() if ":" in header else ""
+    ci = CiConfig(
+        name=name,
+        type=extract_val(body, "type") or "github",
+        runner=extract_val(body, "runner"),
+        stages=extract_list(body, "stages"),
+    )
+    spec.ci_configs.append(ci)

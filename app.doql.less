@@ -107,3 +107,29 @@ environment[name="local"] {
   runtime: docker-compose;
   env_file: .env;
 }
+
+infrastructure[type="kubernetes"] {
+  provider: k3s;
+  namespace: doql;
+  replicas: 3;
+}
+
+infrastructure[type="terraform"] {
+  provider: docker;
+}
+
+ingress[type="nginx"] {
+  tls: true;
+  cert_manager: letsencrypt;
+  rate_limit: 100r/m;
+}
+
+ci[type="gitlab"] {
+  runner: docker;
+  stages: validate, build, test, deploy;
+}
+
+ci[type="jenkins"] {
+  runner: any;
+  stages: validate, build, test, deploy;
+}

@@ -12,7 +12,7 @@ from typing import Callable
 from pathlib import Path
 
 from .. import parser as doql_parser
-from ..generators import api_gen, web_gen, mobile_gen, desktop_gen, infra_gen, document_gen, report_gen, i18n_gen, integrations_gen, workflow_gen, ci_gen
+from ..generators import api_gen, web_gen, mobile_gen, desktop_gen, infra_gen, document_gen, report_gen, i18n_gen, integrations_gen, workflow_gen, ci_gen, vite_gen
 from .. import plugins as _plugins
 from .context import BuildContext, build_context, load_spec
 from .lockfile import write_lockfile
@@ -110,6 +110,20 @@ def run_ci_generator(spec, env_vars, ctx: BuildContext) -> None:
     """Run CI/CD generator (always into project root)."""
     print("🛠  Generating CI...")
     ci_gen.generate(spec, env_vars, ctx.root)
+
+
+def run_vite_generator(spec, env_vars, ctx: BuildContext) -> None:
+    """Run Vite config generator when a vite framework interface is present."""
+    has_vite = any(
+        getattr(i, "framework", None) == "vite" or getattr(i, "type", None) == "vite"
+        for i in spec.interfaces
+    )
+    if not has_vite:
+        return
+    print("🛠  Generating Vite tooling config...")
+    out = ctx.build_dir / "web"
+    out.mkdir(parents=True, exist_ok=True)
+    vite_gen.generate(spec, env_vars, out)
 
 
 def run_plugins(spec, env_vars, ctx: BuildContext) -> None:
@@ -239,6 +253,7 @@ def cmd_build(args: argparse.Namespace) -> int:
     run_integration_generators(spec, env_vars, ctx)
     run_workflow_generators(spec, env_vars, ctx)
     run_ci_generator(spec, env_vars, ctx)
+    run_vite_generator(spec, env_vars, ctx)
     run_plugins(spec, env_vars, ctx)
     
     if no_overwrite:

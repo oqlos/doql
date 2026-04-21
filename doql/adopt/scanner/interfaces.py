@@ -190,22 +190,27 @@ def _scan_python_cli(root: Path, spec: DoqlSpec) -> None:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _detect_web_framework(root: Path) -> str | None:
-    """Detect web framework from package.json."""
+    """Detect web framework from package.json and config files."""
     pkg = root / "package.json"
-    if not pkg.exists():
-        return None
-    try:
-        data = json.loads(pkg.read_text())
-        deps = {**data.get("dependencies", {}), **data.get("devDependencies", {})}
+    if pkg.exists():
+        try:
+            data = json.loads(pkg.read_text())
+            deps = {**data.get("dependencies", {}), **data.get("devDependencies", {})}
 
-        if "react" in deps or "@vitejs/plugin-react" in deps:
-            return "react"
-        if "vue" in deps or "@vitejs/plugin-vue" in deps:
-            return "vue"
-        if "svelte" in deps:
-            return "svelte"
-    except (json.JSONDecodeError, OSError):
-        pass
+            if "react" in deps or "@vitejs/plugin-react" in deps:
+                return "react"
+            if "vue" in deps or "@vitejs/plugin-vue" in deps:
+                return "vue"
+            if "svelte" in deps:
+                return "svelte"
+            if "vite" in deps:
+                return "vite"
+        except (json.JSONDecodeError, OSError):
+            pass
+
+    # Standalone Vite without package.json (rare)
+    if any((root / f).exists() for f in ("vite.config.ts", "vite.config.js", "vite.config.mjs")):
+        return "vite"
     return None
 
 

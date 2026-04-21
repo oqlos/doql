@@ -194,6 +194,35 @@ class Environment:
 
 
 @dataclass
+class Infrastructure:
+    name: str
+    type: str = "docker-compose"
+    provider: Optional[str] = None
+    namespace: Optional[str] = None
+    replicas: int = 1
+    config: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class Ingress:
+    name: str
+    type: str = "traefik"
+    tls: bool = False
+    cert_manager: Optional[str] = None
+    rate_limit: Optional[str] = None
+    config: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class CiConfig:
+    name: str
+    type: str = "github"
+    runner: Optional[str] = None
+    stages: list[str] = field(default_factory=list)
+    config: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
 class DoqlSpec:
     app_name: str = "Untitled"
     version: str = "0.1.0"
@@ -215,5 +244,8 @@ class DoqlSpec:
     roles: list[Role] = field(default_factory=list)
     deploy: Deploy = field(default_factory=Deploy)
     environments: list[Environment] = field(default_factory=list)
+    infrastructures: list[Infrastructure] = field(default_factory=list)
+    ingresses: list[Ingress] = field(default_factory=list)
+    ci_configs: list[CiConfig] = field(default_factory=list)
     env_refs: list[str] = field(default_factory=list)
     parse_errors: list[ValidationIssue] = field(default_factory=list)

@@ -1,0 +1,11 @@
+spec_path: infra.yaml
+host: local
+total_steps: 7
+completed_step_ids: []
+failed_step_id: sync_env
+failed_error: '[sync_env] scp failed: cp: cannot create regular file ''/opt/doql/.env'':
+  No such file or directory
+
+  '
+started_at: '2026-04-21T18:58:26+00:00'
+updated_at: '2026-04-21T19:03:17+00:00'
