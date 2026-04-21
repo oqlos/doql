@@ -4,12 +4,12 @@
 
 - **Project**: /home/tom/github/oqlos/doql
 - **Primary Language**: python
-- **Languages**: python: 117, shell: 3, javascript: 3, typescript: 1
+- **Languages**: python: 123, shell: 3, javascript: 3, typescript: 1
 - **Analysis Mode**: static
-- **Total Functions**: 566
+- **Total Functions**: 596
 - **Total Classes**: 27
-- **Modules**: 124
-- **Entry Points**: 154
+- **Modules**: 130
+- **Entry Points**: 159
 
 ## Architecture by Module
 
@@ -22,16 +22,16 @@
 - **Functions**: 24
 - **File**: `registry.py`
 
+### doql.parsers.css_mappers
+- **Functions**: 24
+- **File**: `css_mappers.py`
+
 ### doql.importers.yaml_importer
 - **Functions**: 22
 - **File**: `yaml_importer.py`
 
-### doql.parsers.css_mappers
-- **Functions**: 22
-- **File**: `css_mappers.py`
-
 ### doql.cli.commands.doctor
-- **Functions**: 19
+- **Functions**: 20
 - **Classes**: 2
 - **File**: `doctor.py`
 
@@ -55,13 +55,13 @@
 - **Functions**: 15
 - **File**: `interfaces.py`
 
-### doql.parsers.css_transformers
-- **Functions**: 14
-- **File**: `css_transformers.py`
-
 ### doql.parsers.extractors
 - **Functions**: 14
 - **File**: `extractors.py`
+
+### doql.parsers.css_transformers
+- **Functions**: 14
+- **File**: `css_transformers.py`
 
 ### doql.exporters.markdown.writers
 - **Functions**: 11
@@ -71,6 +71,14 @@
 - **Functions**: 11
 - **File**: `integrations_gen.py`
 
+### doql.adopt.scanner.entities
+- **Functions**: 11
+- **File**: `entities.py`
+
+### doql.parsers.validators
+- **Functions**: 11
+- **File**: `validators.py`
+
 ### playground.renderers
 - **Functions**: 10
 - **File**: `renderers.js`
@@ -79,10 +87,6 @@
 - **Functions**: 10
 - **File**: `plan.py`
 
-### doql.parsers.validators
-- **Functions**: 10
-- **File**: `validators.py`
-
 ### playground.app
 - **Functions**: 9
 - **File**: `app.js`
@@ -90,10 +94,6 @@
 ### doql.exporters.css
 - **Functions**: 9
 - **File**: `__init__.py`
-
-### doql.adopt.scanner.entities
-- **Functions**: 9
-- **File**: `entities.py`
 
 ## Key Entry Points
 
@@ -117,6 +117,10 @@ Main execution flows into the system:
 With --list-templates, shows available templates and exits.
 - **Calls**: getattr, pathlib.Path, target.exists, print, doql.cli.context.scaffold_from_template, print, print, print
 
+### doql.cli.commands.drift.cmd_drift
+> Entry point for ``doql drift``.
+- **Calls**: getattr, getattr, print, None.resolve, doql.drift.detector.find_intended_file, list, doql.drift.detector.detect_drift, doql.cli.commands.drift._report_to_json
+
 ### doql.cli.commands.run.cmd_run
 > Run project locally in dev mode.
 
@@ -125,6 +129,10 @@ Without -f: use existing project build/ directory.
 With
 - **Calls**: getattr, getattr, getattr, subprocess.call, None.resolve, doql.cli.commands.run._workspace_for_file, workspace.mkdir, print
 
+### doql.cli.commands.doctor.cmd_doctor
+> Run comprehensive project health check.
+- **Calls**: None.resolve, getattr, getattr, print, DoctorReport, doql.cli.commands.doctor._check_parse, doql.cli.commands.doctor._check_env, doql.cli.commands.doctor._check_files
+
 ### doql.generators.mobile_gen.generate
 > Generate mobile PWA into *out* directory.
 - **Calls**: next, out.mkdir, None.write_text, None.write_text, None.write_text, None.write_text, None.write_text, doql.generators.mobile_gen._gen_icons
@@ -132,9 +140,9 @@ With
 ### doql.lsp_server.document_symbols
 - **Calls**: server.feature, ls.workspace.get_text_document, doql.lsp_server._parse_doc, doql.lsp_server._find_line_col, lsp.Range, _mkrange, symbols.append, _mkrange
 
-### doql.cli.commands.doctor.cmd_doctor
-> Run comprehensive project health check.
-- **Calls**: None.resolve, getattr, getattr, print, DoctorReport, doql.cli.commands.doctor._check_parse, doql.cli.commands.doctor._check_env, doql.cli.commands.doctor._check_files
+### doql.parsers.validators.validate
+> Validate a parsed DoqlSpec against env vars and internal consistency.
+- **Calls**: issues.extend, issues.extend, issues.extend, issues.extend, issues.extend, issues.extend, doql.parsers.validators._validate_app_name, doql.parsers.validators._validate_env_refs
 
 ### doql.cli.commands.publish.cmd_publish
 > Publish project artifacts to registries.
@@ -143,10 +151,6 @@ With
 ### doql.generators.workflow_gen.generate
 > Generate workflow engine modules.
 - **Calls**: wf_dir.mkdir, None.write_text, None.write_text, print, None.write_text, print, None.write_text, print
-
-### doql.parsers.validators.validate
-> Validate a parsed DoqlSpec against env vars and internal consistency.
-- **Calls**: issues.extend, issues.extend, issues.extend, issues.extend, issues.extend, doql.parsers.validators._validate_app_name, doql.parsers.validators._validate_env_refs, doql.parsers.validators._validate_document_partials
 
 ### doql.lsp_server.definition
 - **Calls**: server.feature, ls.workspace.get_text_document, doql.lsp_server._word_at, re.compile, pattern.search, None.count, None.find, lsp.Location
@@ -172,10 +176,6 @@ and estimated file counts per i
 > Import a YAML spec file and convert to DOQL format.
 - **Calls**: None.resolve, getattr, doql.importers.yaml_importer.import_yaml_file, print, source.exists, print, None.resolve, None.replace
 
-### doql.cli.commands.adopt.cmd_adopt
-> Scan *target* directory, produce app.doql.{css|less|sass}.
-- **Calls**: None.resolve, getattr, print, doql.adopt.scanner.scan_project, doql.cli.commands.adopt._print_scan_summary, target.is_dir, print, output.exists
-
 ### doql.generators.export_ts_sdk.run
 > Write TypeScript SDK to the given stream.
 - **Calls**: out.write, out.write, out.write, name.lower, out.write, out.write, out.write, out.write
@@ -198,15 +198,15 @@ and estimated file counts per i
 > Run `doql <action>` in each project with app.doql.css.
 - **Calls**: None.resolve, doql.cli.commands.workspace._select_run_projects, doql.cli.commands.workspace._print, enumerate, doql.cli.commands.workspace._print_run_summary, doql.cli.commands.workspace._print, doql.cli.commands.workspace._print_dry_run_commands, doql.cli.commands.workspace._execute_single_project
 
+### doql.lsp_server.completion
+- **Calls**: server.feature, ls.workspace.get_text_document, doql.lsp_server._parse_doc, lsp.CompletionList, lsp.CompletionOptions, items.append, items.append, lsp.CompletionItem
+
 ### doql.cli.commands.validate.cmd_validate
 > Validate .doql file and .env configuration.
 
 Returns:
     0 if validation passes, 1 if there are errors
 - **Calls**: None.resolve, getattr, print, doql.cli.commands.validate._print_issues, doql.parsers.detect_doql_file, doql_parser.parse_file, doql_parser.parse_env, doql_parser.validate
-
-### doql.lsp_server.completion
-- **Calls**: server.feature, ls.workspace.get_text_document, doql.lsp_server._parse_doc, lsp.CompletionList, lsp.CompletionOptions, items.append, items.append, lsp.CompletionItem
 
 ### doql.cli.commands.quadlet.cmd_quadlet
 > Manage Podman Quadlet containers.
@@ -258,16 +258,15 @@ cmd_init [doql.cli.commands.init]
   └─ →> scaffold_from_template
 ```
 
-### Flow 5: cmd_run
+### Flow 5: cmd_drift
 ```
-cmd_run [doql.cli.commands.run]
+cmd_drift [doql.cli.commands.drift]
+  └─ →> find_intended_file
 ```
 
-### Flow 6: document_symbols
+### Flow 6: cmd_run
 ```
-document_symbols [doql.lsp_server]
-  └─> _parse_doc
-  └─> _find_line_col
+cmd_run [doql.cli.commands.run]
 ```
 
 ### Flow 7: cmd_doctor
@@ -275,12 +274,11 @@ document_symbols [doql.lsp_server]
 cmd_doctor [doql.cli.commands.doctor]
 ```
 
-### Flow 8: cmd_publish
+### Flow 8: document_symbols
 ```
-cmd_publish [doql.cli.commands.publish]
-  └─ →> build_context
-      └─ →> detect_doql_file
-  └─ →> load_spec
+document_symbols [doql.lsp_server]
+  └─> _parse_doc
+  └─> _find_line_col
 ```
 
 ### Flow 9: validate
@@ -288,10 +286,12 @@ cmd_publish [doql.cli.commands.publish]
 validate [doql.parsers.validators]
 ```
 
-### Flow 10: definition
+### Flow 10: cmd_publish
 ```
-definition [doql.lsp_server]
-  └─> _word_at
+cmd_publish [doql.cli.commands.publish]
+  └─ →> build_context
+      └─ →> detect_doql_file
+  └─ →> load_spec
 ```
 
 ## Key Classes
@@ -367,6 +367,20 @@ definition [doql.lsp_server]
 
 Key functions that process and transform data:
 
+### doql.drift.detector.parse_intended
+> Parse a ``.doql.less`` file into an :class:`opstree.PartialSnapshot`.
+
+Raises :class:`FileNotFoundEr
+- **Output to**: doql.integrations.op3_bridge.require_op3, path.read_text, partial.model_copy, path.is_file, FileNotFoundError
+
+### doql.lsp_server._parse_doc
+> Safely parse a document from its text content.
+- **Output to**: doql_parser.parse_text
+
+### doql.cli.main.create_parser
+> Create and configure the argument parser with all subcommands.
+- **Output to**: argparse.ArgumentParser, p.add_argument, p.add_argument, p.add_argument, p.add_subparsers
+
 ### doql.cli.commands.validate.cmd_validate
 > Validate .doql file and .env configuration.
 
@@ -374,17 +388,13 @@ Returns:
     0 if validation passes, 1 if there are err
 - **Output to**: None.resolve, getattr, print, doql.cli.commands.validate._print_issues, doql.parsers.detect_doql_file
 
-### doql.cli.main.create_parser
-> Create and configure the argument parser with all subcommands.
-- **Output to**: argparse.ArgumentParser, p.add_argument, p.add_argument, p.add_argument, p.add_subparsers
-
 ### doql.cli.commands.adopt._validate_output_written
 > Check that output file was written successfully.
 - **Output to**: print, print, output.exists, output.stat
 
-### doql.lsp_server._parse_doc
-> Safely parse a document from its text content.
-- **Output to**: doql_parser.parse_text
+### doql.cli.commands.doctor._check_parse
+> Parse the .doql file and report errors.
+- **Output to**: report.add, doql_parser.parse_file, report.add, report.add, len
 
 ### doql.adopt.scanner.metadata._parse_pyproject
 > Extract metadata from pyproject.toml (stdlib tomllib).
@@ -398,23 +408,21 @@ Returns:
 > Extract metadata from goal.yaml if present.
 - **Output to**: yaml.safe_load, path.read_text
 
-### doql.parsers._is_css_format
-> Check if a path uses one of the CSS-like DOQL formats.
-- **Output to**: path.name.lower, any, name.endswith
+### doql.parsers.css_tokenizer._process_decl_line
+> Process one stripped declaration line; return updated (pending_key, pending_value).
+- **Output to**: re.match, None.endswith, None.endswith, doql.parsers.css_tokenizer._consume_pending, m.group
 
-### doql.parsers.parse_file
-> Parse a .doql / .doql.css / .doql.less / .doql.sass file into a DoqlSpec.
-- **Output to**: doql.parsers._is_css_format, doql.parsers.parse_text, path.exists, DoqlParseError, doql.parsers.css_parser.parse_css_file
+### doql.parsers.css_tokenizer._parse_declarations
+> Extract property: value pairs from a CSS block body (top-level only).
 
-### doql.parsers.parse_text
-> Parse .doql source text into a DoqlSpec (in-memory, no disk I/O).
+Handles multi-line declaratio
+- **Output to**: re.compile, body.splitlines, line.strip, line.count, line.count
 
-Uses error recovery: malformed bl
-- **Output to**: DoqlSpec, doql.parsers.extractors.collect_env_refs, doql.parsers.blocks.split_blocks, doql.parsers.blocks.apply_block, spec.parse_errors.append
+### doql.adopt.scanner.workflows._parse_makefile_deps
+> Split the ``deps`` portion of ``target: dep1 dep2 ## comment``.
 
-### doql.parsers.parse_env
-> Parse a .env file into a dict. Missing file → empty dict.
-- **Output to**: None.splitlines, path.exists, line.strip, path.read_text, line.startswith
+Strips trailing ``## help`` comment
+- **Output to**: deps_raw.split, text.split, tok.startswith
 
 ### doql.parsers.css_parser._parse_selector
 > Parse a CSS-like selector into structured form.
@@ -436,51 +444,41 @@ Examples:
 > Detect format from file extension.
 - **Output to**: path.name.lower, name.endswith, name.endswith
 
-### doql.parsers.css_tokenizer._process_decl_line
-> Process one stripped declaration line; return updated (pending_key, pending_value).
-- **Output to**: re.match, None.endswith, None.endswith, doql.parsers.css_tokenizer._consume_pending, m.group
+### doql.parsers.extractors._extract_page_from_format1
+> Extract pages using PAGE keyword format.
+- **Output to**: re.finditer, m.group, m.end, re.search, re.search
 
-### doql.parsers.css_tokenizer._parse_declarations
-> Extract property: value pairs from a CSS block body (top-level only).
+### doql.parsers.extractors._extract_page_from_format2
+> Extract pages using PAGES: YAML list format.
+- **Output to**: re.search, len, re.search, first_item.group, re.compile
 
-Handles multi-line declaratio
-- **Output to**: body.splitlines, line.strip, doql.parsers.css_tokenizer._process_decl_line, doql.parsers.css_utils._strip_quotes, line.count
+### doql.parsers.extractors._parse_field_flags
+> Parse field flags from type string.
+- **Output to**: ftype_raw.lower, ftype_raw.lower, ftype_raw.lower
+
+### doql.parsers.extractors._parse_field_ref
+> Extract reference entity from type string.
+- **Output to**: re.search, ref_m.group
+
+### doql.parsers.extractors._parse_field_default
+> Extract default value from type string.
+- **Output to**: re.search, default_m.group
+
+### doql.parsers.extractors._parse_field_type
+> Extract clean base type from type string.
+- **Output to**: re.split
 
 ### doql.parsers.css_transformers._convert_indent_to_braces
 > Convert indent-based SASS blocks to brace-delimited CSS.
 - **Output to**: len, line.rstrip, doql.parsers.css_transformers._close_indent_blocks, doql.parsers.css_transformers._is_step_line, doql.parsers.css_transformers._is_selector_starter
 
-### doql.parsers.validators._validate_app_name
-> Validate APP name is set.
-- **Output to**: issues.append, ValidationIssue
+### doql.parsers._is_css_format
+> Check if a path uses one of the CSS-like DOQL formats.
+- **Output to**: path.name.lower, any, name.endswith
 
-### doql.parsers.validators._validate_env_refs
-> Validate env.* references exist in env vars.
-- **Output to**: issues.append, ref.endswith, any, ValidationIssue, k.startswith
-
-### doql.parsers.validators._validate_data_source_files
-> Validate DATA source files exist.
-- **Output to**: None.is_absolute, issues.append, fpath.exists, issues.append, pathlib.PurePosixPath
-
-### doql.parsers.validators._validate_file_refs
-> Generic file reference validator.
-
-Args:
-    items: List of objects to validate
-    project_root: Ro
-- **Output to**: getattr, fpath.exists, getattr, issues.append, ValidationIssue
-
-### doql.parsers.validators._validate_document_templates
-> Validate DOCUMENT template files exist.
-- **Output to**: doql.parsers.validators._validate_file_refs
-
-### doql.parsers.validators._validate_template_files
-> Validate TEMPLATE files exist.
-- **Output to**: doql.parsers.validators._validate_file_refs
-
-### doql.parsers.validators._validate_document_partials
-> Cross-reference: DOCUMENT partials must reference known TEMPLATEs.
-- **Output to**: issues.append, ValidationIssue
+### doql.parsers.parse_file
+> Parse a .doql / .doql.css / .doql.less / .doql.sass file into a DoqlSpec.
+- **Output to**: doql.parsers._is_css_format, doql.parsers.parse_text, path.exists, DoqlParseError, doql.parsers.css_parser.parse_css_file
 
 ## Behavioral Patterns
 
@@ -498,32 +496,32 @@ Args:
 
 Functions exposed as public API (no underscore prefix):
 
-- `doql.cli.main.create_parser` - 68 calls
+- `doql.cli.main.create_parser` - 82 calls
 - `doql.cli.commands.workspace.register_parser` - 30 calls
 - `doql.cli.sync.cmd_sync` - 23 calls
 - `doql.generators.desktop_gen.generate` - 23 calls
 - `doql.cli.lockfile.spec_section_hashes` - 22 calls
 - `doql.cli.commands.init.cmd_init` - 22 calls
+- `doql.cli.commands.drift.cmd_drift` - 22 calls
 - `doql.cli.commands.run.cmd_run` - 22 calls
+- `doql.cli.commands.doctor.cmd_doctor` - 21 calls
 - `doql.generators.mobile_gen.generate` - 21 calls
 - `doql.lsp_server.document_symbols` - 19 calls
-- `doql.cli.commands.doctor.cmd_doctor` - 19 calls
 - `doql.cli.sync.determine_regeneration_set` - 18 calls
+- `doql.parsers.validators.validate` - 18 calls
 - `doql.cli.commands.publish.cmd_publish` - 17 calls
 - `doql.generators.workflow_gen.generate` - 16 calls
-- `doql.parsers.validators.validate` - 16 calls
 - `doql.importers.yaml_importer.import_yaml` - 15 calls
 - `doql.lsp_server.definition` - 15 calls
 - `doql.cli.commands.deploy.cmd_deploy` - 15 calls
 - `doql.parsers.blocks.split_blocks` - 15 calls
 - `doql.cli.commands.plan.cmd_plan` - 14 calls
 - `doql.cli.commands.import_cmd.cmd_import` - 14 calls
-- `doql.cli.commands.adopt.cmd_adopt` - 14 calls
 - `doql.generators.export_ts_sdk.run` - 14 calls
 - `doql.parsers.extractors.extract_entity_fields` - 14 calls
 - `doql.cli.commands.export.cmd_export` - 13 calls
-- `doql.cli.commands.validate.cmd_validate` - 12 calls
 - `doql.lsp_server.completion` - 12 calls
+- `doql.cli.commands.validate.cmd_validate` - 12 calls
 - `doql.cli.commands.quadlet.cmd_quadlet` - 12 calls
 - `doql.generators.i18n_gen.generate` - 12 calls
 - `doql.generators.report_gen.generate` - 12 calls
@@ -534,10 +532,10 @@ Functions exposed as public API (no underscore prefix):
 - `doql.generators.api_gen.models.gen_models` - 11 calls
 - `doql.exporters.markdown.export_markdown` - 10 calls
 - `doql.generators.web_gen.generate` - 10 calls
-- `doql.parsers.parse_env` - 10 calls
 - `doql.parsers.extractors.extract_val` - 10 calls
-- `doql.cli.commands.render.cmd_render` - 9 calls
-- `doql.cli.commands.query.cmd_query` - 9 calls
+- `doql.parsers.parse_env` - 10 calls
+- `doql.drift.detector.parse_intended` - 9 calls
+- `plugins.doql-plugin-fleet.doql_plugin_fleet.generate` - 9 calls
 
 ## System Interactions
 
@@ -561,20 +559,20 @@ graph TD
     cmd_init --> exists
     cmd_init --> print
     cmd_init --> scaffold_from_templa
+    cmd_drift --> getattr
+    cmd_drift --> print
+    cmd_drift --> resolve
+    cmd_drift --> find_intended_file
     cmd_run --> getattr
     cmd_run --> call
     cmd_run --> resolve
-    generate --> mkdir
-    document_symbols --> feature
-    document_symbols --> get_text_document
-    document_symbols --> _parse_doc
-    document_symbols --> _find_line_col
-    document_symbols --> Range
     cmd_doctor --> resolve
     cmd_doctor --> getattr
     cmd_doctor --> print
     cmd_doctor --> DoctorReport
-    cmd_publish --> build_context
+    generate --> mkdir
+    document_symbols --> feature
+    document_symbols --> get_text_document
 ```
 
 ## Reverse Engineering Guidelines

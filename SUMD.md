@@ -16,18 +16,19 @@ Declarative OQL — build complete applications from a single .doql file
 - [Release Management (`goal.yaml`)](#release-management-goalyaml)
 - [Code Analysis](#code-analysis)
 - [Source Map](#source-map)
+- [Call Graph](#call-graph)
 - [Test Contracts](#test-contracts)
 - [Intent](#intent)
 
 ## Metadata
 
 - **name**: `doql`
-- **version**: `0.1.3`
+- **version**: `1.0.7`
 - **python_requires**: `>=3.10`
 - **license**: Apache-2.0
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
 - **ecosystem**: SUMD + DOQL + testql + taskfile
-- **generated_from**: pyproject.toml, Taskfile.yml, testql(3), app.doql.less, pyqual.yaml, goal.yaml, .env.example, src(4 mod), project/(1 analysis files)
+- **generated_from**: pyproject.toml, Taskfile.yml, testql(3), app.doql.less, pyqual.yaml, goal.yaml, .env.example, src(4 mod), project/(2 analysis files)
 
 ## Architecture
 
@@ -255,6 +256,7 @@ version: "3"
 vars:
   APP_NAME: doql
   DOQL_OUTPUT: app.doql.less
+  REDEPLOY_ROOT: "../../maskservice/redeploy"
 
 env:
   PYTHONPATH: "{{.PWD}}"
@@ -399,6 +401,21 @@ tasks:
     desc: Show available tasks
     cmds:
       - task --list
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Cross-project quality gate (doql + redeploy)
+  # Trend: redeploy catches up to doql, never the other way around.
+  # ─────────────────────────────────────────────────────────────────────────────
+
+  cross-quality:
+    desc: Run quality gates for doql (strict) and redeploy (catching up)
+    cmds:
+      - |
+        echo "🧪 doql quality gate   — cc≤12, critical=0"
+        pyqual run
+      - |
+        echo "🧪 redeploy quality gate — cc≤15, critical≤80"
+        cd "{{.REDEPLOY_ROOT}}" && make quality-check
 ```
 
 ## Quality Pipeline (`pyqual.yaml`)
@@ -460,7 +477,7 @@ pipeline:
 ```yaml
 project:
   name: doql
-  version: 0.1.3
+  version: 1.0.7
   env: local
 ```
 
@@ -487,6 +504,7 @@ testql>=0.1.1
 ```text markpact:deps python scope=dev
 pytest>=7.4
 pytest-asyncio
+pytest-cov>=4.0
 ruff
 mypy
 goal>=2.1.0
@@ -532,59 +550,63 @@ pip install -e .[dev]
 ### `project/map.toon.yaml`
 
 ```toon markpact:analysis path=project/map.toon.yaml
-# doql | 173f 22153L | python:136,css:15,less:11,shell:6,javascript:4,typescript:1 | 2026-04-19
-# stats: 584 func | 38 cls | 173 mod | CC̄=3.3 | critical:28 | cycles:0
-# alerts[5]: CC _convert_indent_to_braces=29; CC _extract_python_cli_workflows=24; CC check_api=22; CC scan_entities=16; CC test_api_boot_and_health=16
-# hotspots[5]: check_api fan=26; test_api_boot_and_health fan=26; _extract_python_cli_workflows fan=21; main fan=21; cmd_build fan=20
+# doql | 191f 25286L | python:149,less:16,css:15,shell:6,javascript:4,typescript:1 | 2026-04-21
+# stats: 732 func | 38 cls | 191 mod | CC̄=3.0 | critical:12 | cycles:0
+# alerts[5]: CC check_api=22; CC test_api_boot_and_health=16; CC test_build_produces_expected_targets=14; CC check_desktop=12; CC _collect_missing_files=11
+# hotspots[5]: check_api fan=26; test_api_boot_and_health fan=26; cmd_build fan=22; main fan=21; cmd_doctor fan=17
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
-M[173]:
+M[191]:
   app.doql.css,108
   app.doql.less,110
-  doql/__init__.py,8
+  doql/__init__.py,92
   doql/adopt/__init__.py,11
+  doql/adopt/device_scanner.py,133
   doql/adopt/emitter.py,19
   doql/adopt/scanner/__init__.py,59
-  doql/adopt/scanner/databases.py,59
+  doql/adopt/scanner/databases.py,63
   doql/adopt/scanner/deploy.py,108
-  doql/adopt/scanner/entities.py,183
+  doql/adopt/scanner/entities.py,186
   doql/adopt/scanner/environments.py,87
-  doql/adopt/scanner/integrations.py,36
-  doql/adopt/scanner/interfaces.py,325
+  doql/adopt/scanner/integrations.py,27
+  doql/adopt/scanner/interfaces.py,329
   doql/adopt/scanner/metadata.py,69
-  doql/adopt/scanner/roles.py,29
+  doql/adopt/scanner/roles.py,33
   doql/adopt/scanner/utils.py,101
-  doql/adopt/scanner/workflows.py,276
+  doql/adopt/scanner/workflows.py,264
   doql/adopt/scanner.py,46
   doql/cli/__init__.py,20
   doql/cli/__main__.py,10
-  doql/cli/build.py,195
-  doql/cli/commands/__init__.py,54
-  doql/cli/commands/adopt.py,95
-  doql/cli/commands/deploy.py,49
+  doql/cli/build.py,277
+  doql/cli/commands/__init__.py,56
+  doql/cli/commands/adopt.py,167
+  doql/cli/commands/deploy.py,143
   doql/cli/commands/docs.py,22
-  doql/cli/commands/doctor.py,322
-  doql/cli/commands/export.py,67
+  doql/cli/commands/doctor.py,408
+  doql/cli/commands/drift.py,232
+  doql/cli/commands/export.py,59
   doql/cli/commands/generate.py,35
   doql/cli/commands/import_cmd.py,46
   doql/cli/commands/init.py,44
   doql/cli/commands/kiosk.py,21
   doql/cli/commands/plan.py,116
   doql/cli/commands/publish.py,152
-  doql/cli/commands/quadlet.py,23
+  doql/cli/commands/quadlet.py,113
   doql/cli/commands/query.py,32
   doql/cli/commands/render.py,27
-  doql/cli/commands/run.py,158
-  doql/cli/commands/validate.py,46
-  doql/cli/commands/workspace.py,539
+  doql/cli/commands/run.py,167
+  doql/cli/commands/validate.py,49
+  doql/cli/commands/workspace.py,545
   doql/cli/context.py,67
-  doql/cli/lockfile.py,89
-  doql/cli/main.py,162
-  doql/cli/sync.py,120
+  doql/cli/lockfile.py,84
+  doql/cli/main.py,195
+  doql/cli/sync.py,123
   doql/cli.py,63
+  doql/drift/__init__.py,23
+  doql/drift/detector.py,126
   doql/exporters/__init__.py,2
   doql/exporters/css/__init__.py,108
-  doql/exporters/css/format_convert.py,76
+  doql/exporters/css/format_convert.py,68
   doql/exporters/css/helpers.py,40
   doql/exporters/css/renderers.py,297
   doql/exporters/css_exporter.py,17
@@ -595,7 +617,7 @@ M[173]:
   doql/exporters/yaml_exporter.py,37
   doql/generators/__init__.py,6
   doql/generators/api_gen/__init__.py,179
-  doql/generators/api_gen/alembic.py,155
+  doql/generators/api_gen/alembic.py,153
   doql/generators/api_gen/auth.py,155
   doql/generators/api_gen/common.py,85
   doql/generators/api_gen/database.py,42
@@ -612,7 +634,7 @@ M[173]:
   doql/generators/export_postman.py,26
   doql/generators/export_ts_sdk.py,27
   doql/generators/i18n_gen.py,169
-  doql/generators/infra_gen.py,322
+  doql/generators/infra_gen.py,400
   doql/generators/integrations_gen.py,337
   doql/generators/mobile_gen.py,463
   doql/generators/report_gen.py,143
@@ -622,26 +644,28 @@ M[173]:
   doql/generators/web_gen/components.py,77
   doql/generators/web_gen/config.py,123
   doql/generators/web_gen/core.py,58
-  doql/generators/web_gen/pages.py,164
+  doql/generators/web_gen/pages.py,167
   doql/generators/web_gen/pwa.py,110
   doql/generators/web_gen/router.py,44
   doql/generators/web_gen.py,35
-  doql/generators/workflow_gen.py,316
+  doql/generators/workflow_gen.py,319
   doql/importers/__init__.py,2
   doql/importers/yaml_importer.py,268
-  doql/lsp_server.py,365
+  doql/integrations/__init__.py,21
+  doql/integrations/op3_bridge.py,159
+  doql/lsp_server.py,379
   doql/parser.py,75
   doql/parsers/__init__.py,154
   doql/parsers/blocks.py,51
-  doql/parsers/css_mappers.py,400
-  doql/parsers/css_parser.py,145
-  doql/parsers/css_tokenizer.py,121
-  doql/parsers/css_transformers.py,269
+  doql/parsers/css_mappers.py,416
+  doql/parsers/css_parser.py,154
+  doql/parsers/css_tokenizer.py,138
+  doql/parsers/css_transformers.py,247
   doql/parsers/css_utils.py,73
   doql/parsers/extractors.py,206
   doql/parsers/models.py,220
   doql/parsers/registry.py,268
-  doql/parsers/validators.py,170
+  doql/parsers/validators.py,201
   doql/plugins.py,102
   doql/utils/__init__.py,7
   doql/utils/clean.py,21
@@ -676,36 +700,48 @@ M[173]:
   playground/renderers.js,94
   playground/serve.sh,16
   playground/style.css,238
+  plugins/doql-plugin-erp/app.doql.less,60
   plugins/doql-plugin-erp/doql_plugin_erp/__init__.py,358
+  plugins/doql-plugin-fleet/app.doql.less,60
   plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py,85
   plugins/doql-plugin-fleet/doql_plugin_fleet/device_registry.py,131
   plugins/doql-plugin-fleet/doql_plugin_fleet/metrics.py,101
   plugins/doql-plugin-fleet/doql_plugin_fleet/migration.py,82
   plugins/doql-plugin-fleet/doql_plugin_fleet/ota.py,73
   plugins/doql-plugin-fleet/doql_plugin_fleet/tenant.py,84
+  plugins/doql-plugin-gxp/app.doql.less,60
   plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py,428
+  plugins/doql-plugin-iso17025/app.doql.less,60
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py,40
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/certificate.py,136
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/drift_monitor.py,79
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/migration.py,75
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/traceability.py,94
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/uncertainty.py,127
+  plugins/doql-plugin-shared/app.doql.less,60
   plugins/doql-plugin-shared/doql_plugin_shared/__init__.py,12
   plugins/doql-plugin-shared/doql_plugin_shared/base.py,30
   plugins/doql-plugin-shared/doql_plugin_shared/readme.py,38
-  project.sh,35
+  project.sh,37
   tests/__init__.py,1
   tests/env_manager.py,468
+  tests/integration/__init__.py,2
+  tests/integration/test_adopt_from_device.py,203
+  tests/integration/test_build_from_device.py,283
+  tests/integration/test_drift.py,290
+  tests/integration/test_op3_bridge.py,165
   tests/playground_e2e.py,124
   tests/runtime_all_examples.sh,116
   tests/runtime_deploy.sh,66
   tests/runtime_smoke.py,92
-  tests/test_adopt.py,366
-  tests/test_css_parser.py,172
+  tests/test_adopt.py,426
+  tests/test_css_parser.py,277
   tests/test_exporters.py,418
+  tests/test_exporters_shims.py,93
   tests/test_generators.py,122
   tests/test_lsp.py,60
-  tests/test_parser.py,172
+  tests/test_parser.py,207
+  tests/test_parser_benchmark.py,217
   tests/test_plugins.py,119
   tests/test_runtime.py,237
   tests/test_workspace.py,170
@@ -715,6 +751,11 @@ M[173]:
 D:
   doql/__init__.py:
   doql/adopt/__init__.py:
+  doql/adopt/device_scanner.py:
+    e: _header,adopt_from_device_to_snapshot,adopt_from_device
+    _header(target;snapshot;layers)
+    adopt_from_device_to_snapshot(target)
+    adopt_from_device(target)
   doql/adopt/emitter.py:
     e: emit_css,emit_spec
     emit_css(spec;output)
@@ -723,8 +764,10 @@ D:
     e: scan_project
     scan_project(root)
   doql/adopt/scanner/databases.py:
-    e: _db_name,scan_databases
+    e: _db_name,_db_from_image,_scan_compose_databases,scan_databases
     _db_name(svc_name;db_type)
+    _db_from_image(svc_name;image)
+    _scan_compose_databases(root;spec)
     scan_databases(root;spec)
   doql/adopt/scanner/deploy.py:
     e: _detect_deployment_indicators,_determine_deploy_target,_apply_deploy_config_flags,_is_database_service,_extract_container_config,_extract_containers_from_compose,_detect_rootless,scan_deploy
@@ -737,13 +780,17 @@ D:
     _detect_rootless(spec)
     scan_deploy(root;spec)
   doql/adopt/scanner/entities.py:
-    e: _is_dto_name,scan_entities,_extract_entities_from_python,_extract_annotation_fields,_extract_sqlalchemy_fields,_extract_fields,_extract_entities_from_sql
+    e: _is_dto_name,_is_excluded_path,scan_entities,_classify_bases,_extract_entities_from_python,_extract_annotation_fields,_extract_sqlalchemy_fields,_extract_fields,_is_reserved_sql_keyword,_extract_sql_columns,_extract_entities_from_sql
     _is_dto_name(name)
+    _is_excluded_path(path)
     scan_entities(root;spec)
+    _classify_bases(bases_raw)
     _extract_entities_from_python(path;spec;seen)
     _extract_annotation_fields(stripped;entity)
     _extract_sqlalchemy_fields(stripped;entity)
     _extract_fields(text;start;entity)
+    _is_reserved_sql_keyword(col_name)
+    _extract_sql_columns(body)
     _extract_entities_from_sql(path;spec;seen)
   doql/adopt/scanner/environments.py:
     e: _detect_local_env,_extract_env_refs,_detect_env_files,_assign_ssh_host,_detect_compose_envs,scan_environments
@@ -757,7 +804,7 @@ D:
     e: scan_integrations
     scan_integrations(root;spec)
   doql/adopt/scanner/interfaces.py:
-    e: scan_interfaces,_detect_framework_from_pyproject,_detect_framework_from_main_py,_find_api_main_file,_has_api_entry_point,_detect_api_auth,_detect_api_port,_scan_python_api,_scan_python_cli,_detect_web_framework,_extract_web_pages,_scan_web_frontend,_scan_mobile,_scan_desktop
+    e: scan_interfaces,_detect_framework_from_pyproject,_detect_framework_from_main_py,_find_api_main_file,_has_api_entry_point,_detect_api_auth,_detect_api_port,_scan_python_api,_scan_python_cli,_detect_web_framework,_scan_pages_dir,_extract_web_pages,_scan_web_frontend,_scan_mobile,_scan_desktop
     scan_interfaces(root;spec)
     _detect_framework_from_pyproject(pyproj)
     _detect_framework_from_main_py(main_py)
@@ -768,6 +815,7 @@ D:
     _scan_python_api(root;spec)
     _scan_python_cli(root;spec)
     _detect_web_framework(root)
+    _scan_pages_dir(pdir;page_seen)
     _extract_web_pages(root)
     _scan_web_frontend(root;spec)
     _scan_mobile(root;spec)
@@ -779,7 +827,8 @@ D:
     _parse_package_json(path;spec)
     _parse_goal_yaml(path;spec)
   doql/adopt/scanner/roles.py:
-    e: scan_roles
+    e: _scan_sql_roles,scan_roles
+    _scan_sql_roles(root;spec)
     scan_roles(root;spec)
   doql/adopt/scanner/utils.py:
     e: load_yaml,find_compose,find_dockerfiles,camel_to_kebab,snake_to_pascal,normalize_python_type,normalize_sqlalchemy_type,normalize_sql_type
@@ -792,7 +841,7 @@ D:
     normalize_sqlalchemy_type(t)
     normalize_sql_type(t)
   doql/adopt/scanner/workflows.py:
-    e: scan_workflows,_is_valid_target,_build_steps_from_body,_create_workflow,_extract_makefile_workflows,_parse_makefile_deps,_build_taskfile_steps,_extract_taskfile_schedule,_extract_taskfile_workflows,_extract_python_cli_workflows
+    e: scan_workflows,_is_valid_target,_build_steps_from_body,_create_workflow,_extract_makefile_workflows,_parse_makefile_deps,_build_taskfile_steps,_extract_taskfile_schedule,_build_workflow_from_task,_extract_taskfile_workflows,_find_cli_candidates,_detect_cli_command_name,_build_workflow_steps,_scan_cli_file_for_workflows,_extract_python_cli_workflows
     scan_workflows(root;spec)
     _is_valid_target(name;deps_raw;seen)
     _build_steps_from_body(body;deps_raw)
@@ -801,13 +850,18 @@ D:
     _parse_makefile_deps(deps_raw)
     _build_taskfile_steps(task)
     _extract_taskfile_schedule(task)
+    _build_workflow_from_task(task_name;task)
     _extract_taskfile_workflows(path;spec)
+    _find_cli_candidates(root)
+    _detect_cli_command_name(root)
+    _build_workflow_steps(cmd_name;cli_command)
+    _scan_cli_file_for_workflows(cli_file;cli_command;seen;spec)
     _extract_python_cli_workflows(root;spec)
   doql/adopt/scanner.py:
   doql/cli/__init__.py:
   doql/cli/__main__.py:
   doql/cli/build.py:
-    e: should_generate_interface,run_core_generators,run_document_generators,_run_conditional_generator,run_report_generators,run_i18n_generators,run_integration_generators,run_workflow_generators,run_ci_generator,run_plugins,cmd_build,_merge_no_overwrite
+    e: should_generate_interface,run_core_generators,run_document_generators,_run_conditional_generator,run_report_generators,run_i18n_generators,run_integration_generators,run_workflow_generators,run_ci_generator,run_plugins,_scan_device_for_build,cmd_build,_merge_no_overwrite
     should_generate_interface(name;spec)
     run_core_generators(spec;env_vars;ctx;no_overwrite)
     run_document_generators(spec;env_vars;ctx)
@@ -818,38 +872,59 @@ D:
     run_workflow_generators(spec;env_vars;ctx)
     run_ci_generator(spec;env_vars;ctx)
     run_plugins(spec;env_vars;ctx)
+    _scan_device_for_build(ctx;args)
     cmd_build(args)
     _merge_no_overwrite(src;dst)
   doql/cli/commands/__init__.py:
   doql/cli/commands/adopt.py:
-    e: _print_item,_print_scan_summary,_cleanup_empty_output,_validate_output_written,cmd_adopt
+    e: _print_item,_print_scan_summary,_cleanup_empty_output,_validate_output_written,cmd_adopt,_cmd_adopt_from_directory,_cmd_adopt_from_device
     _print_item(label;count;items;display_names)
     _print_scan_summary(spec)
     _cleanup_empty_output(output)
     _validate_output_written(output)
     cmd_adopt(args)
+    _cmd_adopt_from_directory(args)
+    _cmd_adopt_from_device(args;device)
   doql/cli/commands/deploy.py:
-    e: _run_directive,cmd_deploy
+    e: _run_directive,_deploy_via_redeploy_api,_deploy_via_redeploy_cli,cmd_deploy
     _run_directive(label;command)
+    _deploy_via_redeploy_api(migration_yaml;dry_run;plan_only)
+    _deploy_via_redeploy_cli(migration_yaml;dry_run;plan_only)
     cmd_deploy(args)
   doql/cli/commands/docs.py:
     e: cmd_docs
     cmd_docs(args)
   doql/cli/commands/doctor.py:
-    e: _check_parse,_check_env,_check_files,_check_databases,_check_interfaces,_check_tools,_check_deploy,_check_environments,_check_remote,cmd_doctor,_print_report,Check,DoctorReport
+    e: _check_parse,_find_missing_env_refs,_check_env,_collect_missing_files,_check_files,_check_databases,_warn_unknown_entity_refs,_check_interfaces,_collect_required_tools,_check_tools,_check_deploy,_check_environments,_ssh_run,_check_remote_ssh,_check_remote_runtime,_check_remote,cmd_doctor,_print_report,_apply_fixes,Check,DoctorReport
     Check:
     DoctorReport: add(3),ok(0),warnings(0),failures(0)
     _check_parse(root;doql_file;report)
+    _find_missing_env_refs(spec;env_vars)
     _check_env(root;spec;report)
+    _collect_missing_files(root;spec)
     _check_files(root;spec;report)
     _check_databases(spec;report)
+    _warn_unknown_entity_refs(iface;entity_names;report)
     _check_interfaces(spec;report)
+    _collect_required_tools(spec)
     _check_tools(spec;report)
-    _check_deploy(spec;report)
+    _check_deploy(spec;report;root)
     _check_environments(spec;report)
+    _ssh_run(host;cmd)
+    _check_remote_ssh(host;report)
+    _check_remote_runtime(host;runtime;report)
     _check_remote(spec;env_name;report)
     cmd_doctor(args)
     _print_report(report)
+    _apply_fixes(report;root;spec)
+  doql/cli/commands/drift.py:
+    e: _change_style,_render_rich,_render_plain,_fmt_value,_report_to_json,cmd_drift
+    _change_style(change_type)
+    _render_rich(report;intended_file;target)
+    _render_plain(report;intended_file;target)
+    _fmt_value(value)
+    _report_to_json(report;intended_file;target)
+    cmd_drift(args)
   doql/cli/commands/export.py:
     e: cmd_export
     cmd_export(args)
@@ -885,7 +960,9 @@ D:
     _publish_github(root;spec;dry_run)
     cmd_publish(args)
   doql/cli/commands/quadlet.py:
-    e: cmd_quadlet
+    e: _install_via_redeploy_api,_install_via_systemctl,cmd_quadlet
+    _install_via_redeploy_api(infra_dir;app;dry_run)
+    _install_via_systemctl(infra_dir;app;dry_run)
     cmd_quadlet(args)
   doql/cli/commands/query.py:
     e: cmd_query
@@ -894,19 +971,25 @@ D:
     e: cmd_render
     cmd_render(args)
   doql/cli/commands/run.py:
-    e: _build_into,_workspace_for_file,cmd_run,_run_target
+    e: _build_into,_workspace_for_file,cmd_run,_run_api,_run_web,_run_desktop,_run_target
     _build_into(doql_file;workspace)
     _workspace_for_file(doql_file)
     cmd_run(args)
+    _run_api(target_dir;port)
+    _run_web(target_dir;port)
+    _run_desktop(target_dir)
     _run_target(build_dir;target;port)
   doql/cli/commands/validate.py:
-    e: cmd_validate
+    e: _print_issues,cmd_validate
+    _print_issues(issues)
     cmd_validate(args)
   doql/cli/commands/workspace.py:
-    e: _is_project,_parse_doql,_discover_local,_print,_filter_projects,_print_project_table,_cmd_list,_analyze_workflow_issues,_analyze_content_issues,_analyze_content_recs,_analyze_project,_output_csv,_output_table,_cmd_analyze,_cmd_validate,_cmd_fix,_select_run_projects,_execute_single_project,_print_dry_run_commands,_print_run_summary,_cmd_run,cmd_workspace,register_parser,DoqlProject
+    e: _is_project,_parse_doql,_load_project_doql,_walk_projects,_discover_local,_print,_filter_projects,_print_project_table,_cmd_list,_analyze_workflow_issues,_analyze_content_issues,_analyze_content_recs,_analyze_project,_output_csv,_output_table,_cmd_analyze,_cmd_validate,_cmd_fix,_select_run_projects,_execute_single_project,_print_dry_run_commands,_print_run_summary,_cmd_run,cmd_workspace,register_parser,DoqlProject
     DoqlProject:  # Minimal project descriptor (used when taskfile is not instal
     _is_project(d)
     _parse_doql(content)
+    _load_project_doql(proj)
+    _walk_projects(current;projects;max_depth;depth)
     _discover_local(root;max_depth)
     _print(msg)
     _filter_projects(projects;doql_only;has_workflow)
@@ -936,7 +1019,8 @@ D:
     scaffold_from_template(template;target)
     estimate_file_count(iface)
   doql/cli/lockfile.py:
-    e: spec_section_hashes,read_lockfile,diff_sections,write_lockfile
+    e: _simple_items_hash,spec_section_hashes,read_lockfile,diff_sections,write_lockfile
+    _simple_items_hash(items;key_prefix;val_fn;h_fn)
     spec_section_hashes(spec;ctx)
     read_lockfile(ctx)
     diff_sections(old_hashes;new_hashes)
@@ -946,11 +1030,19 @@ D:
     create_parser()
     main()
   doql/cli/sync.py:
-    e: determine_regeneration_set,run_generators,cmd_sync
+    e: determine_regeneration_set,_run_interface_generators,run_generators,cmd_sync
     determine_regeneration_set(diff_result;spec)
+    _run_interface_generators(regen;spec;env_vars;ctx)
     run_generators(regen;spec;env_vars;ctx)
     cmd_sync(args)
   doql/cli.py:
+  doql/drift/__init__.py:
+  doql/drift/detector.py:
+    e: find_intended_file,_has_unsupported_intended,parse_intended,detect_drift
+    find_intended_file(directory)
+    _has_unsupported_intended(directory)
+    parse_intended(path)
+    detect_drift(target)
   doql/exporters/__init__.py:
   doql/exporters/css/__init__.py:
     e: _render_data_layer,_render_documentation_layer,_render_infrastructure_layer,_render_integration_layer,_render_css,export_css,export_less,export_sass,export_css_file
@@ -964,7 +1056,8 @@ D:
     export_sass(spec;out)
     export_css_file(spec;path;fmt)
   doql/exporters/css/format_convert.py:
-    e: _css_to_less,_css_to_sass
+    e: _unquote_simple_value,_css_to_less,_css_to_sass
+    _unquote_simple_value(full_prop;val)
     _css_to_less(css_text)
     _css_to_sass(css_text)
   doql/exporters/css/helpers.py:
@@ -1034,9 +1127,10 @@ D:
     generate(spec;env_vars;out)
     export_openapi(spec;out)
   doql/generators/api_gen/alembic.py:
-    e: gen_alembic_ini,gen_alembic_env,gen_initial_migration
+    e: gen_alembic_ini,gen_alembic_env,_entity_table_columns,gen_initial_migration
     gen_alembic_ini()
     gen_alembic_env()
+    _entity_table_columns(ent)
     gen_initial_migration(spec)
   doql/generators/api_gen/auth.py:
     e: gen_auth
@@ -1113,11 +1207,13 @@ D:
     _gen_translations(spec;lang)
     generate(spec;env_vars;out)
   doql/generators/infra_gen.py:
-    e: _slug,_gen_docker_compose,_gen_quadlet,_gen_kiosk,generate
+    e: _slug,_gen_docker_compose,_gen_quadlet,_gen_kiosk,_map_deploy_strategy,_gen_migration_spec,generate
     _slug(name)
     _gen_docker_compose(spec;env_vars;out)
     _gen_quadlet(spec;env_vars;out)
     _gen_kiosk(spec;env_vars;out)
+    _map_deploy_strategy(doql_target)
+    _gen_migration_spec(spec;env_vars;out)
     generate(spec;env_vars;out)
   doql/generators/integrations_gen.py:
     e: _gen_email_service,_gen_slack_service,_gen_storage_service,_gen_notifications,_gen_api_client,_gen_webhook_dispatcher,_setup_services_dir,_generate_integration_services,_generate_api_clients,_generate_webhooks,generate
@@ -1178,9 +1274,10 @@ D:
     _gen_index_css()
     _gen_api_ts()
   doql/generators/web_gen/pages.py:
-    e: _gen_dashboard,_field_input,_gen_entity_page
+    e: _gen_dashboard,_field_input,_build_interface_body,_gen_entity_page
     _gen_dashboard(spec)
     _field_input(f)
+    _build_interface_body(visible_fields)
     _gen_entity_page(ent)
   doql/generators/web_gen/pwa.py:
     e: _gen_manifest,_gen_service_worker,_gen_sw_register
@@ -1192,10 +1289,11 @@ D:
     _gen_app(spec)
   doql/generators/web_gen.py:
   doql/generators/workflow_gen.py:
-    e: _gen_engine,_step_fn_name,_gen_workflow_module,_gen_scheduler,_gen_init,_gen_routes,generate
+    e: _gen_engine,_step_fn_name,_gen_workflow_module,_extract_cron,_gen_scheduler,_gen_init,_gen_routes,generate
     _gen_engine()
     _step_fn_name(action)
     _gen_workflow_module(wf;spec)
+    _extract_cron(sched)
     _gen_scheduler(spec)
     _gen_init(spec)
     _gen_routes(spec)
@@ -1225,8 +1323,20 @@ D:
     import_yaml(data)
     import_yaml_text(text)
     import_yaml_file(path)
+  doql/integrations/__init__.py:
+  doql/integrations/op3_bridge.py:
+    e: op3_enabled,op3_available,should_use_op3,build_layer_tree,make_scanner,make_ssh_context,make_mock_context,snapshot_to_less,require_op3
+    op3_enabled()
+    op3_available()
+    should_use_op3()
+    build_layer_tree(layer_ids)
+    make_scanner(layer_ids)
+    make_ssh_context(target;ssh_key)
+    make_mock_context(responses)
+    snapshot_to_less(snapshot;scope)
+    require_op3(feature)
   doql/lsp_server.py:
-    e: _parse_doc,_find_line_col,_diagnostics_for,_word_at,_on_text_document_event,did_open,did_change,did_save,completion,hover,definition,document_symbols,main
+    e: _parse_doc,_find_line_col,_diagnostics_for,_word_at,_on_text_document_event,did_open,did_change,did_save,completion,_hover_field,_hover_entity,hover,definition,document_symbols,main
     _parse_doc(source)
     _find_line_col(source;needle)
     _diagnostics_for(source;uri)
@@ -1236,6 +1346,8 @@ D:
     did_change(ls;params)
     did_save(ls;params)
     completion(ls;params)
+    _hover_field(ent;f)
+    _hover_entity(spec;word)
     hover(ls;params)
     definition(ls;params)
     document_symbols(ls;params)
@@ -1253,9 +1365,11 @@ D:
     split_blocks(text)
     apply_block(spec;keyword;header;body)
   doql/parsers/css_mappers.py:
-    e: _map_entity,_add_entity_field,_map_data_source,_map_config_block,_map_template,_map_document,_map_report,_find_or_create_interface,_handle_interface_chain,_apply_interface_properties,_apply_nested_interface_children,_map_interface,_add_interface_page,_map_integration,_map_workflow,_map_role,_map_deploy,_map_database,_map_environment
+    e: _map_entity,_parse_type_flags,_add_entity_field,_parse_type_modifiers,_map_data_source,_map_config_block,_map_template,_map_document,_map_report,_find_or_create_interface,_handle_interface_chain,_apply_interface_properties,_apply_nested_interface_children,_map_interface,_add_interface_page,_map_integration,_parse_step_text,_append_inline_steps,_append_child_steps,_map_workflow,_map_role,_map_deploy,_map_database,_map_environment
     _map_entity(spec;sel;block)
+    _parse_type_flags(type_str)
     _add_entity_field(entity;name;type_str)
+    _parse_type_modifiers(current_type)
     _map_data_source(spec;sel;block)
     _map_config_block(spec;sel;block;model_class;list_attr;defaults;list_fields)
     _map_template(spec;sel;block)
@@ -1268,6 +1382,9 @@ D:
     _map_interface(spec;sel;block)
     _add_interface_page(iface;sel;block)
     _map_integration(spec;sel;block)
+    _parse_step_text(step_text)
+    _append_inline_steps(wf;block;strip_quotes_fn)
+    _append_child_steps(wf;block;parse_selector_fn;strip_quotes_fn)
     _map_workflow(spec;sel;block)
     _map_role(spec;sel;block)
     _map_deploy(spec;sel;block)
@@ -1282,17 +1399,26 @@ D:
     parse_css_text(text;format)
     _detect_format(path)
   doql/parsers/css_tokenizer.py:
-    e: _tokenise_css,_parse_declarations
+    e: _make_css_block,_tokenise_css,_consume_pending,_process_decl_line,_parse_declarations
+    _make_css_block(selector;body;line_num)
     _tokenise_css(text)
+    _consume_pending(decls;pending_key;pending_value)
+    _process_decl_line(stripped;pending_key;pending_value;decls)
     _parse_declarations(body)
   doql/parsers/css_transformers.py:
-    e: _resolve_vars,_resolve_less_vars,_resolve_sass_vars,_extract_mixins,_expand_includes,_is_selector_line,_convert_indent_to_braces,_sass_to_css
+    e: _resolve_vars,_resolve_less_vars,_resolve_sass_vars,_extract_mixins,_expand_includes,_is_doql_property_decl,_is_selector_line,_is_step_line,_has_bracket_selector,_is_selector_starter,_find_step_block_end,_close_indent_blocks,_convert_indent_to_braces,_sass_to_css
     _resolve_vars(text;prefix)
     _resolve_less_vars(text)
     _resolve_sass_vars(text)
     _extract_mixins(lines)
     _expand_includes(lines;mixins)
+    _is_doql_property_decl(stripped)
     _is_selector_line(stripped)
+    _is_step_line(line)
+    _has_bracket_selector(stripped)
+    _is_selector_starter(line)
+    _find_step_block_end(lines;start_idx;start_indent)
+    _close_indent_blocks(result_lines;indent_stack;current_indent)
     _convert_indent_to_braces(lines)
     _sass_to_css(text)
   doql/parsers/css_utils.py:
@@ -1368,7 +1494,7 @@ D:
     _handle_tests(spec;header;body)
     _handle_deploy(spec;header;body)
   doql/parsers/validators.py:
-    e: _validate_app_name,_validate_env_refs,_validate_data_source_files,_validate_file_refs,_validate_document_templates,_validate_template_files,_validate_document_partials,_validate_entity_refs,_validate_interfaces,validate
+    e: _validate_app_name,_validate_env_refs,_validate_data_source_files,_validate_file_refs,_validate_document_templates,_validate_template_files,_validate_document_partials,_validate_entity_refs,_validate_interfaces,_validate_deploy_strategy,validate
     _validate_app_name(spec)
     _validate_env_refs(spec;env_vars)
     _validate_data_source_files(spec;project_root)
@@ -1378,6 +1504,7 @@ D:
     _validate_document_partials(spec)
     _validate_entity_refs(spec)
     _validate_interfaces(spec)
+    _validate_deploy_strategy(spec)
     validate(spec;env_vars;project_root)
   doql/plugins.py:
     e: _discover_entry_points,_discover_local,discover_plugins,run_plugins,Plugin
@@ -1480,6 +1607,61 @@ D:
     render_text(reports)
     render_json(reports)
     main(argv)
+  tests/integration/__init__.py:
+  tests/integration/test_adopt_from_device.py:
+    e: _healthy_rpi_responses,test_adopt_from_device_returns_less_text,test_adopt_from_device_writes_output,test_adopt_from_device_to_snapshot_contains_layer_data,test_adopt_output_is_parsable_by_doql,_make_cli_args,test_cmd_adopt_from_device_writes_file,test_cmd_adopt_rejects_non_less_format,test_cmd_adopt_without_target_or_device_errors,test_cmd_adopt_refuses_to_overwrite
+    _healthy_rpi_responses()
+    test_adopt_from_device_returns_less_text()
+    test_adopt_from_device_writes_output(tmp_path)
+    test_adopt_from_device_to_snapshot_contains_layer_data()
+    test_adopt_output_is_parsable_by_doql(tmp_path)
+    _make_cli_args()
+    test_cmd_adopt_from_device_writes_file(tmp_path;monkeypatch;capsys)
+    test_cmd_adopt_rejects_non_less_format(capsys)
+    test_cmd_adopt_without_target_or_device_errors(capsys)
+    test_cmd_adopt_refuses_to_overwrite(tmp_path;monkeypatch;capsys)
+  tests/integration/test_build_from_device.py:
+    e: _healthy_rpi_responses,_build_args,_patch_context_factory,test_scan_device_writes_app_doql_less_in_root,test_scan_device_honours_global_file_flag,test_scan_device_refuses_to_overwrite_without_force,test_scan_device_force_overwrites,_minimal_env_file,test_cmd_build_from_device_runs_full_pipeline,test_cmd_build_refuses_to_clobber_without_force,test_cmd_build_without_from_device_skips_scan
+    _healthy_rpi_responses()
+    _build_args(root)
+    _patch_context_factory(monkeypatch;responses)
+    test_scan_device_writes_app_doql_less_in_root(tmp_path;monkeypatch;capsys)
+    test_scan_device_honours_global_file_flag(tmp_path;monkeypatch)
+    test_scan_device_refuses_to_overwrite_without_force(tmp_path;monkeypatch;capsys)
+    test_scan_device_force_overwrites(tmp_path;monkeypatch)
+    _minimal_env_file(root)
+    test_cmd_build_from_device_runs_full_pipeline(tmp_path;monkeypatch;capsys)
+    test_cmd_build_refuses_to_clobber_without_force(tmp_path;monkeypatch;capsys)
+    test_cmd_build_without_from_device_skips_scan(tmp_path;monkeypatch)
+  tests/integration/test_drift.py:
+    e: _rpi_responses_with_service,_intended_less,test_parse_intended_attaches_source_path,test_parse_intended_missing_file,test_detect_drift_no_changes,test_detect_drift_service_state_mismatch,test_detect_drift_missing_file_raises,_args,_patch_context,test_cmd_drift_returns_drift_exit_code,test_cmd_drift_json_output_is_valid,test_cmd_drift_missing_from_device,test_cmd_drift_missing_file,test_cmd_drift_unsupported_format_gives_actionable_hint,test_cmd_drift_explicit_missing_file,test_cmd_drift_no_drift_exit_code_zero
+    _rpi_responses_with_service(active_state)
+    _intended_less(service_name;active)
+    test_parse_intended_attaches_source_path(tmp_path)
+    test_parse_intended_missing_file(tmp_path)
+    test_detect_drift_no_changes(tmp_path)
+    test_detect_drift_service_state_mismatch(tmp_path)
+    test_detect_drift_missing_file_raises(tmp_path;monkeypatch)
+    _args()
+    _patch_context(monkeypatch;responses)
+    test_cmd_drift_returns_drift_exit_code(tmp_path;monkeypatch;capsys)
+    test_cmd_drift_json_output_is_valid(tmp_path;monkeypatch;capsys)
+    test_cmd_drift_missing_from_device(capsys)
+    test_cmd_drift_missing_file(tmp_path;monkeypatch;capsys)
+    test_cmd_drift_unsupported_format_gives_actionable_hint(tmp_path;monkeypatch;capsys)
+    test_cmd_drift_explicit_missing_file(tmp_path;capsys)
+    test_cmd_drift_no_drift_exit_code_zero(tmp_path;monkeypatch;capsys)
+  tests/integration/test_op3_bridge.py:
+    e: test_op3_importable,test_op3_enabled_reads_env,test_should_use_op3_requires_both,test_require_op3_noop_when_available,test_build_layer_tree_defaults,test_build_layer_tree_explicit_leaf_pulls_deps,test_build_layer_tree_rejects_unknown,test_scanner_runs_against_mock_context,test_snapshot_to_less_produces_parsable_less
+    test_op3_importable()
+    test_op3_enabled_reads_env(monkeypatch;value;expected)
+    test_should_use_op3_requires_both(monkeypatch)
+    test_require_op3_noop_when_available()
+    test_build_layer_tree_defaults()
+    test_build_layer_tree_explicit_leaf_pulls_deps()
+    test_build_layer_tree_rejects_unknown()
+    test_scanner_runs_against_mock_context()
+    test_snapshot_to_less_produces_parsable_less()
   tests/playground_e2e.py:
     e: serve,main,_QuietHandler
     _QuietHandler: log_message(0)
@@ -1490,7 +1672,7 @@ D:
     step(client;name;response;expected)
     main()
   tests/test_adopt.py:
-    e: _write,_pyproject,test_jwt_secret_does_not_crash_renderer,test_pydantic_dtos_are_excluded_from_entities,test_generic_db_service_name_is_normalised,test_fastapi_dependency_alone_does_not_create_api_interface,test_fastapi_with_main_py_creates_api,test_api_entry_point_in_scripts_creates_api,_make_args,test_cmd_adopt_returns_zero_on_success,test_cmd_adopt_returns_nonzero_on_render_failure,test_cmd_adopt_refuses_to_overwrite_without_force,test_cmd_adopt_rejects_non_directory,test_makefile_targets_become_workflows,test_makefile_workflows_round_trip_to_css,test_taskfile_yml_tasks_become_workflows,test_dependency_only_targets_emit_depend_steps,test_empty_target_without_deps_is_skipped,test_makefile_variable_assignments_are_not_workflows,test_workflows_are_deduplicated_across_makefile_and_taskfile
+    e: _write,_pyproject,test_jwt_secret_does_not_crash_renderer,test_pydantic_dtos_are_excluded_from_entities,test_generic_db_service_name_is_normalised,test_fastapi_dependency_alone_does_not_create_api_interface,test_fastapi_with_main_py_creates_api,test_api_entry_point_in_scripts_creates_api,_make_args,test_cmd_adopt_returns_zero_on_success,test_cmd_adopt_returns_nonzero_on_render_failure,test_cmd_adopt_refuses_to_overwrite_without_force,test_cmd_adopt_rejects_non_directory,test_makefile_targets_become_workflows,test_makefile_workflows_round_trip_to_css,test_taskfile_yml_tasks_become_workflows,test_dependency_only_targets_emit_depend_steps,test_empty_target_without_deps_is_skipped,test_makefile_variable_assignments_are_not_workflows,test_workflows_are_deduplicated_across_makefile_and_taskfile,test_adopt_e2e_real_project_oqlos
     _write(root;rel;body)
     _pyproject(name;deps)
     test_jwt_secret_does_not_crash_renderer(tmp_path)
@@ -1511,8 +1693,9 @@ D:
     test_empty_target_without_deps_is_skipped(tmp_path)
     test_makefile_variable_assignments_are_not_workflows(tmp_path)
     test_workflows_are_deduplicated_across_makefile_and_taskfile(tmp_path)
+    test_adopt_e2e_real_project_oqlos(tmp_path)
   tests/test_css_parser.py:
-    e: test_css_parse_minimal,test_css_parse_entity,test_css_parse_interface,test_css_parse_role,test_css_parse_deploy,test_less_variable_expansion,test_sass_basic_parsing,test_parses_css_example_file,test_detect_doql_file_prefers_less,test_detect_doql_file_prefers_sass,test_detect_doql_file_falls_back_to_classic,test_iot_fleet_less_has_entities,test_notes_app_sass_has_all_interfaces
+    e: test_css_parse_minimal,test_css_parse_entity,test_css_parse_interface,test_css_parse_role,test_css_parse_deploy,test_less_variable_expansion,test_sass_basic_parsing,test_parses_css_example_file,test_detect_doql_file_prefers_less,test_detect_doql_file_prefers_sass,test_detect_doql_file_falls_back_to_classic,test_iot_fleet_less_has_entities,test_notes_app_sass_has_all_interfaces,test_css_parse_error_has_line_info,test_css_unknown_selector_gives_warning,test_less_syntax_error_recovery,_spec_to_comparable_dict,test_doql_vs_less_regression
     test_css_parse_minimal()
     test_css_parse_entity()
     test_css_parse_interface()
@@ -1526,6 +1709,11 @@ D:
     test_detect_doql_file_falls_back_to_classic(tmp_path)
     test_iot_fleet_less_has_entities()
     test_notes_app_sass_has_all_interfaces()
+    test_css_parse_error_has_line_info()
+    test_css_unknown_selector_gives_warning()
+    test_less_syntax_error_recovery()
+    _spec_to_comparable_dict(spec)
+    test_doql_vs_less_regression(example)
   tests/test_exporters.py:
     e: sample_spec,test_yaml_roundtrip_real_example,test_css_export_real_example,test_markdown_export_real_example,TestYamlExporter,TestMarkdownExporter,TestCssExporter,TestYamlImporter
     TestYamlExporter: test_export_basic_fields(1),test_export_entities(1),test_export_interfaces(1),test_export_workflows(1),test_export_roles(1),test_export_deploy(1),test_clean_removes_empty_and_none(0)
@@ -1536,6 +1724,15 @@ D:
     test_yaml_roundtrip_real_example(example)
     test_css_export_real_example(example)
     test_markdown_export_real_example(example)
+  tests/test_exporters_shims.py:
+    e: test_css_exporter_shim_re_exports_public_api,test_css_exporter_shim_re_exports_renderers,test_css_exporter_shim_re_exports_format_helpers,test_markdown_exporter_shim_re_exports_public_api,test_markdown_exporter_shim_re_exports_writers,test_markdown_exporter_shim_re_exports_helpers,test_css_shim_roundtrip_matches_direct_subpackage
+    test_css_exporter_shim_re_exports_public_api()
+    test_css_exporter_shim_re_exports_renderers()
+    test_css_exporter_shim_re_exports_format_helpers()
+    test_markdown_exporter_shim_re_exports_public_api()
+    test_markdown_exporter_shim_re_exports_writers()
+    test_markdown_exporter_shim_re_exports_helpers()
+    test_css_shim_roundtrip_matches_direct_subpackage(tmp_path)
   tests/test_generators.py:
     e: _run_doql,_compile_all_py,test_build_example,test_init_and_build_template,test_sync_no_changes_is_noop,test_list_templates_includes_all
     _run_doql()
@@ -1553,7 +1750,7 @@ D:
     test_diagnostics_on_asset_management_example()
     test_keyword_completion_includes_common_top_level()
   tests/test_parser.py:
-    e: test_parse_text_minimal,test_parse_text_full_entity,test_parse_text_languages_list,test_parse_text_workflow_with_schedule_and_inline_comment,test_parse_text_recovers_from_broken_block,test_parse_errors_is_a_list,test_parses_example_file,test_asset_management_entities,test_validate_detects_missing_env_ref,test_validation_issue_has_line_field,test_validate_detects_dangling_entity_ref,test_calibration_lab_has_no_dangling_refs
+    e: test_parse_text_minimal,test_parse_text_full_entity,test_parse_text_languages_list,test_parse_text_workflow_with_schedule_and_inline_comment,test_parse_text_recovers_from_broken_block,test_parse_errors_is_a_list,test_parses_example_file,test_asset_management_entities,test_validate_detects_missing_env_ref,test_validation_issue_has_line_field,test_validate_detects_dangling_entity_ref,test_calibration_lab_has_no_dangling_refs,test_deprecated_docker_compose_strategy_warns,test_deprecated_quadlet_strategy_warns,test_canonical_strategy_no_warning
     test_parse_text_minimal()
     test_parse_text_full_entity()
     test_parse_text_languages_list()
@@ -1566,6 +1763,16 @@ D:
     test_validation_issue_has_line_field()
     test_validate_detects_dangling_entity_ref()
     test_calibration_lab_has_no_dangling_refs()
+    test_deprecated_docker_compose_strategy_warns()
+    test_deprecated_quadlet_strategy_warns()
+    test_canonical_strategy_no_warning()
+  tests/test_parser_benchmark.py:
+    e: test_css_parser_cold_start_under_threshold,test_less_parser_variable_resolution_under_threshold,test_real_example_parse_under_threshold,test_css_vs_classic_parse_time_parity,test_large_file_parse_under_threshold
+    test_css_parser_cold_start_under_threshold()
+    test_less_parser_variable_resolution_under_threshold()
+    test_real_example_parse_under_threshold(example;fmt)
+    test_css_vs_classic_parse_time_parity()
+    test_large_file_parse_under_threshold()
   tests/test_plugins.py:
     e: test_entrypoint_discovery_finds_all_four,test_doql_plugins_module_import,_run_plugin_and_import,test_iso17025_uncertainty_budget_numerical,test_iso17025_drift_monitor_detects_stable,test_iso17025_drift_monitor_flags_excessive_drift,test_fleet_ota_canary_advances_on_success,test_gxp_audit_log_hash_is_deterministic
     test_entrypoint_discovery_finds_all_four()
@@ -1606,7 +1813,9 @@ def did_open(ls, params)  # CC=1, fan=2
 def did_change(ls, params)  # CC=1, fan=2
 def did_save(ls, params)  # CC=1, fan=2
 def completion(ls, params)  # CC=5, fan=8
-def hover(ls, params)  # CC=12, fan=9 ⚠
+def _hover_field(ent, f)  # CC=5, fan=5
+def _hover_entity(spec, word)  # CC=5, fan=5
+def hover(ls, params)  # CC=5, fan=6
 def definition(ls, params)  # CC=3, fan=14
 def document_symbols(ls, params)  # CC=7, fan=10
 def main()  # CC=2, fan=5
@@ -1620,6 +1829,636 @@ def _discover_local(project_root)  # CC=8, fan=11
 def discover_plugins(project_root)  # CC=1, fan=2
 def run_plugins(spec, env_vars, build_dir, project_root)  # CC=4, fan=5
 class Plugin:
+```
+
+## Call Graph
+
+*471 nodes · 500 edges · 93 modules · CC̄=3.5*
+
+### Hubs (by degree)
+
+| Function | CC | in | out | total |
+|----------|----|----|-----|-------|
+| `create_parser` *(in doql.cli.main)* | 1 | 1 | 82 | **83** |
+| `_prop` *(in doql.exporters.css.helpers)* | 8 | 73 | 6 | **79** |
+| `extract_val` *(in doql.parsers.extractors)* | 6 | 51 | 10 | **61** |
+| `_deploy_via_redeploy_api` *(in doql.cli.commands.deploy)* | 12 ⚠ | 1 | 31 | **32** |
+| `_render_rich` *(in doql.cli.commands.drift)* | 7 | 1 | 29 | **30** |
+| `_convert_indent_to_braces` *(in doql.parsers.css_transformers)* | 9 | 1 | 27 | **28** |
+| `_diagnostics_for` *(in doql.lsp_server)* | 10 ⚠ | 1 | 26 | **27** |
+| `spec_section_hashes` *(in doql.cli.lockfile)* | 9 | 2 | 22 | **24** |
+
+```toon markpact:analysis path=project/calls.toon.yaml
+# code2llm call graph | /home/tom/github/oqlos/doql
+# nodes: 471 | edges: 500 | modules: 93
+# CC̄=3.5
+
+HUBS[20]:
+  doql.cli.main.create_parser
+    CC=1  in:1  out:82  total:83
+  doql.exporters.css.helpers._prop
+    CC=8  in:73  out:6  total:79
+  doql.parsers.extractors.extract_val
+    CC=6  in:51  out:10  total:61
+  doql.cli.commands.deploy._deploy_via_redeploy_api
+    CC=12  in:1  out:31  total:32
+  doql.cli.commands.drift._render_rich
+    CC=7  in:1  out:29  total:30
+  doql.parsers.css_transformers._convert_indent_to_braces
+    CC=9  in:1  out:27  total:28
+  doql.lsp_server._diagnostics_for
+    CC=10  in:1  out:26  total:27
+  doql.cli.lockfile.spec_section_hashes
+    CC=9  in:2  out:22  total:24
+  doql.cli.sync.cmd_sync
+    CC=6  in:0  out:23  total:23
+  doql.cli.commands.drift.cmd_drift
+    CC=12  in:0  out:22  total:22
+  doql.generators.infra_gen._gen_docker_compose
+    CC=8  in:2  out:20  total:22
+  doql.parsers.extractors._extract_page_from_format2
+    CC=6  in:1  out:21  total:22
+  doql.cli.commands.init.cmd_init
+    CC=8  in:0  out:22  total:22
+  doql.cli.commands.run.cmd_run
+    CC=9  in:0  out:22  total:22
+  doql.exporters.css.renderers._render_data_source
+    CC=9  in:1  out:21  total:22
+  doql.cli.commands.doctor.cmd_doctor
+    CC=7  in:0  out:21  total:21
+  doql.generators.integrations_gen._gen_webhook_dispatcher
+    CC=5  in:1  out:20  total:21
+  doql.exporters.css.renderers._render_document
+    CC=7  in:1  out:20  total:21
+  doql.generators.mobile_gen.generate
+    CC=5  in:0  out:21  total:21
+  doql.cli.commands.quadlet._install_via_systemctl
+    CC=8  in:1  out:19  total:20
+
+MODULES:
+  doql.adopt.device_scanner  [3 funcs]
+    _header  CC=1  out:2
+    adopt_from_device  CC=4  out:9
+    adopt_from_device_to_snapshot  CC=2  out:5
+  doql.adopt.emitter  [2 funcs]
+    emit_css  CC=1  out:1
+    emit_spec  CC=1  out:2
+  doql.adopt.scanner  [1 funcs]
+    scan_project  CC=1  out:12
+  doql.adopt.scanner.databases  [4 funcs]
+    _db_from_image  CC=3  out:2
+    _db_name  CC=2  out:1
+    _scan_compose_databases  CC=5  out:7
+    scan_databases  CC=6  out:6
+  doql.adopt.scanner.deploy  [8 funcs]
+    _apply_deploy_config_flags  CC=3  out:0
+    _detect_deployment_indicators  CC=3  out:8
+    _detect_rootless  CC=2  out:2
+    _determine_deploy_target  CC=5  out:2
+    _extract_container_config  CC=5  out:5
+    _extract_containers_from_compose  CC=5  out:7
+    _is_database_service  CC=2  out:1
+    scan_deploy  CC=2  out:6
+  doql.adopt.scanner.entities  [10 funcs]
+    _classify_bases  CC=3  out:8
+    _extract_annotation_fields  CC=5  out:7
+    _extract_entities_from_python  CC=9  out:12
+    _extract_entities_from_sql  CC=5  out:9
+    _extract_fields  CC=8  out:8
+    _extract_sql_columns  CC=3  out:7
+    _extract_sqlalchemy_fields  CC=3  out:7
+    _is_excluded_path  CC=2  out:2
+    _is_reserved_sql_keyword  CC=1  out:1
+    scan_entities  CC=6  out:8
+  doql.adopt.scanner.environments  [6 funcs]
+    _assign_ssh_host  CC=4  out:3
+    _detect_compose_envs  CC=7  out:4
+    _detect_env_files  CC=4  out:6
+    _detect_local_env  CC=3  out:4
+    _extract_env_refs  CC=7  out:7
+    scan_environments  CC=1  out:3
+  doql.adopt.scanner.integrations  [1 funcs]
+    scan_integrations  CC=4  out:5
+  doql.adopt.scanner.interfaces  [14 funcs]
+    _detect_api_auth  CC=4  out:2
+    _detect_framework_from_main_py  CC=6  out:2
+    _detect_framework_from_pyproject  CC=5  out:3
+    _detect_web_framework  CC=8  out:5
+    _extract_web_pages  CC=3  out:3
+    _find_api_main_file  CC=8  out:6
+    _has_api_entry_point  CC=7  out:6
+    _scan_desktop  CC=7  out:14
+    _scan_mobile  CC=6  out:11
+    _scan_pages_dir  CC=9  out:14
+  doql.adopt.scanner.metadata  [4 funcs]
+    _parse_goal_yaml  CC=4  out:2
+    _parse_package_json  CC=1  out:4
+    _parse_pyproject  CC=5  out:7
+    scan_metadata  CC=6  out:9
+  doql.adopt.scanner.roles  [2 funcs]
+    _scan_sql_roles  CC=9  out:10
+    scan_roles  CC=3  out:5
+  doql.adopt.scanner.utils  [8 funcs]
+    camel_to_kebab  CC=1  out:5
+    find_compose  CC=3  out:1
+    find_dockerfiles  CC=5  out:5
+    load_yaml  CC=3  out:2
+    normalize_python_type  CC=1  out:3
+    normalize_sql_type  CC=4  out:3
+    normalize_sqlalchemy_type  CC=1  out:2
+    snake_to_pascal  CC=2  out:3
+  doql.adopt.scanner.workflows  [15 funcs]
+    _build_steps_from_body  CC=7  out:8
+    _build_taskfile_steps  CC=5  out:6
+    _build_workflow_from_task  CC=4  out:4
+    _build_workflow_steps  CC=2  out:4
+    _create_workflow  CC=2  out:1
+    _detect_cli_command_name  CC=6  out:6
+    _extract_makefile_workflows  CC=6  out:10
+    _extract_python_cli_workflows  CC=3  out:3
+    _extract_taskfile_schedule  CC=2  out:2
+    _extract_taskfile_workflows  CC=9  out:9
+  doql.cli.commands.adopt  [6 funcs]
+    _cmd_adopt_from_device  CC=10  out:16
+    _cmd_adopt_from_directory  CC=8  out:15
+    _print_item  CC=5  out:5
+    _print_scan_summary  CC=7  out:19
+    _validate_output_written  CC=3  out:4
+    cmd_adopt  CC=2  out:3
+  doql.cli.commands.deploy  [3 funcs]
+    _deploy_via_redeploy_api  CC=12  out:31
+    _deploy_via_redeploy_cli  CC=4  out:7
+    cmd_deploy  CC=9  out:15
+  doql.cli.commands.doctor  [15 funcs]
+    _check_databases  CC=5  out:4
+    _check_env  CC=5  out:11
+    _check_files  CC=3  out:3
+    _check_interfaces  CC=10  out:6
+    _check_parse  CC=4  out:5
+    _check_remote  CC=8  out:7
+    _check_remote_runtime  CC=4  out:4
+    _check_remote_ssh  CC=3  out:4
+    _check_tools  CC=4  out:6
+    _collect_missing_files  CC=11  out:8
+  doql.cli.commands.drift  [5 funcs]
+    _fmt_value  CC=6  out:6
+    _render_plain  CC=3  out:7
+    _render_rich  CC=7  out:29
+    _report_to_json  CC=2  out:1
+    cmd_drift  CC=12  out:22
+  doql.cli.commands.export  [1 funcs]
+    cmd_export  CC=7  out:13
+  doql.cli.commands.import_cmd  [1 funcs]
+    cmd_import  CC=7  out:14
+  doql.cli.commands.init  [1 funcs]
+    cmd_init  CC=8  out:22
+  doql.cli.commands.plan  [10 funcs]
+    _print_api_clients  CC=3  out:3
+    _print_data_sources  CC=3  out:3
+    _print_documents  CC=2  out:5
+    _print_entities  CC=2  out:4
+    _print_file_counts  CC=2  out:6
+    _print_header  CC=3  out:3
+    _print_interfaces  CC=4  out:2
+    _print_summary  CC=4  out:13
+    _print_workflows  CC=4  out:3
+    cmd_plan  CC=3  out:14
+  doql.cli.commands.publish  [2 funcs]
+    _publish_pypi  CC=7  out:12
+    cmd_publish  CC=8  out:17
+  doql.cli.commands.quadlet  [3 funcs]
+    _install_via_redeploy_api  CC=9  out:15
+    _install_via_systemctl  CC=8  out:19
+    cmd_quadlet  CC=6  out:12
+  doql.cli.commands.run  [7 funcs]
+    _build_into  CC=6  out:16
+    _run_api  CC=3  out:6
+    _run_desktop  CC=2  out:5
+    _run_target  CC=7  out:9
+    _run_web  CC=3  out:7
+    _workspace_for_file  CC=1  out:0
+    cmd_run  CC=9  out:22
+  doql.cli.commands.validate  [2 funcs]
+    _print_issues  CC=8  out:4
+    cmd_validate  CC=5  out:12
+  doql.cli.context  [4 funcs]
+    build_context  CC=3  out:6
+    estimate_file_count  CC=5  out:2
+    load_spec  CC=1  out:2
+    scaffold_from_template  CC=2  out:4
+  doql.cli.lockfile  [5 funcs]
+    _simple_items_hash  CC=2  out:2
+    diff_sections  CC=8  out:0
+    read_lockfile  CC=3  out:3
+    spec_section_hashes  CC=9  out:22
+    write_lockfile  CC=1  out:5
+  doql.cli.main  [2 funcs]
+    create_parser  CC=1  out:82
+    main  CC=1  out:3
+  doql.cli.sync  [4 funcs]
+    _run_interface_generators  CC=5  out:3
+    cmd_sync  CC=6  out:23
+    determine_regeneration_set  CC=10  out:18
+    run_generators  CC=5  out:5
+  doql.drift.detector  [3 funcs]
+    detect_drift  CC=3  out:8
+    find_intended_file  CC=4  out:2
+    parse_intended  CC=3  out:9
+  doql.exporters.css  [9 funcs]
+    _render_css  CC=5  out:16
+    _render_data_layer  CC=4  out:6
+    _render_documentation_layer  CC=3  out:4
+    _render_infrastructure_layer  CC=4  out:6
+    _render_integration_layer  CC=5  out:8
+    export_css  CC=1  out:2
+    export_css_file  CC=1  out:2
+    export_less  CC=1  out:3
+    export_sass  CC=1  out:3
+  doql.exporters.css.format_convert  [3 funcs]
+    _css_to_less  CC=4  out:8
+    _css_to_sass  CC=9  out:18
+    _unquote_simple_value  CC=8  out:4
+  doql.exporters.css.helpers  [3 funcs]
+    _field_line  CC=7  out:6
+    _indent  CC=2  out:1
+    _prop  CC=8  out:6
+  doql.exporters.css.renderers  [17 funcs]
+    _build_interface_props  CC=10  out:17
+    _build_page_props  CC=6  out:12
+    _render_api_client  CC=8  out:18
+    _render_app  CC=3  out:12
+    _render_data_source  CC=9  out:21
+    _render_database  CC=5  out:12
+    _render_deploy  CC=5  out:11
+    _render_document  CC=7  out:20
+    _render_entity  CC=4  out:10
+    _render_environment  CC=5  out:13
+  doql.exporters.markdown  [2 funcs]
+    export_markdown  CC=1  out:10
+    export_markdown_file  CC=1  out:2
+  doql.exporters.markdown.sections  [8 funcs]
+    _config_section  CC=3  out:4
+    _document_section  CC=1  out:1
+    _entity_section  CC=5  out:9
+    _field_type_str  CC=7  out:7
+    _h  CC=1  out:0
+    _interface_section  CC=8  out:10
+    _report_section  CC=1  out:1
+    _workflow_section  CC=9  out:12
+  doql.exporters.markdown.writers  [11 funcs]
+    _write_data_sources  CC=5  out:7
+    _write_deployment  CC=4  out:5
+    _write_documents  CC=1  out:1
+    _write_entities  CC=1  out:1
+    _write_header  CC=3  out:6
+    _write_integrations  CC=3  out:4
+    _write_interfaces  CC=1  out:1
+    _write_reports  CC=1  out:1
+    _write_roles  CC=5  out:5
+    _write_section  CC=3  out:5
+  doql.exporters.yaml_exporter  [3 funcs]
+    export_yaml  CC=1  out:2
+    export_yaml_file  CC=1  out:2
+    spec_to_dict  CC=1  out:2
+  doql.generators.api_gen  [5 funcs]
+    _write_alembic_files  CC=1  out:8
+    _write_api_files  CC=3  out:10
+    _write_api_readme  CC=3  out:6
+    export_openapi  CC=2  out:2
+    generate  CC=2  out:6
+  doql.generators.api_gen.alembic  [4 funcs]
+    _entity_table_columns  CC=10  out:11
+    gen_alembic_env  CC=1  out:0
+    gen_alembic_ini  CC=1  out:1
+    gen_initial_migration  CC=3  out:12
+  doql.generators.api_gen.auth  [1 funcs]
+    gen_auth  CC=7  out:5
+  doql.generators.api_gen.common  [5 funcs]
+    py_default  CC=6  out:1
+    py_type  CC=4  out:1
+    sa_type  CC=1  out:1
+    safe_name  CC=2  out:1
+    snake  CC=1  out:3
+  doql.generators.api_gen.database  [1 funcs]
+    gen_database  CC=1  out:2
+  doql.generators.api_gen.main  [2 funcs]
+    gen_main  CC=1  out:1
+    gen_requirements  CC=2  out:1
+  doql.generators.api_gen.models  [2 funcs]
+    _gen_column_def  CC=10  out:10
+    gen_models  CC=7  out:11
+  doql.generators.api_gen.routes  [6 funcs]
+    _gen_create_route  CC=1  out:0
+    _gen_entity_routes  CC=1  out:11
+    _gen_get_route  CC=1  out:0
+    _gen_list_route  CC=1  out:0
+    _gen_update_route  CC=1  out:0
+    gen_routes  CC=2  out:3
+  doql.generators.api_gen.schemas  [5 funcs]
+    _gen_create_schema  CC=6  out:5
+    _gen_entity_schemas  CC=1  out:7
+    _gen_response_schema  CC=10  out:7
+    _gen_update_schema  CC=7  out:4
+    gen_schemas  CC=2  out:3
+  doql.generators.ci_gen  [2 funcs]
+    _gen_github_action  CC=1  out:1
+    generate  CC=1  out:4
+  doql.generators.desktop_gen  [1 funcs]
+    _gen_package_json  CC=1  out:2
+  doql.generators.document_gen  [3 funcs]
+    _gen_preview_html  CC=6  out:8
+    _gen_render_script  CC=2  out:1
+    generate  CC=5  out:11
+  doql.generators.i18n_gen  [3 funcs]
+    _gen_translations  CC=6  out:8
+    _humanize  CC=1  out:3
+    generate  CC=4  out:12
+  doql.generators.infra_gen  [7 funcs]
+    _gen_docker_compose  CC=8  out:20
+    _gen_kiosk  CC=1  out:8
+    _gen_migration_spec  CC=6  out:9
+    _gen_quadlet  CC=4  out:18
+    _map_deploy_strategy  CC=1  out:1
+    _slug  CC=1  out:3
+    generate  CC=4  out:5
+  doql.generators.integrations_gen  [7 funcs]
+    _gen_api_client  CC=4  out:5
+    _gen_webhook_dispatcher  CC=5  out:20
+    _generate_api_clients  CC=2  out:3
+    _generate_integration_services  CC=8  out:14
+    _generate_webhooks  CC=2  out:3
+    _setup_services_dir  CC=1  out:2
+    generate  CC=6  out:6
+  doql.generators.mobile_gen  [5 funcs]
+    _gen_icons  CC=3  out:5
+    _gen_manifest  CC=1  out:2
+    _gen_service_worker  CC=1  out:2
+    _slug  CC=2  out:3
+    generate  CC=5  out:21
+  doql.generators.report_gen  [2 funcs]
+    _gen_report_script  CC=7  out:3
+    generate  CC=9  out:12
+  doql.generators.utils.codegen  [2 funcs]
+    generate_file_from_template  CC=2  out:5
+    write_code_block  CC=1  out:3
+  doql.generators.web_gen  [8 funcs]
+    _setup_web_directories  CC=2  out:1
+    _write_component_files  CC=1  out:3
+    _write_config_files  CC=2  out:9
+    _write_core_files  CC=1  out:9
+    _write_page_files  CC=2  out:6
+    _write_pwa_files  CC=3  out:9
+    _write_readme  CC=3  out:3
+    generate  CC=6  out:10
+  doql.generators.web_gen.components  [1 funcs]
+    _gen_layout  CC=2  out:5
+  doql.generators.web_gen.config  [5 funcs]
+    _gen_index_html  CC=1  out:1
+    _gen_postcss_config  CC=1  out:1
+    _gen_tailwind_config  CC=1  out:1
+    _gen_tsconfig  CC=1  out:1
+    _gen_vite_config  CC=1  out:1
+  doql.generators.web_gen.core  [3 funcs]
+    _gen_api_ts  CC=1  out:1
+    _gen_index_css  CC=1  out:1
+    _gen_main_tsx  CC=1  out:1
+  doql.generators.web_gen.pages  [4 funcs]
+    _build_interface_body  CC=4  out:4
+    _field_input  CC=7  out:0
+    _gen_dashboard  CC=3  out:8
+    _gen_entity_page  CC=10  out:9
+  doql.generators.web_gen.pwa  [3 funcs]
+    _gen_manifest  CC=1  out:1
+    _gen_service_worker  CC=1  out:3
+    _gen_sw_register  CC=1  out:1
+  doql.generators.web_gen.router  [1 funcs]
+    _gen_app  CC=3  out:9
+  doql.generators.workflow_gen  [7 funcs]
+    _extract_cron  CC=4  out:3
+    _gen_engine  CC=1  out:1
+    _gen_init  CC=2  out:5
+    _gen_scheduler  CC=8  out:5
+    _gen_workflow_module  CC=7  out:11
+    _step_fn_name  CC=1  out:6
+    generate  CC=3  out:16
+  doql.importers.yaml_importer  [11 funcs]
+    _build_entity  CC=2  out:5
+    _build_entity_field  CC=1  out:8
+    _build_interface  CC=2  out:10
+    _build_page  CC=1  out:5
+    _build_workflow  CC=2  out:6
+    _build_workflow_step  CC=1  out:3
+    _import_collection  CC=2  out:4
+    _import_metadata  CC=1  out:5
+    import_yaml  CC=3  out:15
+    import_yaml_file  CC=1  out:2
+  doql.integrations.op3_bridge  [7 funcs]
+    make_scanner  CC=2  out:3
+    make_ssh_context  CC=1  out:1
+    op3_available  CC=2  out:0
+    op3_enabled  CC=1  out:3
+    require_op3  CC=2  out:2
+    should_use_op3  CC=2  out:2
+    snapshot_to_less  CC=1  out:2
+  doql.lsp_server  [14 funcs]
+    _diagnostics_for  CC=10  out:26
+    _find_line_col  CC=3  out:3
+    _hover_entity  CC=7  out:5
+    _hover_field  CC=5  out:8
+    _on_text_document_event  CC=1  out:3
+    _parse_doc  CC=2  out:1
+    _word_at  CC=8  out:5
+    completion  CC=5  out:12
+    definition  CC=3  out:15
+    did_change  CC=1  out:2
+  doql.parsers  [4 funcs]
+    _is_css_format  CC=2  out:3
+    detect_doql_file  CC=3  out:1
+    parse_file  CC=3  out:6
+    parse_text  CC=3  out:6
+  doql.parsers.blocks  [2 funcs]
+    apply_block  CC=2  out:3
+    split_blocks  CC=4  out:15
+  doql.parsers.css_mappers  [16 funcs]
+    _add_entity_field  CC=2  out:3
+    _add_interface_page  CC=7  out:4
+    _append_inline_steps  CC=3  out:5
+    _apply_interface_properties  CC=6  out:6
+    _apply_nested_interface_children  CC=3  out:2
+    _find_or_create_interface  CC=4  out:3
+    _handle_interface_chain  CC=5  out:2
+    _map_config_block  CC=4  out:9
+    _map_document  CC=1  out:1
+    _map_entity  CC=9  out:7
+  doql.parsers.css_parser  [6 funcs]
+    _apply_css_block  CC=8  out:14
+    _detect_format  CC=3  out:3
+    _map_to_spec  CC=3  out:5
+    _parse_selector  CC=4  out:9
+    parse_css_file  CC=2  out:5
+    parse_css_text  CC=3  out:6
+  doql.parsers.css_tokenizer  [5 funcs]
+    _consume_pending  CC=1  out:3
+    _make_css_block  CC=2  out:3
+    _parse_declarations  CC=11  out:13
+    _process_decl_line  CC=7  out:11
+    _tokenise_css  CC=9  out:9
+  doql.parsers.css_transformers  [14 funcs]
+    _close_indent_blocks  CC=3  out:3
+    _convert_indent_to_braces  CC=9  out:27
+    _expand_includes  CC=5  out:7
+    _extract_mixins  CC=6  out:8
+    _find_step_block_end  CC=7  out:10
+    _has_bracket_selector  CC=4  out:3
+    _is_doql_property_decl  CC=1  out:3
+    _is_selector_line  CC=11  out:11
+    _is_selector_starter  CC=8  out:9
+    _is_step_line  CC=1  out:2
+  doql.parsers.css_utils  [3 funcs]
+    _parse_list  CC=3  out:6
+    _strip_comments  CC=1  out:2
+    _strip_quotes  CC=4  out:1
+  doql.parsers.extractors  [13 funcs]
+    _extract_page_from_format1  CC=5  out:15
+    _extract_page_from_format2  CC=6  out:21
+    _parse_field_default  CC=2  out:2
+    _parse_field_flags  CC=1  out:3
+    _parse_field_ref  CC=2  out:2
+    _parse_field_type  CC=1  out:1
+    _should_skip_line  CC=4  out:1
+    collect_env_refs  CC=1  out:3
+    extract_entity_fields  CC=5  out:14
+    extract_list  CC=4  out:7
+  doql.parsers.registry  [23 funcs]
+    _handle_api_client  CC=3  out:13
+    _handle_app  CC=2  out:4
+    _handle_data  CC=2  out:14
+    _handle_database  CC=2  out:10
+    _handle_deploy  CC=6  out:7
+    _handle_document  CC=4  out:11
+    _handle_domain  CC=1  out:2
+    _handle_entity  CC=1  out:8
+    _handle_import_block  CC=2  out:5
+    _handle_integration  CC=1  out:5
+  doql.parsers.validators  [8 funcs]
+    _validate_app_name  CC=3  out:2
+    _validate_document_partials  CC=5  out:2
+    _validate_document_templates  CC=1  out:1
+    _validate_entity_refs  CC=6  out:2
+    _validate_env_refs  CC=6  out:5
+    _validate_file_refs  CC=4  out:6
+    _validate_template_files  CC=1  out:1
+    validate  CC=2  out:18
+  doql.utils.clean  [1 funcs]
+    _clean  CC=9  out:5
+  doql.utils.naming  [2 funcs]
+    kebab  CC=1  out:2
+    snake  CC=1  out:4
+  playground.app  [5 funcs]
+    activateTab  CC=4  out:5
+    initial  CC=2  out:1
+    key  CC=3  out:2
+    name  CC=2  out:1
+    updateStats  CC=1  out:1
+  playground.pyodide-bridge  [6 funcs]
+    _createBuildFunction  CC=2  out:5
+    _installDoql  CC=1  out:6
+    _loadPyodide  CC=1  out:1
+    bootPyodide  CC=3  out:5
+    buildFn  CC=1  out:0
+    executeBuild  CC=7  out:8
+  playground.renderers  [6 funcs]
+    escapeHtml  CC=1  out:2
+    keys  CC=3  out:2
+    renderDiagnostics  CC=3  out:3
+    renderEnv  CC=7  out:7
+    renderFatal  CC=1  out:1
+    renderFiles  CC=2  out:3
+  plugins.doql-plugin-erp.doql_plugin_erp  [6 funcs]
+    _mapping_module  CC=1  out:1
+    _odoo_client_module  CC=1  out:1
+    _readme  CC=1  out:1
+    _sync_module  CC=1  out:1
+    _webhook_module  CC=1  out:1
+    generate  CC=2  out:8
+  plugins.doql-plugin-fleet.doql_plugin_fleet  [2 funcs]
+    _readme  CC=1  out:1
+    generate  CC=2  out:9
+  plugins.doql-plugin-fleet.doql_plugin_fleet.device_registry  [1 funcs]
+    _device_registry_module  CC=1  out:1
+  plugins.doql-plugin-fleet.doql_plugin_fleet.metrics  [1 funcs]
+    _metrics_module  CC=1  out:1
+  plugins.doql-plugin-fleet.doql_plugin_fleet.migration  [1 funcs]
+    _migration_module  CC=1  out:1
+  plugins.doql-plugin-fleet.doql_plugin_fleet.ota  [1 funcs]
+    _ota_module  CC=1  out:1
+  plugins.doql-plugin-fleet.doql_plugin_fleet.tenant  [1 funcs]
+    _tenant_module  CC=1  out:1
+  plugins.doql-plugin-gxp.doql_plugin_gxp  [6 funcs]
+    _audit_log_module  CC=1  out:1
+    _audit_middleware  CC=1  out:1
+    _e_signature_module  CC=1  out:1
+    _migration_audit  CC=1  out:1
+    _readme  CC=1  out:1
+    generate  CC=2  out:8
+  plugins.doql-plugin-iso17025.doql_plugin_iso17025  [1 funcs]
+    generate  CC=1  out:2
+  plugins.doql-plugin-shared.doql_plugin_shared.base  [1 funcs]
+    plugin_generate  CC=3  out:6
+  plugins.doql-plugin-shared.doql_plugin_shared.readme  [1 funcs]
+    generate_readme  CC=3  out:1
+
+EDGES:
+  playground.pyodide-bridge.executeBuild → playground.pyodide-bridge.buildFn
+  playground.pyodide-bridge.bootPyodide → playground.pyodide-bridge._loadPyodide
+  playground.pyodide-bridge.bootPyodide → playground.pyodide-bridge._installDoql
+  playground.pyodide-bridge.bootPyodide → playground.pyodide-bridge._createBuildFunction
+  playground.pyodide-bridge.bootPyodide → playground.pyodide-bridge.executeBuild
+  playground.renderers.renderFatal → playground.renderers.escapeHtml
+  playground.renderers.renderDiagnostics → playground.renderers.escapeHtml
+  playground.renderers.renderEnv → playground.renderers.keys
+  playground.renderers.renderFiles → playground.renderers.escapeHtml
+  playground.app.name → playground.app.activateTab
+  playground.app.initial → playground.app.activateTab
+  playground.app.key → playground.app.updateStats
+  doql.drift.detector.parse_intended → doql.integrations.op3_bridge.require_op3
+  doql.drift.detector.detect_drift → doql.integrations.op3_bridge.require_op3
+  doql.drift.detector.detect_drift → doql.drift.detector.parse_intended
+  doql.drift.detector.detect_drift → doql.adopt.device_scanner.adopt_from_device_to_snapshot
+  doql.drift.detector.detect_drift → doql.drift.detector.find_intended_file
+  plugins.doql-plugin-fleet.doql_plugin_fleet.generate → plugins.doql-plugin-fleet.doql_plugin_fleet.tenant._tenant_module
+  plugins.doql-plugin-fleet.doql_plugin_fleet.generate → plugins.doql-plugin-fleet.doql_plugin_fleet.device_registry._device_registry_module
+  plugins.doql-plugin-fleet.doql_plugin_fleet.generate → plugins.doql-plugin-fleet.doql_plugin_fleet.metrics._metrics_module
+  plugins.doql-plugin-fleet.doql_plugin_fleet.generate → plugins.doql-plugin-fleet.doql_plugin_fleet.ota._ota_module
+  plugins.doql-plugin-fleet.doql_plugin_fleet.generate → plugins.doql-plugin-fleet.doql_plugin_fleet.migration._migration_module
+  plugins.doql-plugin-fleet.doql_plugin_fleet.generate → plugins.doql-plugin-fleet.doql_plugin_fleet._readme
+  doql.cli.lockfile.spec_section_hashes → doql.exporters.markdown.sections._h
+  doql.cli.lockfile.spec_section_hashes → doql.cli.lockfile._simple_items_hash
+  doql.cli.lockfile.write_lockfile → doql.cli.lockfile.spec_section_hashes
+  doql.importers.yaml_importer._build_entity → doql.importers.yaml_importer._build_entity_field
+  doql.importers.yaml_importer._build_interface → doql.importers.yaml_importer._build_page
+  doql.importers.yaml_importer._build_workflow → doql.importers.yaml_importer._build_workflow_step
+  doql.importers.yaml_importer.import_yaml → doql.importers.yaml_importer._import_metadata
+  doql.importers.yaml_importer.import_yaml → doql.importers.yaml_importer._import_collection
+  doql.importers.yaml_importer.import_yaml_text → doql.importers.yaml_importer.import_yaml
+  doql.importers.yaml_importer.import_yaml_file → doql.importers.yaml_importer.import_yaml_text
+  doql.lsp_server._diagnostics_for → doql.lsp_server._parse_doc
+  doql.lsp_server._on_text_document_event → doql.lsp_server._diagnostics_for
+  doql.lsp_server.did_open → doql.lsp_server._on_text_document_event
+  doql.lsp_server.did_change → doql.lsp_server._on_text_document_event
+  doql.lsp_server.did_save → doql.lsp_server._on_text_document_event
+  doql.lsp_server.completion → doql.lsp_server._parse_doc
+  doql.lsp_server._hover_entity → doql.lsp_server._hover_field
+  doql.lsp_server.hover → doql.lsp_server._word_at
+  doql.lsp_server.hover → doql.lsp_server._parse_doc
+  doql.lsp_server.hover → doql.lsp_server._hover_entity
+  doql.lsp_server.definition → doql.lsp_server._word_at
+  doql.lsp_server.document_symbols → doql.lsp_server._parse_doc
+  doql.lsp_server.document_symbols → doql.lsp_server._find_line_col
+  doql.cli.main.main → doql.cli.main.create_parser
+  doql.cli.commands.validate.cmd_validate → doql.cli.commands.validate._print_issues
+  doql.cli.commands.validate.cmd_validate → doql.parsers.detect_doql_file
+  doql.cli.sync.run_generators → doql.cli.sync._run_interface_generators
 ```
 
 ## Test Contracts

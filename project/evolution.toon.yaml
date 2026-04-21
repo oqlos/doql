@@ -1,4 +1,4 @@
-# code2llm/evolution | 566 func | 107f | 2026-04-20
+# code2llm/evolution | 596 func | 111f | 2026-04-21
 
 NEXT[1] (ranked by impact):
   [1] !! SPLIT           doql/cli/commands/workspace.py
@@ -41,4 +41,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=3.6 → now CC̄=3.5
+  prev CC̄=3.5 → now CC̄=3.5

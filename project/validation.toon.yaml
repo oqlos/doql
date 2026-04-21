@@ -1,611 +1,68 @@
-# vallm batch | 333f | 0✓ 198⚠ 0✗ | 2026-04-21
+# vallm batch | 302f | 176✓ 12⚠ 3✗ | 2026-04-18
 
 SUMMARY:
-  scanned: 333  passed: 0 (0.0%)  warnings: 198  errors: 0  unsupported: 0
+  scanned: 302  passed: 176 (58.3%)  warnings: 12  errors: 3  unsupported: 122
 
-WARNINGS[198]{path,score}:
-  plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py,0.71
-    issues[3]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
+WARNINGS[12]{path,score}:
+  vscode-doql/src/extension.ts,0.78
+    issues[2]{rule,severity,message,line}:
+      js.import.resolvable,warning,Module 'vscode' not found,2
+      js.import.resolvable,warning,Module 'vscode-languageclient/node' not found,3
+  plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py,0.93
+    issues[2]{rule,severity,message,line}:
       complexity.lizard_length,warning,_audit_log_module: 110 lines exceeds limit 100,21
       complexity.lizard_length,warning,_e_signature_module: 119 lines exceeds limit 100,133
-  tests/env_manager.py,0.71
-    issues[3]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
+  tests/env_manager.py,0.93
+    issues[4]{rule,severity,message,line}:
+      complexity.cyclomatic,warning,check_api has cyclomatic complexity 25 (max: 15),113
+      complexity.cyclomatic,warning,check_desktop has cyclomatic complexity 17 (max: 15),268
       complexity.lizard_cc,warning,check_api: CC=26 exceeds limit 15,113
       complexity.lizard_cc,warning,check_desktop: CC=17 exceeds limit 15,268
-  doql/cli/main.py,0.74
+  tests/test_runtime.py,0.96
     issues[2]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-      complexity.lizard_length,warning,create_parser: 106 lines exceeds limit 100,21
-  doql/generators/mobile_gen.py,0.74
+      complexity.cyclomatic,warning,test_api_boot_and_health has cyclomatic complexity 17 (max: 15),66
+      complexity.cyclomatic,warning,test_build_produces_expected_targets has cyclomatic complexity 33 (max: 15),169
+  doql/adopt/scanner/entities.py,0.97
     issues[2]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
+      complexity.cyclomatic,warning,scan_entities has cyclomatic complexity 16 (max: 15),36
+      complexity.lizard_cc,warning,scan_entities: CC=16 exceeds limit 15,36
+  doql/generators/mobile_gen.py,0.97
+    issues[1]{rule,severity,message,line}:
       complexity.lizard_length,warning,_gen_style_css: 148 lines exceeds limit 100,250
-  doql/generators/workflow_gen.py,0.74
-    issues[2]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
+  doql/generators/workflow_gen.py,0.97
+    issues[1]{rule,severity,message,line}:
       complexity.lizard_length,warning,_gen_engine: 102 lines exceeds limit 100,19
-  plugins/doql-plugin-fleet/doql_plugin_fleet/device_registry.py,0.74
+  doql/parsers/css_mappers.py,0.97
     issues[2]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
+      complexity.cyclomatic,warning,_map_workflow has cyclomatic complexity 16 (max: 15),279
+      complexity.lizard_cc,warning,_map_workflow: CC=16 exceeds limit 15,279
+  plugins/doql-plugin-fleet/doql_plugin_fleet/device_registry.py,0.97
+    issues[1]{rule,severity,message,line}:
       complexity.lizard_length,warning,_device_registry_module: 124 lines exceeds limit 100,7
-  plugins/doql-plugin-iso17025/doql_plugin_iso17025/certificate.py,0.74
-    issues[2]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
+  plugins/doql-plugin-iso17025/doql_plugin_iso17025/certificate.py,0.97
+    issues[1]{rule,severity,message,line}:
       complexity.lizard_length,warning,generate: 128 lines exceeds limit 100,7
-  plugins/doql-plugin-iso17025/doql_plugin_iso17025/uncertainty.py,0.74
-    issues[2]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
+  plugins/doql-plugin-iso17025/doql_plugin_iso17025/uncertainty.py,0.97
+    issues[1]{rule,severity,message,line}:
       complexity.lizard_length,warning,generate: 119 lines exceeds limit 100,7
-  .pyqual/runtime_errors.json,0.78
+  tests/test_exporters.py,0.98
     issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse JSON: Download error: Language 'JSON' not available for download. Available groups: [""all""]",
-  doql.sh,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse BASH: Download error: Language 'BASH' not available for download. Available groups: [""all""]",
-  doql/__init__.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/adopt/__init__.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/adopt/device_scanner.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/adopt/emitter.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/adopt/scanner.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/adopt/scanner/__init__.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/adopt/scanner/databases.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/adopt/scanner/deploy.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/adopt/scanner/entities.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/adopt/scanner/environments.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/adopt/scanner/integrations.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/adopt/scanner/interfaces.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/adopt/scanner/metadata.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/adopt/scanner/roles.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/adopt/scanner/utils.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/adopt/scanner/workflows.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli/__init__.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli/__main__.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli/build.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli/commands/__init__.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli/commands/adopt.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli/commands/deploy.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli/commands/docs.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli/commands/doctor.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli/commands/drift.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli/commands/export.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli/commands/generate.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli/commands/import_cmd.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli/commands/init.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli/commands/kiosk.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli/commands/plan.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli/commands/publish.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli/commands/quadlet.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli/commands/query.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli/commands/render.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli/commands/run.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli/commands/validate.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli/commands/workspace.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli/context.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli/lockfile.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/cli/sync.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/drift/__init__.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/drift/detector.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/exporters/__init__.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/exporters/css/__init__.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/exporters/css/format_convert.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/exporters/css/helpers.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/exporters/css/renderers.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/exporters/css_exporter.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/exporters/markdown/__init__.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/exporters/markdown/sections.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/exporters/markdown/writers.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/exporters/markdown_exporter.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/exporters/yaml_exporter.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/__init__.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/api_gen.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/api_gen/__init__.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/api_gen/alembic.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/api_gen/auth.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/api_gen/common.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/api_gen/database.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/api_gen/main.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/api_gen/models.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/api_gen/routes.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/api_gen/schemas.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/ci_gen.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/deploy.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/desktop_gen.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/docs_gen.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/document_gen.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/export_postman.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/export_ts_sdk.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/i18n_gen.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/infra_gen.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/integrations_gen.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/report_gen.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/utils/codegen.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/web_gen.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/web_gen/__init__.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/web_gen/common.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/web_gen/components.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/web_gen/config.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/web_gen/core.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/web_gen/pages.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/web_gen/pwa.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/generators/web_gen/router.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/importers/__init__.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/importers/yaml_importer.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/integrations/__init__.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/integrations/op3_bridge.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/lsp_server.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/parser.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/parsers/__init__.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/parsers/blocks.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/parsers/css_mappers.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/parsers/css_parser.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/parsers/css_tokenizer.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/parsers/css_transformers.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/parsers/css_utils.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/parsers/extractors.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/parsers/models.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/parsers/registry.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/parsers/validators.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/plugins.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/utils/__init__.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/utils/clean.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  doql/utils/naming.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  examples/asset-management/.pyqual/runtime_errors.json,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse JSON: Download error: Language 'JSON' not available for download. Available groups: [""all""]",
-  examples/asset-management/pyqual.yaml,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse YAML: Download error: Language 'YAML' not available for download. Available groups: [""all""]",
-  examples/blog-cms/.pyqual/runtime_errors.json,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse JSON: Download error: Language 'JSON' not available for download. Available groups: [""all""]",
-  examples/blog-cms/pyqual.yaml,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse YAML: Download error: Language 'YAML' not available for download. Available groups: [""all""]",
-  examples/calibration-lab/.pyqual/runtime_errors.json,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse JSON: Download error: Language 'JSON' not available for download. Available groups: [""all""]",
-  examples/calibration-lab/pyqual.yaml,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse YAML: Download error: Language 'YAML' not available for download. Available groups: [""all""]",
-  examples/crm-contacts/.pyqual/runtime_errors.json,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse JSON: Download error: Language 'JSON' not available for download. Available groups: [""all""]",
-  examples/crm-contacts/pyqual.yaml,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse YAML: Download error: Language 'YAML' not available for download. Available groups: [""all""]",
-  examples/document-generator/.pyqual/runtime_errors.json,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse JSON: Download error: Language 'JSON' not available for download. Available groups: [""all""]",
-  examples/document-generator/data/customers.json,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse JSON: Download error: Language 'JSON' not available for download. Available groups: [""all""]",
-  examples/document-generator/data/organization.json,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse JSON: Download error: Language 'JSON' not available for download. Available groups: [""all""]",
-  examples/document-generator/pyqual.yaml,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse YAML: Download error: Language 'YAML' not available for download. Available groups: [""all""]",
-  examples/e-commerce-shop/pyqual.yaml,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse YAML: Download error: Language 'YAML' not available for download. Available groups: [""all""]",
-  examples/iot-fleet/pyqual.yaml,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse YAML: Download error: Language 'YAML' not available for download. Available groups: [""all""]",
-  examples/kiosk-station/pyqual.yaml,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse YAML: Download error: Language 'YAML' not available for download. Available groups: [""all""]",
-  examples/notes-app/pyqual.yaml,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse YAML: Download error: Language 'YAML' not available for download. Available groups: [""all""]",
-  examples/todo-pwa/pyqual.yaml,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse YAML: Download error: Language 'YAML' not available for download. Available groups: [""all""]",
-  goal.yaml,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse YAML: Download error: Language 'YAML' not available for download. Available groups: [""all""]",
-  playground/app.js,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse JAVASCRIPT: Download error: Language 'JAVASCRIPT' not available for download. Available groups: [""all""]",
-  playground/doql_build.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  playground/pyodide-bridge.js,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse JAVASCRIPT: Download error: Language 'JAVASCRIPT' not available for download. Available groups: [""all""]",
-  playground/renderers.js,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse JAVASCRIPT: Download error: Language 'JAVASCRIPT' not available for download. Available groups: [""all""]",
-  playground/serve.sh,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse BASH: Download error: Language 'BASH' not available for download. Available groups: [""all""]",
-  plugins/doql-plugin-erp/doql_plugin_erp/__init__.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  plugins/doql-plugin-erp/pyproject.toml,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse TOML: Download error: Language 'TOML' not available for download. Available groups: [""all""]",
-  plugins/doql-plugin-erp/sumd.json,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse JSON: Download error: Language 'JSON' not available for download. Available groups: [""all""]",
-  plugins/doql-plugin-fleet/doql_plugin_fleet/__init__.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  plugins/doql-plugin-fleet/doql_plugin_fleet/metrics.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  plugins/doql-plugin-fleet/doql_plugin_fleet/migration.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  plugins/doql-plugin-fleet/doql_plugin_fleet/ota.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  plugins/doql-plugin-fleet/doql_plugin_fleet/tenant.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  plugins/doql-plugin-fleet/pyproject.toml,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse TOML: Download error: Language 'TOML' not available for download. Available groups: [""all""]",
-  plugins/doql-plugin-fleet/sumd.json,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse JSON: Download error: Language 'JSON' not available for download. Available groups: [""all""]",
-  plugins/doql-plugin-gxp/pyproject.toml,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse TOML: Download error: Language 'TOML' not available for download. Available groups: [""all""]",
-  plugins/doql-plugin-gxp/sumd.json,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse JSON: Download error: Language 'JSON' not available for download. Available groups: [""all""]",
-  plugins/doql-plugin-iso17025/doql_plugin_iso17025/__init__.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  plugins/doql-plugin-iso17025/doql_plugin_iso17025/drift_monitor.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  plugins/doql-plugin-iso17025/doql_plugin_iso17025/migration.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  plugins/doql-plugin-iso17025/doql_plugin_iso17025/traceability.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  plugins/doql-plugin-iso17025/pyproject.toml,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse TOML: Download error: Language 'TOML' not available for download. Available groups: [""all""]",
-  plugins/doql-plugin-iso17025/sumd.json,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse JSON: Download error: Language 'JSON' not available for download. Available groups: [""all""]",
-  plugins/doql-plugin-shared/doql_plugin_shared/__init__.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  plugins/doql-plugin-shared/doql_plugin_shared/base.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  plugins/doql-plugin-shared/doql_plugin_shared/readme.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  plugins/doql-plugin-shared/pyproject.toml,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse TOML: Download error: Language 'TOML' not available for download. Available groups: [""all""]",
-  plugins/doql-plugin-shared/sumd.json,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse JSON: Download error: Language 'JSON' not available for download. Available groups: [""all""]",
-  project.sh,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse BASH: Download error: Language 'BASH' not available for download. Available groups: [""all""]",
-  project/calls.yaml,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse YAML: Download error: Language 'YAML' not available for download. Available groups: [""all""]",
-  pyproject.toml,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse TOML: Download error: Language 'TOML' not available for download. Available groups: [""all""]",
-  pyqual.yaml,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse YAML: Download error: Language 'YAML' not available for download. Available groups: [""all""]",
-  sumd.json,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse JSON: Download error: Language 'JSON' not available for download. Available groups: [""all""]",
-  tests/__init__.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  tests/integration/__init__.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  tests/integration/test_adopt_from_device.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  tests/integration/test_drift.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  tests/integration/test_op3_bridge.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  tests/playground_e2e.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  tests/runtime_all_examples.sh,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse BASH: Download error: Language 'BASH' not available for download. Available groups: [""all""]",
-  tests/runtime_deploy.sh,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse BASH: Download error: Language 'BASH' not available for download. Available groups: [""all""]",
-  tests/runtime_smoke.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  tests/test_adopt.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  tests/test_css_parser.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  tests/test_exporters.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  tests/test_exporters_shims.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  tests/test_generators.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  tests/test_lsp.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  tests/test_parser.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  tests/test_parser_benchmark.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  tests/test_plugins.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  tests/test_runtime.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  tests/test_workspace.py,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse PYTHON: Download error: Language 'PYTHON' not available for download. Available groups: [""all""]",
-  tree.sh,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse BASH: Download error: Language 'BASH' not available for download. Available groups: [""all""]",
-  vscode-doql/language-configuration.json,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse JSON: Download error: Language 'JSON' not available for download. Available groups: [""all""]",
-  vscode-doql/package-lock.json,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse JSON: Download error: Language 'JSON' not available for download. Available groups: [""all""]",
-  vscode-doql/package.json,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse JSON: Download error: Language 'JSON' not available for download. Available groups: [""all""]",
-  vscode-doql/src/extension.ts,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse TYPESCRIPT: Download error: Language 'TYPESCRIPT' not available for download. Available groups: [""all""]",
-  vscode-doql/syntaxes/doql-css.tmLanguage.json,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse JSON: Download error: Language 'JSON' not available for download. Available groups: [""all""]",
-  vscode-doql/syntaxes/doql.tmLanguage.json,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse JSON: Download error: Language 'JSON' not available for download. Available groups: [""all""]",
-  vscode-doql/test/vscode-doql.test.js,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse JAVASCRIPT: Download error: Language 'JAVASCRIPT' not available for download. Available groups: [""all""]",
-  vscode-doql/tsconfig.json,0.78
-    issues[1]{rule,severity,message,line}:
-      syntax.unsupported,warning,"Could not parse JSON: Download error: Language 'JSON' not available for download. Available groups: [""all""]",
+      complexity.maintainability,warning,Low maintainability index: 16.5 (threshold: 20),
 
+ERRORS[3]{path,score}:
+  doql/adopt/scanner/interfaces.py,0.88
+    issues[2]{rule,severity,message,line}:
+      python.import.resolvable,error,Module 'tomli' not found,80
+      python.import.resolvable,error,Module 'tomli' not found,159
+  tests/test_lsp.py,0.91
+    issues[1]{rule,severity,message,line}:
+      python.import.resolvable,error,Module 'lsprotocol' not found,39
+  doql/adopt/scanner/metadata.py,0.93
+    issues[1]{rule,severity,message,line}:
+      python.import.resolvable,error,Module 'tomli' not found,36
+
+UNSUPPORTED[4]{bucket,count}:
+  *.md,41
+  *.txt,1
+  *.yml,16
+  other,64

@@ -1,10 +1,11 @@
-# doql-plugin-fleet | 6f 556L | python:6 | 2026-04-20
-# stats: 7 func | 0 cls | 6 mod | CC̄=1.1 | critical:0 | cycles:0
+# doql-plugin-fleet | 7f 616L | python:6,less:1 | 2026-04-21
+# stats: 7 func | 0 cls | 7 mod | CC̄=1.1 | critical:0 | cycles:0
 # alerts[5]: CC generate=2; CC _readme=1; CC _device_registry_module=1; CC _metrics_module=1; CC _migration_module=1
 # hotspots[5]: generate fan=9; _readme fan=1; _device_registry_module fan=1; _metrics_module fan=1; _migration_module fan=1
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
-M[6]:
+M[7]:
+  app.doql.less,60
   doql_plugin_fleet/__init__.py,85
   doql_plugin_fleet/device_registry.py,131
   doql_plugin_fleet/metrics.py,101

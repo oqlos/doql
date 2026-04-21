@@ -2,7 +2,7 @@
 set -e
 clear
 
-VENV="venv"
+VENV=".venv"
 PIP="$VENV/bin/pip"
 
 if [ ! -f "$PIP" ]; then
@@ -22,8 +22,6 @@ $PIP install code2llm --upgrade --quiet
 #$VENV/bin/code2llm ./ -f toon,evolution,code2logic,project-yaml -o ./project --no-chunk
 $VENV/bin/code2llm ./ -f all -o ./project --no-chunk
 #$VENV/bin/code2llm report --format all       # → all views
-rm -f project/analysis.json
-rm -f project/analysis.yaml
 
 $PIP install code2docs --upgrade --quiet
 $VENV/bin/code2docs ./ --readme-only
@@ -31,8 +29,9 @@ $VENV/bin/redup scan . --format toon --output ./project
 #$VENV/bin/redup scan . --functions-only -f toon --output ./project
 #$VENV/bin/vallm batch ./src --recursive --semantic --model qwen2.5-coder:7b
 #$VENV/bin/vallm batch --parallel .
-$VENV/bin/vallm batch . --recursive --format toon --output ./project
-$VENV/bin/prefact -a -e "examples/**"
+#$VENV/bin/vallm batch . --recursive --format toon --output ./project
+#$VENV/bin/prefact -a -e "examples/**"
+#$PIP install sumd --upgrade --quiet
 $PIP install sumd --upgrade --quiet
 $VENV/bin/sumd .
 $VENV/bin/sumr .

@@ -9,36 +9,36 @@ flowchart TD
         doql__cli__lockfile__read_lockfile["read_lockfile"]
         doql__cli__lockfile__diff_sections["diff_sections"]
         doql__cli__lockfile__write_lockfile["write_lockfile"]
+        doql__cli__main__main["main"]
         doql__cli__commands__render__cmd_render["cmd_render"]
         doql__cli__commands__validate___print_issues["_print_issues"]
         doql__cli__commands__validate__cmd_validate["cmd_validate"]
-        doql__cli__main__main["main"]
-        doql__cli__commands__init__cmd_init["cmd_init"]
+        doql__cli__sync__determine_regeneration_set["determine_regeneration_set"]
+        doql__cli__sync___run_interface_generators["_run_interface_generators"]
+        doql__cli__sync__run_generators["run_generators"]
+        doql__cli__sync__cmd_sync["cmd_sync"]
         doql__cli__commands__export__cmd_export["cmd_export"]
-        doql__cli__commands__plan___print_header["_print_header"]
-        doql__cli__commands__plan___print_entities["_print_entities"]
-        doql__cli__commands__plan___print_data_sources["_print_data_sources"]
-        doql__cli__commands__plan___print_documents["_print_documents"]
-        ...["+87 more"]
+        doql__cli__commands__init__cmd_init["cmd_init"]
+        ...["+96 more"]
     end
 
     subgraph Core
         doql__usage["usage"]
-        plugins__doql_plugin_gxp__doql_plugin_gxp__generate["generate"]
-        plugins__doql_plugin_iso17025__doql_plugin_iso17025__uncertainty__generate["generate"]
         plugins__doql_plugin_iso17025__doql_plugin_iso17025__drift_monitor__generate["generate"]
-        playground__renderers__renderFatal["renderFatal"]
-        playground__renderers__renderDiagnostics["renderDiagnostics"]
-        playground__renderers__loc["loc"]
-        playground__renderers__renderAst["renderAst"]
-        playground__renderers__renderEnv["renderEnv"]
-        playground__renderers__refs["refs"]
-        playground__renderers__marker["marker"]
-        playground__renderers__renderFiles["renderFiles"]
         playground__pyodide_bridge__pyodide["pyodide"]
         playground__pyodide_bridge__debounceTimer["debounceTimer"]
         playground__pyodide_bridge__initElements["initElements"]
-        ...["+119 more"]
+        playground__pyodide_bridge__isReady["isReady"]
+        playground__pyodide_bridge__debouncedBuild["debouncedBuild"]
+        playground__pyodide_bridge__r["r"]
+        playground__pyodide_bridge__resp["resp"]
+        playground__pyodide_bridge__src["src"]
+        playground__pyodide_bridge__bootPyodide["bootPyodide"]
+        playground__pyodide_bridge__version["version"]
+        playground__renderers__renderFatal["renderFatal"]
+        playground__renderers__renderDiagnostics["renderDiagnostics"]
+        playground__renderers__loc["loc"]
+        ...["+121 more"]
     end
 
     subgraph Exporters
@@ -57,4 +57,4 @@ flowchart TD
         doql__generators__api_gen__export_openapi["export_openapi"]
     end
 
-    class doql__usage,plugins__doql_plugin_gxp__doql_plugin_gxp__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__uncertainty__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__drift_monitor__generate,playground__renderers__renderFatal,playground__renderers__renderDiagnostics,playground__renderers__loc,playground__renderers__renderAst,playground__renderers__renderEnv,playground__renderers__refs entry
+    class doql__usage,plugins__doql_plugin_iso17025__doql_plugin_iso17025__drift_monitor__generate,playground__pyodide_bridge__pyodide,playground__pyodide_bridge__debounceTimer,playground__pyodide_bridge__initElements,playground__pyodide_bridge__isReady,playground__pyodide_bridge__debouncedBuild,playground__pyodide_bridge__r,playground__pyodide_bridge__resp,playground__pyodide_bridge__src entry
