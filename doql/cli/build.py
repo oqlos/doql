@@ -9,6 +9,8 @@ import sys
 import tempfile
 from typing import Callable
 
+from pathlib import Path
+
 from .. import parser as doql_parser
 from ..generators import api_gen, web_gen, mobile_gen, desktop_gen, infra_gen, document_gen, report_gen, i18n_gen, integrations_gen, workflow_gen, ci_gen
 from .. import plugins as _plugins
@@ -115,6 +117,80 @@ def run_plugins(spec, env_vars, ctx: BuildContext) -> None:
     _plugins.run_plugins(spec, env_vars, ctx.build_dir, ctx.root)
 
 
+def _scan_device_for_build(ctx: BuildContext, args) -> BuildContext:
+    """Scan a live device via op3 and rewrite the build context.
+
+    Writes the resulting ``.doql.less`` to ``<root>/app.doql.less`` (or
+    the path the user gave via the global ``-f/--file`` option) and
+    returns a new :class:`BuildContext` whose ``doql_file`` points at
+    exactly that file.
+
+    Overwriting an existing file requires ``--force`` — we inherit the
+    build command's own flag instead of introducing a second one, so the
+    user only has to remember one override switch.
+    """
+    device = args.from_device
+
+    # Resolve the target file path. When the user passed an explicit
+    # ``-f/--file`` (global flag) we honour it; otherwise we land on
+    # ``<root>/app.doql.less`` which is the convention `doql adopt`
+    # already uses.
+    explicit_file = getattr(args, "file", None)
+    if explicit_file:
+        scan_output = (ctx.root / explicit_file).resolve()
+    else:
+        scan_output = (ctx.root / "app.doql.less").resolve()
+
+    # Refuse to clobber unless the user explicitly asked for it.
+    if scan_output.exists() and not getattr(args, "force", False):
+        print(
+            f"⚠️  {scan_output.name} already exists. Use --force to overwrite "
+            f"with the scanned state from {device}.",
+            file=sys.stderr,
+        )
+        raise SystemExit(1)
+
+    # Lazy import — keeps the build path cheap when --from-device isn't used.
+    try:
+        from ..adopt.device_scanner import adopt_from_device
+    except ImportError as exc:  # pragma: no cover — defensive
+        print(f"❌ Failed to import device scanner: {exc}", file=sys.stderr)
+        raise SystemExit(1) from exc
+
+    layers = list(args.layers) if args.layers else None
+
+    print(f"🔍 Scanning device {device} via op3 …")
+    try:
+        adopt_from_device(
+            target=device,
+            ssh_key=getattr(args, "ssh_key", None),
+            layers=layers,
+            output=scan_output,
+        )
+    except RuntimeError as exc:
+        # Raised when op3 is not installed — message already carries a hint.
+        print(f"❌ {exc}", file=sys.stderr)
+        raise SystemExit(1) from exc
+
+    if not scan_output.exists() or scan_output.stat().st_size == 0:
+        print(f"❌ {scan_output.name} was not written (empty output).",
+              file=sys.stderr)
+        raise SystemExit(1)
+
+    print(f"✅ Wrote {scan_output}")
+
+    # Rebuild the context so the generator pipeline reads the scanned
+    # file explicitly (bypassing detect_doql_file, which would otherwise
+    # prefer app.doql.css if one is lying around).
+    return BuildContext(
+        root=ctx.root,
+        doql_file=scan_output,
+        env_file=ctx.env_file,
+        build_dir=ctx.build_dir,
+        target_env=ctx.target_env,
+    )
+
+
 def cmd_build(args: argparse.Namespace) -> int:
     """Generate all code for the project.
     
@@ -122,7 +198,13 @@ def cmd_build(args: argparse.Namespace) -> int:
     Validation is performed first unless --force is specified.
     """
     ctx = build_context(args)
-    
+
+    if getattr(args, "from_device", None):
+        try:
+            ctx = _scan_device_for_build(ctx, args)
+        except SystemExit as exc:
+            return int(exc.code) if exc.code is not None else 1
+
     spec, env_vars = load_spec(ctx)
     
     # Validate unless --force

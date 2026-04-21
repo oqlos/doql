@@ -50,6 +50,14 @@ def create_parser() -> argparse.ArgumentParser:
     s.add_argument("--force", action="store_true")
     s.add_argument("--no-overwrite", action="store_true",
                    help="Skip files that already exist (merge-friendly)")
+    s.add_argument("--from-device", dest="from_device", metavar="USER@HOST",
+                   help="Scan a live device first, then build from the resulting "
+                        "app.doql.less (requires doql[device-adopt])")
+    s.add_argument("--ssh-key", dest="ssh_key",
+                   help="Path to SSH private key for --from-device")
+    s.add_argument("--layers", action="append", default=None,
+                   help="Op3 layer ids to probe (repeatable). Only used with "
+                        "--from-device; see `doql adopt --help` for defaults")
     s.set_defaults(func=cmd_build)
     
     # run

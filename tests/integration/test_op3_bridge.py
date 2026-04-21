@@ -85,7 +85,8 @@ def test_build_layer_tree_explicit_leaf_pulls_deps():
 
 
 def test_build_layer_tree_rejects_unknown():
-    with pytest.raises(ValueError, match="Unknown op3 layer id"):
+    # op3 0.1.8+ raises the error upstream with a slightly different phrasing.
+    with pytest.raises(ValueError, match="Unknown built-in layer id"):
         build_layer_tree(["not.a.real.layer"])
 
 

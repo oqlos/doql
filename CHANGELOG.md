@@ -4,6 +4,20 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [1.0.7] - 2026-04-21
+
+### Docs
+- Update README.md
+
+### Test
+- Update tests/integration/test_build_from_device.py
+- Update tests/integration/test_op3_bridge.py
+
+### Other
+- Update doql/cli/build.py
+- Update doql/cli/main.py
+- Update doql/integrations/op3_bridge.py
+
 ## [1.0.6] - 2026-04-21
 
 ### Docs
