@@ -4,6 +4,24 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [1.0.11] - 2026-04-21
+
+### Docs
+- Update README.md
+- Update SUMD.md
+- Update plugins/doql-plugin-shared/SUMD.md
+
+### Other
+- Update Jenkinsfile
+- Update app.doql.css
+- Update app.doql.less
+- Update doql/generators/infra_gen.py
+- Update doql/parsers/css_mappers.py
+- Update plugins/doql-plugin-shared/project/map.toon.yaml
+- Update plugins/doql-plugin-shared/sumd.json
+- Update project/map.toon.yaml
+- Update sumd.json
+
 ## [1.0.10] - 2026-04-21
 
 ### Docs

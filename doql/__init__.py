@@ -16,7 +16,7 @@ Example:
     issues = doql.validate(spec, env_vars={"DOMAIN": "example.com"})
 """
 
-__version__ = "1.0.10"
+__version__ = "1.0.11"
 
 # Re-export stable public API from parsers
 from doql.parsers import (

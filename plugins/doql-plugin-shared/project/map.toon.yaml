@@ -1,6 +1,6 @@
 # doql-plugin-shared | 4f 140L | python:3,less:1 | 2026-04-21
-# stats: 2 func | 0 cls | 4 mod | CC̄=2.0 | critical:0 | cycles:0
-# alerts[5]: CC plugin_generate=3; CC generate_readme=1; fan-out plugin_generate=4; fan-out generate_readme=1
+# stats: 2 func | 0 cls | 4 mod | CC̄=3.0 | critical:0 | cycles:0
+# alerts[5]: CC plugin_generate=3; CC generate_readme=3; fan-out plugin_generate=4; fan-out generate_readme=1
 # hotspots[5]: plugin_generate fan=4; generate_readme fan=1
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods

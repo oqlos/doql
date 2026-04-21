@@ -620,6 +620,10 @@ def generate(spec: DoqlSpec, env_vars: dict[str, str], out: pathlib.Path) -> Non
     # Fallback to legacy deploy.target if no Infrastructure blocks declared
     if not infra_types:
         infra_types = {spec.deploy.target}
+    # Also include legacy docker target so docker-compose still emits
+    # alongside new Infrastructure blocks (backward compat)
+    elif spec.deploy.target in ("docker", "docker-compose"):
+        infra_types.add("docker-compose")
 
     for itype in infra_types:
         if itype in ("docker-compose", "docker"):

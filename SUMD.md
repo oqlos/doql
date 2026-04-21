@@ -23,7 +23,7 @@ Declarative OQL — build complete applications from a single .doql file
 ## Metadata
 
 - **name**: `doql`
-- **version**: `1.0.7`
+- **version**: `1.0.10`
 - **python_requires**: `>=3.10`
 - **license**: Apache-2.0
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
@@ -43,7 +43,7 @@ SUMD (description) → DOQL/source (code) → taskfile (automation) → testql (
 
 app {
   name: doql;
-  version: 0.1.2;
+  version: 1.0.10;
 }
 
 interface[type="cli"] {
@@ -55,12 +55,34 @@ interface[type="cli"] page[name="doql"] {
 
 workflow[name="install"] {
   trigger: manual;
-  step-1: run cmd=pip install -e .[dev];
+  step-1: run cmd=pip install -e plugins/doql-plugin-shared -e plugins/doql-plugin-gxp -e plugins/doql-plugin-iso17025 -e plugins/doql-plugin-fleet -e plugins/doql-plugin-erp -e .[dev];
+}
+
+workflow[name="deps:update"] {
+  trigger: manual;
+  step-1: run cmd=PIP="pip"
+[ -f "{{.PWD}}/.venv/bin/pip" ] && PIP="{{.PWD}}/.venv/bin/pip"
+$PIP install --upgrade pip
+OUTDATED=$($PIP list --outdated --format=columns 2>/dev/null | tail -n +3 | awk '{print $1}')
+if [ -z "$OUTDATED" ]; then
+  echo "✅ All packages are up to date."
+else
+  echo "📦 Upgrading: $OUTDATED"
+  echo "$OUTDATED" | xargs $PIP install --upgrade
+  echo "✅ Done."
+fi
+echo "🔌 Reinstalling local plugins..."
+$PIP install -e plugins/doql-plugin-shared -e plugins/doql-plugin-gxp -e plugins/doql-plugin-iso17025 -e plugins/doql-plugin-fleet -e plugins/doql-plugin-erp -e .[dev] -q;
 }
 
 workflow[name="quality"] {
   trigger: manual;
   step-1: run cmd=pyqual run;
+}
+
+workflow[name="test"] {
+  trigger: manual;
+  step-1: run cmd=pytest -q;
 }
 
 workflow[name="quality:fix"] {
@@ -140,6 +162,14 @@ workflow[name="help"] {
   step-1: run cmd=task --list;
 }
 
+workflow[name="cross-quality"] {
+  trigger: manual;
+  step-1: run cmd=echo "🧪 doql quality gate   — cc≤12, critical=0"
+pyqual run;
+  step-2: run cmd=echo "🧪 redeploy quality gate — cc≤15, critical≤80"
+cd "{{.REDEPLOY_ROOT}}" && make quality-check;
+}
+
 deploy {
   target: docker;
 }
@@ -147,6 +177,32 @@ deploy {
 environment[name="local"] {
   runtime: docker-compose;
   env_file: .env;
+}
+
+infrastructure[type="kubernetes"] {
+  provider: k3s;
+  namespace: doql;
+  replicas: 3;
+}
+
+infrastructure[type="terraform"] {
+  provider: docker;
+}
+
+ingress[type="nginx"] {
+  tls: true;
+  cert_manager: letsencrypt;
+  rate_limit: 100r/m;
+}
+
+ci[type="gitlab"] {
+  runner: docker;
+  stages: validate, build, test, deploy;
+}
+
+ci[type="jenkins"] {
+  runner: any;
+  stages: validate, build, test, deploy;
 }
 ```
 
@@ -477,7 +533,7 @@ pipeline:
 ```yaml
 project:
   name: doql
-  version: 1.0.7
+  version: 1.0.10
   env: local
 ```
 
@@ -550,26 +606,26 @@ pip install -e .[dev]
 ### `project/map.toon.yaml`
 
 ```toon markpact:analysis path=project/map.toon.yaml
-# doql | 191f 25286L | python:149,less:16,css:15,shell:6,javascript:4,typescript:1 | 2026-04-21
-# stats: 732 func | 38 cls | 191 mod | CC̄=3.0 | critical:12 | cycles:0
+# doql | 192f 26010L | python:150,less:16,css:15,shell:6,javascript:4,typescript:1 | 2026-04-21
+# stats: 743 func | 41 cls | 192 mod | CC̄=3.0 | critical:14 | cycles:0
 # alerts[5]: CC check_api=22; CC test_api_boot_and_health=16; CC test_build_produces_expected_targets=14; CC check_desktop=12; CC _collect_missing_files=11
-# hotspots[5]: check_api fan=26; test_api_boot_and_health fan=26; cmd_build fan=22; main fan=21; cmd_doctor fan=17
+# hotspots[5]: check_api fan=26; test_api_boot_and_health fan=26; cmd_build fan=23; main fan=21; cmd_doctor fan=17
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
-M[191]:
-  app.doql.css,108
-  app.doql.less,110
+M[192]:
+  app.doql.css,166
+  app.doql.less,166
   doql/__init__.py,92
   doql/adopt/__init__.py,11
   doql/adopt/device_scanner.py,133
   doql/adopt/emitter.py,19
   doql/adopt/scanner/__init__.py,59
   doql/adopt/scanner/databases.py,63
-  doql/adopt/scanner/deploy.py,108
+  doql/adopt/scanner/deploy.py,143
   doql/adopt/scanner/entities.py,186
   doql/adopt/scanner/environments.py,87
   doql/adopt/scanner/integrations.py,27
-  doql/adopt/scanner/interfaces.py,329
+  doql/adopt/scanner/interfaces.py,334
   doql/adopt/scanner/metadata.py,69
   doql/adopt/scanner/roles.py,33
   doql/adopt/scanner/utils.py,101
@@ -577,7 +633,7 @@ M[191]:
   doql/adopt/scanner.py,46
   doql/cli/__init__.py,20
   doql/cli/__main__.py,10
-  doql/cli/build.py,277
+  doql/cli/build.py,292
   doql/cli/commands/__init__.py,56
   doql/cli/commands/adopt.py,167
   doql/cli/commands/deploy.py,143
@@ -626,7 +682,7 @@ M[191]:
   doql/generators/api_gen/routes.py,116
   doql/generators/api_gen/schemas.py,84
   doql/generators/api_gen.py,26
-  doql/generators/ci_gen.py,113
+  doql/generators/ci_gen.py,241
   doql/generators/deploy.py,21
   doql/generators/desktop_gen.py,210
   doql/generators/docs_gen.py,25
@@ -634,11 +690,12 @@ M[191]:
   doql/generators/export_postman.py,26
   doql/generators/export_ts_sdk.py,27
   doql/generators/i18n_gen.py,169
-  doql/generators/infra_gen.py,400
+  doql/generators/infra_gen.py,648
   doql/generators/integrations_gen.py,337
   doql/generators/mobile_gen.py,463
   doql/generators/report_gen.py,143
   doql/generators/utils/codegen.py,68
+  doql/generators/vite_gen.py,125
   doql/generators/web_gen/__init__.py,201
   doql/generators/web_gen/common.py,10
   doql/generators/web_gen/components.py,77
@@ -652,19 +709,19 @@ M[191]:
   doql/importers/__init__.py,2
   doql/importers/yaml_importer.py,268
   doql/integrations/__init__.py,21
-  doql/integrations/op3_bridge.py,159
+  doql/integrations/op3_bridge.py,75
   doql/lsp_server.py,379
   doql/parser.py,75
   doql/parsers/__init__.py,154
-  doql/parsers/blocks.py,51
-  doql/parsers/css_mappers.py,416
-  doql/parsers/css_parser.py,154
+  doql/parsers/blocks.py,52
+  doql/parsers/css_mappers.py,474
+  doql/parsers/css_parser.py,158
   doql/parsers/css_tokenizer.py,138
   doql/parsers/css_transformers.py,247
   doql/parsers/css_utils.py,73
   doql/parsers/extractors.py,206
-  doql/parsers/models.py,220
-  doql/parsers/registry.py,268
+  doql/parsers/models.py,252
+  doql/parsers/registry.py,311
   doql/parsers/validators.py,201
   doql/plugins.py,102
   doql/utils/__init__.py,7
@@ -770,7 +827,7 @@ D:
     _scan_compose_databases(root;spec)
     scan_databases(root;spec)
   doql/adopt/scanner/deploy.py:
-    e: _detect_deployment_indicators,_determine_deploy_target,_apply_deploy_config_flags,_is_database_service,_extract_container_config,_extract_containers_from_compose,_detect_rootless,scan_deploy
+    e: _detect_deployment_indicators,_determine_deploy_target,_apply_deploy_config_flags,_is_database_service,_extract_container_config,_extract_containers_from_compose,_detect_rootless,_emit_infrastructure_blocks,scan_deploy
     _detect_deployment_indicators(root)
     _determine_deploy_target(indicators;deploy;root)
     _apply_deploy_config_flags(indicators;deploy)
@@ -778,6 +835,7 @@ D:
     _extract_container_config(svc_name;svc)
     _extract_containers_from_compose(compose;deploy)
     _detect_rootless(spec)
+    _emit_infrastructure_blocks(indicators;spec)
     scan_deploy(root;spec)
   doql/adopt/scanner/entities.py:
     e: _is_dto_name,_is_excluded_path,scan_entities,_classify_bases,_extract_entities_from_python,_extract_annotation_fields,_extract_sqlalchemy_fields,_extract_fields,_is_reserved_sql_keyword,_extract_sql_columns,_extract_entities_from_sql
@@ -861,7 +919,7 @@ D:
   doql/cli/__init__.py:
   doql/cli/__main__.py:
   doql/cli/build.py:
-    e: should_generate_interface,run_core_generators,run_document_generators,_run_conditional_generator,run_report_generators,run_i18n_generators,run_integration_generators,run_workflow_generators,run_ci_generator,run_plugins,_scan_device_for_build,cmd_build,_merge_no_overwrite
+    e: should_generate_interface,run_core_generators,run_document_generators,_run_conditional_generator,run_report_generators,run_i18n_generators,run_integration_generators,run_workflow_generators,run_ci_generator,run_vite_generator,run_plugins,_scan_device_for_build,cmd_build,_merge_no_overwrite
     should_generate_interface(name;spec)
     run_core_generators(spec;env_vars;ctx;no_overwrite)
     run_document_generators(spec;env_vars;ctx)
@@ -871,6 +929,7 @@ D:
     run_integration_generators(spec;env_vars;ctx)
     run_workflow_generators(spec;env_vars;ctx)
     run_ci_generator(spec;env_vars;ctx)
+    run_vite_generator(spec;env_vars;ctx)
     run_plugins(spec;env_vars;ctx)
     _scan_device_for_build(ctx;args)
     cmd_build(args)
@@ -1171,8 +1230,10 @@ D:
     _gen_update_schema(ent)
   doql/generators/api_gen.py:
   doql/generators/ci_gen.py:
-    e: _gen_github_action,generate
+    e: _gen_github_action,_gen_gitlab_ci,_gen_jenkinsfile,generate
     _gen_github_action(spec)
+    _gen_gitlab_ci(spec)
+    _gen_jenkinsfile(spec)
     generate(spec;env_vars;out)
   doql/generators/deploy.py:
     e: run
@@ -1207,12 +1268,15 @@ D:
     _gen_translations(spec;lang)
     generate(spec;env_vars;out)
   doql/generators/infra_gen.py:
-    e: _slug,_gen_docker_compose,_gen_quadlet,_gen_kiosk,_map_deploy_strategy,_gen_migration_spec,generate
+    e: _slug,_gen_docker_compose,_gen_quadlet,_gen_kiosk,_map_deploy_strategy,_gen_kubernetes,_gen_terraform,_gen_nginx,_gen_migration_spec,generate
     _slug(name)
     _gen_docker_compose(spec;env_vars;out)
     _gen_quadlet(spec;env_vars;out)
     _gen_kiosk(spec;env_vars;out)
     _map_deploy_strategy(doql_target)
+    _gen_kubernetes(spec;env_vars;out)
+    _gen_terraform(spec;env_vars;out)
+    _gen_nginx(spec;env_vars;out)
     _gen_migration_spec(spec;env_vars;out)
     generate(spec;env_vars;out)
   doql/generators/integrations_gen.py:
@@ -1246,6 +1310,13 @@ D:
     e: write_code_block,generate_file_from_template
     write_code_block(content;path)
     generate_file_from_template(template_name;variables;output_path)
+  doql/generators/vite_gen.py:
+    e: _slug,_gen_vite_config,_gen_tsconfig,_gen_index_html,generate
+    _slug(name)
+    _gen_vite_config(spec;env_vars;out)
+    _gen_tsconfig(spec;out)
+    _gen_index_html(spec;out)
+    generate(spec;env_vars;out)
   doql/generators/web_gen/__init__.py:
     e: _setup_web_directories,_write_config_files,_write_core_files,_write_component_files,_write_page_files,_write_pwa_files,_write_readme,generate
     _setup_web_directories(out)
@@ -1325,16 +1396,9 @@ D:
     import_yaml_file(path)
   doql/integrations/__init__.py:
   doql/integrations/op3_bridge.py:
-    e: op3_enabled,op3_available,should_use_op3,build_layer_tree,make_scanner,make_ssh_context,make_mock_context,snapshot_to_less,require_op3
-    op3_enabled()
-    op3_available()
-    should_use_op3()
+    e: build_layer_tree,snapshot_to_less
     build_layer_tree(layer_ids)
-    make_scanner(layer_ids)
-    make_ssh_context(target;ssh_key)
-    make_mock_context(responses)
     snapshot_to_less(snapshot;scope)
-    require_op3(feature)
   doql/lsp_server.py:
     e: _parse_doc,_find_line_col,_diagnostics_for,_word_at,_on_text_document_event,did_open,did_change,did_save,completion,_hover_field,_hover_entity,hover,definition,document_symbols,main
     _parse_doc(source)
@@ -1365,7 +1429,7 @@ D:
     split_blocks(text)
     apply_block(spec;keyword;header;body)
   doql/parsers/css_mappers.py:
-    e: _map_entity,_parse_type_flags,_add_entity_field,_parse_type_modifiers,_map_data_source,_map_config_block,_map_template,_map_document,_map_report,_find_or_create_interface,_handle_interface_chain,_apply_interface_properties,_apply_nested_interface_children,_map_interface,_add_interface_page,_map_integration,_parse_step_text,_append_inline_steps,_append_child_steps,_map_workflow,_map_role,_map_deploy,_map_database,_map_environment
+    e: _map_entity,_parse_type_flags,_add_entity_field,_parse_type_modifiers,_map_data_source,_map_config_block,_map_template,_map_document,_map_report,_find_or_create_interface,_handle_interface_chain,_apply_interface_properties,_apply_nested_interface_children,_map_interface,_add_interface_page,_map_integration,_parse_step_text,_append_inline_steps,_append_child_steps,_map_workflow,_map_role,_map_deploy,_map_database,_map_environment,_map_infrastructure,_map_ingress,_map_ci
     _map_entity(spec;sel;block)
     _parse_type_flags(type_str)
     _add_entity_field(entity;name;type_str)
@@ -1390,6 +1454,9 @@ D:
     _map_deploy(spec;sel;block)
     _map_database(spec;sel;block)
     _map_environment(spec;sel;block)
+    _map_infrastructure(spec;sel;block)
+    _map_ingress(spec;sel;block)
+    _map_ci(spec;sel;block)
   doql/parsers/css_parser.py:
     e: _parse_selector,_map_to_spec,_apply_css_block,parse_css_file,parse_css_text,_detect_format
     _parse_selector(selector)
@@ -1446,7 +1513,7 @@ D:
     extract_entity_fields(body)
     collect_env_refs(text)
   doql/parsers/models.py:
-    e: DoqlParseError,ValidationIssue,EntityField,Entity,DataSource,Template,Document,Report,Database,ApiClient,Webhook,Page,Interface,Integration,WorkflowStep,Workflow,Role,Deploy,Environment,DoqlSpec
+    e: DoqlParseError,ValidationIssue,EntityField,Entity,DataSource,Template,Document,Report,Database,ApiClient,Webhook,Page,Interface,Integration,WorkflowStep,Workflow,Role,Deploy,Environment,Infrastructure,Ingress,CiConfig,DoqlSpec
     DoqlParseError:  # Raised when a .doql file cannot be parsed.
     ValidationIssue:
     EntityField:
@@ -1466,9 +1533,12 @@ D:
     Role:
     Deploy:
     Environment:
+    Infrastructure:
+    Ingress:
+    CiConfig:
     DoqlSpec:
   doql/parsers/registry.py:
-    e: register,get_handler,list_registered,_handle_app,_handle_version,_handle_domain,_handle_languages,_handle_entity,_handle_data,_handle_template,_handle_document,_handle_report,_handle_database,_handle_api_client,_handle_webhook,_handle_interface,_handle_integration,_handle_workflow,_handle_roles,_handle_role,_handle_import_block,_handle_scenarios,_handle_tests,_handle_deploy
+    e: register,get_handler,list_registered,_handle_app,_handle_version,_handle_domain,_handle_languages,_handle_entity,_handle_data,_handle_template,_handle_document,_handle_report,_handle_database,_handle_api_client,_handle_webhook,_handle_interface,_handle_integration,_handle_workflow,_handle_roles,_handle_role,_handle_import_block,_handle_scenarios,_handle_tests,_handle_deploy,_handle_infrastructure,_handle_ingress,_handle_ci
     register(keyword)
     get_handler(keyword)
     list_registered()
@@ -1493,6 +1563,9 @@ D:
     _handle_scenarios(spec;header;body)
     _handle_tests(spec;header;body)
     _handle_deploy(spec;header;body)
+    _handle_infrastructure(spec;header;body)
+    _handle_ingress(spec;header;body)
+    _handle_ci(spec;header;body)
   doql/parsers/validators.py:
     e: _validate_app_name,_validate_env_refs,_validate_data_source_files,_validate_file_refs,_validate_document_templates,_validate_template_files,_validate_document_partials,_validate_entity_refs,_validate_interfaces,_validate_deploy_strategy,validate
     _validate_app_name(spec)

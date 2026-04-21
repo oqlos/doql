@@ -421,14 +421,14 @@ def _map_infrastructure(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBloc
     name = sel.attributes.get('name', '')
     infra = Infrastructure(
         name=name,
-        type=block.declarations.get('type', 'docker-compose'),
+        type=sel.attributes.get('type', 'docker-compose'),
         provider=block.declarations.get('provider'),
         namespace=block.declarations.get('namespace'),
     )
     replicas = block.declarations.get('replicas')
     if replicas and replicas.isdigit():
         infra.replicas = int(replicas)
-    skip = {'type', 'provider', 'namespace', 'replicas'}
+    skip = {'provider', 'namespace', 'replicas'}
     for k, v in block.declarations.items():
         if k not in skip:
             infra.config[k] = v
@@ -441,12 +441,12 @@ def _map_ingress(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") -> 
     name = sel.attributes.get('name', '')
     ingress = Ingress(
         name=name,
-        type=block.declarations.get('type', 'traefik'),
+        type=sel.attributes.get('type', 'traefik'),
         tls=block.declarations.get('tls', '').lower() == 'true',
         cert_manager=block.declarations.get('cert_manager'),
         rate_limit=block.declarations.get('rate_limit'),
     )
-    skip = {'type', 'tls', 'cert_manager', 'rate_limit'}
+    skip = {'tls', 'cert_manager', 'rate_limit'}
     for k, v in block.declarations.items():
         if k not in skip:
             ingress.config[k] = v
@@ -460,13 +460,13 @@ def _map_ci(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") -> None:
     name = sel.attributes.get('name', '')
     ci = CiConfig(
         name=name,
-        type=block.declarations.get('type', 'github'),
+        type=sel.attributes.get('type', 'github'),
         runner=block.declarations.get('runner'),
     )
     stages_str = block.declarations.get('stages')
     if stages_str:
         ci.stages = _parse_list(stages_str)
-    skip = {'type', 'runner', 'stages'}
+    skip = {'runner', 'stages'}
     for k, v in block.declarations.items():
         if k not in skip:
             ci.config[k] = v
