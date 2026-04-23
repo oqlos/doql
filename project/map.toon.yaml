@@ -1,22 +1,22 @@
-# doql | 193f 26109L | python:150,less:18,css:14,shell:6,javascript:4,typescript:1 | 2026-04-23
-# stats: 749 func | 41 cls | 193 mod | CC̄=3.9 | critical:34 | cycles:0
-# alerts[5]: CC test_build_produces_expected_targets=33; CC check_api=25; CC test_adopt_e2e_real_project_oqlos=22; CC check_desktop=17; CC test_api_boot_and_health=17
-# hotspots[5]: check_api fan=26; test_api_boot_and_health fan=26; cmd_build fan=23; main fan=21; cmd_doctor fan=17
+# doql | 193f 26569L | python:150,less:18,css:14,shell:6,javascript:4,typescript:1 | 2026-04-23
+# stats: 761 func | 42 cls | 193 mod | CC̄=3.9 | critical:38 | cycles:0
+# alerts[5]: CC test_build_produces_expected_targets=33; CC check_api=25; CC test_adopt_e2e_real_project_oqlos=22; CC _render_project=21; CC check_desktop=17
+# hotspots[5]: check_api fan=26; test_api_boot_and_health fan=26; cmd_build fan=23; main fan=21; _cmd_adopt_recursive fan=17
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
 M[193]:
-  app.doql.less,60
+  app.doql.less,151
   doql/__init__.py,92
   doql/adopt/__init__.py,11
   doql/adopt/device_scanner.py,133
   doql/adopt/emitter.py,19
   doql/adopt/scanner/__init__.py,59
   doql/adopt/scanner/databases.py,63
-  doql/adopt/scanner/deploy.py,143
+  doql/adopt/scanner/deploy.py,151
   doql/adopt/scanner/entities.py,186
-  doql/adopt/scanner/environments.py,92
+  doql/adopt/scanner/environments.py,89
   doql/adopt/scanner/integrations.py,27
-  doql/adopt/scanner/interfaces.py,334
+  doql/adopt/scanner/interfaces.py,364
   doql/adopt/scanner/metadata.py,104
   doql/adopt/scanner/roles.py,33
   doql/adopt/scanner/utils.py,101
@@ -26,7 +26,7 @@ M[193]:
   doql/cli/__main__.py,10
   doql/cli/build.py,292
   doql/cli/commands/__init__.py,56
-  doql/cli/commands/adopt.py,167
+  doql/cli/commands/adopt.py,270
   doql/cli/commands/deploy.py,143
   doql/cli/commands/docs.py,22
   doql/cli/commands/doctor.py,408
@@ -46,16 +46,16 @@ M[193]:
   doql/cli/commands/workspace.py,545
   doql/cli/context.py,67
   doql/cli/lockfile.py,84
-  doql/cli/main.py,195
+  doql/cli/main.py,197
   doql/cli/sync.py,123
   doql/cli.py,63
   doql/drift/__init__.py,23
   doql/drift/detector.py,126
   doql/exporters/__init__.py,2
-  doql/exporters/css/__init__.py,111
+  doql/exporters/css/__init__.py,114
   doql/exporters/css/format_convert.py,68
   doql/exporters/css/helpers.py,40
-  doql/exporters/css/renderers.py,321
+  doql/exporters/css/renderers.py,375
   doql/exporters/css_exporter.py,17
   doql/exporters/markdown/__init__.py,41
   doql/exporters/markdown/sections.py,122
@@ -103,16 +103,16 @@ M[193]:
   doql/integrations/op3_bridge.py,75
   doql/lsp_server.py,379
   doql/parser.py,75
-  doql/parsers/__init__.py,154
+  doql/parsers/__init__.py,155
   doql/parsers/blocks.py,52
-  doql/parsers/css_mappers.py,474
-  doql/parsers/css_parser.py,158
-  doql/parsers/css_tokenizer.py,138
+  doql/parsers/css_mappers.py,522
+  doql/parsers/css_parser.py,138
+  doql/parsers/css_tokenizer.py,130
   doql/parsers/css_transformers.py,247
-  doql/parsers/css_utils.py,73
+  doql/parsers/css_utils.py,75
   doql/parsers/extractors.py,206
-  doql/parsers/models.py,260
-  doql/parsers/registry.py,311
+  doql/parsers/models.py,270
+  doql/parsers/registry.py,332
   doql/parsers/validators.py,201
   doql/plugins.py,102
   doql/utils/__init__.py,7
@@ -171,7 +171,7 @@ M[193]:
   plugins/doql-plugin-shared/doql_plugin_shared/__init__.py,12
   plugins/doql-plugin-shared/doql_plugin_shared/base.py,30
   plugins/doql-plugin-shared/doql_plugin_shared/readme.py,38
-  project.sh,45
+  project.sh,44
   tests/__init__.py,1
   tests/env_manager.py,468
   tests/integration/__init__.py,2
@@ -183,9 +183,9 @@ M[193]:
   tests/runtime_all_examples.sh,116
   tests/runtime_deploy.sh,66
   tests/runtime_smoke.py,92
-  tests/test_adopt.py,426
-  tests/test_css_parser.py,277
-  tests/test_exporters.py,418
+  tests/test_adopt.py,477
+  tests/test_css_parser.py,326
+  tests/test_exporters.py,437
   tests/test_exporters_shims.py,93
   tests/test_generators.py,122
   tests/test_lsp.py,60
@@ -255,10 +255,11 @@ D:
     e: scan_integrations
     scan_integrations(root;spec)
   doql/adopt/scanner/interfaces.py:
-    e: scan_interfaces,_detect_framework_from_pyproject,_detect_framework_from_main_py,_find_api_main_file,_has_api_entry_point,_detect_api_auth,_detect_api_port,_scan_python_api,_scan_python_cli,_detect_web_framework,_scan_pages_dir,_extract_web_pages,_scan_web_frontend,_scan_mobile,_scan_desktop
+    e: scan_interfaces,_detect_framework_from_pyproject,_detect_framework_from_main_py,_detect_framework_from_any_py,_find_api_main_file,_has_api_entry_point,_detect_api_auth,_detect_api_port,_scan_python_api,_scan_python_cli,_detect_web_framework,_scan_pages_dir,_extract_web_pages,_scan_web_frontend,_scan_mobile,_scan_desktop
     scan_interfaces(root;spec)
     _detect_framework_from_pyproject(pyproj)
     _detect_framework_from_main_py(main_py)
+    _detect_framework_from_any_py(root)
     _find_api_main_file(root)
     _has_api_entry_point(pyproj)
     _detect_api_auth(spec)
@@ -329,12 +330,14 @@ D:
     _merge_no_overwrite(src;dst)
   doql/cli/commands/__init__.py:
   doql/cli/commands/adopt.py:
-    e: _print_item,_print_scan_summary,_cleanup_empty_output,_validate_output_written,cmd_adopt,_cmd_adopt_from_directory,_cmd_adopt_from_device
+    e: _print_item,_print_scan_summary,_cleanup_empty_output,_validate_output_written,cmd_adopt,_discover_subprojects,_cmd_adopt_recursive,_cmd_adopt_from_directory,_cmd_adopt_from_device
     _print_item(label;count;items;display_names)
     _print_scan_summary(spec)
     _cleanup_empty_output(output)
     _validate_output_written(output)
     cmd_adopt(args)
+    _discover_subprojects(root)
+    _cmd_adopt_recursive(args)
     _cmd_adopt_from_directory(args)
     _cmd_adopt_from_device(args;device)
   doql/cli/commands/deploy.py:
@@ -518,7 +521,7 @@ D:
     _prop(key;value;quote_str)
     _field_line(f)
   doql/exporters/css/renderers.py:
-    e: _render_app,_render_dependencies,_render_entity,_render_data_source,_render_template,_render_document,_render_report,_render_database,_render_api_client,_render_webhook,_build_interface_props,_build_page_props,_render_interface,_render_integration,_render_workflow,_render_role,_render_deploy,_render_environment
+    e: _render_app,_render_dependencies,_render_entity,_render_data_source,_render_template,_render_document,_render_report,_render_database,_render_api_client,_render_webhook,_build_interface_props,_build_page_props,_render_interface,_render_integration,_render_workflow,_render_role,_render_deploy,_render_environment,_render_project
     _render_app(spec)
     _render_dependencies(spec)
     _render_entity(e)
@@ -537,6 +540,7 @@ D:
     _render_role(role)
     _render_deploy(deploy)
     _render_environment(env)
+    _render_project(sub)
   doql/exporters/css_exporter.py:
   doql/exporters/markdown/__init__.py:
     e: export_markdown,export_markdown_file
@@ -823,7 +827,7 @@ D:
     split_blocks(text)
     apply_block(spec;keyword;header;body)
   doql/parsers/css_mappers.py:
-    e: _map_entity,_parse_type_flags,_add_entity_field,_parse_type_modifiers,_map_data_source,_map_config_block,_map_template,_map_document,_map_report,_find_or_create_interface,_handle_interface_chain,_apply_interface_properties,_apply_nested_interface_children,_map_interface,_add_interface_page,_map_integration,_parse_step_text,_append_inline_steps,_append_child_steps,_map_workflow,_map_role,_map_deploy,_map_database,_map_environment,_map_infrastructure,_map_ingress,_map_ci
+    e: _map_entity,_parse_type_flags,_add_entity_field,_parse_type_modifiers,_map_data_source,_map_config_block,_map_template,_map_document,_map_report,_find_or_create_interface,_handle_interface_chain,_apply_interface_properties,_apply_nested_interface_children,_map_interface,_add_interface_page,_map_integration,_parse_step_text,_append_inline_steps,_append_child_steps,_map_workflow,_map_role,_map_deploy,_map_database,_map_environment,_map_infrastructure,_map_ingress,_map_ci,_map_project
     _map_entity(spec;sel;block)
     _parse_type_flags(type_str)
     _add_entity_field(entity;name;type_str)
@@ -851,9 +855,9 @@ D:
     _map_infrastructure(spec;sel;block)
     _map_ingress(spec;sel;block)
     _map_ci(spec;sel;block)
+    _map_project(spec;sel;block)
   doql/parsers/css_parser.py:
-    e: _parse_selector,_map_to_spec,_apply_css_block,parse_css_file,parse_css_text,_detect_format
-    _parse_selector(selector)
+    e: _map_to_spec,_apply_css_block,parse_css_file,parse_css_text,_detect_format
     _map_to_spec(blocks)
     _apply_css_block(spec;sel;block)
     parse_css_file(path)
@@ -907,7 +911,7 @@ D:
     extract_entity_fields(body)
     collect_env_refs(text)
   doql/parsers/models.py:
-    e: DoqlParseError,ValidationIssue,EntityField,Entity,DataSource,Template,Document,Report,Database,ApiClient,Webhook,Page,Interface,Integration,WorkflowStep,Workflow,Role,Deploy,Environment,Infrastructure,Ingress,CiConfig,DoqlSpec
+    e: DoqlParseError,ValidationIssue,EntityField,Entity,DataSource,Template,Document,Report,Database,ApiClient,Webhook,Page,Interface,Integration,WorkflowStep,Workflow,Role,Deploy,Environment,Infrastructure,Ingress,CiConfig,Subproject,DoqlSpec
     DoqlParseError:  # Raised when a .doql file cannot be parsed.
     ValidationIssue:
     EntityField:
@@ -930,9 +934,10 @@ D:
     Infrastructure:
     Ingress:
     CiConfig:
+    Subproject:  # A named sub-project inside a monorepo DOQL manifest.
     DoqlSpec:
   doql/parsers/registry.py:
-    e: register,get_handler,list_registered,_handle_app,_handle_version,_handle_domain,_handle_languages,_handle_entity,_handle_data,_handle_template,_handle_document,_handle_report,_handle_database,_handle_api_client,_handle_webhook,_handle_interface,_handle_integration,_handle_workflow,_handle_roles,_handle_role,_handle_import_block,_handle_scenarios,_handle_tests,_handle_deploy,_handle_infrastructure,_handle_ingress,_handle_ci
+    e: register,get_handler,list_registered,_handle_app,_handle_version,_handle_domain,_handle_languages,_handle_author,_handle_default_language,_handle_entity,_handle_data,_handle_template,_handle_document,_handle_report,_handle_database,_handle_api_client,_handle_webhook,_handle_interface,_handle_integration,_handle_workflow,_handle_roles,_handle_role,_handle_import_block,_handle_scenarios,_handle_tests,_handle_deploy,_handle_infrastructure,_handle_ingress,_handle_ci,_handle_project
     register(keyword)
     get_handler(keyword)
     list_registered()
@@ -940,6 +945,8 @@ D:
     _handle_version(spec;header;body)
     _handle_domain(spec;header;body)
     _handle_languages(spec;header;body)
+    _handle_author(spec;header;body)
+    _handle_default_language(spec;header;body)
     _handle_entity(spec;header;body)
     _handle_data(spec;header;body)
     _handle_template(spec;header;body)
@@ -960,6 +967,7 @@ D:
     _handle_infrastructure(spec;header;body)
     _handle_ingress(spec;header;body)
     _handle_ci(spec;header;body)
+    _handle_project(spec;header;body)
   doql/parsers/validators.py:
     e: _validate_app_name,_validate_env_refs,_validate_data_source_files,_validate_file_refs,_validate_document_templates,_validate_template_files,_validate_document_partials,_validate_entity_refs,_validate_interfaces,_validate_deploy_strategy,validate
     _validate_app_name(spec)
@@ -1144,7 +1152,7 @@ D:
     step(client;name;response;expected)
     main()
   tests/test_adopt.py:
-    e: _write,_pyproject,test_jwt_secret_does_not_crash_renderer,test_pydantic_dtos_are_excluded_from_entities,test_generic_db_service_name_is_normalised,test_fastapi_dependency_alone_does_not_create_api_interface,test_fastapi_with_main_py_creates_api,test_api_entry_point_in_scripts_creates_api,_make_args,test_cmd_adopt_returns_zero_on_success,test_cmd_adopt_returns_nonzero_on_render_failure,test_cmd_adopt_refuses_to_overwrite_without_force,test_cmd_adopt_rejects_non_directory,test_makefile_targets_become_workflows,test_makefile_workflows_round_trip_to_css,test_taskfile_yml_tasks_become_workflows,test_dependency_only_targets_emit_depend_steps,test_empty_target_without_deps_is_skipped,test_makefile_variable_assignments_are_not_workflows,test_workflows_are_deduplicated_across_makefile_and_taskfile,test_adopt_e2e_real_project_oqlos
+    e: _write,_pyproject,test_jwt_secret_does_not_crash_renderer,test_pydantic_dtos_are_excluded_from_entities,test_generic_db_service_name_is_normalised,test_fastapi_dependency_alone_does_not_create_api_interface,test_fastapi_with_main_py_creates_api,test_api_entry_point_in_scripts_creates_api,_make_args,test_cmd_adopt_returns_zero_on_success,test_cmd_adopt_returns_nonzero_on_render_failure,test_cmd_adopt_refuses_to_overwrite_without_force,test_cmd_adopt_rejects_non_directory,test_makefile_targets_become_workflows,test_makefile_workflows_round_trip_to_css,test_taskfile_yml_tasks_become_workflows,test_dependency_only_targets_emit_depend_steps,test_empty_target_without_deps_is_skipped,test_makefile_variable_assignments_are_not_workflows,test_workflows_are_deduplicated_across_makefile_and_taskfile,test_adopt_e2e_real_project_oqlos,test_discover_subprojects,test_click_not_inferred_from_comment_or_changelog,test_fastapi_detected_from_server_py
     _write(root;rel;body)
     _pyproject(name;deps)
     test_jwt_secret_does_not_crash_renderer(tmp_path)
@@ -1166,8 +1174,11 @@ D:
     test_makefile_variable_assignments_are_not_workflows(tmp_path)
     test_workflows_are_deduplicated_across_makefile_and_taskfile(tmp_path)
     test_adopt_e2e_real_project_oqlos(tmp_path)
+    test_discover_subprojects(tmp_path)
+    test_click_not_inferred_from_comment_or_changelog(tmp_path)
+    test_fastapi_detected_from_server_py(tmp_path)
   tests/test_css_parser.py:
-    e: test_css_parse_minimal,test_css_parse_entity,test_css_parse_interface,test_css_parse_role,test_css_parse_deploy,test_less_variable_expansion,test_sass_basic_parsing,test_parses_css_example_file,test_detect_doql_file_prefers_less,test_detect_doql_file_prefers_sass,test_detect_doql_file_falls_back_to_classic,test_iot_fleet_less_has_entities,test_notes_app_sass_has_all_interfaces,test_css_parse_error_has_line_info,test_css_unknown_selector_gives_warning,test_less_syntax_error_recovery,_spec_to_comparable_dict,test_doql_vs_less_regression
+    e: test_css_parse_minimal,test_css_parse_entity,test_css_parse_interface,test_css_parse_role,test_css_parse_deploy,test_less_variable_expansion,test_sass_basic_parsing,test_parses_css_example_file,test_detect_doql_file_prefers_less,test_detect_doql_file_prefers_sass,test_detect_doql_file_falls_back_to_classic,test_iot_fleet_less_has_entities,test_notes_app_sass_has_all_interfaces,test_css_parse_error_has_line_info,test_css_unknown_selector_gives_warning,test_less_syntax_error_recovery,_spec_to_comparable_dict,test_doql_vs_less_regression,test_css_parse_project_blocks
     test_css_parse_minimal()
     test_css_parse_entity()
     test_css_parse_interface()
@@ -1186,8 +1197,9 @@ D:
     test_less_syntax_error_recovery()
     _spec_to_comparable_dict(spec)
     test_doql_vs_less_regression(example)
+    test_css_parse_project_blocks()
   tests/test_exporters.py:
-    e: sample_spec,test_yaml_roundtrip_real_example,test_css_export_real_example,test_markdown_export_real_example,TestYamlExporter,TestMarkdownExporter,TestCssExporter,TestYamlImporter
+    e: sample_spec,test_yaml_roundtrip_real_example,test_css_export_real_example,test_markdown_export_real_example,test_css_export_project_blocks,TestYamlExporter,TestMarkdownExporter,TestCssExporter,TestYamlImporter
     TestYamlExporter: test_export_basic_fields(1),test_export_entities(1),test_export_interfaces(1),test_export_workflows(1),test_export_roles(1),test_export_deploy(1),test_clean_removes_empty_and_none(0)
     TestMarkdownExporter: test_export_has_title(1),test_export_has_entities(1),test_export_has_interfaces(1),test_export_has_workflows(1),test_export_has_roles(1),test_export_has_deploy(1),test_export_minimal_spec(0)
     TestCssExporter: test_export_app_block(1),test_export_entity_block(1),test_export_interface_and_pages(1),test_export_workflow(1),test_export_roles(1),test_export_deploy_no_duplicate(1),test_export_less_format(1),test_export_sass_format(1)
@@ -1196,6 +1208,7 @@ D:
     test_yaml_roundtrip_real_example(example)
     test_css_export_real_example(example)
     test_markdown_export_real_example(example)
+    test_css_export_project_blocks()
   tests/test_exporters_shims.py:
     e: test_css_exporter_shim_re_exports_public_api,test_css_exporter_shim_re_exports_renderers,test_css_exporter_shim_re_exports_format_helpers,test_markdown_exporter_shim_re_exports_public_api,test_markdown_exporter_shim_re_exports_writers,test_markdown_exporter_shim_re_exports_helpers,test_css_shim_roundtrip_matches_direct_subpackage
     test_css_exporter_shim_re_exports_public_api()

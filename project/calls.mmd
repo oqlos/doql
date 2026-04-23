@@ -1,477 +1,519 @@
 flowchart LR
+    subgraph SUMD
+        SUMD___parse_selector["_parse_selector"]
+        SUMD__gen_alembic_env["gen_alembic_env"]
+        SUMD__find_intended_file["find_intended_file"]
+        SUMD___write_workflows["_write_workflows"]
+        SUMD___write_integrations["_write_integrations"]
+        SUMD__detect_drift["detect_drift"]
+        SUMD__snake["snake"]
+        SUMD___field_line["_field_line"]
+        SUMD___gen_entity_page["_gen_entity_page"]
+        SUMD__run_report_generators["run_report_generators"]
+        SUMD___gen_package_json["_gen_package_json"]
+        SUMD__adopt_from_device["adopt_from_device"]
+        SUMD__load_yaml["load_yaml"]
+        SUMD__plugin_generate["plugin_generate"]
+        SUMD__snapshot_to_less["snapshot_to_less"]
+        SUMD___write_documents["_write_documents"]
+        SUMD___gen_dashboard["_gen_dashboard"]
+        SUMD___write_reports["_write_reports"]
+        SUMD__diff_sections["diff_sections"]
+        SUMD__normalize_sqlalchemy_type["normalize_sqlalchemy_type"]
+        SUMD__gen_database["gen_database"]
+        SUMD__run_integration_generators["run_integration_generators"]
+        SUMD__scan_project["scan_project"]
+        SUMD__write_lockfile["write_lockfile"]
+        SUMD___render_report["_render_report"]
+        SUMD__gen_requirements["gen_requirements"]
+        SUMD__scan_interfaces["scan_interfaces"]
+        SUMD___css_to_less["_css_to_less"]
+        SUMD__gen_schemas["gen_schemas"]
+        SUMD___gen_manifest["_gen_manifest"]
+        SUMD__scan_entities["scan_entities"]
+        SUMD__scan_integrations["scan_integrations"]
+        SUMD__estimate_file_count["estimate_file_count"]
+        SUMD___clean["_clean"]
+        SUMD___gen_api_ts["_gen_api_ts"]
+        SUMD__normalize_sql_type["normalize_sql_type"]
+        SUMD___render_document["_render_document"]
+        SUMD___gen_index_css["_gen_index_css"]
+        SUMD___tenant_module["_tenant_module"]
+        SUMD__adopt_from_device_to_snapshot["adopt_from_device_to_snapshot"]
+        SUMD___write_deployment["_write_deployment"]
+        SUMD___render_workflow["_render_workflow"]
+        SUMD__find_compose["find_compose"]
+        SUMD___write_roles["_write_roles"]
+        SUMD___ota_module["_ota_module"]
+        SUMD___indent["_indent"]
+        SUMD__generate_readme["generate_readme"]
+        SUMD__run_i18n_generators["run_i18n_generators"]
+        SUMD__read_lockfile["read_lockfile"]
+        SUMD__py_type["py_type"]
+        SUMD___device_registry_module["_device_registry_module"]
+        SUMD__scan_deploy["scan_deploy"]
+        SUMD___gen_index_html["_gen_index_html"]
+        SUMD__safe_name["safe_name"]
+        SUMD___render_app["_render_app"]
+        SUMD__export_yaml_file["export_yaml_file"]
+        SUMD___gen_sw_register["_gen_sw_register"]
+        SUMD__run_document_generators["run_document_generators"]
+        SUMD___metrics_module["_metrics_module"]
+        SUMD__scaffold_from_template["scaffold_from_template"]
+        SUMD__snake_to_pascal["snake_to_pascal"]
+        SUMD__gen_main["gen_main"]
+        SUMD__gen_routes["gen_routes"]
+        SUMD__should_generate_interface["should_generate_interface"]
+        SUMD___gen_main_tsx["_gen_main_tsx"]
+        SUMD___gen_tsconfig["_gen_tsconfig"]
+        SUMD__camel_to_kebab["camel_to_kebab"]
+        SUMD___render_webhook["_render_webhook"]
+        SUMD___migration_module["_migration_module"]
+        SUMD__scan_roles["scan_roles"]
+        SUMD__gen_models["gen_models"]
+        SUMD___render_data_source["_render_data_source"]
+        SUMD__scan_environments["scan_environments"]
+        SUMD___render_interface["_render_interface"]
+        SUMD___render_role["_render_role"]
+        SUMD__scan_databases["scan_databases"]
+        SUMD__scan_metadata["scan_metadata"]
+        SUMD___gen_service_worker["_gen_service_worker"]
+        SUMD___render_api_client["_render_api_client"]
+        SUMD___strip_quotes["_strip_quotes"]
+        SUMD___render_template["_render_template"]
+        SUMD___gen_tailwind_config["_gen_tailwind_config"]
+        SUMD__sa_type["sa_type"]
+        SUMD___render_dependencies["_render_dependencies"]
+        SUMD___css_to_sass["_css_to_sass"]
+        SUMD___gen_app["_gen_app"]
+        SUMD___render_database["_render_database"]
+        SUMD___write_data_sources["_write_data_sources"]
+        SUMD___write_header["_write_header"]
+        SUMD__gen_initial_migration["gen_initial_migration"]
+        SUMD__detect_doql_file["detect_doql_file"]
+        SUMD__gen_auth["gen_auth"]
+        SUMD__load_spec["load_spec"]
+        SUMD__spec_section_hashes["spec_section_hashes"]
+        SUMD___gen_vite_config["_gen_vite_config"]
+        SUMD__gen_alembic_ini["gen_alembic_ini"]
+        SUMD___gen_layout["_gen_layout"]
+        SUMD___h["_h"]
+        SUMD__import_yaml_file["import_yaml_file"]
+        SUMD__py_default["py_default"]
+        SUMD___render_entity["_render_entity"]
+        SUMD___write_interfaces["_write_interfaces"]
+        SUMD__export_css_file["export_css_file"]
+        SUMD___prop["_prop"]
+        SUMD___gen_postcss_config["_gen_postcss_config"]
+        SUMD__build_context["build_context"]
+        SUMD___render_integration["_render_integration"]
+        SUMD__normalize_python_type["normalize_python_type"]
+        SUMD__find_dockerfiles["find_dockerfiles"]
+        SUMD___write_entities["_write_entities"]
+    end
     subgraph doql__adopt
         doql__adopt__scanner__deploy___detect_rootless["_detect_rootless"]
-        doql__adopt__scanner__workflows___scan_cli_file_for_workflows["_scan_cli_file_for_workflows"]
-        doql__adopt__scanner__integrations__scan_integrations["scan_integrations"]
-        doql__adopt__scanner__databases__scan_databases["scan_databases"]
-        doql__adopt__scanner__deploy___extract_containers_from_compose["_extract_containers_from_compo"]
-        doql__adopt__scanner__interfaces___detect_framework_from_main_py["_detect_framework_from_main_py"]
         doql__adopt__scanner__interfaces___detect_api_auth["_detect_api_auth"]
-        doql__adopt__scanner__utils__normalize_sqlalchemy_type["normalize_sqlalchemy_type"]
-        doql__adopt__scanner__workflows___extract_taskfile_workflows["_extract_taskfile_workflows"]
-        doql__adopt__scanner__interfaces__scan_interfaces["scan_interfaces"]
-        doql__adopt__scanner__interfaces___scan_python_cli["_scan_python_cli"]
-        doql__adopt__scanner__workflows___parse_makefile_deps["_parse_makefile_deps"]
-        doql__adopt__scanner__databases___db_from_image["_db_from_image"]
-        doql__adopt__scanner__interfaces___find_api_main_file["_find_api_main_file"]
-        doql__adopt__scanner__deploy___is_database_service["_is_database_service"]
-        doql__adopt__scanner__interfaces___scan_web_frontend["_scan_web_frontend"]
-        doql__adopt__device_scanner__adopt_from_device_to_snapshot["adopt_from_device_to_snapshot"]
-        doql__adopt__scanner__workflows___extract_makefile_workflows["_extract_makefile_workflows"]
-        doql__adopt__scanner__workflows___create_workflow["_create_workflow"]
-        doql__adopt__scanner__interfaces___detect_web_framework["_detect_web_framework"]
-        doql__adopt__scanner__workflows___build_taskfile_steps["_build_taskfile_steps"]
-        doql__adopt__scanner__entities___extract_fields["_extract_fields"]
-        doql__adopt__scanner__entities___extract_sqlalchemy_fields["_extract_sqlalchemy_fields"]
-        doql__adopt__scanner__deploy___extract_container_config["_extract_container_config"]
-        doql__adopt__scanner__interfaces___extract_web_pages["_extract_web_pages"]
-        doql__adopt__scanner__interfaces___has_api_entry_point["_has_api_entry_point"]
-        doql__adopt__scanner__utils__normalize_sql_type["normalize_sql_type"]
         doql__adopt__scanner__entities___extract_entities_from_python["_extract_entities_from_python"]
-        doql__adopt__scanner__utils__load_yaml["load_yaml"]
-        doql__adopt__scanner__deploy___detect_deployment_indicators["_detect_deployment_indicators"]
-        doql__adopt__scanner__deploy___determine_deploy_target["_determine_deploy_target"]
-        doql__adopt__scanner__roles__scan_roles["scan_roles"]
-        doql__adopt__scanner__entities__scan_entities["scan_entities"]
-        doql__adopt__scanner__workflows__scan_workflows["scan_workflows"]
-        doql__adopt__scanner__deploy___emit_infrastructure_blocks["_emit_infrastructure_blocks"]
-        doql__adopt__scanner__workflows___build_workflow_steps["_build_workflow_steps"]
-        doql__adopt__scanner__utils__camel_to_kebab["camel_to_kebab"]
-        doql__adopt__scanner__utils__snake_to_pascal["snake_to_pascal"]
-        doql__adopt__device_scanner___header["_header"]
-        doql__adopt__scanner__interfaces___scan_desktop["_scan_desktop"]
-        doql__adopt__scanner__workflows___detect_cli_command_name["_detect_cli_command_name"]
-        doql__adopt__scanner__entities___extract_entities_from_sql["_extract_entities_from_sql"]
-        doql__adopt__emitter__emit_css["emit_css"]
-        doql__adopt__scanner__scan_project["scan_project"]
-        doql__adopt__scanner__entities___classify_bases["_classify_bases"]
-        doql__adopt__scanner__workflows___build_steps_from_body["_build_steps_from_body"]
-        doql__adopt__scanner__utils__find_compose["find_compose"]
-        doql__adopt__scanner__interfaces___scan_python_api["_scan_python_api"]
-        doql__adopt__scanner__entities___is_reserved_sql_keyword["_is_reserved_sql_keyword"]
-        doql__adopt__scanner__interfaces___scan_pages_dir["_scan_pages_dir"]
-        doql__adopt__scanner__workflows___extract_taskfile_schedule["_extract_taskfile_schedule"]
-        doql__adopt__scanner__interfaces___scan_mobile["_scan_mobile"]
-        doql__adopt__scanner__utils__find_dockerfiles["find_dockerfiles"]
-        doql__adopt__scanner__deploy___apply_deploy_config_flags["_apply_deploy_config_flags"]
-        doql__adopt__emitter__emit_spec["emit_spec"]
-        doql__adopt__scanner__interfaces___detect_framework_from_pyproject["_detect_framework_from_pyproje"]
-        doql__adopt__device_scanner__adopt_from_device["adopt_from_device"]
-        doql__adopt__scanner__utils__normalize_python_type["normalize_python_type"]
-        doql__adopt__scanner__entities___extract_annotation_fields["_extract_annotation_fields"]
-        doql__adopt__scanner__roles___scan_sql_roles["_scan_sql_roles"]
-        doql__adopt__scanner__deploy__scan_deploy["scan_deploy"]
-        doql__adopt__scanner__databases___scan_compose_databases["_scan_compose_databases"]
-        doql__adopt__scanner__workflows___build_workflow_from_task["_build_workflow_from_task"]
-        doql__adopt__scanner__entities___is_excluded_path["_is_excluded_path"]
-        doql__adopt__scanner__databases___db_name["_db_name"]
         doql__adopt__scanner__workflows___find_cli_candidates["_find_cli_candidates"]
-        doql__adopt__scanner__workflows___is_valid_target["_is_valid_target"]
+        doql__adopt__scanner__deploy___detect_deployment_indicators["_detect_deployment_indicators"]
+        doql__adopt__scanner__interfaces___scan_desktop["_scan_desktop"]
+        doql__adopt__scanner__interfaces___detect_web_framework["_detect_web_framework"]
+        doql__adopt__scanner__entities___extract_entities_from_sql["_extract_entities_from_sql"]
+        doql__adopt__scanner__interfaces___scan_pages_dir["_scan_pages_dir"]
         doql__adopt__scanner__workflows___extract_python_cli_workflows["_extract_python_cli_workflows"]
+        doql__adopt__scanner__metadata___parse_goal_yaml["_parse_goal_yaml"]
+        doql__adopt__scanner__metadata___parse_pyproject["_parse_pyproject"]
+        doql__adopt__scanner__interfaces___scan_mobile["_scan_mobile"]
+        doql__adopt__device_scanner__adopt_from_device["adopt_from_device"]
+        doql__adopt__scanner__databases__scan_databases["scan_databases"]
+        doql__adopt__emitter__emit_css["emit_css"]
+        doql__adopt__scanner__metadata__scan_metadata["scan_metadata"]
+        doql__adopt__scanner__deploy___is_database_service["_is_database_service"]
+        doql__adopt__scanner__workflows___scan_cli_file_for_workflows["_scan_cli_file_for_workflows"]
+        doql__adopt__scanner__workflows__scan_workflows["scan_workflows"]
+        doql__adopt__scanner__workflows___build_steps_from_body["_build_steps_from_body"]
+        doql__adopt__scanner__entities___classify_bases["_classify_bases"]
+        doql__adopt__scanner__interfaces___has_api_entry_point["_has_api_entry_point"]
+        doql__adopt__scanner__scan_project["scan_project"]
+        doql__adopt__scanner__interfaces___detect_framework_from_main_py["_detect_framework_from_main_py"]
+        doql__adopt__scanner__databases___scan_compose_databases["_scan_compose_databases"]
+        doql__adopt__scanner__workflows___extract_taskfile_schedule["_extract_taskfile_schedule"]
         doql__adopt__scanner__entities___extract_sql_columns["_extract_sql_columns"]
+        doql__adopt__scanner__environments___detect_compose_envs["_detect_compose_envs"]
+        doql__adopt__scanner__deploy___apply_deploy_config_flags["_apply_deploy_config_flags"]
+        doql__adopt__scanner__entities___extract_annotation_fields["_extract_annotation_fields"]
+        doql__adopt__scanner__interfaces___extract_web_pages["_extract_web_pages"]
+        doql__adopt__scanner__deploy___extract_container_config["_extract_container_config"]
+        doql__adopt__scanner__deploy___emit_infrastructure_blocks["_emit_infrastructure_blocks"]
+        doql__adopt__scanner__workflows___extract_taskfile_workflows["_extract_taskfile_workflows"]
+        doql__adopt__scanner__roles__scan_roles["scan_roles"]
+        doql__adopt__scanner__interfaces___scan_web_frontend["_scan_web_frontend"]
+        doql__adopt__scanner__workflows___parse_makefile_deps["_parse_makefile_deps"]
+        doql__adopt__scanner__workflows___detect_cli_command_name["_detect_cli_command_name"]
+        doql__adopt__scanner__environments___extract_env_refs["_extract_env_refs"]
+        doql__adopt__scanner__interfaces___detect_framework_from_any_py["_detect_framework_from_any_py"]
+        doql__adopt__scanner__entities___extract_fields["_extract_fields"]
+        doql__adopt__scanner__workflows___extract_makefile_workflows["_extract_makefile_workflows"]
+        doql__adopt__scanner__environments__scan_environments["scan_environments"]
+        doql__adopt__scanner__environments___assign_ssh_host["_assign_ssh_host"]
+        doql__adopt__scanner__environments___detect_local_env["_detect_local_env"]
+        doql__adopt__scanner__deploy___extract_containers_from_compose["_extract_containers_from_compo"]
+        doql__adopt__scanner__interfaces___find_api_main_file["_find_api_main_file"]
+        doql__adopt__scanner__deploy___determine_deploy_target["_determine_deploy_target"]
+        doql__adopt__scanner__databases___db_name["_db_name"]
+        doql__adopt__scanner__interfaces___scan_python_api["_scan_python_api"]
+        doql__adopt__scanner__workflows___create_workflow["_create_workflow"]
+        doql__adopt__scanner__workflows___build_taskfile_steps["_build_taskfile_steps"]
+        doql__adopt__scanner__interfaces___scan_python_cli["_scan_python_cli"]
+        doql__adopt__scanner__entities___is_excluded_path["_is_excluded_path"]
+        doql__adopt__scanner__roles___scan_sql_roles["_scan_sql_roles"]
+        doql__adopt__emitter__emit_spec["emit_spec"]
+        doql__adopt__scanner__interfaces__scan_interfaces["scan_interfaces"]
+        doql__adopt__scanner__workflows___is_valid_target["_is_valid_target"]
+        doql__adopt__scanner__metadata___parse_package_json["_parse_package_json"]
+        doql__adopt__device_scanner__adopt_from_device_to_snapshot["adopt_from_device_to_snapshot"]
+        doql__adopt__scanner__entities__scan_entities["scan_entities"]
+        doql__adopt__scanner__databases___db_from_image["_db_from_image"]
+        doql__adopt__scanner__workflows___build_workflow_steps["_build_workflow_steps"]
+        doql__adopt__scanner__workflows___build_workflow_from_task["_build_workflow_from_task"]
+        doql__adopt__scanner__entities___extract_sqlalchemy_fields["_extract_sqlalchemy_fields"]
+        doql__adopt__scanner__entities___is_reserved_sql_keyword["_is_reserved_sql_keyword"]
+        doql__adopt__scanner__deploy__scan_deploy["scan_deploy"]
+        doql__adopt__scanner__environments___detect_env_files["_detect_env_files"]
+        doql__adopt__scanner__interfaces___detect_framework_from_pyproject["_detect_framework_from_pyproje"]
+        doql__adopt__device_scanner___header["_header"]
     end
     subgraph doql__cli
-        doql__cli__commands__plan___print_workflows["_print_workflows"]
-        doql__cli__commands__doctor___check_interfaces["_check_interfaces"]
-        doql__cli__sync__run_generators["run_generators"]
-        doql__cli__commands__doctor___check_databases["_check_databases"]
-        doql__cli__commands__drift___fmt_value["_fmt_value"]
-        doql__cli__commands__validate___print_issues["_print_issues"]
-        doql__cli__commands__adopt___validate_output_written["_validate_output_written"]
-        doql__cli__context__load_spec["load_spec"]
-        doql__cli__commands__drift___report_to_json["_report_to_json"]
-        doql__cli__lockfile___simple_items_hash["_simple_items_hash"]
-        doql__cli__commands__workspace___is_project["_is_project"]
-        doql__cli__commands__adopt___cmd_adopt_from_directory["_cmd_adopt_from_directory"]
-        doql__cli__commands__workspace___parse_doql["_parse_doql"]
-        doql__cli__sync___run_interface_generators["_run_interface_generators"]
-        doql__cli__commands__workspace___filter_projects["_filter_projects"]
-        doql__cli__lockfile__spec_section_hashes["spec_section_hashes"]
-        doql__cli__main__create_parser["create_parser"]
-        doql__cli__lockfile__diff_sections["diff_sections"]
-        doql__cli__commands__workspace___output_table["_output_table"]
+        doql__cli__sync__determine_regeneration_set["determine_regeneration_set"]
         doql__cli__commands__deploy___deploy_via_redeploy_api["_deploy_via_redeploy_api"]
-        doql__cli__commands__adopt__cmd_adopt["cmd_adopt"]
         doql__cli__lockfile__write_lockfile["write_lockfile"]
-        doql__cli__commands__workspace___walk_projects["_walk_projects"]
-        doql__cli__context__estimate_file_count["estimate_file_count"]
-        doql__cli__lockfile__read_lockfile["read_lockfile"]
-        doql__cli__commands__plan___print_documents["_print_documents"]
-        doql__cli__commands__validate__cmd_validate["cmd_validate"]
-        doql__cli__commands__publish___publish_pypi["_publish_pypi"]
+        doql__cli__commands__run___build_into["_build_into"]
+        doql__cli__commands__workspace___print_project_table["_print_project_table"]
+        doql__cli__commands__doctor___check_databases["_check_databases"]
+        doql__cli__commands__adopt__cmd_adopt["cmd_adopt"]
+        doql__cli__commands__workspace___cmd_list["_cmd_list"]
         doql__cli__commands__workspace___cmd_validate["_cmd_validate"]
-        doql__cli__commands__workspace___print["_print"]
-        doql__cli__commands__workspace___cmd_fix["_cmd_fix"]
-        doql__cli__commands__quadlet__cmd_quadlet["cmd_quadlet"]
-        doql__cli__commands__workspace___select_run_projects["_select_run_projects"]
-        doql__cli__commands__quadlet___install_via_systemctl["_install_via_systemctl"]
-        doql__cli__commands__doctor___find_missing_env_refs["_find_missing_env_refs"]
-        doql__cli__commands__doctor___ssh_run["_ssh_run"]
-        doql__cli__commands__plan___print_header["_print_header"]
+        doql__cli__commands__doctor___check_tools["_check_tools"]
         doql__cli__commands__doctor___collect_required_tools["_collect_required_tools"]
         doql__cli__commands__workspace___cmd_analyze["_cmd_analyze"]
-        doql__cli__commands__doctor__cmd_doctor["cmd_doctor"]
-        doql__cli__commands__plan___print_data_sources["_print_data_sources"]
-        doql__cli__commands__workspace___print_dry_run_commands["_print_dry_run_commands"]
-        doql__cli__commands__drift___render_rich["_render_rich"]
-        doql__cli__commands__doctor___collect_missing_files["_collect_missing_files"]
-        doql__cli__commands__workspace___cmd_list["_cmd_list"]
-        doql__cli__commands__doctor___check_remote_ssh["_check_remote_ssh"]
-        doql__cli__commands__workspace___print_project_table["_print_project_table"]
-        doql__cli__commands__plan___print_entities["_print_entities"]
-        doql__cli__commands__run___run_web["_run_web"]
-        doql__cli__context__scaffold_from_template["scaffold_from_template"]
-        doql__cli__commands__run__cmd_run["cmd_run"]
-        doql__cli__commands__workspace___load_project_doql["_load_project_doql"]
-        doql__cli__commands__plan___print_file_counts["_print_file_counts"]
-        doql__cli__commands__adopt___print_scan_summary["_print_scan_summary"]
-        doql__cli__commands__import_cmd__cmd_import["cmd_import"]
-        doql__cli__main__main["main"]
-        doql__cli__commands__doctor___check_tools["_check_tools"]
-        doql__cli__sync__cmd_sync["cmd_sync"]
-        doql__cli__commands__workspace___execute_single_project["_execute_single_project"]
-        doql__cli__commands__deploy___deploy_via_redeploy_cli["_deploy_via_redeploy_cli"]
-        doql__cli__commands__workspace__cmd_workspace["cmd_workspace"]
-        doql__cli__commands__doctor___check_remote_runtime["_check_remote_runtime"]
-        doql__cli__commands__doctor___warn_unknown_entity_refs["_warn_unknown_entity_refs"]
-        doql__cli__commands__run___build_into["_build_into"]
-        doql__cli__commands__workspace___cmd_run["_cmd_run"]
-        doql__cli__commands__run___run_desktop["_run_desktop"]
-        doql__cli__commands__drift__cmd_drift["cmd_drift"]
-        doql__cli__commands__drift___render_plain["_render_plain"]
-        doql__cli__commands__quadlet___install_via_redeploy_api["_install_via_redeploy_api"]
-        doql__cli__commands__workspace___print_run_summary["_print_run_summary"]
         doql__cli__commands__run___run_api["_run_api"]
-        doql__cli__commands__doctor___check_remote["_check_remote"]
-        doql__cli__commands__doctor___check_parse["_check_parse"]
-        doql__cli__sync__determine_regeneration_set["determine_regeneration_set"]
-        doql__cli__commands__plan___print_summary["_print_summary"]
-        doql__cli__commands__deploy__cmd_deploy["cmd_deploy"]
-        doql__cli__commands__workspace___discover_local["_discover_local"]
-        doql__cli__context__build_context["build_context"]
-        doql__cli__commands__export__cmd_export["cmd_export"]
-        doql__cli__commands__adopt___print_item["_print_item"]
-        doql__cli__commands__plan___print_api_clients["_print_api_clients"]
-        doql__cli__commands__publish__cmd_publish["cmd_publish"]
-        doql__cli__commands__doctor___check_files["_check_files"]
-        doql__cli__commands__plan__cmd_plan["cmd_plan"]
-        doql__cli__commands__doctor___check_env["_check_env"]
-        doql__cli__commands__workspace___analyze_project["_analyze_project"]
-        doql__cli__commands__adopt___cmd_adopt_from_device["_cmd_adopt_from_device"]
-        doql__cli__commands__workspace___output_csv["_output_csv"]
-        doql__cli__commands__run___workspace_for_file["_workspace_for_file"]
-        doql__cli__commands__run___run_target["_run_target"]
-        doql__cli__commands__plan___print_interfaces["_print_interfaces"]
+        doql__cli__commands__plan___print_file_counts["_print_file_counts"]
         doql__cli__commands__init__cmd_init["cmd_init"]
+        doql__cli__commands__drift___report_to_json["_report_to_json"]
+        doql__cli__commands__run__cmd_run["cmd_run"]
+        doql__cli__commands__publish___publish_pypi["_publish_pypi"]
+        doql__cli__commands__workspace___load_project_doql["_load_project_doql"]
+        doql__cli__commands__drift___render_rich["_render_rich"]
+        doql__cli__context__build_context["build_context"]
+        doql__cli__commands__quadlet___install_via_systemctl["_install_via_systemctl"]
+        doql__cli__commands__adopt___print_item["_print_item"]
+        doql__cli__commands__workspace___execute_single_project["_execute_single_project"]
+        doql__cli__commands__workspace___output_csv["_output_csv"]
+        doql__cli__commands__doctor___check_remote["_check_remote"]
+        doql__cli__commands__workspace___print["_print"]
+        doql__cli__commands__plan___print_data_sources["_print_data_sources"]
+        doql__cli__commands__drift__cmd_drift["cmd_drift"]
+        doql__cli__commands__run___run_web["_run_web"]
+        doql__cli__commands__workspace___analyze_project["_analyze_project"]
+        doql__cli__commands__workspace___cmd_fix["_cmd_fix"]
+        doql__cli__commands__workspace___output_table["_output_table"]
+        doql__cli__commands__doctor___collect_missing_files["_collect_missing_files"]
+        doql__cli__commands__workspace___walk_projects["_walk_projects"]
+        doql__cli__commands__doctor___check_env["_check_env"]
+        doql__cli__commands__workspace__cmd_workspace["cmd_workspace"]
+        doql__cli__commands__quadlet__cmd_quadlet["cmd_quadlet"]
+        doql__cli__commands__adopt___validate_output_written["_validate_output_written"]
+        doql__cli__main__main["main"]
+        doql__cli__commands__adopt___cmd_adopt_from_directory["_cmd_adopt_from_directory"]
+        doql__cli__sync__cmd_sync["cmd_sync"]
+        doql__cli__commands__plan___print_entities["_print_entities"]
+        doql__cli__commands__workspace___cmd_run["_cmd_run"]
+        doql__cli__commands__validate___print_issues["_print_issues"]
+        doql__cli__commands__run___run_target["_run_target"]
+        doql__cli__commands__drift___fmt_value["_fmt_value"]
+        doql__cli__commands__plan___print_api_clients["_print_api_clients"]
+        doql__cli__commands__adopt___discover_subprojects["_discover_subprojects"]
+        doql__cli__commands__run___workspace_for_file["_workspace_for_file"]
+        doql__cli__commands__adopt___cmd_adopt_from_device["_cmd_adopt_from_device"]
+        doql__cli__commands__doctor___warn_unknown_entity_refs["_warn_unknown_entity_refs"]
+        doql__cli__commands__adopt___cmd_adopt_recursive["_cmd_adopt_recursive"]
+        doql__cli__commands__deploy___deploy_via_redeploy_cli["_deploy_via_redeploy_cli"]
+        doql__cli__commands__plan___print_documents["_print_documents"]
+        doql__cli__commands__plan___print_interfaces["_print_interfaces"]
+        doql__cli__commands__workspace___parse_doql["_parse_doql"]
+        doql__cli__commands__workspace___select_run_projects["_select_run_projects"]
+        doql__cli__lockfile__spec_section_hashes["spec_section_hashes"]
+        doql__cli__commands__adopt___print_scan_summary["_print_scan_summary"]
+        doql__cli__commands__workspace___filter_projects["_filter_projects"]
+        doql__cli__lockfile___simple_items_hash["_simple_items_hash"]
+        doql__cli__main__create_parser["create_parser"]
+        doql__cli__commands__workspace___is_project["_is_project"]
+        doql__cli__commands__run___run_desktop["_run_desktop"]
+        doql__cli__commands__quadlet___install_via_redeploy_api["_install_via_redeploy_api"]
+        doql__cli__commands__doctor___find_missing_env_refs["_find_missing_env_refs"]
+        doql__cli__commands__plan___print_header["_print_header"]
+        doql__cli__commands__doctor___check_interfaces["_check_interfaces"]
+        doql__cli__commands__doctor___check_parse["_check_parse"]
+        doql__cli__commands__validate__cmd_validate["cmd_validate"]
+        doql__cli__commands__doctor__cmd_doctor["cmd_doctor"]
+        doql__cli__commands__workspace___discover_local["_discover_local"]
+        doql__cli__commands__doctor___ssh_run["_ssh_run"]
+        doql__cli__commands__doctor___check_remote_ssh["_check_remote_ssh"]
+        doql__cli__sync___run_interface_generators["_run_interface_generators"]
+        doql__cli__commands__doctor___check_remote_runtime["_check_remote_runtime"]
+        doql__cli__commands__workspace___print_run_summary["_print_run_summary"]
+        doql__cli__commands__export__cmd_export["cmd_export"]
+        doql__cli__commands__drift___render_plain["_render_plain"]
+        doql__cli__commands__plan__cmd_plan["cmd_plan"]
+        doql__cli__commands__publish__cmd_publish["cmd_publish"]
+        doql__cli__sync__run_generators["run_generators"]
+        doql__cli__commands__import_cmd__cmd_import["cmd_import"]
+        doql__cli__commands__deploy__cmd_deploy["cmd_deploy"]
+        doql__cli__commands__doctor___check_files["_check_files"]
+        doql__cli__commands__workspace___print_dry_run_commands["_print_dry_run_commands"]
+        doql__cli__commands__plan___print_workflows["_print_workflows"]
+        doql__cli__commands__plan___print_summary["_print_summary"]
     end
     subgraph doql__drift
+        doql__drift__detector__parse_intended["parse_intended"]
         doql__drift__detector__find_intended_file["find_intended_file"]
         doql__drift__detector__detect_drift["detect_drift"]
-        doql__drift__detector__parse_intended["parse_intended"]
     end
     subgraph doql__exporters
-        doql__exporters__markdown__export_markdown_file["export_markdown_file"]
-        doql__exporters__yaml_exporter__spec_to_dict["spec_to_dict"]
-        doql__exporters__markdown__writers___write_workflows["_write_workflows"]
-        doql__exporters__markdown__sections___interface_section["_interface_section"]
-        doql__exporters__markdown__writers___write_entities["_write_entities"]
-        doql__exporters__markdown__writers___write_header["_write_header"]
-        doql__exporters__markdown__sections___h["_h"]
-        doql__exporters__css__format_convert___unquote_simple_value["_unquote_simple_value"]
-        doql__exporters__markdown__writers___write_data_sources["_write_data_sources"]
         doql__exporters__markdown__writers___write_reports["_write_reports"]
-        doql__exporters__yaml_exporter__export_yaml["export_yaml"]
-        doql__exporters__markdown__sections___config_section["_config_section"]
-        doql__exporters__markdown__sections___entity_section["_entity_section"]
-        doql__exporters__markdown__writers___write_documents["_write_documents"]
+        doql__exporters__css__renderers___build_interface_props["_build_interface_props"]
+        doql__exporters__css__export_sass["export_sass"]
+        doql__exporters__css__renderers___render_role["_render_role"]
         doql__exporters__yaml_exporter__export_yaml_file["export_yaml_file"]
-        doql__exporters__markdown__writers___write_integrations["_write_integrations"]
-        doql__exporters__markdown__writers___write_section["_write_section"]
-        doql__exporters__markdown__sections___field_type_str["_field_type_str"]
-        doql__exporters__markdown__writers___write_interfaces["_write_interfaces"]
-        doql__exporters__markdown__export_markdown["export_markdown"]
-        doql__exporters__css__format_convert___css_to_less["_css_to_less"]
-        doql__exporters__markdown__writers___write_roles["_write_roles"]
-        doql__exporters__markdown__sections___document_section["_document_section"]
         doql__exporters__markdown__writers___write_deployment["_write_deployment"]
-        doql__exporters__markdown__sections___report_section["_report_section"]
+        doql__exporters__css__renderers___render_template["_render_template"]
+        doql__exporters__markdown__sections___field_type_str["_field_type_str"]
+        doql__exporters__css___render_documentation_layer["_render_documentation_layer"]
+        doql__exporters__markdown__export_markdown["export_markdown"]
+        doql__exporters__css__renderers___build_page_props["_build_page_props"]
+        doql__exporters__markdown__writers___write_documents["_write_documents"]
+        doql__exporters__markdown__writers___write_workflows["_write_workflows"]
+        doql__exporters__css__renderers___render_dependencies["_render_dependencies"]
+        doql__exporters__markdown__writers___write_interfaces["_write_interfaces"]
+        doql__exporters__markdown__sections___config_section["_config_section"]
+        doql__exporters__css__renderers___render_webhook["_render_webhook"]
+        doql__exporters__markdown__writers___write_section["_write_section"]
+        doql__exporters__markdown__sections___interface_section["_interface_section"]
+        doql__exporters__css__renderers___render_entity["_render_entity"]
+        doql__exporters__markdown__sections___h["_h"]
+        doql__exporters__css__export_css["export_css"]
+        doql__exporters__css__export_less["export_less"]
+        doql__exporters__markdown__export_markdown_file["export_markdown_file"]
+        doql__exporters__css__renderers___render_app["_render_app"]
+        doql__exporters__css__renderers___render_database["_render_database"]
+        doql__exporters__css___render_infrastructure_layer["_render_infrastructure_layer"]
+        doql__exporters__markdown__writers___write_entities["_write_entities"]
+        doql__exporters__markdown__writers___write_data_sources["_write_data_sources"]
         doql__exporters__markdown__sections___workflow_section["_workflow_section"]
+        doql__exporters__css__renderers___render_report["_render_report"]
+        doql__exporters__css__renderers___render_document["_render_document"]
+        doql__exporters__markdown__writers___write_header["_write_header"]
+        doql__exporters__markdown__writers___write_integrations["_write_integrations"]
+        doql__exporters__css__renderers___render_integration["_render_integration"]
+        doql__exporters__yaml_exporter__spec_to_dict["spec_to_dict"]
+        doql__exporters__markdown__sections___entity_section["_entity_section"]
+        doql__exporters__yaml_exporter__export_yaml["export_yaml"]
+        doql__exporters__css___render_integration_layer["_render_integration_layer"]
+        doql__exporters__css___render_css["_render_css"]
+        doql__exporters__css__format_convert___unquote_simple_value["_unquote_simple_value"]
+        doql__exporters__css__renderers___render_data_source["_render_data_source"]
+        doql__exporters__markdown__sections___report_section["_report_section"]
+        doql__exporters__css__renderers___render_deploy["_render_deploy"]
+        doql__exporters__css__renderers___render_project["_render_project"]
+        doql__exporters__css__renderers___render_interface["_render_interface"]
+        doql__exporters__css__renderers___render_api_client["_render_api_client"]
+        doql__exporters__markdown__sections___document_section["_document_section"]
+        doql__exporters__markdown__writers___write_roles["_write_roles"]
+        doql__exporters__css__renderers___render_workflow["_render_workflow"]
+        doql__exporters__css__format_convert___css_to_less["_css_to_less"]
+        doql__exporters__css___render_data_layer["_render_data_layer"]
+        doql__exporters__css__renderers___render_environment["_render_environment"]
     end
     subgraph doql__generators
-        doql__generators__infra_gen___gen_terraform["_gen_terraform"]
-        doql__generators__document_gen___gen_preview_html["_gen_preview_html"]
-        doql__generators__api_gen__routes__gen_routes["gen_routes"]
-        doql__generators__workflow_gen___step_fn_name["_step_fn_name"]
-        doql__generators__report_gen__generate["generate"]
+        doql__generators__api_gen___write_alembic_files["_write_alembic_files"]
         doql__generators__integrations_gen__generate["generate"]
-        doql__generators__web_gen__config___gen_tailwind_config["_gen_tailwind_config"]
+        doql__generators__infra_gen___gen_kubernetes["_gen_kubernetes"]
         doql__generators__infra_gen__generate["generate"]
-        doql__generators__web_gen___write_pwa_files["_write_pwa_files"]
-        doql__generators__api_gen__main__gen_main["gen_main"]
-        doql__generators__api_gen__routes___gen_create_route["_gen_create_route"]
-        doql__generators__api_gen__schemas___gen_update_schema["_gen_update_schema"]
-        doql__generators__web_gen__pages___gen_entity_page["_gen_entity_page"]
-        doql__generators__ci_gen__generate["generate"]
-        doql__generators__infra_gen___slug["_slug"]
+        doql__generators__vite_gen__generate["generate"]
+        doql__generators__workflow_gen___gen_init["_gen_init"]
+        doql__generators__utils__codegen__generate_file_from_template["generate_file_from_template"]
+        doql__generators__infra_gen___gen_nginx["_gen_nginx"]
+        doql__generators__integrations_gen___generate_integration_services["_generate_integration_services"]
+        doql__generators__infra_gen___gen_migration_spec["_gen_migration_spec"]
+        doql__generators__api_gen__alembic___entity_table_columns["_entity_table_columns"]
+        doql__generators__ci_gen___gen_gitlab_ci["_gen_gitlab_ci"]
+        doql__generators__api_gen__routes__gen_routes["gen_routes"]
         doql__generators__api_gen__models___gen_column_def["_gen_column_def"]
+        doql__generators__api_gen__alembic__gen_initial_migration["gen_initial_migration"]
+        doql__generators__utils__codegen__write_code_block["write_code_block"]
+        doql__generators__i18n_gen__generate["generate"]
+        doql__generators__api_gen__routes___gen_create_route["_gen_create_route"]
+        doql__generators__report_gen___gen_report_script["_gen_report_script"]
+        doql__generators__api_gen__schemas___gen_update_schema["_gen_update_schema"]
+        doql__generators__infra_gen___gen_docker_compose["_gen_docker_compose"]
+        doql__generators__api_gen__routes___gen_list_route["_gen_list_route"]
+        doql__generators__mobile_gen__generate["generate"]
+        doql__generators__web_gen__generate["generate"]
+        doql__generators__api_gen__generate["generate"]
+        doql__generators__api_gen__routes___gen_entity_routes["_gen_entity_routes"]
+        doql__generators__api_gen___write_api_readme["_write_api_readme"]
+        doql__generators__api_gen__schemas___gen_create_schema["_gen_create_schema"]
+        doql__generators__infra_gen___gen_quadlet["_gen_quadlet"]
+        doql__generators__integrations_gen___gen_webhook_dispatcher["_gen_webhook_dispatcher"]
+        doql__generators__vite_gen___slug["_slug"]
+        doql__generators__document_gen___gen_render_script["_gen_render_script"]
+        doql__generators__workflow_gen___gen_scheduler["_gen_scheduler"]
+        doql__generators__report_gen__generate["generate"]
+        doql__generators__api_gen__schemas___gen_entity_schemas["_gen_entity_schemas"]
+        doql__generators__integrations_gen___setup_services_dir["_setup_services_dir"]
+        doql__generators__mobile_gen___gen_icons["_gen_icons"]
+        doql__generators__vite_gen___gen_index_html["_gen_index_html"]
+        doql__generators__infra_gen___slug["_slug"]
+        doql__generators__integrations_gen___generate_api_clients["_generate_api_clients"]
+        doql__generators__web_gen___write_component_files["_write_component_files"]
+        doql__generators__api_gen__export_openapi["export_openapi"]
+        doql__generators__infra_gen___map_deploy_strategy["_map_deploy_strategy"]
+        doql__generators__web_gen___setup_web_directories["_setup_web_directories"]
+        doql__generators__api_gen__routes___gen_get_route["_gen_get_route"]
+        doql__generators__workflow_gen___extract_cron["_extract_cron"]
+        doql__generators__web_gen___write_page_files["_write_page_files"]
+        doql__generators__vite_gen___gen_vite_config["_gen_vite_config"]
+        doql__generators__web_gen___write_config_files["_write_config_files"]
+        doql__generators__web_gen___write_readme["_write_readme"]
+        doql__generators__i18n_gen___gen_translations["_gen_translations"]
+        doql__generators__vite_gen___gen_tsconfig["_gen_tsconfig"]
+        doql__generators__document_gen___gen_preview_html["_gen_preview_html"]
+        doql__generators__mobile_gen___gen_manifest["_gen_manifest"]
+        doql__generators__api_gen__schemas__gen_schemas["gen_schemas"]
+        doql__generators__api_gen__schemas___gen_response_schema["_gen_response_schema"]
+        doql__generators__api_gen___write_api_files["_write_api_files"]
+        doql__generators__workflow_gen___step_fn_name["_step_fn_name"]
+        doql__generators__workflow_gen__generate["generate"]
         doql__generators__infra_gen___gen_kiosk["_gen_kiosk"]
-        doql__generators__web_gen__pwa___gen_sw_register["_gen_sw_register"]
+        doql__generators__web_gen__pages___gen_entity_page["_gen_entity_page"]
+        doql__generators__ci_gen___gen_github_action["_gen_github_action"]
+        doql__generators__ci_gen__generate["generate"]
         doql__generators__api_gen__routes___gen_update_route["_gen_update_route"]
         doql__generators__web_gen___write_core_files["_write_core_files"]
         doql__generators__integrations_gen___gen_api_client["_gen_api_client"]
-        doql__generators__web_gen__pages___gen_dashboard["_gen_dashboard"]
-        doql__generators__api_gen__auth__gen_auth["gen_auth"]
-        doql__generators__web_gen__pages___field_input["_field_input"]
-        doql__generators__api_gen__database__gen_database["gen_database"]
-        doql__generators__web_gen__config___gen_postcss_config["_gen_postcss_config"]
-        doql__generators__api_gen__alembic__gen_initial_migration["gen_initial_migration"]
-        doql__generators__workflow_gen__generate["generate"]
-        doql__generators__workflow_gen___extract_cron["_extract_cron"]
-        doql__generators__web_gen__components___gen_layout["_gen_layout"]
-        doql__generators__workflow_gen___gen_engine["_gen_engine"]
-        doql__generators__api_gen___write_api_files["_write_api_files"]
-        doql__generators__vite_gen__generate["generate"]
-        doql__generators__ci_gen___gen_gitlab_ci["_gen_gitlab_ci"]
-        doql__generators__integrations_gen___generate_integration_services["_generate_integration_services"]
-        doql__generators__vite_gen___gen_vite_config["_gen_vite_config"]
-        doql__generators__vite_gen___gen_index_html["_gen_index_html"]
-        doql__generators__api_gen__alembic___entity_table_columns["_entity_table_columns"]
         doql__generators__mobile_gen___gen_service_worker["_gen_service_worker"]
-        doql__generators__web_gen___write_page_files["_write_page_files"]
-        doql__generators__mobile_gen___slug["_slug"]
-        doql__generators__mobile_gen__generate["generate"]
-        doql__generators__utils__codegen__generate_file_from_template["generate_file_from_template"]
-        doql__generators__infra_gen___map_deploy_strategy["_map_deploy_strategy"]
-        doql__generators__workflow_gen___gen_init["_gen_init"]
-        doql__generators__ci_gen___gen_github_action["_gen_github_action"]
-        doql__generators__web_gen__router___gen_app["_gen_app"]
-        doql__generators__api_gen__common__sa_type["sa_type"]
-        doql__generators__infra_gen___gen_quadlet["_gen_quadlet"]
-        doql__generators__api_gen__common__py_type["py_type"]
-        doql__generators__report_gen___gen_report_script["_gen_report_script"]
-        doql__generators__document_gen___gen_render_script["_gen_render_script"]
-        doql__generators__mobile_gen___gen_icons["_gen_icons"]
-        doql__generators__api_gen__routes___gen_entity_routes["_gen_entity_routes"]
-        doql__generators__api_gen__schemas__gen_schemas["gen_schemas"]
-        doql__generators__web_gen__generate["generate"]
-        doql__generators__web_gen__core___gen_index_css["_gen_index_css"]
-        doql__generators__web_gen__pages___build_interface_body["_build_interface_body"]
-        doql__generators__api_gen__schemas___gen_entity_schemas["_gen_entity_schemas"]
-        doql__generators__web_gen___setup_web_directories["_setup_web_directories"]
-        doql__generators__i18n_gen__generate["generate"]
-        doql__generators__web_gen___write_config_files["_write_config_files"]
-        doql__generators__web_gen___write_readme["_write_readme"]
-        doql__generators__api_gen__alembic__gen_alembic_env["gen_alembic_env"]
-        doql__generators__api_gen__common__py_default["py_default"]
-        doql__generators__workflow_gen___gen_workflow_module["_gen_workflow_module"]
-        doql__generators__api_gen__generate["generate"]
-        doql__generators__integrations_gen___gen_webhook_dispatcher["_gen_webhook_dispatcher"]
-        doql__generators__i18n_gen___gen_translations["_gen_translations"]
-        doql__generators__web_gen__core___gen_api_ts["_gen_api_ts"]
-        doql__generators__api_gen__export_openapi["export_openapi"]
-        doql__generators__api_gen___write_api_readme["_write_api_readme"]
-        doql__generators__api_gen__main__gen_requirements["gen_requirements"]
-        doql__generators__vite_gen___gen_tsconfig["_gen_tsconfig"]
-        doql__generators__api_gen__schemas___gen_create_schema["_gen_create_schema"]
-        doql__generators__web_gen__core___gen_main_tsx["_gen_main_tsx"]
-        doql__generators__integrations_gen___setup_services_dir["_setup_services_dir"]
-        doql__generators__vite_gen___slug["_slug"]
-        doql__generators__api_gen__schemas___gen_response_schema["_gen_response_schema"]
-        doql__generators__api_gen__common__snake["snake"]
-        doql__generators__utils__codegen__write_code_block["write_code_block"]
-        doql__generators__api_gen__common__safe_name["safe_name"]
-        doql__generators__integrations_gen___generate_api_clients["_generate_api_clients"]
-        doql__generators__desktop_gen___gen_package_json["_gen_package_json"]
-        doql__generators__i18n_gen___humanize["_humanize"]
+        doql__generators__web_gen___write_pwa_files["_write_pwa_files"]
         doql__generators__api_gen__models__gen_models["gen_models"]
-        doql__generators__mobile_gen___gen_index_html["_gen_index_html"]
-        doql__generators__infra_gen___gen_migration_spec["_gen_migration_spec"]
-        doql__generators__workflow_gen___gen_scheduler["_gen_scheduler"]
-        doql__generators__api_gen__alembic__gen_alembic_ini["gen_alembic_ini"]
-        doql__generators__infra_gen___gen_nginx["_gen_nginx"]
-        doql__generators__infra_gen___gen_kubernetes["_gen_kubernetes"]
+        doql__generators__workflow_gen___gen_engine["_gen_engine"]
+        doql__generators__web_gen__pages___field_input["_field_input"]
+        doql__generators__i18n_gen___humanize["_humanize"]
+        doql__generators__workflow_gen___gen_workflow_module["_gen_workflow_module"]
         doql__generators__document_gen__generate["generate"]
-        doql__generators__api_gen__routes___gen_list_route["_gen_list_route"]
-        doql__generators__infra_gen___gen_docker_compose["_gen_docker_compose"]
-        doql__generators__api_gen__routes___gen_get_route["_gen_get_route"]
+        doql__generators__mobile_gen___slug["_slug"]
+        doql__generators__infra_gen___gen_terraform["_gen_terraform"]
         doql__generators__integrations_gen___generate_webhooks["_generate_webhooks"]
-        doql__generators__web_gen___write_component_files["_write_component_files"]
-        doql__generators__api_gen___write_alembic_files["_write_alembic_files"]
-        doql__generators__mobile_gen___gen_manifest["_gen_manifest"]
+        doql__generators__web_gen__pages___build_interface_body["_build_interface_body"]
     end
     subgraph doql__importers
-        doql__importers__yaml_importer__import_yaml["import_yaml"]
-        doql__importers__yaml_importer___import_metadata["_import_metadata"]
-        doql__importers__yaml_importer__import_yaml_file["import_yaml_file"]
-        doql__importers__yaml_importer___build_entity_field["_build_entity_field"]
-        doql__importers__yaml_importer__import_yaml_text["import_yaml_text"]
-        doql__importers__yaml_importer___build_entity["_build_entity"]
         doql__importers__yaml_importer___build_page["_build_page"]
-        doql__importers__yaml_importer___import_collection["_import_collection"]
         doql__importers__yaml_importer___build_workflow_step["_build_workflow_step"]
-        doql__importers__yaml_importer___build_workflow["_build_workflow"]
+        doql__importers__yaml_importer__import_yaml_text["import_yaml_text"]
+        doql__importers__yaml_importer___build_entity_field["_build_entity_field"]
         doql__importers__yaml_importer___build_interface["_build_interface"]
-    end
-    subgraph doql__integrations
-        doql__integrations__op3_bridge__snapshot_to_less["snapshot_to_less"]
+        doql__importers__yaml_importer__import_yaml_file["import_yaml_file"]
+        doql__importers__yaml_importer___import_collection["_import_collection"]
+        doql__importers__yaml_importer__import_yaml["import_yaml"]
+        doql__importers__yaml_importer___build_workflow["_build_workflow"]
+        doql__importers__yaml_importer___build_entity["_build_entity"]
+        doql__importers__yaml_importer___import_metadata["_import_metadata"]
     end
     subgraph doql__lsp_server
-        doql__lsp_server___parse_doc["_parse_doc"]
-        doql__lsp_server___word_at["_word_at"]
-        doql__lsp_server__did_open["did_open"]
-        doql__lsp_server___diagnostics_for["_diagnostics_for"]
-        doql__lsp_server__document_symbols["document_symbols"]
-        doql__lsp_server___hover_entity["_hover_entity"]
-        doql__lsp_server___on_text_document_event["_on_text_document_event"]
-        doql__lsp_server__did_change["did_change"]
-        doql__lsp_server__definition["definition"]
         doql__lsp_server___hover_field["_hover_field"]
-        doql__lsp_server__hover["hover"]
         doql__lsp_server__completion["completion"]
+        doql__lsp_server__hover["hover"]
+        doql__lsp_server___parse_doc["_parse_doc"]
+        doql__lsp_server__document_symbols["document_symbols"]
+        doql__lsp_server__did_change["did_change"]
+        doql__lsp_server___hover_entity["_hover_entity"]
         doql__lsp_server__did_save["did_save"]
+        doql__lsp_server___word_at["_word_at"]
         doql__lsp_server___find_line_col["_find_line_col"]
+        doql__lsp_server___diagnostics_for["_diagnostics_for"]
+        doql__lsp_server___on_text_document_event["_on_text_document_event"]
+        doql__lsp_server__definition["definition"]
+        doql__lsp_server__did_open["did_open"]
     end
     subgraph doql__parsers
-        doql__parsers__css_utils___strip_quotes["_strip_quotes"]
-        doql__parsers__css_mappers___map_interface["_map_interface"]
-        doql__parsers__extractors___parse_field_default["_parse_field_default"]
-        doql__parsers__extractors___extract_page_from_format1["_extract_page_from_format1"]
-        doql__parsers__css_transformers___extract_mixins["_extract_mixins"]
-        doql__parsers__css_transformers___resolve_less_vars["_resolve_less_vars"]
-        doql__parsers__registry___handle_domain["_handle_domain"]
-        doql__parsers__registry___handle_version["_handle_version"]
-        doql__parsers__css_transformers___convert_indent_to_braces["_convert_indent_to_braces"]
-        doql__parsers__css_transformers___sass_to_css["_sass_to_css"]
-        doql__parsers__registry__get_handler["get_handler"]
-        doql__parsers__css_parser___map_to_spec["_map_to_spec"]
-        doql__parsers__extractors__collect_env_refs["collect_env_refs"]
-        doql__parsers__css_transformers___is_selector_starter["_is_selector_starter"]
-        doql__parsers__css_tokenizer___make_css_block["_make_css_block"]
-        doql__parsers__detect_doql_file["detect_doql_file"]
-        doql__parsers__css_transformers___is_step_line["_is_step_line"]
-        doql__parsers__registry___handle_report["_handle_report"]
-        doql__parsers__css_transformers___resolve_vars["_resolve_vars"]
         doql__parsers__css_parser___apply_css_block["_apply_css_block"]
-        doql__parsers__registry__register["register"]
-        doql__parsers__css_transformers___is_selector_line["_is_selector_line"]
-        doql__parsers__css_parser__parse_css_text["parse_css_text"]
-        doql__parsers__registry___handle_webhook["_handle_webhook"]
-        doql__parsers__registry___handle_template["_handle_template"]
-        doql__parsers__extractors__extract_entity_fields["extract_entity_fields"]
-        doql__parsers__registry___handle_api_client["_handle_api_client"]
-        doql__parsers__blocks__apply_block["apply_block"]
-        doql__parsers__extractors___should_skip_line["_should_skip_line"]
+        doql__parsers__css_tokenizer___make_css_block["_make_css_block"]
         doql__parsers__css_tokenizer___consume_pending["_consume_pending"]
-        doql__parsers__css_tokenizer___process_decl_line["_process_decl_line"]
-        doql__parsers__extractors___extract_page_from_format2["_extract_page_from_format2"]
-        doql__parsers__css_transformers___resolve_sass_vars["_resolve_sass_vars"]
-        doql__parsers__css_transformers___has_bracket_selector["_has_bracket_selector"]
-        doql__parsers__css_utils___strip_comments["_strip_comments"]
-        doql__parsers__registry___handle_data["_handle_data"]
-        doql__parsers__extractors___parse_field_ref["_parse_field_ref"]
-        doql__parsers__registry___handle_entity["_handle_entity"]
-        doql__parsers__registry___handle_app["_handle_app"]
-        doql__parsers__extractors__extract_pages["extract_pages"]
-        doql__parsers__extractors__extract_list["extract_list"]
-        doql__parsers__css_tokenizer___parse_declarations["_parse_declarations"]
-        doql__parsers__registry___handle_languages["_handle_languages"]
-        doql__parsers__css_transformers___is_doql_property_decl["_is_doql_property_decl"]
-        doql__parsers__extractors___parse_field_type["_parse_field_type"]
-        doql__parsers__extractors__extract_val["extract_val"]
-        doql__parsers__css_transformers___close_indent_blocks["_close_indent_blocks"]
-        doql__parsers__extractors__extract_yaml_list["extract_yaml_list"]
-        doql__parsers__css_transformers___expand_includes["_expand_includes"]
-        doql__parsers__css_parser___detect_format["_detect_format"]
+        doql__parsers__css_parser___map_to_spec["_map_to_spec"]
         doql__parsers__css_tokenizer___tokenise_css["_tokenise_css"]
-        doql__parsers__css_transformers___find_step_block_end["_find_step_block_end"]
-        doql__parsers__css_utils___parse_list["_parse_list"]
-        doql__parsers__css_parser__parse_css_file["parse_css_file"]
-        doql__parsers__css_parser___parse_selector["_parse_selector"]
-        doql__parsers__extractors___parse_field_flags["_parse_field_flags"]
-        doql__parsers__registry___handle_document["_handle_document"]
-        doql__parsers__registry___handle_database["_handle_database"]
+        doql__parsers__css_tokenizer___process_decl_line["_process_decl_line"]
+        doql__parsers__css_tokenizer___parse_declarations["_parse_declarations"]
     end
     subgraph doql__plugins
+        doql__plugins___discover_entry_points["_discover_entry_points"]
         doql__plugins__discover_plugins["discover_plugins"]
         doql__plugins___discover_local["_discover_local"]
-        doql__plugins___discover_entry_points["_discover_entry_points"]
         doql__plugins__run_plugins["run_plugins"]
     end
     subgraph doql__utils
         doql__utils__naming__snake["snake"]
         doql__utils__naming__kebab["kebab"]
-        doql__utils__clean___clean["_clean"]
     end
     subgraph playground__app
-        playground__app__key["key"]
-        playground__app__name["name"]
-        playground__app__initial["initial"]
         playground__app__activateTab["activateTab"]
+        playground__app__initial["initial"]
+        playground__app__name["name"]
+        playground__app__key["key"]
         playground__app__updateStats["updateStats"]
     end
     subgraph playground__pyodide_bridge
-        playground__pyodide_bridge__bootPyodide["bootPyodide"]
-        playground__pyodide_bridge___installDoql["_installDoql"]
-        playground__pyodide_bridge__buildFn["buildFn"]
         playground__pyodide_bridge__executeBuild["executeBuild"]
-        playground__pyodide_bridge___loadPyodide["_loadPyodide"]
+        playground__pyodide_bridge__buildFn["buildFn"]
+        playground__pyodide_bridge__bootPyodide["bootPyodide"]
         playground__pyodide_bridge___createBuildFunction["_createBuildFunction"]
+        playground__pyodide_bridge___loadPyodide["_loadPyodide"]
+        playground__pyodide_bridge___installDoql["_installDoql"]
     end
     subgraph playground__renderers
-        playground__renderers__renderEnv["renderEnv"]
-        playground__renderers__renderFatal["renderFatal"]
         playground__renderers__escapeHtml["escapeHtml"]
         playground__renderers__renderDiagnostics["renderDiagnostics"]
-        playground__renderers__keys["keys"]
+        playground__renderers__renderEnv["renderEnv"]
         playground__renderers__renderFiles["renderFiles"]
+        playground__renderers__keys["keys"]
+        playground__renderers__renderFatal["renderFatal"]
     end
     subgraph plugins__doql_plugin_erp
+        plugins__doql_plugin_erp__doql_plugin_erp__generate["generate"]
+        plugins__doql_plugin_erp__doql_plugin_erp___sync_module["_sync_module"]
         plugins__doql_plugin_erp__doql_plugin_erp___mapping_module["_mapping_module"]
         plugins__doql_plugin_erp__doql_plugin_erp___odoo_client_module["_odoo_client_module"]
-        plugins__doql_plugin_erp__doql_plugin_erp___readme["_readme"]
         plugins__doql_plugin_erp__doql_plugin_erp___webhook_module["_webhook_module"]
-        plugins__doql_plugin_erp__doql_plugin_erp___sync_module["_sync_module"]
-        plugins__doql_plugin_erp__doql_plugin_erp__generate["generate"]
+        plugins__doql_plugin_erp__doql_plugin_erp___readme["_readme"]
     end
     subgraph plugins__doql_plugin_fleet
         plugins__doql_plugin_fleet__doql_plugin_fleet___readme["_readme"]
-        plugins__doql_plugin_fleet__doql_plugin_fleet__migration___migration_module["_migration_module"]
-        plugins__doql_plugin_fleet__doql_plugin_fleet__ota___ota_module["_ota_module"]
         plugins__doql_plugin_fleet__doql_plugin_fleet__generate["generate"]
-        plugins__doql_plugin_fleet__doql_plugin_fleet__device_registry___device_registry_module["_device_registry_module"]
-        plugins__doql_plugin_fleet__doql_plugin_fleet__metrics___metrics_module["_metrics_module"]
-        plugins__doql_plugin_fleet__doql_plugin_fleet__tenant___tenant_module["_tenant_module"]
     end
     subgraph plugins__doql_plugin_gxp
-        plugins__doql_plugin_gxp__doql_plugin_gxp___audit_log_module["_audit_log_module"]
-        plugins__doql_plugin_gxp__doql_plugin_gxp___e_signature_module["_e_signature_module"]
         plugins__doql_plugin_gxp__doql_plugin_gxp___migration_audit["_migration_audit"]
         plugins__doql_plugin_gxp__doql_plugin_gxp___audit_middleware["_audit_middleware"]
-        plugins__doql_plugin_gxp__doql_plugin_gxp__generate["generate"]
+        plugins__doql_plugin_gxp__doql_plugin_gxp___e_signature_module["_e_signature_module"]
         plugins__doql_plugin_gxp__doql_plugin_gxp___readme["_readme"]
+        plugins__doql_plugin_gxp__doql_plugin_gxp___audit_log_module["_audit_log_module"]
+        plugins__doql_plugin_gxp__doql_plugin_gxp__generate["generate"]
     end
     subgraph plugins__doql_plugin_iso17025
         plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate["generate"]
     end
-    subgraph plugins__doql_plugin_shared
-        plugins__doql_plugin_shared__doql_plugin_shared__base__plugin_generate["plugin_generate"]
-        plugins__doql_plugin_shared__doql_plugin_shared__readme__generate_readme["generate_readme"]
-    end
-    subgraph project__map
-        project__map__toon__run_document_generators["run_document_generators"]
-        project__map__toon__run_i18n_generators["run_i18n_generators"]
-        project__map__toon__export_css_file["export_css_file"]
-        project__map__toon__scan_metadata["scan_metadata"]
-        project__map__toon__run_report_generators["run_report_generators"]
-        project__map__toon__scan_environments["scan_environments"]
-        project__map__toon__should_generate_interface["should_generate_interface"]
-        project__map__toon__run_integration_generators["run_integration_generators"]
-    end
-    plugins__doql_plugin_fleet__doql_plugin_fleet__generate --> plugins__doql_plugin_fleet__doql_plugin_fleet__tenant___tenant_module
-    plugins__doql_plugin_fleet__doql_plugin_fleet__generate --> plugins__doql_plugin_fleet__doql_plugin_fleet__device_registry___device_registry_module
-    plugins__doql_plugin_fleet__doql_plugin_fleet__generate --> plugins__doql_plugin_fleet__doql_plugin_fleet__metrics___metrics_module
-    plugins__doql_plugin_fleet__doql_plugin_fleet__generate --> plugins__doql_plugin_fleet__doql_plugin_fleet__ota___ota_module
-    plugins__doql_plugin_fleet__doql_plugin_fleet__generate --> plugins__doql_plugin_fleet__doql_plugin_fleet__migration___migration_module
+    plugins__doql_plugin_fleet__doql_plugin_fleet__generate --> SUMD___tenant_module
+    plugins__doql_plugin_fleet__doql_plugin_fleet__generate --> SUMD___device_registry_module
+    plugins__doql_plugin_fleet__doql_plugin_fleet__generate --> SUMD___metrics_module
+    plugins__doql_plugin_fleet__doql_plugin_fleet__generate --> SUMD___ota_module
+    plugins__doql_plugin_fleet__doql_plugin_fleet__generate --> SUMD___migration_module
     plugins__doql_plugin_fleet__doql_plugin_fleet__generate --> plugins__doql_plugin_fleet__doql_plugin_fleet___readme
     plugins__doql_plugin_gxp__doql_plugin_gxp__generate --> plugins__doql_plugin_gxp__doql_plugin_gxp___audit_log_module
     plugins__doql_plugin_gxp__doql_plugin_gxp__generate --> plugins__doql_plugin_gxp__doql_plugin_gxp___e_signature_module
@@ -483,8 +525,8 @@ flowchart LR
     plugins__doql_plugin_erp__doql_plugin_erp__generate --> plugins__doql_plugin_erp__doql_plugin_erp___sync_module
     plugins__doql_plugin_erp__doql_plugin_erp__generate --> plugins__doql_plugin_erp__doql_plugin_erp___webhook_module
     plugins__doql_plugin_erp__doql_plugin_erp__generate --> plugins__doql_plugin_erp__doql_plugin_erp___readme
-    plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate --> plugins__doql_plugin_shared__doql_plugin_shared__readme__generate_readme
-    plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate --> plugins__doql_plugin_shared__doql_plugin_shared__base__plugin_generate
+    plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate --> SUMD__generate_readme
+    plugins__doql_plugin_iso17025__doql_plugin_iso17025__generate --> SUMD__plugin_generate
     playground__pyodide_bridge__executeBuild --> playground__pyodide_bridge__buildFn
     playground__pyodide_bridge__bootPyodide --> playground__pyodide_bridge___loadPyodide
     playground__pyodide_bridge__bootPyodide --> playground__pyodide_bridge___installDoql
@@ -514,7 +556,7 @@ flowchart LR
     doql__lsp_server__document_symbols --> doql__lsp_server___parse_doc
     doql__lsp_server__document_symbols --> doql__lsp_server___find_line_col
     doql__drift__detector__detect_drift --> doql__drift__detector__parse_intended
-    doql__drift__detector__detect_drift --> doql__adopt__device_scanner__adopt_from_device_to_snapshot
+    doql__drift__detector__detect_drift --> SUMD__adopt_from_device_to_snapshot
     doql__drift__detector__detect_drift --> doql__drift__detector__find_intended_file
     doql__importers__yaml_importer___build_entity --> doql__importers__yaml_importer___build_entity_field
     doql__importers__yaml_importer___build_interface --> doql__importers__yaml_importer___build_page
@@ -523,26 +565,26 @@ flowchart LR
     doql__importers__yaml_importer__import_yaml --> doql__importers__yaml_importer___import_collection
     doql__importers__yaml_importer__import_yaml_text --> doql__importers__yaml_importer__import_yaml
     doql__importers__yaml_importer__import_yaml_file --> doql__importers__yaml_importer__import_yaml_text
-    doql__cli__lockfile__spec_section_hashes --> doql__exporters__markdown__sections___h
+    doql__cli__lockfile__spec_section_hashes --> SUMD___h
     doql__cli__lockfile__spec_section_hashes --> doql__cli__lockfile___simple_items_hash
     doql__cli__lockfile__write_lockfile --> doql__cli__lockfile__spec_section_hashes
-    doql__cli__context__build_context --> doql__parsers__detect_doql_file
-    doql__cli__sync___run_interface_generators --> project__map__toon__should_generate_interface
+    doql__cli__context__build_context --> SUMD__detect_doql_file
+    doql__cli__sync___run_interface_generators --> SUMD__should_generate_interface
     doql__cli__sync__run_generators --> doql__cli__sync___run_interface_generators
-    doql__cli__sync__run_generators --> project__map__toon__run_document_generators
-    doql__cli__sync__run_generators --> project__map__toon__run_report_generators
-    doql__cli__sync__run_generators --> project__map__toon__run_i18n_generators
-    doql__cli__sync__run_generators --> project__map__toon__run_integration_generators
-    doql__cli__sync__cmd_sync --> doql__cli__context__build_context
-    doql__cli__sync__cmd_sync --> doql__cli__context__load_spec
-    doql__cli__sync__cmd_sync --> doql__cli__lockfile__read_lockfile
-    doql__cli__sync__cmd_sync --> doql__cli__lockfile__spec_section_hashes
-    doql__cli__sync__cmd_sync --> doql__cli__lockfile__diff_sections
+    doql__cli__sync__run_generators --> SUMD__run_document_generators
+    doql__cli__sync__run_generators --> SUMD__run_report_generators
+    doql__cli__sync__run_generators --> SUMD__run_i18n_generators
+    doql__cli__sync__run_generators --> SUMD__run_integration_generators
+    doql__cli__sync__cmd_sync --> SUMD__build_context
+    doql__cli__sync__cmd_sync --> SUMD__load_spec
+    doql__cli__sync__cmd_sync --> SUMD__read_lockfile
+    doql__cli__sync__cmd_sync --> SUMD__spec_section_hashes
+    doql__cli__sync__cmd_sync --> SUMD__diff_sections
     doql__cli__sync__cmd_sync --> doql__cli__sync__determine_regeneration_set
     doql__cli__sync__cmd_sync --> doql__cli__sync__run_generators
-    doql__cli__sync__cmd_sync --> doql__cli__lockfile__write_lockfile
+    doql__cli__sync__cmd_sync --> SUMD__write_lockfile
     doql__cli__main__main --> doql__cli__main__create_parser
-    doql__cli__commands__plan___print_file_counts --> doql__cli__context__estimate_file_count
+    doql__cli__commands__plan___print_file_counts --> SUMD__estimate_file_count
     doql__cli__commands__plan__cmd_plan --> doql__cli__commands__plan___print_header
     doql__cli__commands__plan__cmd_plan --> doql__cli__commands__plan___print_entities
     doql__cli__commands__plan__cmd_plan --> doql__cli__commands__plan___print_data_sources
@@ -552,9 +594,9 @@ flowchart LR
     doql__cli__commands__plan__cmd_plan --> doql__cli__commands__plan___print_interfaces
     doql__cli__commands__plan__cmd_plan --> doql__cli__commands__plan___print_workflows
     doql__cli__commands__validate__cmd_validate --> doql__cli__commands__validate___print_issues
-    doql__cli__commands__validate__cmd_validate --> doql__parsers__detect_doql_file
-    doql__cli__commands__export__cmd_export --> doql__parsers__detect_doql_file
-    doql__cli__commands__init__cmd_init --> doql__cli__context__scaffold_from_template
+    doql__cli__commands__validate__cmd_validate --> SUMD__detect_doql_file
+    doql__cli__commands__export__cmd_export --> SUMD__detect_doql_file
+    doql__cli__commands__init__cmd_init --> SUMD__scaffold_from_template
     doql__cli__commands__workspace___load_project_doql --> doql__cli__commands__workspace___parse_doql
     doql__cli__commands__workspace___walk_projects --> doql__cli__commands__workspace___is_project
     doql__cli__commands__workspace___walk_projects --> doql__cli__commands__workspace___load_project_doql
@@ -597,58 +639,114 @@ flowchart LR
     doql__cli__commands__doctor__cmd_doctor --> doql__cli__commands__doctor___check_databases
     doql__cli__commands__doctor__cmd_doctor --> doql__cli__commands__doctor___check_interfaces
     doql__cli__commands__drift___render_plain --> doql__cli__commands__drift___fmt_value
-    doql__cli__commands__drift__cmd_drift --> doql__drift__detector__find_intended_file
-    doql__cli__commands__drift__cmd_drift --> doql__drift__detector__detect_drift
+    doql__cli__commands__drift__cmd_drift --> SUMD__find_intended_file
+    doql__cli__commands__drift__cmd_drift --> SUMD__detect_drift
     doql__cli__commands__drift__cmd_drift --> doql__cli__commands__drift___report_to_json
     doql__cli__commands__drift__cmd_drift --> doql__cli__commands__drift___render_rich
     doql__cli__commands__adopt___print_scan_summary --> doql__cli__commands__adopt___print_item
     doql__cli__commands__adopt__cmd_adopt --> doql__cli__commands__adopt___cmd_adopt_from_directory
     doql__cli__commands__adopt__cmd_adopt --> doql__cli__commands__adopt___cmd_adopt_from_device
-    doql__cli__commands__adopt___cmd_adopt_from_directory --> doql__adopt__scanner__scan_project
+    doql__cli__commands__adopt__cmd_adopt --> doql__cli__commands__adopt___cmd_adopt_recursive
+    doql__cli__commands__adopt___cmd_adopt_recursive --> doql__cli__commands__adopt___discover_subprojects
+    doql__cli__commands__adopt___cmd_adopt_recursive --> SUMD__scan_project
+    doql__cli__commands__adopt___cmd_adopt_recursive --> doql__cli__commands__adopt___print_scan_summary
+    doql__cli__commands__adopt___cmd_adopt_from_directory --> SUMD__scan_project
     doql__cli__commands__adopt___cmd_adopt_from_directory --> doql__cli__commands__adopt___print_scan_summary
-    doql__cli__commands__adopt___cmd_adopt_from_device --> doql__adopt__device_scanner__adopt_from_device
+    doql__cli__commands__adopt___cmd_adopt_from_device --> SUMD__adopt_from_device
     doql__cli__commands__adopt___cmd_adopt_from_device --> doql__cli__commands__adopt___validate_output_written
     doql__cli__commands__quadlet__cmd_quadlet --> doql__cli__commands__quadlet___install_via_redeploy_api
     doql__cli__commands__quadlet__cmd_quadlet --> doql__cli__commands__quadlet___install_via_systemctl
-    doql__cli__commands__deploy__cmd_deploy --> doql__cli__context__build_context
-    doql__cli__commands__deploy__cmd_deploy --> doql__cli__context__load_spec
+    doql__cli__commands__deploy__cmd_deploy --> SUMD__build_context
+    doql__cli__commands__deploy__cmd_deploy --> SUMD__load_spec
     doql__cli__commands__deploy__cmd_deploy --> doql__cli__commands__deploy___deploy_via_redeploy_api
     doql__cli__commands__deploy__cmd_deploy --> doql__cli__commands__deploy___deploy_via_redeploy_cli
-    doql__cli__commands__import_cmd__cmd_import --> doql__importers__yaml_importer__import_yaml_file
-    doql__cli__commands__import_cmd__cmd_import --> doql__exporters__yaml_exporter__export_yaml_file
+    doql__cli__commands__import_cmd__cmd_import --> SUMD__import_yaml_file
+    doql__cli__commands__import_cmd__cmd_import --> SUMD__export_yaml_file
     doql__cli__commands__run__cmd_run --> doql__cli__commands__run___workspace_for_file
     doql__cli__commands__run__cmd_run --> doql__cli__commands__run___build_into
     doql__cli__commands__run___run_target --> doql__cli__commands__run___run_api
     doql__cli__commands__run___run_target --> doql__cli__commands__run___run_web
     doql__cli__commands__run___run_target --> doql__cli__commands__run___run_desktop
-    doql__cli__commands__publish__cmd_publish --> doql__cli__context__build_context
-    doql__cli__commands__publish__cmd_publish --> doql__cli__context__load_spec
+    doql__cli__commands__publish__cmd_publish --> SUMD__build_context
+    doql__cli__commands__publish__cmd_publish --> SUMD__load_spec
     doql__cli__commands__publish__cmd_publish --> doql__cli__commands__publish___publish_pypi
-    doql__exporters__yaml_exporter__spec_to_dict --> doql__utils__clean___clean
+    doql__exporters__yaml_exporter__spec_to_dict --> SUMD___clean
     doql__exporters__yaml_exporter__export_yaml --> doql__exporters__yaml_exporter__spec_to_dict
     doql__exporters__yaml_exporter__export_yaml_file --> doql__exporters__yaml_exporter__export_yaml
     doql__exporters__css__format_convert___css_to_less --> doql__exporters__css__format_convert___unquote_simple_value
-    doql__exporters__markdown__writers___write_header --> doql__exporters__markdown__sections___h
-    doql__exporters__markdown__writers___write_data_sources --> doql__exporters__markdown__sections___h
-    doql__exporters__markdown__writers___write_section --> doql__exporters__markdown__sections___h
+    doql__exporters__css__renderers___render_app --> SUMD___prop
+    doql__exporters__css__renderers___render_dependencies --> SUMD___indent
+    doql__exporters__css__renderers___render_dependencies --> SUMD___prop
+    doql__exporters__css__renderers___render_entity --> SUMD___indent
+    doql__exporters__css__renderers___render_entity --> SUMD___field_line
+    doql__exporters__css__renderers___render_entity --> SUMD___prop
+    doql__exporters__css__renderers___render_data_source --> SUMD___prop
+    doql__exporters__css__renderers___render_template --> SUMD___prop
+    doql__exporters__css__renderers___render_template --> SUMD___indent
+    doql__exporters__css__renderers___render_document --> SUMD___prop
+    doql__exporters__css__renderers___render_report --> SUMD___prop
+    doql__exporters__css__renderers___render_database --> SUMD___prop
+    doql__exporters__css__renderers___render_database --> SUMD___indent
+    doql__exporters__css__renderers___render_api_client --> SUMD___indent
+    doql__exporters__css__renderers___render_webhook --> SUMD___indent
+    doql__exporters__css__renderers___render_webhook --> SUMD___prop
+    doql__exporters__css__renderers___build_interface_props --> SUMD___prop
+    doql__exporters__css__renderers___build_page_props --> SUMD___prop
+    doql__exporters__css__renderers___render_interface --> SUMD___indent
+    doql__exporters__css__renderers___render_interface --> doql__exporters__css__renderers___build_interface_props
+    doql__exporters__css__renderers___render_interface --> doql__exporters__css__renderers___build_page_props
+    doql__exporters__css__renderers___render_integration --> SUMD___prop
+    doql__exporters__css__renderers___render_integration --> SUMD___indent
+    doql__exporters__css__renderers___render_workflow --> SUMD___indent
+    doql__exporters__css__renderers___render_workflow --> SUMD___prop
+    doql__exporters__css__renderers___render_role --> SUMD___indent
+    doql__exporters__css__renderers___render_deploy --> SUMD___prop
+    doql__exporters__css__renderers___render_deploy --> SUMD___indent
+    doql__exporters__css__renderers___render_environment --> SUMD___prop
+    doql__exporters__css__renderers___render_environment --> SUMD___indent
+    doql__exporters__css__renderers___render_project --> doql__exporters__css__renderers___render_dependencies
+    doql__exporters__css__renderers___render_project --> doql__exporters__css__renderers___render_app
+    doql__exporters__css___render_data_layer --> SUMD___render_entity
+    doql__exporters__css___render_data_layer --> SUMD___render_data_source
+    doql__exporters__css___render_data_layer --> SUMD___render_template
+    doql__exporters__css___render_documentation_layer --> SUMD___render_document
+    doql__exporters__css___render_documentation_layer --> SUMD___render_report
+    doql__exporters__css___render_infrastructure_layer --> SUMD___render_database
+    doql__exporters__css___render_infrastructure_layer --> SUMD___render_api_client
+    doql__exporters__css___render_infrastructure_layer --> SUMD___render_webhook
+    doql__exporters__css___render_integration_layer --> SUMD___render_interface
+    doql__exporters__css___render_integration_layer --> SUMD___render_integration
+    doql__exporters__css___render_integration_layer --> SUMD___render_workflow
+    doql__exporters__css___render_integration_layer --> SUMD___render_role
+    doql__exporters__css___render_css --> SUMD___render_dependencies
+    doql__exporters__css___render_css --> SUMD___render_app
+    doql__exporters__css___render_css --> doql__exporters__css___render_data_layer
+    doql__exporters__css__export_css --> doql__exporters__css___render_css
+    doql__exporters__css__export_less --> SUMD___css_to_less
+    doql__exporters__css__export_less --> doql__exporters__css___render_css
+    doql__exporters__css__export_sass --> SUMD___css_to_sass
+    doql__exporters__css__export_sass --> doql__exporters__css___render_css
+    doql__exporters__markdown__writers___write_header --> SUMD___h
+    doql__exporters__markdown__writers___write_data_sources --> SUMD___h
+    doql__exporters__markdown__writers___write_section --> SUMD___h
     doql__exporters__markdown__writers___write_entities --> doql__exporters__markdown__writers___write_section
     doql__exporters__markdown__writers___write_interfaces --> doql__exporters__markdown__writers___write_section
     doql__exporters__markdown__writers___write_documents --> doql__exporters__markdown__writers___write_section
     doql__exporters__markdown__writers___write_reports --> doql__exporters__markdown__writers___write_section
     doql__exporters__markdown__writers___write_workflows --> doql__exporters__markdown__writers___write_section
-    doql__exporters__markdown__writers___write_roles --> doql__exporters__markdown__sections___h
-    doql__exporters__markdown__writers___write_integrations --> doql__exporters__markdown__sections___h
-    doql__exporters__markdown__writers___write_deployment --> doql__exporters__markdown__sections___h
-    doql__exporters__markdown__export_markdown --> doql__exporters__markdown__writers___write_header
-    doql__exporters__markdown__export_markdown --> doql__exporters__markdown__writers___write_data_sources
-    doql__exporters__markdown__export_markdown --> doql__exporters__markdown__writers___write_entities
-    doql__exporters__markdown__export_markdown --> doql__exporters__markdown__writers___write_interfaces
-    doql__exporters__markdown__export_markdown --> doql__exporters__markdown__writers___write_documents
-    doql__exporters__markdown__export_markdown --> doql__exporters__markdown__writers___write_reports
-    doql__exporters__markdown__export_markdown --> doql__exporters__markdown__writers___write_workflows
-    doql__exporters__markdown__export_markdown --> doql__exporters__markdown__writers___write_roles
-    doql__exporters__markdown__export_markdown --> doql__exporters__markdown__writers___write_integrations
-    doql__exporters__markdown__export_markdown --> doql__exporters__markdown__writers___write_deployment
+    doql__exporters__markdown__writers___write_roles --> SUMD___h
+    doql__exporters__markdown__writers___write_integrations --> SUMD___h
+    doql__exporters__markdown__writers___write_deployment --> SUMD___h
+    doql__exporters__markdown__export_markdown --> SUMD___write_header
+    doql__exporters__markdown__export_markdown --> SUMD___write_data_sources
+    doql__exporters__markdown__export_markdown --> SUMD___write_entities
+    doql__exporters__markdown__export_markdown --> SUMD___write_interfaces
+    doql__exporters__markdown__export_markdown --> SUMD___write_documents
+    doql__exporters__markdown__export_markdown --> SUMD___write_reports
+    doql__exporters__markdown__export_markdown --> SUMD___write_workflows
+    doql__exporters__markdown__export_markdown --> SUMD___write_roles
+    doql__exporters__markdown__export_markdown --> SUMD___write_integrations
+    doql__exporters__markdown__export_markdown --> SUMD___write_deployment
     doql__exporters__markdown__export_markdown_file --> doql__exporters__markdown__export_markdown
     doql__exporters__markdown__sections___entity_section --> doql__exporters__markdown__sections___h
     doql__exporters__markdown__sections___entity_section --> doql__exporters__markdown__sections___field_type_str
@@ -698,22 +796,22 @@ flowchart LR
     doql__generators__vite_gen__generate --> doql__generators__vite_gen___gen_index_html
     doql__generators__report_gen__generate --> doql__generators__report_gen___gen_report_script
     doql__generators__utils__codegen__generate_file_from_template --> doql__generators__utils__codegen__write_code_block
-    doql__generators__web_gen___write_config_files --> doql__generators__desktop_gen___gen_package_json
-    doql__generators__web_gen___write_config_files --> doql__generators__vite_gen___gen_vite_config
-    doql__generators__web_gen___write_config_files --> doql__generators__web_gen__config___gen_tailwind_config
-    doql__generators__web_gen___write_config_files --> doql__generators__web_gen__config___gen_postcss_config
-    doql__generators__web_gen___write_config_files --> doql__generators__vite_gen___gen_tsconfig
-    doql__generators__web_gen___write_config_files --> doql__generators__mobile_gen___gen_index_html
-    doql__generators__web_gen___write_core_files --> doql__generators__web_gen__core___gen_main_tsx
-    doql__generators__web_gen___write_core_files --> doql__generators__web_gen__core___gen_index_css
-    doql__generators__web_gen___write_core_files --> doql__generators__web_gen__core___gen_api_ts
-    doql__generators__web_gen___write_core_files --> doql__generators__web_gen__router___gen_app
-    doql__generators__web_gen___write_component_files --> doql__generators__web_gen__components___gen_layout
-    doql__generators__web_gen___write_page_files --> doql__generators__web_gen__pages___gen_dashboard
-    doql__generators__web_gen___write_page_files --> doql__generators__web_gen__pages___gen_entity_page
-    doql__generators__web_gen___write_pwa_files --> doql__generators__mobile_gen___gen_manifest
-    doql__generators__web_gen___write_pwa_files --> doql__generators__mobile_gen___gen_service_worker
-    doql__generators__web_gen___write_pwa_files --> doql__generators__web_gen__pwa___gen_sw_register
+    doql__generators__web_gen___write_config_files --> SUMD___gen_package_json
+    doql__generators__web_gen___write_config_files --> SUMD___gen_vite_config
+    doql__generators__web_gen___write_config_files --> SUMD___gen_tailwind_config
+    doql__generators__web_gen___write_config_files --> SUMD___gen_postcss_config
+    doql__generators__web_gen___write_config_files --> SUMD___gen_tsconfig
+    doql__generators__web_gen___write_config_files --> SUMD___gen_index_html
+    doql__generators__web_gen___write_core_files --> SUMD___gen_main_tsx
+    doql__generators__web_gen___write_core_files --> SUMD___gen_index_css
+    doql__generators__web_gen___write_core_files --> SUMD___gen_api_ts
+    doql__generators__web_gen___write_core_files --> SUMD___gen_app
+    doql__generators__web_gen___write_component_files --> SUMD___gen_layout
+    doql__generators__web_gen___write_page_files --> SUMD___gen_dashboard
+    doql__generators__web_gen___write_page_files --> SUMD___gen_entity_page
+    doql__generators__web_gen___write_pwa_files --> SUMD___gen_manifest
+    doql__generators__web_gen___write_pwa_files --> SUMD___gen_service_worker
+    doql__generators__web_gen___write_pwa_files --> SUMD___gen_sw_register
     doql__generators__web_gen__generate --> doql__generators__web_gen___setup_web_directories
     doql__generators__web_gen__generate --> doql__generators__web_gen___write_config_files
     doql__generators__web_gen__generate --> doql__generators__web_gen___write_core_files
@@ -723,11 +821,11 @@ flowchart LR
     doql__generators__web_gen__generate --> doql__generators__web_gen___write_readme
     doql__generators__web_gen__pages___gen_entity_page --> doql__generators__web_gen__pages___build_interface_body
     doql__generators__web_gen__pages___gen_entity_page --> doql__generators__web_gen__pages___field_input
-    doql__generators__api_gen__alembic___entity_table_columns --> doql__generators__api_gen__common__sa_type
-    doql__generators__api_gen__alembic___entity_table_columns --> doql__generators__api_gen__common__safe_name
-    doql__generators__api_gen__alembic__gen_initial_migration --> doql__generators__api_gen__common__snake
+    doql__generators__api_gen__alembic___entity_table_columns --> SUMD__sa_type
+    doql__generators__api_gen__alembic___entity_table_columns --> SUMD__safe_name
+    doql__generators__api_gen__alembic__gen_initial_migration --> SUMD__snake
     doql__generators__api_gen__routes__gen_routes --> doql__generators__api_gen__routes___gen_entity_routes
-    doql__generators__api_gen__routes___gen_entity_routes --> doql__generators__api_gen__common__snake
+    doql__generators__api_gen__routes___gen_entity_routes --> SUMD__snake
     doql__generators__api_gen__routes___gen_entity_routes --> doql__generators__api_gen__routes___gen_list_route
     doql__generators__api_gen__routes___gen_entity_routes --> doql__generators__api_gen__routes___gen_get_route
     doql__generators__api_gen__routes___gen_entity_routes --> doql__generators__api_gen__routes___gen_create_route
@@ -736,37 +834,37 @@ flowchart LR
     doql__generators__api_gen__schemas___gen_entity_schemas --> doql__generators__api_gen__schemas___gen_create_schema
     doql__generators__api_gen__schemas___gen_entity_schemas --> doql__generators__api_gen__schemas___gen_response_schema
     doql__generators__api_gen__schemas___gen_entity_schemas --> doql__generators__api_gen__schemas___gen_update_schema
-    doql__generators__api_gen__schemas___gen_create_schema --> doql__generators__api_gen__common__safe_name
-    doql__generators__api_gen__schemas___gen_create_schema --> doql__generators__api_gen__common__py_type
-    doql__generators__api_gen__schemas___gen_create_schema --> doql__generators__api_gen__common__py_default
-    doql__generators__api_gen__schemas___gen_response_schema --> doql__generators__api_gen__common__safe_name
-    doql__generators__api_gen__schemas___gen_response_schema --> doql__generators__api_gen__common__py_type
-    doql__generators__api_gen__schemas___gen_update_schema --> doql__generators__api_gen__common__safe_name
-    doql__generators__api_gen___write_api_files --> doql__generators__api_gen__main__gen_main
-    doql__generators__api_gen___write_api_files --> doql__generators__api_gen__database__gen_database
-    doql__generators__api_gen___write_api_files --> doql__generators__api_gen__models__gen_models
-    doql__generators__api_gen___write_api_files --> doql__generators__api_gen__schemas__gen_schemas
-    doql__generators__api_gen___write_api_files --> doql__generators__api_gen__routes__gen_routes
-    doql__generators__api_gen___write_api_files --> doql__generators__api_gen__main__gen_requirements
-    doql__generators__api_gen___write_api_files --> doql__generators__api_gen__auth__gen_auth
-    doql__generators__api_gen___write_alembic_files --> doql__generators__api_gen__alembic__gen_alembic_ini
-    doql__generators__api_gen___write_alembic_files --> doql__generators__api_gen__alembic__gen_alembic_env
-    doql__generators__api_gen___write_alembic_files --> doql__generators__api_gen__alembic__gen_initial_migration
-    doql__generators__api_gen___write_api_readme --> doql__generators__api_gen__common__snake
+    doql__generators__api_gen__schemas___gen_create_schema --> SUMD__safe_name
+    doql__generators__api_gen__schemas___gen_create_schema --> SUMD__py_type
+    doql__generators__api_gen__schemas___gen_create_schema --> SUMD__py_default
+    doql__generators__api_gen__schemas___gen_response_schema --> SUMD__safe_name
+    doql__generators__api_gen__schemas___gen_response_schema --> SUMD__py_type
+    doql__generators__api_gen__schemas___gen_update_schema --> SUMD__safe_name
+    doql__generators__api_gen___write_api_files --> SUMD__gen_main
+    doql__generators__api_gen___write_api_files --> SUMD__gen_database
+    doql__generators__api_gen___write_api_files --> SUMD__gen_models
+    doql__generators__api_gen___write_api_files --> SUMD__gen_schemas
+    doql__generators__api_gen___write_api_files --> SUMD__gen_routes
+    doql__generators__api_gen___write_api_files --> SUMD__gen_requirements
+    doql__generators__api_gen___write_api_files --> SUMD__gen_auth
+    doql__generators__api_gen___write_alembic_files --> SUMD__gen_alembic_ini
+    doql__generators__api_gen___write_alembic_files --> SUMD__gen_alembic_env
+    doql__generators__api_gen___write_alembic_files --> SUMD__gen_initial_migration
+    doql__generators__api_gen___write_api_readme --> SUMD__snake
     doql__generators__api_gen__generate --> doql__generators__api_gen___write_api_files
     doql__generators__api_gen__generate --> doql__generators__api_gen___write_alembic_files
     doql__generators__api_gen__generate --> doql__generators__api_gen___write_api_readme
-    doql__generators__api_gen__export_openapi --> doql__generators__api_gen__common__snake
-    doql__generators__api_gen__models__gen_models --> doql__generators__api_gen__common__snake
+    doql__generators__api_gen__export_openapi --> SUMD__snake
+    doql__generators__api_gen__models__gen_models --> SUMD__snake
     doql__generators__api_gen__models__gen_models --> doql__generators__api_gen__models___gen_column_def
-    doql__generators__api_gen__models___gen_column_def --> doql__generators__api_gen__common__sa_type
-    doql__generators__api_gen__models___gen_column_def --> doql__generators__api_gen__common__snake
-    doql__generators__api_gen__models___gen_column_def --> doql__generators__api_gen__common__safe_name
+    doql__generators__api_gen__models___gen_column_def --> SUMD__sa_type
+    doql__generators__api_gen__models___gen_column_def --> SUMD__snake
+    doql__generators__api_gen__models___gen_column_def --> SUMD__safe_name
     doql__utils__naming__kebab --> doql__utils__naming__snake
     doql__adopt__emitter__emit_css --> doql__adopt__emitter__emit_spec
-    doql__adopt__emitter__emit_spec --> project__map__toon__export_css_file
+    doql__adopt__emitter__emit_spec --> SUMD__export_css_file
     doql__adopt__device_scanner__adopt_from_device --> doql__adopt__device_scanner__adopt_from_device_to_snapshot
-    doql__adopt__device_scanner__adopt_from_device --> doql__integrations__op3_bridge__snapshot_to_less
+    doql__adopt__device_scanner__adopt_from_device --> SUMD__snapshot_to_less
     doql__adopt__device_scanner__adopt_from_device --> doql__adopt__device_scanner___header
     doql__adopt__scanner__interfaces__scan_interfaces --> doql__adopt__scanner__interfaces___scan_python_api
     doql__adopt__scanner__interfaces__scan_interfaces --> doql__adopt__scanner__interfaces___scan_python_cli
@@ -777,27 +875,31 @@ flowchart LR
     doql__adopt__scanner__interfaces___scan_python_api --> doql__adopt__scanner__interfaces___find_api_main_file
     doql__adopt__scanner__interfaces___scan_python_api --> doql__adopt__scanner__interfaces___has_api_entry_point
     doql__adopt__scanner__interfaces___scan_python_api --> doql__adopt__scanner__interfaces___detect_framework_from_main_py
+    doql__adopt__scanner__interfaces___scan_python_api --> doql__adopt__scanner__interfaces___detect_framework_from_any_py
     doql__adopt__scanner__interfaces___scan_python_api --> doql__adopt__scanner__interfaces___detect_api_auth
-    doql__adopt__scanner__interfaces___scan_pages_dir --> doql__adopt__scanner__utils__camel_to_kebab
+    doql__adopt__scanner__interfaces___scan_pages_dir --> SUMD__camel_to_kebab
     doql__adopt__scanner__interfaces___extract_web_pages --> doql__adopt__scanner__interfaces___scan_pages_dir
     doql__adopt__scanner__interfaces___scan_web_frontend --> doql__adopt__scanner__interfaces___detect_web_framework
     doql__adopt__scanner__interfaces___scan_web_frontend --> doql__adopt__scanner__interfaces___extract_web_pages
+    doql__adopt__scanner__metadata__scan_metadata --> doql__adopt__scanner__metadata___parse_pyproject
+    doql__adopt__scanner__metadata__scan_metadata --> doql__adopt__scanner__metadata___parse_package_json
+    doql__adopt__scanner__metadata__scan_metadata --> doql__adopt__scanner__metadata___parse_goal_yaml
     doql__adopt__scanner__databases___db_from_image --> doql__adopt__scanner__databases___db_name
-    doql__adopt__scanner__databases___scan_compose_databases --> doql__adopt__scanner__utils__find_compose
-    doql__adopt__scanner__databases___scan_compose_databases --> doql__adopt__scanner__utils__load_yaml
+    doql__adopt__scanner__databases___scan_compose_databases --> SUMD__find_compose
+    doql__adopt__scanner__databases___scan_compose_databases --> SUMD__load_yaml
     doql__adopt__scanner__databases___scan_compose_databases --> doql__adopt__scanner__databases___db_from_image
     doql__adopt__scanner__databases__scan_databases --> doql__adopt__scanner__databases___scan_compose_databases
-    doql__adopt__scanner__scan_project --> project__map__toon__scan_metadata
-    doql__adopt__scanner__scan_project --> doql__adopt__scanner__databases__scan_databases
-    doql__adopt__scanner__scan_project --> project__map__toon__scan_environments
-    doql__adopt__scanner__scan_project --> doql__adopt__scanner__deploy__scan_deploy
-    doql__adopt__scanner__scan_project --> doql__adopt__scanner__interfaces__scan_interfaces
-    doql__adopt__scanner__scan_project --> doql__adopt__scanner__integrations__scan_integrations
-    doql__adopt__scanner__scan_project --> doql__adopt__scanner__entities__scan_entities
-    doql__adopt__scanner__scan_project --> doql__adopt__scanner__roles__scan_roles
-    doql__adopt__scanner__deploy___detect_deployment_indicators --> doql__adopt__scanner__utils__find_compose
-    doql__adopt__scanner__deploy___detect_deployment_indicators --> doql__adopt__scanner__utils__find_dockerfiles
-    doql__adopt__scanner__deploy___extract_containers_from_compose --> doql__adopt__scanner__utils__load_yaml
+    doql__adopt__scanner__scan_project --> SUMD__scan_metadata
+    doql__adopt__scanner__scan_project --> SUMD__scan_databases
+    doql__adopt__scanner__scan_project --> SUMD__scan_environments
+    doql__adopt__scanner__scan_project --> SUMD__scan_deploy
+    doql__adopt__scanner__scan_project --> SUMD__scan_interfaces
+    doql__adopt__scanner__scan_project --> SUMD__scan_integrations
+    doql__adopt__scanner__scan_project --> SUMD__scan_entities
+    doql__adopt__scanner__scan_project --> SUMD__scan_roles
+    doql__adopt__scanner__deploy___detect_deployment_indicators --> SUMD__find_compose
+    doql__adopt__scanner__deploy___detect_deployment_indicators --> SUMD__find_dockerfiles
+    doql__adopt__scanner__deploy___extract_containers_from_compose --> SUMD__load_yaml
     doql__adopt__scanner__deploy___extract_containers_from_compose --> doql__adopt__scanner__deploy___is_database_service
     doql__adopt__scanner__deploy___extract_containers_from_compose --> doql__adopt__scanner__deploy___extract_container_config
     doql__adopt__scanner__deploy__scan_deploy --> doql__adopt__scanner__deploy___detect_deployment_indicators
@@ -815,94 +917,38 @@ flowchart LR
     doql__adopt__scanner__workflows___extract_makefile_workflows --> doql__adopt__scanner__workflows___is_valid_target
     doql__adopt__scanner__workflows___build_workflow_from_task --> doql__adopt__scanner__workflows___build_taskfile_steps
     doql__adopt__scanner__workflows___build_workflow_from_task --> doql__adopt__scanner__workflows___extract_taskfile_schedule
-    doql__adopt__scanner__workflows___extract_taskfile_workflows --> doql__adopt__scanner__utils__load_yaml
+    doql__adopt__scanner__workflows___extract_taskfile_workflows --> SUMD__load_yaml
     doql__adopt__scanner__workflows___extract_taskfile_workflows --> doql__adopt__scanner__workflows___build_workflow_from_task
     doql__adopt__scanner__workflows___scan_cli_file_for_workflows --> doql__adopt__scanner__workflows___build_workflow_steps
     doql__adopt__scanner__workflows___extract_python_cli_workflows --> doql__adopt__scanner__workflows___detect_cli_command_name
     doql__adopt__scanner__workflows___extract_python_cli_workflows --> doql__adopt__scanner__workflows___find_cli_candidates
     doql__adopt__scanner__workflows___extract_python_cli_workflows --> doql__adopt__scanner__workflows___scan_cli_file_for_workflows
     doql__adopt__scanner__roles__scan_roles --> doql__adopt__scanner__roles___scan_sql_roles
+    doql__adopt__scanner__environments___detect_local_env --> doql__adopt__scanner__environments___extract_env_refs
+    doql__adopt__scanner__environments___detect_env_files --> doql__adopt__scanner__environments___assign_ssh_host
+    doql__adopt__scanner__environments__scan_environments --> doql__adopt__scanner__environments___detect_local_env
+    doql__adopt__scanner__environments__scan_environments --> doql__adopt__scanner__environments___detect_env_files
+    doql__adopt__scanner__environments__scan_environments --> doql__adopt__scanner__environments___detect_compose_envs
     doql__adopt__scanner__entities__scan_entities --> doql__adopt__scanner__entities___is_excluded_path
     doql__adopt__scanner__entities__scan_entities --> doql__adopt__scanner__entities___extract_entities_from_python
     doql__adopt__scanner__entities__scan_entities --> doql__adopt__scanner__entities___extract_entities_from_sql
     doql__adopt__scanner__entities___extract_entities_from_python --> doql__adopt__scanner__entities___classify_bases
     doql__adopt__scanner__entities___extract_entities_from_python --> doql__adopt__scanner__entities___extract_fields
-    doql__adopt__scanner__entities___extract_annotation_fields --> doql__adopt__scanner__utils__normalize_python_type
-    doql__adopt__scanner__entities___extract_sqlalchemy_fields --> doql__adopt__scanner__utils__normalize_sqlalchemy_type
+    doql__adopt__scanner__entities___extract_annotation_fields --> SUMD__normalize_python_type
+    doql__adopt__scanner__entities___extract_sqlalchemy_fields --> SUMD__normalize_sqlalchemy_type
     doql__adopt__scanner__entities___extract_fields --> doql__adopt__scanner__entities___extract_annotation_fields
     doql__adopt__scanner__entities___extract_fields --> doql__adopt__scanner__entities___extract_sqlalchemy_fields
     doql__adopt__scanner__entities___extract_sql_columns --> doql__adopt__scanner__entities___is_reserved_sql_keyword
-    doql__adopt__scanner__entities___extract_sql_columns --> doql__adopt__scanner__utils__normalize_sql_type
+    doql__adopt__scanner__entities___extract_sql_columns --> SUMD__normalize_sql_type
     doql__adopt__scanner__entities___extract_entities_from_sql --> doql__adopt__scanner__entities___extract_sql_columns
-    doql__adopt__scanner__entities___extract_entities_from_sql --> doql__adopt__scanner__utils__snake_to_pascal
+    doql__adopt__scanner__entities___extract_entities_from_sql --> SUMD__snake_to_pascal
     doql__parsers__css_tokenizer___make_css_block --> doql__parsers__css_tokenizer___parse_declarations
     doql__parsers__css_tokenizer___make_css_block --> doql__parsers__css_tokenizer___tokenise_css
-    doql__parsers__css_tokenizer___tokenise_css --> doql__parsers__css_utils___strip_comments
     doql__parsers__css_tokenizer___tokenise_css --> doql__parsers__css_tokenizer___make_css_block
-    doql__parsers__css_tokenizer___consume_pending --> doql__parsers__css_utils___strip_quotes
+    doql__parsers__css_tokenizer___consume_pending --> SUMD___strip_quotes
     doql__parsers__css_tokenizer___process_decl_line --> doql__parsers__css_tokenizer___consume_pending
-    doql__parsers__css_tokenizer___process_decl_line --> doql__parsers__css_utils___strip_quotes
-    doql__parsers__css_tokenizer___parse_declarations --> doql__parsers__css_utils___strip_quotes
-    doql__parsers__css_parser___map_to_spec --> doql__parsers__css_parser___parse_selector
+    doql__parsers__css_tokenizer___process_decl_line --> SUMD___strip_quotes
+    doql__parsers__css_tokenizer___parse_declarations --> SUMD___strip_quotes
+    doql__parsers__css_parser___map_to_spec --> SUMD___parse_selector
     doql__parsers__css_parser___map_to_spec --> doql__parsers__css_parser___apply_css_block
-    doql__parsers__css_parser___apply_css_block --> doql__parsers__css_utils___strip_quotes
-    doql__parsers__css_parser___apply_css_block --> doql__parsers__css_utils___parse_list
-    doql__parsers__css_parser___apply_css_block --> doql__parsers__css_mappers___map_interface
-    doql__parsers__css_parser__parse_css_file --> doql__parsers__css_parser__parse_css_text
-    doql__parsers__css_parser__parse_css_file --> doql__parsers__css_parser___detect_format
-    doql__parsers__css_parser__parse_css_text --> doql__parsers__css_utils___strip_comments
-    doql__parsers__css_parser__parse_css_text --> doql__parsers__css_tokenizer___tokenise_css
-    doql__parsers__css_parser__parse_css_text --> doql__parsers__css_parser___map_to_spec
-    doql__parsers__css_parser__parse_css_text --> doql__parsers__extractors__collect_env_refs
-    doql__parsers__css_parser__parse_css_text --> doql__parsers__css_transformers___resolve_less_vars
-    doql__parsers__css_parser__parse_css_text --> doql__parsers__css_transformers___sass_to_css
-    doql__parsers__blocks__apply_block --> doql__parsers__registry__get_handler
-    doql__parsers__extractors__extract_list --> doql__parsers__extractors__extract_val
-    doql__parsers__extractors___extract_page_from_format1 --> doql__parsers__extractors__extract_val
-    doql__parsers__extractors__extract_pages --> doql__parsers__extractors___extract_page_from_format1
-    doql__parsers__extractors__extract_pages --> doql__parsers__extractors___extract_page_from_format2
-    doql__parsers__extractors__extract_entity_fields --> doql__parsers__extractors___should_skip_line
-    doql__parsers__extractors__extract_entity_fields --> doql__parsers__extractors___parse_field_flags
-    doql__parsers__extractors__extract_entity_fields --> doql__parsers__extractors___parse_field_ref
-    doql__parsers__extractors__extract_entity_fields --> doql__parsers__extractors___parse_field_default
-    doql__parsers__extractors__extract_entity_fields --> doql__parsers__extractors___parse_field_type
-    doql__parsers__css_transformers___resolve_less_vars --> doql__parsers__css_transformers___resolve_vars
-    doql__parsers__css_transformers___resolve_sass_vars --> doql__parsers__css_transformers___resolve_vars
-    doql__parsers__css_transformers___is_selector_line --> doql__parsers__css_transformers___is_doql_property_decl
-    doql__parsers__css_transformers___is_selector_starter --> doql__parsers__css_transformers___has_bracket_selector
-    doql__parsers__css_transformers___is_selector_starter --> doql__parsers__css_transformers___is_step_line
-    doql__parsers__css_transformers___find_step_block_end --> doql__parsers__css_transformers___is_step_line
-    doql__parsers__css_transformers___find_step_block_end --> doql__parsers__css_transformers___is_selector_starter
-    doql__parsers__css_transformers___convert_indent_to_braces --> doql__parsers__css_transformers___close_indent_blocks
-    doql__parsers__css_transformers___convert_indent_to_braces --> doql__parsers__css_transformers___is_step_line
-    doql__parsers__css_transformers___convert_indent_to_braces --> doql__parsers__css_transformers___is_selector_starter
-    doql__parsers__css_transformers___convert_indent_to_braces --> doql__parsers__css_transformers___find_step_block_end
-    doql__parsers__css_transformers___sass_to_css --> doql__parsers__css_transformers___resolve_sass_vars
-    doql__parsers__css_transformers___sass_to_css --> doql__parsers__css_transformers___extract_mixins
-    doql__parsers__css_transformers___sass_to_css --> doql__parsers__css_transformers___expand_includes
-    doql__parsers__css_transformers___sass_to_css --> doql__parsers__css_transformers___convert_indent_to_braces
-    doql__parsers__registry___handle_app --> doql__parsers__registry__register
-    doql__parsers__registry___handle_version --> doql__parsers__registry__register
-    doql__parsers__registry___handle_domain --> doql__parsers__registry__register
-    doql__parsers__registry___handle_languages --> doql__parsers__registry__register
-    doql__parsers__registry___handle_entity --> doql__parsers__registry__register
-    doql__parsers__registry___handle_entity --> doql__parsers__extractors__extract_entity_fields
-    doql__parsers__registry___handle_entity --> doql__parsers__extractors__extract_val
-    doql__parsers__registry___handle_entity --> doql__parsers__extractors__extract_list
-    doql__parsers__registry___handle_data --> doql__parsers__registry__register
-    doql__parsers__registry___handle_data --> doql__parsers__extractors__extract_val
-    doql__parsers__registry___handle_template --> doql__parsers__registry__register
-    doql__parsers__registry___handle_template --> doql__parsers__extractors__extract_val
-    doql__parsers__registry___handle_template --> doql__parsers__extractors__extract_list
-    doql__parsers__registry___handle_document --> doql__parsers__registry__register
-    doql__parsers__registry___handle_document --> doql__parsers__extractors__extract_list
-    doql__parsers__registry___handle_document --> doql__parsers__extractors__extract_yaml_list
-    doql__parsers__registry___handle_document --> doql__parsers__extractors__extract_val
-    doql__parsers__registry___handle_report --> doql__parsers__registry__register
-    doql__parsers__registry___handle_report --> doql__parsers__extractors__extract_val
-    doql__parsers__registry___handle_database --> doql__parsers__registry__register
-    doql__parsers__registry___handle_database --> doql__parsers__extractors__extract_val
-    doql__parsers__registry___handle_api_client --> doql__parsers__registry__register
-    doql__parsers__registry___handle_api_client --> doql__parsers__extractors__extract_val
-    doql__parsers__registry___handle_webhook --> doql__parsers__registry__register
-    doql__parsers__registry___handle_webhook --> doql__parsers__extractors__extract_val
+    doql__parsers__css_parser___apply_css_block --> SUMD___strip_quotes

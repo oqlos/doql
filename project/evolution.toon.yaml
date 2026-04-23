@@ -1,6 +1,6 @@
-# code2llm/evolution | 2108 func | 132f | 2026-04-23
+# code2llm/evolution | 2117 func | 132f | 2026-04-23
 
-NEXT[3] (ranked by impact):
+NEXT[6] (ranked by impact):
   [1] !! SPLIT           doql/generators/infra_gen.py
       WHY: 647L, 0 classes, max CC=12
       EFFORT: ~4h  IMPACT: 7764
@@ -9,20 +9,33 @@ NEXT[3] (ranked by impact):
       WHY: 544L, 1 classes, max CC=10
       EFFORT: ~4h  IMPACT: 5440
 
-  [3] !  SPLIT-FUNC      _parse_pyproject  CC=15  fan=11
+  [3] !! SPLIT           doql/parsers/css_mappers.py
+      WHY: 521L, 0 classes, max CC=9
+      EFFORT: ~4h  IMPACT: 4689
+
+  [4] !  SPLIT-FUNC      _render_project  CC=21  fan=18
+      WHY: CC=21 exceeds 15
+      EFFORT: ~1h  IMPACT: 378
+
+  [5] !  SPLIT-FUNC      _cmd_adopt_recursive  CC=15  fan=19
+      WHY: CC=15 exceeds 15
+      EFFORT: ~1h  IMPACT: 285
+
+  [6] !  SPLIT-FUNC      _parse_pyproject  CC=15  fan=11
       WHY: CC=15 exceeds 15
       EFFORT: ~1h  IMPACT: 165
 
 
-RISKS[2]:
+RISKS[3]:
   ⚠ Splitting doql/generators/infra_gen.py may break 10 import paths
   ⚠ Splitting doql/cli/commands/workspace.py may break 25 import paths
+  ⚠ Splitting doql/parsers/css_mappers.py may break 28 import paths
 
 METRICS-TARGET:
-  CC̄:          1.0 → ≤0.7
-  max-CC:      15 → ≤7
-  god-modules: 2 → 0
-  high-CC(≥15): 1 → ≤0
+  CC̄:          1.1 → ≤0.8
+  max-CC:      21 → ≤10
+  god-modules: 3 → 0
+  high-CC(≥15): 3 → ≤1
   hub-types:   0 → ≤0
 
 PATTERNS (language parser shared logic):
@@ -50,4 +63,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=1.0 → now CC̄=1.0
+  prev CC̄=1.1 → now CC̄=1.1

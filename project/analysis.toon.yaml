@@ -1,128 +1,130 @@
-# code2llm | 276f 52785L | python:124,md:63,yaml:31,json:15,yml:14,doql:13,toml:6,shell:3,javascript:3,txt:1,typescript:1 | 2026-04-23
-# CC̄=1.0 | critical:1/2108 | dups:0 | cycles:0
+# code2llm | 276f 55122L | python:124,md:63,yaml:31,json:15,yml:14,doql:13,toml:6,shell:3,javascript:3,txt:1,typescript:1 | 2026-04-23
+# CC̄=1.1 | critical:3/2117 | dups:0 | cycles:0
 
-HEALTH[1]:
+HEALTH[3]:
+  🟡 CC    _cmd_adopt_recursive CC=15 (limit:15)
+  🟡 CC    _render_project CC=21 (limit:15)
   🟡 CC    _parse_pyproject CC=15 (limit:15)
 
 REFACTOR[1]:
-  1. split 1 high-CC methods  (CC>15)
+  1. split 3 high-CC methods  (CC>15)
 
-PIPELINES[174]:
-  [1] Src [generate]: generate → _tenant_module
+PIPELINES[253]:
+  [1] Src [generate_readme]: generate_readme
       PURITY: 100% pure
-  [2] Src [generate]: generate → _audit_log_module
+  [2] Src [plugin_generate]: plugin_generate
       PURITY: 100% pure
-  [3] Src [generate]: generate → _odoo_client_module
+  [3] Src [generate]: generate → _tenant_module
       PURITY: 100% pure
-  [4] Src [generate]: generate
+  [4] Src [_metrics_module]: _metrics_module
       PURITY: 100% pure
-  [5] Src [generate]: generate → generate_readme
+  [5] Src [_device_registry_module]: _device_registry_module
       PURITY: 100% pure
 
 LAYERS:
-  doql/                           CC̄=3.8    ←in:4  →out:4
+  doql/                           CC̄=3.9    ←in:0  →out:4
   │ !! infra_gen                  647L  0C   10m  CC=12     ←0
   │ !! workspace                  544L  1C   25m  CC=10     ←0
-  │ css_mappers                473L  0C   27m  CC=9      ←1
-  │ mobile_gen                 462L  0C    8m  CC=5      ←1
+  │ !! css_mappers                521L  0C   28m  CC=9      ←0
+  │ mobile_gen                 462L  0C    8m  CC=5      ←0
   │ doctor                     407L  2C   20m  CC=11     ←0
   │ lsp_server                 378L  0C   15m  CC=10     ←0
+  │ !! renderers                  374L  0C   19m  CC=21     ←1
+  │ interfaces                 363L  0C   16m  CC=14     ←0
   │ integrations_gen           336L  0C   11m  CC=8      ←0
-  │ interfaces                 333L  0C   15m  CC=11     ←1
-  │ renderers                  320L  0C   18m  CC=10     ←1
+  │ registry                   331L  0C   30m  CC=6      ←0
   │ workflow_gen               318L  0C    8m  CC=8      ←0
-  │ registry                   310L  0C   27m  CC=6      ←1
-  │ yaml_importer              267L  0C   22m  CC=3      ←1
-  │ workflows                  263L  0C   15m  CC=9      ←1
-  │ models                     259L  23C    0m  CC=0.0    ←0
-  │ css_transformers           246L  0C   14m  CC=11     ←1
+  │ !! adopt                      269L  0C    9m  CC=15     ←0
+  │ models                     269L  24C    0m  CC=0.0    ←0
+  │ yaml_importer              267L  0C   22m  CC=3      ←0
+  │ workflows                  263L  0C   15m  CC=9      ←0
+  │ css_transformers           246L  0C   14m  CC=11     ←0
   │ ci_gen                     240L  0C    4m  CC=7      ←0
   │ drift                      231L  0C    6m  CC=12     ←0
-  │ desktop_gen                209L  0C    7m  CC=6      ←1
-  │ extractors                 205L  0C   14m  CC=6      ←3
+  │ desktop_gen                209L  0C    7m  CC=6      ←0
+  │ extractors                 205L  0C   14m  CC=6      ←0
   │ __init__                   200L  0C    8m  CC=6      ←0
   │ validators                 200L  0C   11m  CC=6      ←0
-  │ main                       194L  0C    2m  CC=1      ←0
-  │ entities                   185L  0C   11m  CC=9      ←1
+  │ main                       196L  0C    2m  CC=1      ←0
+  │ entities                   185L  0C   11m  CC=9      ←0
   │ document_gen               182L  0C    4m  CC=6      ←0
   │ __init__                   178L  0C    5m  CC=3      ←0
   │ i18n_gen                   168L  0C    3m  CC=6      ←0
-  │ adopt                      166L  0C    7m  CC=10     ←0
   │ run                        166L  0C    7m  CC=9      ←0
-  │ pages                      166L  0C    4m  CC=10     ←1
-  │ css_parser                 157L  0C    6m  CC=8      ←2
-  │ auth                       154L  0C    1m  CC=7      ←1
-  │ __init__                   153L  0C    5m  CC=6      ←4
-  │ alembic                    152L  0C    4m  CC=10     ←1
+  │ pages                      166L  0C    4m  CC=10     ←0
+  │ auth                       154L  0C    1m  CC=7      ←0
+  │ __init__                   154L  0C    5m  CC=6      ←0
+  │ alembic                    152L  0C    4m  CC=10     ←0
   │ publish                    151L  0C    5m  CC=8      ←0
+  │ deploy                     150L  0C    9m  CC=10     ←0
   │ deploy                     142L  0C    4m  CC=12     ←0
   │ report_gen                 142L  0C    2m  CC=9      ←0
-  │ deploy                     142L  0C    9m  CC=10     ←1
-  │ css_tokenizer              137L  0C    5m  CC=11     ←1
+  │ css_parser                 137L  0C    5m  CC=8      ←0
   │ app.doql                   135L  0C    0m  CC=0.0    ←0
-  │ device_scanner             132L  0C    3m  CC=4      ←2
-  │ detector                   125L  0C    4m  CC=4      ←1
-  │ vite_gen                   124L  0C    5m  CC=1      ←1
+  │ device_scanner             132L  0C    3m  CC=4      ←0
+  │ css_tokenizer              129L  0C    5m  CC=11     ←0
+  │ detector                   125L  0C    4m  CC=4      ←0
+  │ vite_gen                   124L  0C    5m  CC=1      ←0
   │ sync                       122L  0C    4m  CC=10     ←0
-  │ config                     122L  0C    6m  CC=1      ←1
-  │ sections                   121L  0C    8m  CC=9      ←2
+  │ config                     122L  0C    6m  CC=1      ←0
+  │ sections                   121L  0C    8m  CC=9      ←0
   │ plan                       115L  0C   10m  CC=4      ←0
-  │ routes                     115L  0C    7m  CC=2      ←1
+  │ routes                     115L  0C    7m  CC=2      ←0
+  │ __init__                   113L  0C    9m  CC=7      ←0
   │ quadlet                    112L  0C    3m  CC=9      ←0
-  │ __init__                   110L  0C    9m  CC=6      ←0
-  │ pwa                        109L  0C    3m  CC=1      ←1
+  │ pwa                        109L  0C    3m  CC=1      ←0
   │ !! metadata                   103L  0C    4m  CC=15     ←0
   │ plugins                    101L  1C    4m  CC=8      ←0
-  │ writers                    101L  0C   11m  CC=5      ←1
-  │ utils                      100L  0C    8m  CC=5      ←5
+  │ writers                    101L  0C   11m  CC=5      ←0
+  │ utils                      100L  0C    8m  CC=5      ←0
   │ app.doql                    99L  0C    0m  CC=0.0    ←0
   │ app.doql                    97L  0C    0m  CC=0.0    ←0
-  │ environments                91L  0C    6m  CC=7      ←0
   │ __init__                    91L  0C    0m  CC=0.0    ←0
-  │ common                      84L  0C    5m  CC=6      ←5
-  │ lockfile                    83L  0C    5m  CC=9      ←2
-  │ schemas                     83L  0C    5m  CC=10     ←1
-  │ models                      82L  0C    2m  CC=10     ←1
-  │ components                  76L  0C    1m  CC=2      ←1
-  │ main                        74L  0C    2m  CC=2      ←1
-  │ op3_bridge                  74L  0C    2m  CC=2      ←1
+  │ environments                88L  0C    6m  CC=7      ←0
+  │ common                      84L  0C    5m  CC=6      ←0
+  │ lockfile                    83L  0C    5m  CC=9      ←0
+  │ schemas                     83L  0C    5m  CC=10     ←0
+  │ models                      82L  0C    2m  CC=10     ←0
+  │ components                  76L  0C    1m  CC=2      ←0
+  │ main                        74L  0C    2m  CC=2      ←0
+  │ css_utils                   74L  2C    4m  CC=5      ←0
+  │ op3_bridge                  74L  0C    2m  CC=2      ←0
   │ parser                      74L  0C    0m  CC=0.0    ←0
-  │ css_utils                   72L  2C    4m  CC=4      ←3
-  │ format_convert              67L  0C    3m  CC=9      ←1
+  │ format_convert              67L  0C    3m  CC=9      ←0
   │ codegen                     67L  0C    2m  CC=2      ←0
-  │ context                     66L  1C    4m  CC=5      ←6
-  │ databases                   62L  0C    4m  CC=6      ←1
+  │ context                     66L  1C    4m  CC=5      ←0
+  │ databases                   62L  0C    4m  CC=6      ←0
   │ export                      58L  0C    1m  CC=7      ←0
-  │ __init__                    58L  0C    1m  CC=1      ←1
-  │ core                        57L  0C    3m  CC=1      ←1
+  │ __init__                    58L  0C    1m  CC=1      ←0
+  │ core                        57L  0C    3m  CC=1      ←0
   │ __init__                    55L  0C    0m  CC=0.0    ←0
-  │ blocks                      51L  0C    2m  CC=4      ←1
+  │ blocks                      51L  0C    2m  CC=4      ←0
   │ validate                    48L  0C    2m  CC=8      ←0
   │ import_cmd                  45L  0C    1m  CC=7      ←0
   │ init                        43L  0C    1m  CC=8      ←0
-  │ router                      43L  0C    1m  CC=3      ←1
-  │ database                    41L  0C    1m  CC=1      ←1
+  │ router                      43L  0C    1m  CC=3      ←0
+  │ database                    41L  0C    1m  CC=1      ←0
   │ __init__                    40L  0C    2m  CC=1      ←0
-  │ helpers                     39L  0C    3m  CC=8      ←1
+  │ helpers                     39L  0C    3m  CC=8      ←0
   │ naming                      37L  0C    2m  CC=1      ←0
-  │ yaml_exporter               36L  0C    3m  CC=1      ←1
+  │ yaml_exporter               36L  0C    3m  CC=1      ←0
   │ app.doql                    35L  0C    0m  CC=0.0    ←0
   │ generate                    34L  0C    1m  CC=9      ←0
-  │ roles                       32L  0C    2m  CC=9      ←1
+  │ roles                       32L  0C    2m  CC=9      ←0
   │ query                       31L  0C    1m  CC=7      ←0
   │ render                      26L  0C    1m  CC=4      ←0
   │ export_ts_sdk               26L  0C    1m  CC=2      ←0
-  │ integrations                26L  0C    1m  CC=4      ←1
+  │ integrations                26L  0C    1m  CC=4      ←0
   │ export_postman              25L  0C    1m  CC=2      ←0
   │ docs_gen                    24L  0C    1m  CC=3      ←1
   │ __init__                    22L  0C    0m  CC=0.0    ←0
   │ docs                        21L  0C    1m  CC=3      ←0
   │ kiosk                       20L  0C    1m  CC=2      ←0
   │ deploy                      20L  0C    1m  CC=2      ←0
-  │ clean                       20L  0C    1m  CC=9      ←1
+  │ clean                       20L  0C    1m  CC=9      ←0
   │ __init__                    20L  0C    0m  CC=0.0    ←0
   │ __init__                    19L  0C    0m  CC=0.0    ←0
-  │ emitter                     18L  0C    2m  CC=1      ←1
+  │ emitter                     18L  0C    2m  CC=1      ←0
   │ css_exporter                16L  0C    0m  CC=0.0    ←0
   │ markdown_exporter           12L  0C    0m  CC=0.0    ←0
   │ __init__                    10L  0C    0m  CC=0.0    ←0
@@ -162,21 +164,21 @@ LAYERS:
   │ SUMD.md                    150L  0C    6m  CC=0.0    ←0
   │ SUMD.md                    142L  0C    2m  CC=0.0    ←0
   │ certificate                135L  0C    1m  CC=1      ←0
-  │ device_registry            130L  0C    1m  CC=1      ←1
+  │ device_registry            130L  0C    1m  CC=1      ←0
   │ uncertainty                126L  0C    1m  CC=1      ←0
   │ SUMR.md                    110L  0C    0m  CC=0.0    ←0
   │ SUMR.md                    109L  0C    0m  CC=0.0    ←0
   │ SUMR.md                    109L  0C    0m  CC=0.0    ←0
   │ SUMR.md                    109L  0C    0m  CC=0.0    ←0
-  │ metrics                    100L  0C    1m  CC=1      ←1
+  │ metrics                    100L  0C    1m  CC=1      ←0
   │ SUMR.md                    100L  0C    0m  CC=0.0    ←0
   │ traceability                93L  0C    1m  CC=1      ←0
   │ __init__                    84L  0C    2m  CC=2      ←0
-  │ tenant                      83L  0C    1m  CC=1      ←1
-  │ migration                   81L  0C    1m  CC=1      ←1
+  │ tenant                      83L  0C    1m  CC=1      ←0
+  │ migration                   81L  0C    1m  CC=1      ←0
   │ drift_monitor               78L  0C    1m  CC=1      ←0
   │ migration                   74L  0C    1m  CC=1      ←0
-  │ ota                         72L  0C    1m  CC=1      ←1
+  │ ota                         72L  0C    1m  CC=1      ←0
   │ sumd.json                   60L  0C    0m  CC=0.0    ←0
   │ sumd.json                   60L  0C    0m  CC=0.0    ←0
   │ sumd.json                   60L  0C    0m  CC=0.0    ←0
@@ -184,12 +186,12 @@ LAYERS:
   │ sumd.json                   48L  0C    0m  CC=0.0    ←0
   │ README.md                   43L  0C    0m  CC=0.0    ←0
   │ __init__                    39L  0C    1m  CC=1      ←0
-  │ readme                      37L  0C    1m  CC=3      ←1
+  │ readme                      37L  0C    1m  CC=3      ←0
   │ map.toon.yaml               34L  0C    7m  CC=0.0    ←0
   │ map.toon.yaml               33L  0C    1m  CC=0.0    ←0
   │ README.md                   33L  0C    0m  CC=0.0    ←0
   │ README.md                   31L  0C    0m  CC=0.0    ←0
-  │ base                        29L  0C    1m  CC=3      ←1
+  │ base                        29L  0C    1m  CC=3      ←0
   │ README.md                   25L  0C    0m  CC=0.0    ←0
   │ pyproject.toml              25L  0C    0m  CC=0.0    ←0
   │ pyproject.toml              24L  0C    0m  CC=0.0    ←0
@@ -202,13 +204,13 @@ LAYERS:
   │ __init__                    11L  0C    0m  CC=0.0    ←0
   │
   ./                              CC̄=0.0    ←in:0  →out:0
-  │ !! SUMD.md                   2458L  1C  704m  CC=0.0    ←0
-  │ !! SUMR.md                   2325L  1C   19m  CC=0.0    ←0
+  │ !! SUMD.md                   2464L  1C  705m  CC=0.0    ←42
+  │ !! SUMR.md                   2346L  1C   19m  CC=0.0    ←0
   │ !! SPEC.md                    983L  0C    0m  CC=0.0    ←0
-  │ !! CHANGELOG.md               778L  0C    1m  CC=0.0    ←0
+  │ !! CHANGELOG.md               876L  0C    1m  CC=0.0    ←0
+  │ !! README.md                  597L  0C    0m  CC=0.0    ←0
   │ !! goal.yaml                  511L  0C    0m  CC=0.0    ←0
   │ OQLOS-REQUIREMENTS.md      491L  9C   10m  CC=0.0    ←0
-  │ README.md                  438L  0C    0m  CC=0.0    ←0
   │ PARSER_AUDIT.md            206L  0C    0m  CC=0.0    ←0
   │ doql.sh                    195L  0C    1m  CC=0.0    ←0
   │ TODO.md                    191L  4C   10m  CC=0.0    ←0
@@ -221,12 +223,12 @@ LAYERS:
   │ test_playbook.yml           70L  0C    0m  CC=0.0    ←0
   │ pyqual.yaml                 49L  0C    0m  CC=0.0    ←0
   │ Taskfile.testql.yml         47L  0C    0m  CC=0.0    ←0
-  │ project.sh                  45L  0C    0m  CC=0.0    ←0
+  │ project.sh                  44L  0C    0m  CC=0.0    ←0
   │ tree.sh                      1L  0C    0m  CC=0.0    ←0
   │ Jenkinsfile                  0L  0C    3m  CC=0.0    ←0
   │
   docs/                           CC̄=0.0    ←in:0  →out:0
-  │ !! README.md                 1517L  0C    1m  CC=0.0    ←0
+  │ !! README.md                 1542L  0C    1m  CC=0.0    ←0
   │ !! context.md                 593L  0C    0m  CC=0.0    ←0
   │ !! context.md                 591L  0C    0m  CC=0.0    ←0
   │ refactoring-plan.md        260L  0C    4m  CC=0.0    ←0
@@ -234,16 +236,16 @@ LAYERS:
   │ evolution.toon.yaml         49L  0C    0m  CC=0.0    ←0
   │
   project/                        CC̄=0.0    ←in:0  →out:0
-  │ !! calls.yaml                6983L  0C    0m  CC=0.0    ←0
-  │ !! map.toon.yaml             1268L  0C  704m  CC=0.0    ←5
-  │ !! calls.toon.yaml            606L  0C    0m  CC=0.0    ←0
-  │ !! context.md                 584L  0C    0m  CC=0.0    ←0
-  │ analysis.toon.yaml         344L  0C    0m  CC=0.0    ←0
+  │ !! calls.yaml                7042L  0C    0m  CC=0.0    ←0
+  │ !! map.toon.yaml             2976L  0C  705m  CC=0.0    ←0
+  │ !! calls.toon.yaml            590L  0C    0m  CC=0.0    ←0
+  │ !! context.md                 581L  0C    0m  CC=0.0    ←0
+  │ analysis.toon.yaml         359L  0C    0m  CC=0.0    ←0
   │ README.md                  339L  0C    0m  CC=0.0    ←0
   │ duplication.toon.yaml      177L  0C    0m  CC=0.0    ←0
   │ validation.toon.yaml        68L  0C    0m  CC=0.0    ←0
-  │ project.toon.yaml           53L  0C    0m  CC=0.0    ←0
-  │ evolution.toon.yaml         49L  0C    0m  CC=0.0    ←0
+  │ evolution.toon.yaml         66L  0C    0m  CC=0.0    ←0
+  │ project.toon.yaml           51L  0C    0m  CC=0.0    ←0
   │ prompt.txt                  47L  0C    0m  CC=0.0    ←0
   │
   code2llm_output/                CC̄=0.0    ←in:0  →out:0
@@ -330,25 +332,24 @@ LAYERS:
      Jenkinsfile                               0L
 
 COUPLING:
-                                                 project.map                      doql.cli                doql.exporters                          doql                    doql.adopt                    doql.drift                  doql.parsers  plugins.doql-plugin-iso17025    plugins.doql-plugin-shared               doql.generators                doql.importers             doql.integrations                    doql.utils
-                   project.map                            ──                            ←7                           ←15                                                          ←3                                                                                                                                                                                                                                                  hub
-                      doql.cli                             7                            ──                             5                             4                             3                             3                                                                                                                       1                             1                                                              !! fan-out
-                doql.exporters                            15                            ←5                            ──                                                                                                                                                                                                                                                                                                           1  hub
-                          doql                                                          ←4                                                          ──                                                                                         4                                                                                                                                                                                    
-                    doql.adopt                             3                            ←3                                                                                        ──                            ←1                                                                                                                                                                                   1                              
-                    doql.drift                                                          ←3                                                                                         1                            ──                                                                                                                                                                                                                  
-                  doql.parsers                                                                                                                      ←4                                                                                        ──                                                                                                                                                                                    
-  plugins.doql-plugin-iso17025                                                                                                                                                                                                                                              ──                             2                                                                                                                        
-    plugins.doql-plugin-shared                                                                                                                                                                                                                                              ←2                            ──                                                                                                                        
-               doql.generators                                                          ←1                                                                                                                                                                                                                                              ──                                                                                          
-                doql.importers                                                          ←1                                                                                                                                                                                                                                                                            ──                                                            
-             doql.integrations                                                                                                                                                    ←1                                                                                                                                                                                                                ──                              
-                    doql.utils                                                                                        ←1                                                                                                                                                                                                                                                                                                          ──
+                                                        SUMD                doql.exporters                  doql.parsers               doql.generators                      doql.cli                    doql.adopt     plugins.doql-plugin-fleet                          doql  plugins.doql-plugin-iso17025                    doql.drift
+                          SUMD                            ──                          ←133                           ←86                           ←44                           ←41                           ←23                            ←5                            ←4                            ←2                            ←1  hub
+                doql.exporters                           133                            ──                                                                                                                                                                                                                                                  !! fan-out
+                  doql.parsers                            86                                                          ──                                                                                                                                                                                                                    !! fan-out
+               doql.generators                            44                                                                                        ──                            ←1                                                                                                                                                        !! fan-out
+                      doql.cli                            41                                                                                         1                            ──                                                                                                                                                        !! fan-out
+                    doql.adopt                            23                                                                                                                                                    ──                                                                                                                          !! fan-out
+     plugins.doql-plugin-fleet                             5                                                                                                                                                                                  ──                                                                                          
+                          doql                             4                                                                                                                                                                                                                ──                                                            
+  plugins.doql-plugin-iso17025                             2                                                                                                                                                                                                                                              ──                              
+                    doql.drift                             1                                                                                                                                                                                                                                                                            ──
   CYCLES: none
-  HUB: project.map/ (fan-in=25)
-  HUB: doql.exporters/ (fan-in=5)
-  SMELL: doql.cli/ fan-out=24 → split needed
-  SMELL: doql.exporters/ fan-out=16 → split needed
+  HUB: SUMD/ (fan-in=339)
+  SMELL: doql.exporters/ fan-out=133 → split needed
+  SMELL: doql.adopt/ fan-out=23 → split needed
+  SMELL: doql.generators/ fan-out=44 → split needed
+  SMELL: doql.cli/ fan-out=42 → split needed
+  SMELL: doql.parsers/ fan-out=86 → split needed
 
 EXTERNAL:
   validation: run `vallm batch .` → validation.toon
