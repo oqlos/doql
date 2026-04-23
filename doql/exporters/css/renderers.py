@@ -14,10 +14,34 @@ def _render_app(spec: DoqlSpec) -> list[str]:
     props = []
     props.append(_prop("name", spec.app_name))
     props.append(_prop("version", spec.version))
+    if spec.description:
+        props.append(_prop("description", spec.description))
+    if spec.license:
+        props.append(_prop("license", spec.license, quote_str=False))
+    if spec.authors:
+        props.append(_prop("authors", ", ".join(spec.authors)))
+    if spec.keywords:
+        props.append(_prop("keywords", ", ".join(spec.keywords)))
+    if spec.homepage:
+        props.append(_prop("homepage", spec.homepage))
+    if spec.repository:
+        props.append(_prop("repository", spec.repository))
     if spec.domain:
         props.append(_prop("domain", spec.domain, quote_str=False))
     if spec.languages:
         props.append(_prop("languages", ", ".join(spec.languages), quote_str=False))
+    lines.append(_indent(props))
+    lines.append("}\n")
+    return lines
+
+
+def _render_dependencies(spec: DoqlSpec) -> list[str]:
+    if not spec.dependencies:
+        return []
+    lines = ["dependencies {\n"]
+    props = []
+    for key, value in spec.dependencies.items():
+        props.append(_prop(key, value))
     lines.append(_indent(props))
     lines.append("}\n")
     return lines

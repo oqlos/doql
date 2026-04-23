@@ -4,22 +4,22 @@
 
 - **Project**: /home/tom/github/oqlos/doql
 - **Primary Language**: python
-- **Languages**: python: 124, md: 58, yaml: 29, yml: 14, doql: 13
+- **Languages**: python: 124, md: 63, yaml: 31, json: 15, yml: 14
 - **Analysis Mode**: static
-- **Total Functions**: 2097
+- **Total Functions**: 2108
 - **Total Classes**: 45
-- **Modules**: 266
-- **Entry Points**: 1654
+- **Modules**: 275
+- **Entry Points**: 1664
 
 ## Architecture by Module
 
 ### SUMD
-- **Functions**: 762
+- **Functions**: 767
 - **Classes**: 1
 - **File**: `SUMD.md`
 
 ### project.map.toon
-- **Functions**: 743
+- **Functions**: 748
 - **File**: `map.toon.yaml`
 
 ### doql.parsers.registry
@@ -50,7 +50,7 @@
 - **File**: `SUMR.md`
 
 ### doql.exporters.css.renderers
-- **Functions**: 17
+- **Functions**: 18
 - **File**: `renderers.py`
 
 ### playground.pyodide-bridge
@@ -106,6 +106,9 @@ Main execution flows into the system:
 > Register `workspace` subcommands on the main doql parser.
 - **Calls**: sub.add_parser, ws.add_subparsers, ws_sub.add_parser, _add_common, p.add_argument, p.add_argument, p.set_defaults, ws_sub.add_parser
 
+### doql.exporters.css.renderers._render_app
+- **Calls**: props.append, props.append, lines.append, lines.append, doql.exporters.css.helpers._prop, doql.exporters.css.helpers._prop, props.append, props.append
+
 ### doql.cli.sync.cmd_sync
 > Selective rebuild — only regenerate sections that changed since last build.
 - **Calls**: doql.cli.context.build_context, doql.cli.context.load_spec, doql.cli.lockfile.read_lockfile, doql.cli.lockfile.spec_section_hashes, doql.cli.lockfile.diff_sections, doql.cli.sync.determine_regeneration_set, print, print
@@ -140,12 +143,21 @@ With
 > Generate mobile PWA into *out* directory.
 - **Calls**: next, out.mkdir, None.write_text, None.write_text, None.write_text, None.write_text, None.write_text, doql.generators.mobile_gen._gen_icons
 
+### doql.exporters.css.renderers._render_data_source
+- **Calls**: props.append, lines.append, lines.append, doql.exporters.css.helpers._prop, props.append, props.append, props.append, props.append
+
+### doql.exporters.css.renderers._render_document
+- **Calls**: d.data.items, d.styling.items, d.metadata.items, d.signature.items, lines.append, lines.append, doql.exporters.css.helpers._prop, props.append
+
 ### doql.lsp_server.document_symbols
 - **Calls**: server.feature, ls.workspace.get_text_document, doql.lsp_server._parse_doc, doql.lsp_server._find_line_col, lsp.Range, _mkrange, symbols.append, _mkrange
 
 ### doql.parsers.validators.validate
 > Validate a parsed DoqlSpec against env vars and internal consistency.
 - **Calls**: issues.extend, issues.extend, issues.extend, issues.extend, issues.extend, issues.extend, doql.parsers.validators._validate_app_name, doql.parsers.validators._validate_env_refs
+
+### doql.exporters.css.renderers._render_api_client
+- **Calls**: lines.append, lines.append, props.append, props.append, props.append, props.append, props.append, props.append
 
 ### doql.cli.commands.publish.cmd_publish
 > Publish project artifacts to registries.
@@ -154,6 +166,9 @@ With
 ### doql.generators.workflow_gen.generate
 > Generate workflow engine modules.
 - **Calls**: wf_dir.mkdir, None.write_text, None.write_text, print, None.write_text, print, None.write_text, print
+
+### doql.exporters.css.renderers._render_report
+- **Calls**: r.query.items, r.recipients.items, lines.append, lines.append, doql.exporters.css.helpers._prop, props.append, props.append, props.append
 
 ### doql.lsp_server.definition
 - **Calls**: server.feature, ls.workspace.get_text_document, doql.lsp_server._word_at, re.compile, pattern.search, None.count, None.find, lsp.Location
@@ -167,6 +182,9 @@ With
 Priority: redeploy API → redeploy CLI → @directives → docker-compose.
 Install redeploy support: pip install doq
 - **Calls**: doql.cli.context.build_context, doql.cli.context.load_spec, getattr, getattr, print, migration_yaml.exists, deploy_gen.run, getattr
+
+### doql.exporters.css.renderers._render_workflow
+- **Calls**: enumerate, lines.append, lines.append, props.append, props.append, props.append, props.append, doql.exporters.css.helpers._indent
 
 ### doql.cli.commands.plan.cmd_plan
 > Show dry-run plan of what would be generated.
@@ -205,32 +223,6 @@ and estimated file counts per i
 > Map CSS block to DataSource definition.
 - **Calls**: sel.attributes.get, DataSource, spec.data_sources.append, block.declarations.get, block.declarations.get, block.declarations.get, block.declarations.get, block.declarations.get
 
-### doql.lsp_server.completion
-- **Calls**: server.feature, ls.workspace.get_text_document, doql.lsp_server._parse_doc, lsp.CompletionList, lsp.CompletionOptions, items.append, items.append, lsp.CompletionItem
-
-### doql.cli.commands.validate.cmd_validate
-> Validate .doql file and .env configuration.
-
-Returns:
-    0 if validation passes, 1 if there are errors
-- **Calls**: None.resolve, getattr, print, doql.cli.commands.validate._print_issues, doql.parsers.detect_doql_file, doql_parser.parse_file, doql_parser.parse_env, doql_parser.validate
-
-### doql.cli.commands.workspace._cmd_list
-- **Calls**: None.resolve, doql.cli.commands.workspace._discover_local, doql.cli.commands.workspace._filter_projects, doql.cli.commands.workspace._print_project_table, doql.cli.commands.workspace._print, root.exists, doql.cli.commands.workspace._print, doql.cli.commands.workspace._print
-
-### doql.cli.commands.workspace._cmd_validate
-- **Calls**: doql.cli.commands.workspace._cmd_analyze, None.resolve, _tf_discover, doql.cli.commands.workspace._print, _tf_validate, None.expanduser, len, doql.cli.commands.workspace._print
-
-### doql.cli.commands.quadlet.cmd_quadlet
-> Manage Podman Quadlet containers.
-
---install   Deploy .container/.network files to ~/.config/containers/systemd/
-            and reload systemd. Uses 
-- **Calls**: getattr, None.resolve, list, doql.cli.commands.quadlet._install_via_redeploy_api, doql.cli.commands.quadlet._install_via_systemctl, print, print, infra_dir.exists
-
-### doql.exporters.markdown.sections._workflow_section
-- **Calls**: lines.append, None.join, doql.exporters.markdown.sections._h, lines.append, lines.append, lines.append, lines.append, enumerate
-
 ## Process Flows
 
 Key execution flows identified:
@@ -240,7 +232,13 @@ Key execution flows identified:
 register_parser [doql.cli.commands.workspace]
 ```
 
-### Flow 2: cmd_sync
+### Flow 2: _render_app
+```
+_render_app [doql.exporters.css.renderers]
+  └─ →> _prop
+```
+
+### Flow 3: cmd_sync
 ```
 cmd_sync [doql.cli.sync]
   └─ →> build_context
@@ -249,51 +247,42 @@ cmd_sync [doql.cli.sync]
   └─ →> read_lockfile
 ```
 
-### Flow 3: generate
+### Flow 4: generate
 ```
 generate [doql.generators.desktop_gen]
 ```
 
-### Flow 4: cmd_init
+### Flow 5: cmd_init
 ```
 cmd_init [doql.cli.commands.init]
   └─ →> scaffold_from_template
 ```
 
-### Flow 5: cmd_drift
+### Flow 6: cmd_drift
 ```
 cmd_drift [doql.cli.commands.drift]
   └─ →> find_intended_file
 ```
 
-### Flow 6: cmd_run
+### Flow 7: cmd_run
 ```
 cmd_run [doql.cli.commands.run]
 ```
 
-### Flow 7: cmd_doctor
+### Flow 8: cmd_doctor
 ```
 cmd_doctor [doql.cli.commands.doctor]
 ```
 
-### Flow 8: document_symbols
+### Flow 9: _render_data_source
 ```
-document_symbols [doql.lsp_server]
-  └─> _parse_doc
-  └─> _find_line_col
-```
-
-### Flow 9: validate
-```
-validate [doql.parsers.validators]
+_render_data_source [doql.exporters.css.renderers]
+  └─ →> _prop
 ```
 
-### Flow 10: cmd_publish
+### Flow 10: _render_document
 ```
-cmd_publish [doql.cli.commands.publish]
-  └─ →> build_context
-      └─ →> detect_doql_file
-  └─ →> load_spec
+_render_document [doql.exporters.css.renderers]
 ```
 
 ## Key Classes
@@ -408,18 +397,6 @@ Returns:
 > Check that output file was written successfully.
 - **Output to**: print, print, output.exists, output.stat
 
-### doql.adopt.scanner.metadata._parse_pyproject
-> Extract metadata from pyproject.toml (stdlib tomllib).
-- **Output to**: data.get, project.get, project.get, project.get, scripts.items
-
-### doql.adopt.scanner.metadata._parse_package_json
-> Extract metadata from package.json.
-- **Output to**: json.loads, data.get, data.get, path.read_text
-
-### doql.adopt.scanner.metadata._parse_goal_yaml
-> Extract metadata from goal.yaml if present.
-- **Output to**: yaml.safe_load, path.read_text
-
 ### doql.adopt.scanner.workflows._parse_makefile_deps
 > Split the ``deps`` portion of ``target: dep1 dep2 ## comment``.
 
@@ -475,6 +452,18 @@ Examples:
 ### doql.parsers.extractors._parse_field_default
 > Extract default value from type string.
 - **Output to**: re.search, default_m.group
+
+### doql.parsers.extractors._parse_field_type
+> Extract clean base type from type string.
+- **Output to**: re.split
+
+### doql.parsers.css_transformers._convert_indent_to_braces
+> Convert indent-based SASS blocks to brace-delimited CSS.
+- **Output to**: len, line.rstrip, doql.parsers.css_transformers._close_indent_blocks, doql.parsers.css_transformers._is_step_line, doql.parsers.css_transformers._is_selector_starter
+
+### doql.parsers._is_css_format
+> Check if a path uses one of the CSS-like DOQL formats.
+- **Output to**: path.name.lower, any, name.endswith
 
 ## Behavioral Patterns
 
@@ -543,6 +532,8 @@ graph TD
     register_parser --> add_subparsers
     register_parser --> _add_common
     register_parser --> add_argument
+    _render_app --> append
+    _render_app --> _prop
     cmd_sync --> build_context
     cmd_sync --> load_spec
     cmd_sync --> read_lockfile
@@ -567,8 +558,6 @@ graph TD
     cmd_doctor --> print
     cmd_doctor --> DoctorReport
     generate --> mkdir
-    document_symbols --> feature
-    document_symbols --> get_text_document
 ```
 
 ## Reverse Engineering Guidelines

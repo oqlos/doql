@@ -15,6 +15,8 @@ def _detect_local_env(root: Path, spec: DoqlSpec) -> None:
         local_env.env_file = ".env"
         _extract_env_refs(env_path, spec)
     local_env.runtime = spec.deploy.target if spec.deploy else "docker-compose"
+    if spec.python_requires:
+        local_env.config["python_version"] = spec.python_requires
     spec.environments.append(local_env)
 
 

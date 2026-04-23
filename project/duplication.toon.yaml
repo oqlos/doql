@@ -1,12 +1,12 @@
-# redup/duplication | 13 groups | 129f 15937L | 2026-04-21
+# redup/duplication | 13 groups | 129f 16007L | 2026-04-23
 
 SUMMARY:
   files_scanned: 129
-  total_lines:   15937
+  total_lines:   16007
   dup_groups:    13
   dup_fragments: 56
   saved_lines:   847
-  scan_ms:       8916
+  scan_ms:       7994
 
 HOTSPOTS[7] (files with most duplication):
   plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py  dup=382L  groups=2  frags=5  (2.4%)
@@ -15,7 +15,7 @@ HOTSPOTS[7] (files with most duplication):
   doql/generators/ci_gen.py  dup=132L  groups=1  frags=2  (0.8%)
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/certificate.py  dup=129L  groups=1  frags=1  (0.8%)
   plugins/doql-plugin-fleet/doql_plugin_fleet/device_registry.py  dup=124L  groups=1  frags=1  (0.8%)
-  plugins/doql-plugin-iso17025/doql_plugin_iso17025/uncertainty.py  dup=120L  groups=1  frags=1  (0.8%)
+  plugins/doql-plugin-iso17025/doql_plugin_iso17025/uncertainty.py  dup=120L  groups=1  frags=1  (0.7%)
 
 DUPLICATES[13] (ranked by impact):
   [ea3eb19d82437e63] !! STRU  gen_alembic_ini  L=40 N=13 saved=480 sim=1.00
@@ -82,8 +82,8 @@ DUPLICATES[13] (ranked by impact):
       doql/parsers/extractors.py:158-161  (_parse_field_ref)
       doql/parsers/extractors.py:164-167  (_parse_field_default)
   [563e71404cb3cb69]   STRU  export_less  L=3 N=2 saved=3 sim=1.00
-      doql/exporters/css/__init__.py:93-95  (export_less)
-      doql/exporters/css/__init__.py:98-100  (export_sass)
+      doql/exporters/css/__init__.py:96-98  (export_less)
+      doql/exporters/css/__init__.py:101-103  (export_sass)
   [b1191467b99382f4]   STRU  _resolve_less_vars  L=3 N=2 saved=3 sim=1.00
       doql/parsers/css_transformers.py:45-47  (_resolve_less_vars)
       doql/parsers/css_transformers.py:50-52  (_resolve_sass_vars)

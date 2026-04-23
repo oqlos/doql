@@ -125,7 +125,7 @@ pip install -e .[dev]
 ### `project/map.toon.yaml`
 
 ```toon markpact:analysis path=project/map.toon.yaml
-# doql-plugin-erp | 2f 418L | less:1,python:1 | 2026-04-21
+# doql-plugin-erp | 2f 418L | less:1,python:1 | 2026-04-23
 # stats: 6 func | 0 cls | 2 mod | CC̄=1.2 | critical:0 | cycles:0
 # alerts[5]: CC generate=2; CC _odoo_client_module=1; CC _mapping_module=1; CC _sync_module=1; CC _webhook_module=1
 # hotspots[5]: generate fan=8; _odoo_client_module fan=1; _mapping_module fan=1; _sync_module fan=1; _webhook_module fan=1

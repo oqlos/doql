@@ -9,7 +9,7 @@ from typing import IO
 
 from ...parsers.models import DoqlSpec
 from .renderers import (
-    _render_app, _render_entity, _render_data_source, _render_template,
+    _render_app, _render_dependencies, _render_entity, _render_data_source, _render_template,
     _render_document, _render_report, _render_database, _render_api_client,
     _render_webhook, _render_interface, _render_integration, _render_workflow,
     _render_role, _render_deploy, _render_environment,
@@ -72,6 +72,9 @@ def _render_css(spec: DoqlSpec) -> str:
     """Render DoqlSpec as CSS-like .doql.css text."""
     sections: list[list[str]] = []
     sections.append(_render_app(spec))
+    deps = _render_dependencies(spec)
+    if deps:
+        sections.append(deps)
     sections.extend(_render_data_layer(spec))
     sections.extend(_render_documentation_layer(spec))
     sections.extend(_render_infrastructure_layer(spec))

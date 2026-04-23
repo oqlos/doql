@@ -1,0 +1,32 @@
+# examples | 24f 4126L | css:13,less:11 | 2026-04-23
+# stats: 0 func | 0 cls | 24 mod | CC̄=1.0 | critical:0 | cycles:0
+# alerts[5]: none
+# hotspots[5]: none
+# evolution: baseline
+# Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
+M[24]:
+  app.doql.less,60
+  asset-management/app.doql.css,229
+  asset-management/app.doql.less,235
+  asset-management.doql.css,531
+  blog-cms/app.doql.less,146
+  blog-cms.doql.css,138
+  calibration-lab/app.doql.less,318
+  calibration-lab.doql.css,174
+  crm-contacts/app.doql.less,171
+  crm-contacts.doql.css,125
+  document-generator/app.doql.less,321
+  document-generator.doql.css,107
+  e-commerce-shop/app.doql.less,130
+  e-commerce-shop.doql.css,177
+  iot-fleet/app.doql.less,329
+  iot-fleet.doql.css,166
+  kiosk-station/app.doql.css,75
+  kiosk-station/app.doql.less,73
+  kiosk-station.doql.css,384
+  notes-app/app.doql.less,73
+  notes-app.doql.css,71
+  todo-pwa/app.doql.css,27
+  todo-pwa/app.doql.less,29
+  todo-pwa.doql.css,37
+D:

@@ -38,14 +38,10 @@ flowchart TD
         TODO__convert["convert"]
         TODO___handle_line["_handle_line"]
         TODO___close_remaining["_close_remaining"]
-        ...["+1579 more"]
+        ...["+1576 more"]
     end
 
     subgraph Exporters
-        doql__exporters__css__renderers___render_api_client["_render_api_client"]
-        doql__exporters__css__export_css["export_css"]
-        doql__exporters__css__export_less["export_less"]
-        doql__exporters__css__export_sass["export_sass"]
         doql__exporters__markdown__export_markdown_file["export_markdown_file"]
         doql__exporters__markdown__sections___entity_section["_entity_section"]
         doql__exporters__markdown__sections___interface_section["_interface_section"]
@@ -57,7 +53,11 @@ flowchart TD
         doql__generators__api_gen__export_openapi["export_openapi"]
         project__map__toon__cmd_export["cmd_export"]
         project__map__toon__export_css["export_css"]
-        ...["+34 more"]
+        project__map__toon__export_less["export_less"]
+        project__map__toon__export_sass["export_sass"]
+        project__map__toon__export_markdown["export_markdown"]
+        project__map__toon__export_markdown_file["export_markdown_file"]
+        ...["+48 more"]
     end
 
     class doql__usage,OQLOS_REQUIREMENTS__get_schema,OQLOS_REQUIREMENTS__advance,OQLOS_REQUIREMENTS__put,OQLOS_REQUIREMENTS__get,OQLOS_REQUIREMENTS__delete,OQLOS_REQUIREMENTS__presigned_url,OQLOS_REQUIREMENTS__send,OQLOS_REQUIREMENTS__generate_report,OQLOS_REQUIREMENTS__register entry

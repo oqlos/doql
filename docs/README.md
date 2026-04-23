@@ -1,7 +1,7 @@
 <!-- code2docs:start --># doql
 
-![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.10-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-2158-green)
-> **2158** functions | **45** classes | **280** files | CC̄ = 3.6
+![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.10-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-2170-green)
+> **2170** functions | **45** classes | **289** files | CC̄ = 3.6
 
 > Auto-generated project documentation from source code analysis.
 
@@ -85,6 +85,7 @@ doql/
 ├── sumd
 ├── pyproject
 ├── tree
+├── PARSER_AUDIT
     ├── testql
 ├── OQLOS-REQUIREMENTS
 ├── TODO
@@ -110,7 +111,10 @@ doql/
             ├── toon
             ├── toon
             ├── toon
+    ├── SUMR
     ├── EXAMPLES-TEST-REPORT
+    ├── SUMD
+    ├── sumd
     ├── Taskfile
         ├── pyqual
         ├── app
@@ -127,6 +131,7 @@ doql/
         ├── README
             ├── customers
             ├── organization
+            ├── toon
         ├── app
         ├── Taskfile
         ├── README
@@ -201,8 +206,6 @@ doql/
             ├── infra-local-9dd2f59b
         ├── toon
         ├── toon
-        ├── toon
-    ├── README
             ├── toon
             ├── toon
             ├── toon
@@ -211,13 +214,17 @@ doql/
     ├── renderers
     ├── README
     ├── app
+    ├── SUMR
+    ├── SUMD
     ├── tsconfig
+    ├── sumd
     ├── language-configuration
     ├── package
     ├── README
             ├── tmLanguage
             ├── tmLanguage
         ├── extension
+            ├── toon
     ├── cli/
     ├── plugins
     ├── parser
@@ -338,8 +345,10 @@ doql/
     ├── prompt
         ├── toon
         ├── toon
-        ├── toon
     ├── context
+        ├── toon
+    ├── README
+        ├── toon
     ├── calls
         ├── toon
 ```
@@ -551,6 +560,10 @@ doql/
 - `test_adopt_from_device_writes_output()` — —
 - `test_adopt_from_device_to_snapshot_contains_layer_data()` — —
 - `test_adopt_output_is_parsable_by_doql()` — —
+- `test_adopt_from_rpi5_podman_quadlet_returns_less_text()` — —
+- `test_adopt_from_rpi5_to_snapshot_contains_all_services()` — —
+- `test_adopt_from_rpi5_to_snapshot_contains_all_containers()` — —
+- `test_adopt_from_rpi5_output_is_parsable_by_doql()` — —
 - `test_cmd_adopt_from_device_writes_file()` — —
 - `test_cmd_adopt_rejects_non_less_format()` — —
 - `test_cmd_adopt_without_target_or_device_errors()` — —
@@ -887,6 +900,7 @@ doql/
 - `validate(spec, env_vars, project_root)` — Validate a parsed DoqlSpec against env vars and internal consistency.
 - `build_layer_tree(layer_ids)` — Build an :class:`opstree.LayerTree` populated with the given layers.
 - `snapshot_to_less(snapshot, scope)` — Render an op3 :class:`Snapshot` as ``.doql.less`` text.
+- `scan_metadata()` — —
 - `cmd_drift()` — —
 - `cmd_deploy()` — —
 - `generate()` — —
@@ -961,7 +975,6 @@ doql/
 - `py_default()` — —
 - `safe_name()` — —
 - `snake()` — —
-- `scan_metadata()` — —
 - `scan_databases()` — —
 - `extract_val()` — —
 - `extract_list()` — —
@@ -977,6 +990,10 @@ doql/
 - `parse_text()` — —
 - `parse_env()` — —
 - `validate()` — —
+- `export_css()` — —
+- `export_less()` — —
+- `export_sass()` — —
+- `export_css_file()` — —
 - `TAB_NAMES()` — —
 - `activateTab()` — —
 - `tabFromHash()` — —
@@ -990,10 +1007,6 @@ doql/
 - `load_spec()` — —
 - `scaffold_from_template()` — —
 - `estimate_file_count()` — —
-- `export_css()` — —
-- `export_less()` — —
-- `export_sass()` — —
-- `export_css_file()` — —
 - `load_yaml()` — —
 - `find_compose()` — —
 - `find_dockerfiles()` — —
@@ -1087,6 +1100,10 @@ doql/
 - `test_adopt_from_device_writes_output()` — —
 - `test_adopt_from_device_to_snapshot_contains_layer_data()` — —
 - `test_adopt_output_is_parsable_by_doql()` — —
+- `test_adopt_from_rpi5_podman_quadlet_returns_less_text()` — —
+- `test_adopt_from_rpi5_to_snapshot_contains_all_services()` — —
+- `test_adopt_from_rpi5_to_snapshot_contains_all_containers()` — —
+- `test_adopt_from_rpi5_output_is_parsable_by_doql()` — —
 - `test_cmd_adopt_from_device_writes_file()` — —
 - `test_cmd_adopt_rejects_non_less_format()` — —
 - `test_cmd_adopt_without_target_or_device_errors()` — —
@@ -1214,10 +1231,11 @@ doql/
 📄 `GLOSSARY`
 📄 `Jenkinsfile` (7 functions)
 📄 `OQLOS-REQUIREMENTS` (10 functions, 9 classes)
+📄 `PARSER_AUDIT`
 📄 `README`
 📄 `ROADMAP`
 📄 `SPEC`
-📄 `SUMD` (762 functions, 1 classes)
+📄 `SUMD` (767 functions, 1 classes)
 📄 `SUMR` (19 functions, 1 classes)
 📄 `TODO` (11 functions, 4 classes)
 📄 `TODO.01-doql-format-migration-analysis`
@@ -1297,7 +1315,7 @@ doql/
 📦 `doql.exporters.css` (9 functions)
 📄 `doql.exporters.css.format_convert` (3 functions)
 📄 `doql.exporters.css.helpers` (3 functions)
-📄 `doql.exporters.css.renderers` (17 functions)
+📄 `doql.exporters.css.renderers` (18 functions)
 📄 `doql.exporters.css_exporter`
 📦 `doql.exporters.markdown` (2 functions)
 📄 `doql.exporters.markdown.sections` (8 functions)
@@ -1363,6 +1381,8 @@ doql/
 📄 `doql.utils.clean` (1 functions)
 📄 `doql.utils.naming` (2 functions)
 📄 `examples.EXAMPLES-TEST-REPORT`
+📄 `examples.SUMD`
+📄 `examples.SUMR`
 📄 `examples.Taskfile`
 📄 `examples.asset-management.README`
 📄 `examples.asset-management.Taskfile`
@@ -1392,6 +1412,8 @@ doql/
 📄 `examples.kiosk-station.README`
 📄 `examples.kiosk-station.Taskfile`
 📄 `examples.kiosk-station.app`
+📄 `examples.project.map.toon`
+📄 `examples.sumd`
 📄 `examples.todo-pwa.README`
 📄 `examples.todo-pwa.Taskfile`
 📄 `examples.todo-pwa.app`
@@ -1455,7 +1477,7 @@ doql/
 📄 `project.context`
 📄 `project.duplication.toon`
 📄 `project.evolution.toon`
-📄 `project.map.toon` (2217 functions)
+📄 `project.map.toon` (2228 functions)
 📄 `project.project.toon`
 📄 `project.prompt`
 📄 `project.validation.toon`
@@ -1469,9 +1491,13 @@ doql/
 📄 `testql-scenarios.generated-from-pytests.testql.toon`
 📄 `tree`
 📄 `vscode-doql.README`
+📄 `vscode-doql.SUMD`
+📄 `vscode-doql.SUMR`
 📄 `vscode-doql.language-configuration`
 📄 `vscode-doql.package`
+📄 `vscode-doql.project.map.toon`
 📄 `vscode-doql.src.extension` (4 functions)
+📄 `vscode-doql.sumd`
 📄 `vscode-doql.syntaxes.doql-css.tmLanguage`
 📄 `vscode-doql.syntaxes.doql.tmLanguage`
 📄 `vscode-doql.tsconfig`

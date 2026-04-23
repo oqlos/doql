@@ -2,22 +2,23 @@ flowchart TD
     doql__adopt["doql.adopt<br/>81 funcs"]
     doql__cli["doql.cli<br/>112 funcs"]
     doql__drift["doql.drift<br/>4 funcs"]
-    doql__exporters["doql.exporters<br/>56 funcs"]
+    doql__exporters["doql.exporters<br/>57 funcs"]
     doql__importers["doql.importers<br/>22 funcs"]
     doql__integrations["doql.integrations<br/>2 funcs"]
     doql__parsers["doql.parsers<br/>115 funcs"]
     doql__utils["doql.utils<br/>3 funcs"]
     plugins__doql_plugin_iso17025["plugins.doql-plugin-iso17025<br/>8 funcs"]
     plugins__doql_plugin_shared["plugins.doql-plugin-shared<br/>6 funcs"]
-    project__map["project.map<br/>699 funcs"]
-    doql__cli ==>|6| doql__exporters
-    doql__cli ==>|6| project__map
+    project__map["project.map<br/>704 funcs"]
+    doql__exporters ==>|15| project__map
+    doql__cli ==>|7| project__map
+    doql__cli ==>|5| doql__exporters
     doql__cli ==>|4| doql__parsers
     doql__cli -->|3| doql__drift
     doql__cli -->|3| doql__adopt
+    doql__adopt -->|3| project__map
     plugins__doql_plugin_iso17025 -->|2| plugins__doql_plugin_shared
     doql__drift -->|1| doql__adopt
     doql__cli -->|1| doql__importers
     doql__exporters -->|1| doql__utils
-    doql__adopt -->|1| doql__exporters
     doql__adopt -->|1| doql__integrations

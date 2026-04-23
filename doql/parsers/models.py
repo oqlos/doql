@@ -226,6 +226,14 @@ class CiConfig:
 class DoqlSpec:
     app_name: str = "Untitled"
     version: str = "0.1.0"
+    description: Optional[str] = None
+    license: Optional[str] = None
+    authors: list[str] = field(default_factory=list)
+    keywords: list[str] = field(default_factory=list)
+    homepage: Optional[str] = None
+    repository: Optional[str] = None
+    python_requires: Optional[str] = None
+    dependencies: dict[str, str] = field(default_factory=dict)
     domain: Optional[str] = None
     languages: list[str] = field(default_factory=list)
     entities: list[Entity] = field(default_factory=list)

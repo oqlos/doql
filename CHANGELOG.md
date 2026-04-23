@@ -4,6 +4,34 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [1.0.15] - 2026-04-23
+
+### Docs
+- Update README.md
+- Update SUMD.md
+- Update SUMR.md
+- Update docs/README.md
+- Update examples/SUMD.md
+- Update examples/SUMR.md
+- Update plugins/doql-plugin-erp/SUMD.md
+- Update plugins/doql-plugin-fleet/SUMD.md
+- Update plugins/doql-plugin-gxp/SUMD.md
+- Update plugins/doql-plugin-iso17025/SUMD.md
+- ... and 5 more files
+
+### Other
+- Update app.doql.css
+- Update app.doql.less
+- Update doql/adopt/scanner/deploy.py
+- Update doql/adopt/scanner/environments.py
+- Update doql/adopt/scanner/interfaces.py
+- Update doql/adopt/scanner/metadata.py
+- Update doql/exporters/css/__init__.py
+- Update doql/exporters/css/renderers.py
+- Update doql/parsers/models.py
+- Update examples/app.doql.less
+- ... and 28 more files
+
 ## [1.0.14] - 2026-04-21
 
 ### Docs

@@ -55,6 +55,8 @@ def _determine_deploy_target(indicators: dict[str, Any], deploy: Deploy, root: P
         deploy.target = "terraform"
     elif indicators["has_makefile"]:
         deploy.target = "makefile"
+    elif (root / "pyproject.toml").exists():
+        deploy.target = "pip"
 
 
 def _apply_deploy_config_flags(indicators: dict[str, Any], deploy: Deploy) -> None:
@@ -140,3 +142,9 @@ def scan_deploy(root: Path, spec: DoqlSpec) -> None:
     _emit_infrastructure_blocks(indicators, spec)
 
     spec.deploy = deploy
+
+    # Override environment runtime for Python pip-deployed projects
+    if deploy.target == "pip":
+        for env in spec.environments:
+            if env.runtime == "docker-compose":
+                env.runtime = "python"

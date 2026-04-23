@@ -1,10 +1,10 @@
-# doql | 191f 25738L | python:150,less:16,css:14,shell:6,javascript:4,typescript:1 | 2026-04-21
-# stats: 743 func | 41 cls | 191 mod | CC̄=3.8 | critical:33 | cycles:0
+# doql | 193f 26109L | python:150,less:18,css:14,shell:6,javascript:4,typescript:1 | 2026-04-23
+# stats: 749 func | 41 cls | 193 mod | CC̄=3.9 | critical:34 | cycles:0
 # alerts[5]: CC test_build_produces_expected_targets=33; CC check_api=25; CC test_adopt_e2e_real_project_oqlos=22; CC check_desktop=17; CC test_api_boot_and_health=17
 # hotspots[5]: check_api fan=26; test_api_boot_and_health fan=26; cmd_build fan=23; main fan=21; cmd_doctor fan=17
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
-M[191]:
+M[193]:
   app.doql.less,60
   doql/__init__.py,92
   doql/adopt/__init__.py,11
@@ -14,10 +14,10 @@ M[191]:
   doql/adopt/scanner/databases.py,63
   doql/adopt/scanner/deploy.py,143
   doql/adopt/scanner/entities.py,186
-  doql/adopt/scanner/environments.py,87
+  doql/adopt/scanner/environments.py,92
   doql/adopt/scanner/integrations.py,27
   doql/adopt/scanner/interfaces.py,334
-  doql/adopt/scanner/metadata.py,69
+  doql/adopt/scanner/metadata.py,104
   doql/adopt/scanner/roles.py,33
   doql/adopt/scanner/utils.py,101
   doql/adopt/scanner/workflows.py,264
@@ -52,10 +52,10 @@ M[191]:
   doql/drift/__init__.py,23
   doql/drift/detector.py,126
   doql/exporters/__init__.py,2
-  doql/exporters/css/__init__.py,108
+  doql/exporters/css/__init__.py,111
   doql/exporters/css/format_convert.py,68
   doql/exporters/css/helpers.py,40
-  doql/exporters/css/renderers.py,297
+  doql/exporters/css/renderers.py,321
   doql/exporters/css_exporter.py,17
   doql/exporters/markdown/__init__.py,41
   doql/exporters/markdown/sections.py,122
@@ -111,7 +111,7 @@ M[191]:
   doql/parsers/css_transformers.py,247
   doql/parsers/css_utils.py,73
   doql/parsers/extractors.py,206
-  doql/parsers/models.py,252
+  doql/parsers/models.py,260
   doql/parsers/registry.py,311
   doql/parsers/validators.py,201
   doql/plugins.py,102
@@ -119,6 +119,7 @@ M[191]:
   doql/utils/clean.py,21
   doql/utils/naming.py,38
   doql.sh,196
+  examples/app.doql.less,60
   examples/asset-management/app.doql.css,229
   examples/asset-management/app.doql.less,235
   examples/asset-management.doql.css,531
@@ -170,11 +171,11 @@ M[191]:
   plugins/doql-plugin-shared/doql_plugin_shared/__init__.py,12
   plugins/doql-plugin-shared/doql_plugin_shared/base.py,30
   plugins/doql-plugin-shared/doql_plugin_shared/readme.py,38
-  project.sh,37
+  project.sh,45
   tests/__init__.py,1
   tests/env_manager.py,468
   tests/integration/__init__.py,2
-  tests/integration/test_adopt_from_device.py,203
+  tests/integration/test_adopt_from_device.py,356
   tests/integration/test_build_from_device.py,283
   tests/integration/test_drift.py,290
   tests/integration/test_op3_bridge.py,165
@@ -194,6 +195,7 @@ M[191]:
   tests/test_runtime.py,237
   tests/test_workspace.py,170
   tree.sh,2
+  vscode-doql/app.doql.less,75
   vscode-doql/src/extension.ts,52
   vscode-doql/test/vscode-doql.test.js,8
 D:
@@ -516,8 +518,9 @@ D:
     _prop(key;value;quote_str)
     _field_line(f)
   doql/exporters/css/renderers.py:
-    e: _render_app,_render_entity,_render_data_source,_render_template,_render_document,_render_report,_render_database,_render_api_client,_render_webhook,_build_interface_props,_build_page_props,_render_interface,_render_integration,_render_workflow,_render_role,_render_deploy,_render_environment
+    e: _render_app,_render_dependencies,_render_entity,_render_data_source,_render_template,_render_document,_render_report,_render_database,_render_api_client,_render_webhook,_build_interface_props,_build_page_props,_render_interface,_render_integration,_render_workflow,_render_role,_render_deploy,_render_environment
     _render_app(spec)
+    _render_dependencies(spec)
     _render_entity(e)
     _render_data_source(ds)
     _render_template(t)
@@ -1073,12 +1076,17 @@ D:
     main(argv)
   tests/integration/__init__.py:
   tests/integration/test_adopt_from_device.py:
-    e: _healthy_rpi_responses,test_adopt_from_device_returns_less_text,test_adopt_from_device_writes_output,test_adopt_from_device_to_snapshot_contains_layer_data,test_adopt_output_is_parsable_by_doql,_make_cli_args,test_cmd_adopt_from_device_writes_file,test_cmd_adopt_rejects_non_less_format,test_cmd_adopt_without_target_or_device_errors,test_cmd_adopt_refuses_to_overwrite
+    e: _healthy_rpi_responses,_rpi5_podman_quadlet_responses,test_adopt_from_device_returns_less_text,test_adopt_from_device_writes_output,test_adopt_from_device_to_snapshot_contains_layer_data,test_adopt_output_is_parsable_by_doql,test_adopt_from_rpi5_podman_quadlet_returns_less_text,test_adopt_from_rpi5_to_snapshot_contains_all_services,test_adopt_from_rpi5_to_snapshot_contains_all_containers,test_adopt_from_rpi5_output_is_parsable_by_doql,_make_cli_args,test_cmd_adopt_from_device_writes_file,test_cmd_adopt_rejects_non_less_format,test_cmd_adopt_without_target_or_device_errors,test_cmd_adopt_refuses_to_overwrite
     _healthy_rpi_responses()
+    _rpi5_podman_quadlet_responses()
     test_adopt_from_device_returns_less_text()
     test_adopt_from_device_writes_output(tmp_path)
     test_adopt_from_device_to_snapshot_contains_layer_data()
     test_adopt_output_is_parsable_by_doql(tmp_path)
+    test_adopt_from_rpi5_podman_quadlet_returns_less_text()
+    test_adopt_from_rpi5_to_snapshot_contains_all_services()
+    test_adopt_from_rpi5_to_snapshot_contains_all_containers()
+    test_adopt_from_rpi5_output_is_parsable_by_doql(tmp_path)
     _make_cli_args()
     test_cmd_adopt_from_device_writes_file(tmp_path;monkeypatch;capsys)
     test_cmd_adopt_rejects_non_less_format(capsys)

@@ -1,7 +1,7 @@
-# doql | 2097 func | 132f | 59482L | python | 2026-04-21
+# doql | 2108 func | 132f | 61265L | python | 2026-04-23
 
 HEALTH:
-  CC̄=1.0  critical=20 (limit:10)  dup=3  cycles=0
+  CC̄=1.0  critical=21 (limit:10)  dup=3  cycles=0
 
 ALERTS[20]:
   !!  high_fan_out     _diagnostics_for = 17 (limit:10)
@@ -10,28 +10,28 @@ ALERTS[20]:
   !!  high_fan_out     _convert_indent_to_braces = 16 (limit:10)
   !!  high_fan_out     _deploy_via_redeploy_api = 15 (limit:10)
   !!  high_fan_out     cmd_run = 15 (limit:10)
+  !   cc_exceeded      _parse_pyproject = 15 (limit:15)
   !   high_fan_out     definition = 14 (limit:10)
   !   high_fan_out     cmd_sync = 14 (limit:10)
   !   high_fan_out     _render_rich = 14 (limit:10)
-  !   high_fan_out     cmd_plan = 13 (limit:10)
 
-MODULES[267] (top by size):
-  M[project/calls.yaml] 6595L C:0 F:0 CC↑0 D:0 (yaml)
-  M[SUMD.md] 2419L C:1 F:699 CC↑0 D:0 (md)
-  M[SUMR.md] 2260L C:1 F:19 CC↑0 D:0 (md)
-  M[docs/README.md] 1516L C:0 F:1 CC↑0 D:0 (md)
-  M[project/map.toon.yaml] 1261L C:0 F:699 CC↑0 D:1 (yaml)
+MODULES[276] (top by size):
+  M[project/calls.yaml] 6983L C:0 F:0 CC↑0 D:0 (yaml)
+  M[SUMD.md] 2458L C:1 F:704 CC↑0 D:0 (md)
+  M[SUMR.md] 2325L C:1 F:19 CC↑0 D:0 (md)
+  M[docs/README.md] 1517L C:0 F:1 CC↑0 D:0 (md)
+  M[project/map.toon.yaml] 1268L C:0 F:704 CC↑0 D:5 (yaml)
   M[SPEC.md] 983L C:0 F:0 CC↑0 D:0 (md)
-  M[CHANGELOG.md] 745L C:0 F:1 CC↑0 D:0 (md)
+  M[CHANGELOG.md] 778L C:0 F:1 CC↑0 D:0 (md)
   M[doql/generators/infra_gen.py] 647L C:0 F:10 CC↑12 D:0 (python)
+  M[project/calls.toon.yaml] 606L C:0 F:0 CC↑0 D:0 (yaml)
   M[code2llm_output/plugins/context.md] 595L C:0 F:0 CC↑0 D:0 (md)
   M[docs/plugins/context.md] 593L C:0 F:0 CC↑0 D:0 (md)
   M[docs/doql_playground/context.md] 591L C:0 F:0 CC↑0 D:0 (md)
   M[analysis-20260421/doql_playground/context.md] 589L C:0 F:0 CC↑0 D:0 (md)
   M[code2llm_output/doql_playground/context.md] 589L C:0 F:0 CC↑0 D:0 (md)
-  M[project/context.md] 588L C:0 F:0 CC↑0 D:0 (md)
-  M[project/calls.toon.yaml] 572L C:0 F:0 CC↑0 D:0 (yaml)
-  LANGS: python:124/md:58/yaml:29/yml:14/doql:13/json:13/toml:6/shell:4/javascript:3/typescript:1/other:1/txt:1
+  M[project/context.md] 584L C:0 F:0 CC↑0 D:0 (md)
+  LANGS: python:124/md:63/yaml:31/json:15/yml:14/doql:13/toml:6/shell:4/javascript:3/typescript:1/other:1/txt:1
 
 HOTSPOTS[10]:
   ★ _diagnostics_for fan=17  // Parse, validate and return LSP diagnostics.
@@ -45,9 +45,9 @@ Returns exit code: 0
 REFACTOR[15]:
   [1] H/H Split god module doql/generators/infra_gen.py (647L, 0 classes)
   [2] H/H Split god module doql/cli/commands/workspace.py (544L, 1 classes)
-  [3] H/H Split god module CHANGELOG.md (745L, 0 classes)
+  [3] H/H Split god module CHANGELOG.md (778L, 0 classes)
   [4] H/H Split god module SPEC.md (983L, 0 classes)
-  [5] H/H Split god module SUMD.md (2419L, 1 classes)
+  [5] H/H Split god module SUMD.md (2458L, 1 classes)
 
 EVOLUTION:
-  2026-04-21 CC̄=1.0 crit=20 59482L // Automated analysis
+  2026-04-23 CC̄=1.0 crit=21 61265L // Automated analysis

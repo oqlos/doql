@@ -50,6 +50,25 @@ def _detect_framework_from_main_py(main_py: Path) -> str | None:
     return None
 
 
+def _detect_framework_from_any_py(root: Path) -> str | None:
+    """Scan all Python files under root for FastAPI/Flask imports.
+
+    Used as fallback when no api/main.py is found (e.g. cqrs-backend-workflows/server.py).
+    """
+    for py_file in root.rglob("*.py"):
+        if any(skip in str(py_file) for skip in ("venv", ".venv", "node_modules", "__pycache__", ".pytest_cache", "tests/")):
+            continue
+        try:
+            text = py_file.read_text()
+        except OSError:
+            continue
+        if "FastAPI" in text or "from fastapi" in text:
+            return "fastapi"
+        if "Flask" in text:
+            return "flask"
+    return None
+
+
 def _find_api_main_file(root: Path) -> Path | None:
     """Find API main file in common locations."""
     api_dirs = ["api", "app", "src/api", "apps/api"]
@@ -61,12 +80,10 @@ def _find_api_main_file(root: Path) -> Path | None:
                 api_dirs.append(f"{child.name}/api")
 
     for d in api_dirs:
-        candidate = root / d / "main.py"
-        if candidate.exists():
-            return candidate
-        candidate = root / d / "app.py"
-        if candidate.exists():
-            return candidate
+        for fname in ("main.py", "app.py", "server.py"):
+            candidate = root / d / fname
+            if candidate.exists():
+                return candidate
     return None
 
 
@@ -125,12 +142,13 @@ def _scan_python_api(root: Path, spec: DoqlSpec) -> None:
     api_main = _find_api_main_file(root)
     has_entry_point = _has_api_entry_point(pyproj)
     main_py_framework = _detect_framework_from_main_py(root / "main.py")
+    any_py_framework = _detect_framework_from_any_py(root)
 
-    has_evidence = bool(api_main or has_entry_point or main_py_framework)
+    has_evidence = bool(api_main or has_entry_point or main_py_framework or any_py_framework)
     if not has_evidence:
         return
 
-    framework = framework_dep or main_py_framework or "fastapi"
+    framework = framework_dep or main_py_framework or any_py_framework or "fastapi"
     auth = _detect_api_auth(spec)
 
     iface = Interface(
@@ -173,7 +191,19 @@ def _scan_python_cli(root: Path, spec: DoqlSpec) -> None:
         if "server" in name or "api" in name:
             continue
         # This is a CLI tool
-        framework = "click" if "click" in pyproj.read_text().lower() else "argparse"
+        # Detect framework from pyproject.toml dependencies or CLI source files
+        framework = "argparse"
+        deps = data.get("project", {}).get("dependencies", [])
+        if deps:
+            deps_str = " ".join(deps).lower()
+            if "click" in deps_str:
+                framework = "click"
+        if framework == "argparse":
+            # Fallback: scan CLI source files for click usage
+            for cli_file in [root / "cli.py", root / name / "cli.py"]:
+                if cli_file.exists() and "click" in cli_file.read_text().lower():
+                    framework = "click"
+                    break
         iface = Interface(
             name="cli",
             type="cli",

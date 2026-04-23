@@ -23,7 +23,7 @@ Declarative OQL — build complete applications from a single .doql file
 ## Metadata
 
 - **name**: `doql`
-- **version**: `1.0.12`
+- **version**: `1.0.14`
 - **python_requires**: `>=3.10`
 - **license**: Apache-2.0
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
@@ -44,7 +44,7 @@ SUMD (description) → DOQL/source (code) → taskfile (automation) → testql (
 
 app {
   name: doql;
-  version: 1.0.12;
+  version: 1.0.14;
 }
 
 interface[type="cli"] {
@@ -427,7 +427,7 @@ pipeline:
 ```yaml
 project:
   name: doql
-  version: 1.0.12
+  version: 1.0.14
   env: local
 ```
 
@@ -500,13 +500,13 @@ pip install -e .[dev]
 ### `project/map.toon.yaml`
 
 ```toon markpact:analysis path=project/map.toon.yaml
-# doql | 191f 25738L | python:150,less:16,css:14,shell:6,javascript:4,typescript:1 | 2026-04-21
-# stats: 743 func | 41 cls | 191 mod | CC̄=3.8 | critical:33 | cycles:0
+# doql | 193f 26109L | python:150,less:18,css:14,shell:6,javascript:4,typescript:1 | 2026-04-23
+# stats: 749 func | 41 cls | 193 mod | CC̄=3.9 | critical:34 | cycles:0
 # alerts[5]: CC test_build_produces_expected_targets=33; CC check_api=25; CC test_adopt_e2e_real_project_oqlos=22; CC check_desktop=17; CC test_api_boot_and_health=17
 # hotspots[5]: check_api fan=26; test_api_boot_and_health fan=26; cmd_build fan=23; main fan=21; cmd_doctor fan=17
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
-M[191]:
+M[193]:
   app.doql.less,60
   doql/__init__.py,92
   doql/adopt/__init__.py,11
@@ -516,10 +516,10 @@ M[191]:
   doql/adopt/scanner/databases.py,63
   doql/adopt/scanner/deploy.py,143
   doql/adopt/scanner/entities.py,186
-  doql/adopt/scanner/environments.py,87
+  doql/adopt/scanner/environments.py,92
   doql/adopt/scanner/integrations.py,27
   doql/adopt/scanner/interfaces.py,334
-  doql/adopt/scanner/metadata.py,69
+  doql/adopt/scanner/metadata.py,104
   doql/adopt/scanner/roles.py,33
   doql/adopt/scanner/utils.py,101
   doql/adopt/scanner/workflows.py,264
@@ -554,10 +554,10 @@ M[191]:
   doql/drift/__init__.py,23
   doql/drift/detector.py,126
   doql/exporters/__init__.py,2
-  doql/exporters/css/__init__.py,108
+  doql/exporters/css/__init__.py,111
   doql/exporters/css/format_convert.py,68
   doql/exporters/css/helpers.py,40
-  doql/exporters/css/renderers.py,297
+  doql/exporters/css/renderers.py,321
   doql/exporters/css_exporter.py,17
   doql/exporters/markdown/__init__.py,41
   doql/exporters/markdown/sections.py,122
@@ -613,7 +613,7 @@ M[191]:
   doql/parsers/css_transformers.py,247
   doql/parsers/css_utils.py,73
   doql/parsers/extractors.py,206
-  doql/parsers/models.py,252
+  doql/parsers/models.py,260
   doql/parsers/registry.py,311
   doql/parsers/validators.py,201
   doql/plugins.py,102
@@ -621,6 +621,7 @@ M[191]:
   doql/utils/clean.py,21
   doql/utils/naming.py,38
   doql.sh,196
+  examples/app.doql.less,60
   examples/asset-management/app.doql.css,229
   examples/asset-management/app.doql.less,235
   examples/asset-management.doql.css,531
@@ -672,11 +673,11 @@ M[191]:
   plugins/doql-plugin-shared/doql_plugin_shared/__init__.py,12
   plugins/doql-plugin-shared/doql_plugin_shared/base.py,30
   plugins/doql-plugin-shared/doql_plugin_shared/readme.py,38
-  project.sh,37
+  project.sh,45
   tests/__init__.py,1
   tests/env_manager.py,468
   tests/integration/__init__.py,2
-  tests/integration/test_adopt_from_device.py,203
+  tests/integration/test_adopt_from_device.py,356
   tests/integration/test_build_from_device.py,283
   tests/integration/test_drift.py,290
   tests/integration/test_op3_bridge.py,165
@@ -696,6 +697,7 @@ M[191]:
   tests/test_runtime.py,237
   tests/test_workspace.py,170
   tree.sh,2
+  vscode-doql/app.doql.less,75
   vscode-doql/src/extension.ts,52
   vscode-doql/test/vscode-doql.test.js,8
 D:
@@ -1018,8 +1020,9 @@ D:
     _prop(key;value;quote_str)
     _field_line(f)
   doql/exporters/css/renderers.py:
-    e: _render_app,_render_entity,_render_data_source,_render_template,_render_document,_render_report,_render_database,_render_api_client,_render_webhook,_build_interface_props,_build_page_props,_render_interface,_render_integration,_render_workflow,_render_role,_render_deploy,_render_environment
+    e: _render_app,_render_dependencies,_render_entity,_render_data_source,_render_template,_render_document,_render_report,_render_database,_render_api_client,_render_webhook,_build_interface_props,_build_page_props,_render_interface,_render_integration,_render_workflow,_render_role,_render_deploy,_render_environment
     _render_app(spec)
+    _render_dependencies(spec)
     _render_entity(e)
     _render_data_source(ds)
     _render_template(t)
@@ -1575,12 +1578,17 @@ D:
     main(argv)
   tests/integration/__init__.py:
   tests/integration/test_adopt_from_device.py:
-    e: _healthy_rpi_responses,test_adopt_from_device_returns_less_text,test_adopt_from_device_writes_output,test_adopt_from_device_to_snapshot_contains_layer_data,test_adopt_output_is_parsable_by_doql,_make_cli_args,test_cmd_adopt_from_device_writes_file,test_cmd_adopt_rejects_non_less_format,test_cmd_adopt_without_target_or_device_errors,test_cmd_adopt_refuses_to_overwrite
+    e: _healthy_rpi_responses,_rpi5_podman_quadlet_responses,test_adopt_from_device_returns_less_text,test_adopt_from_device_writes_output,test_adopt_from_device_to_snapshot_contains_layer_data,test_adopt_output_is_parsable_by_doql,test_adopt_from_rpi5_podman_quadlet_returns_less_text,test_adopt_from_rpi5_to_snapshot_contains_all_services,test_adopt_from_rpi5_to_snapshot_contains_all_containers,test_adopt_from_rpi5_output_is_parsable_by_doql,_make_cli_args,test_cmd_adopt_from_device_writes_file,test_cmd_adopt_rejects_non_less_format,test_cmd_adopt_without_target_or_device_errors,test_cmd_adopt_refuses_to_overwrite
     _healthy_rpi_responses()
+    _rpi5_podman_quadlet_responses()
     test_adopt_from_device_returns_less_text()
     test_adopt_from_device_writes_output(tmp_path)
     test_adopt_from_device_to_snapshot_contains_layer_data()
     test_adopt_output_is_parsable_by_doql(tmp_path)
+    test_adopt_from_rpi5_podman_quadlet_returns_less_text()
+    test_adopt_from_rpi5_to_snapshot_contains_all_services()
+    test_adopt_from_rpi5_to_snapshot_contains_all_containers()
+    test_adopt_from_rpi5_output_is_parsable_by_doql(tmp_path)
     _make_cli_args()
     test_cmd_adopt_from_device_writes_file(tmp_path;monkeypatch;capsys)
     test_cmd_adopt_rejects_non_less_format(capsys)
@@ -1799,45 +1807,45 @@ class Plugin:
 
 ## Call Graph
 
-*466 nodes · 500 edges · 96 modules · CC̄=1.0*
+*479 nodes · 500 edges · 94 modules · CC̄=1.0*
 
 ### Hubs (by degree)
 
 | Function | CC | in | out | total |
 |----------|----|----|-----|-------|
 | `create_parser` *(in doql.cli.main)* | 1 | 1 | 82 | **83** |
-| `_prop` *(in doql.exporters.css.helpers)* | 8 | 73 | 6 | **79** |
 | `extract_val` *(in doql.parsers.extractors)* | 6 | 61 | 10 | **71** |
+| `_parse_pyproject` *(in doql.adopt.scanner.metadata)* | 15 ⚠ | 1 | 33 | **34** |
 | `_deploy_via_redeploy_api` *(in doql.cli.commands.deploy)* | 12 ⚠ | 1 | 31 | **32** |
 | `_render_rich` *(in doql.cli.commands.drift)* | 7 | 1 | 29 | **30** |
 | `_convert_indent_to_braces` *(in doql.parsers.css_transformers)* | 9 | 1 | 27 | **28** |
-| `_print` *(in doql.cli.commands.workspace)* | 2 | 24 | 3 | **27** |
 | `_output_table` *(in doql.cli.commands.workspace)* | 10 ⚠ | 1 | 26 | **27** |
+| `_diagnostics_for` *(in doql.lsp_server)* | 10 ⚠ | 1 | 26 | **27** |
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/oqlos/doql
-# nodes: 466 | edges: 500 | modules: 96
+# nodes: 479 | edges: 500 | modules: 94
 # CC̄=1.0
 
 HUBS[20]:
   doql.cli.main.create_parser
     CC=1  in:1  out:82  total:83
-  doql.exporters.css.helpers._prop
-    CC=8  in:73  out:6  total:79
   doql.parsers.extractors.extract_val
     CC=6  in:61  out:10  total:71
+  doql.adopt.scanner.metadata._parse_pyproject
+    CC=15  in:1  out:33  total:34
   doql.cli.commands.deploy._deploy_via_redeploy_api
     CC=12  in:1  out:31  total:32
   doql.cli.commands.drift._render_rich
     CC=7  in:1  out:29  total:30
   doql.parsers.css_transformers._convert_indent_to_braces
     CC=9  in:1  out:27  total:28
-  doql.cli.commands.workspace._print
-    CC=2  in:24  out:3  total:27
   doql.cli.commands.workspace._output_table
     CC=10  in:1  out:26  total:27
   doql.lsp_server._diagnostics_for
     CC=10  in:1  out:26  total:27
+  doql.cli.commands.workspace._print
+    CC=2  in:24  out:3  total:27
   doql.adopt.scanner.deploy._detect_deployment_indicators
     CC=10  in:1  out:25  total:26
   doql.cli.commands.workspace._print_project_table
@@ -1850,16 +1858,16 @@ HUBS[20]:
     CC=6  in:0  out:23  total:23
   doql.cli.commands.run.cmd_run
     CC=9  in:0  out:22  total:22
-  doql.cli.commands.drift.cmd_drift
-    CC=12  in:0  out:22  total:22
   doql.parsers.extractors._extract_page_from_format2
     CC=6  in:1  out:21  total:22
+  doql.cli.commands.drift.cmd_drift
+    CC=12  in:0  out:22  total:22
   doql.generators.infra_gen._gen_docker_compose
     CC=8  in:2  out:20  total:22
-  doql.exporters.css.renderers._render_data_source
-    CC=9  in:1  out:21  total:22
   doql.cli.commands.init.cmd_init
     CC=8  in:0  out:22  total:22
+  doql.generators.mobile_gen.generate
+    CC=5  in:0  out:21  total:21
 
 MODULES:
   doql.adopt.device_scanner  [3 funcs]
@@ -1901,7 +1909,7 @@ MODULES:
     _assign_ssh_host  CC=4  out:3
     _detect_compose_envs  CC=7  out:4
     _detect_env_files  CC=4  out:6
-    _detect_local_env  CC=3  out:4
+    _detect_local_env  CC=6  out:4
     _extract_env_refs  CC=7  out:7
     scan_environments  CC=1  out:3
   doql.adopt.scanner.integrations  [1 funcs]
@@ -1917,10 +1925,9 @@ MODULES:
     _scan_desktop  CC=7  out:14
     _scan_mobile  CC=6  out:11
     _scan_pages_dir  CC=9  out:14
-  doql.adopt.scanner.metadata  [4 funcs]
-    _parse_goal_yaml  CC=4  out:2
+  doql.adopt.scanner.metadata  [3 funcs]
     _parse_package_json  CC=1  out:4
-    _parse_pyproject  CC=5  out:7
+    _parse_pyproject  CC=15  out:33
     scan_metadata  CC=6  out:9
   doql.adopt.scanner.roles  [2 funcs]
     _scan_sql_roles  CC=9  out:10
@@ -2042,35 +2049,9 @@ MODULES:
     detect_drift  CC=3  out:8
     find_intended_file  CC=4  out:2
     parse_intended  CC=3  out:9
-  doql.exporters.css  [9 funcs]
-    _render_css  CC=5  out:16
-    _render_data_layer  CC=4  out:6
-    _render_documentation_layer  CC=3  out:4
-    _render_infrastructure_layer  CC=4  out:6
-    _render_integration_layer  CC=5  out:8
-    export_css  CC=1  out:2
-    export_css_file  CC=1  out:2
-    export_less  CC=1  out:3
-    export_sass  CC=1  out:3
-  doql.exporters.css.format_convert  [3 funcs]
+  doql.exporters.css.format_convert  [2 funcs]
     _css_to_less  CC=4  out:8
-    _css_to_sass  CC=9  out:18
     _unquote_simple_value  CC=8  out:4
-  doql.exporters.css.helpers  [3 funcs]
-    _field_line  CC=7  out:6
-    _indent  CC=2  out:1
-    _prop  CC=8  out:6
-  doql.exporters.css.renderers  [17 funcs]
-    _build_interface_props  CC=10  out:17
-    _build_page_props  CC=6  out:12
-    _render_api_client  CC=8  out:18
-    _render_app  CC=3  out:12
-    _render_data_source  CC=9  out:21
-    _render_database  CC=5  out:12
-    _render_deploy  CC=5  out:11
-    _render_document  CC=7  out:20
-    _render_entity  CC=4  out:10
-    _render_environment  CC=5  out:13
   doql.exporters.markdown  [2 funcs]
     export_markdown  CC=1  out:10
     export_markdown_file  CC=1  out:2
@@ -2249,12 +2230,25 @@ MODULES:
     completion  CC=5  out:12
     definition  CC=3  out:15
     did_change  CC=1  out:2
-  doql.parsers  [1 funcs]
+  doql.parsers  [4 funcs]
+    _is_css_format  CC=2  out:3
     detect_doql_file  CC=3  out:1
-  doql.parsers.blocks  [1 funcs]
+    parse_file  CC=3  out:6
+    parse_text  CC=3  out:6
+  doql.parsers.blocks  [2 funcs]
     apply_block  CC=2  out:3
-  doql.parsers.css_mappers  [1 funcs]
-    _map_interface  CC=4  out:6
+    split_blocks  CC=4  out:15
+  doql.parsers.css_mappers  [19 funcs]
+    _add_entity_field  CC=2  out:3
+    _add_interface_page  CC=7  out:4
+    _append_child_steps  CC=4  out:9
+    _append_inline_steps  CC=3  out:5
+    _apply_interface_properties  CC=6  out:6
+    _apply_nested_interface_children  CC=3  out:2
+    _find_or_create_interface  CC=4  out:3
+    _handle_interface_chain  CC=5  out:2
+    _map_ci  CC=4  out:8
+    _map_config_block  CC=4  out:9
   doql.parsers.css_parser  [6 funcs]
     _apply_css_block  CC=8  out:14
     _detect_format  CC=3  out:3
@@ -2294,17 +2288,26 @@ MODULES:
     collect_env_refs  CC=1  out:3
     extract_entity_fields  CC=5  out:14
     extract_list  CC=4  out:7
-  doql.parsers.registry  [15 funcs]
+  doql.parsers.registry  [26 funcs]
     _handle_api_client  CC=3  out:13
     _handle_app  CC=2  out:4
+    _handle_ci  CC=3  out:8
     _handle_data  CC=2  out:14
     _handle_database  CC=2  out:10
+    _handle_deploy  CC=6  out:7
     _handle_document  CC=4  out:11
     _handle_domain  CC=1  out:2
     _handle_entity  CC=1  out:8
-    _handle_interface  CC=3  out:10
-    _handle_languages  CC=3  out:7
-    _handle_report  CC=2  out:9
+    _handle_import_block  CC=2  out:5
+  doql.parsers.validators  [8 funcs]
+    _validate_app_name  CC=3  out:2
+    _validate_document_partials  CC=5  out:2
+    _validate_document_templates  CC=1  out:1
+    _validate_entity_refs  CC=6  out:2
+    _validate_env_refs  CC=6  out:5
+    _validate_file_refs  CC=4  out:6
+    _validate_template_files  CC=1  out:1
+    validate  CC=2  out:18
   doql.plugins  [4 funcs]
     _discover_entry_points  CC=5  out:9
     _discover_local  CC=8  out:12
@@ -2368,11 +2371,14 @@ MODULES:
     plugin_generate  CC=3  out:6
   plugins.doql-plugin-shared.doql_plugin_shared.readme  [1 funcs]
     generate_readme  CC=3  out:1
-  project.map.toon  [5 funcs]
+  project.map.toon  [8 funcs]
+    export_css_file  CC=0  out:0
     run_document_generators  CC=0  out:0
     run_i18n_generators  CC=0  out:0
     run_integration_generators  CC=0  out:0
     run_report_generators  CC=0  out:0
+    scan_environments  CC=0  out:0
+    scan_metadata  CC=0  out:0
     should_generate_interface  CC=0  out:0
 
 EDGES:
