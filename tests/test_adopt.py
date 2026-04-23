@@ -423,3 +423,54 @@ def test_adopt_e2e_real_project_oqlos(tmp_path: Path) -> None:
     text = out_file.read_text()
     assert 'app {' in text
     assert 'name: "oqlos"' in text
+
+
+# ─── subproject discovery ─────────────────────────────────────
+
+def test_discover_subprojects(tmp_path: Path):
+    from doql.cli.commands.adopt import _discover_subprojects
+
+    # Root with no sub-projects
+    assert _discover_subprojects(tmp_path) == []
+
+    # Create a frontend with package.json
+    (tmp_path / "frontend" / "package.json").parent.mkdir(parents=True, exist_ok=True)
+    (tmp_path / "frontend" / "package.json").write_text('{"name":"fe"}')
+
+    # Create an API with pyproject.toml
+    (tmp_path / "api" / "pyproject.toml").parent.mkdir(parents=True, exist_ok=True)
+    (tmp_path / "api" / "pyproject.toml").write_text('[project]\nname = "api"\n')
+
+    # docs/ without markers should be ignored
+    (tmp_path / "docs" / "README.md").parent.mkdir(parents=True, exist_ok=True)
+    (tmp_path / "docs" / "README.md").write_text("# docs")
+
+    subs = _discover_subprojects(tmp_path)
+    names = {s.name for s in subs}
+    assert names == {"api", "frontend"}
+
+
+# ─── bug fixes: CLI click detection ───────────────────────────
+
+def test_click_not_inferred_from_comment_or_changelog(tmp_path: Path):
+    """Click mentioned in changelog / comments must NOT create CLI interface."""
+    _write(tmp_path, "pyproject.toml", _pyproject(deps='"fastapi", "uvicorn"'))
+    _write(tmp_path, "CHANGELOG.md", "Added click support for CLI\n")
+    _write(tmp_path, "api/main.py", "from fastapi import FastAPI\napp = FastAPI()\n")
+
+    spec = scan_project(tmp_path)
+    cli_ifaces = [i for i in spec.interfaces if i.name == "cli"]
+    assert len(cli_ifaces) == 0, "click in markdown should not create CLI interface"
+
+
+# ─── bug fixes: FastAPI from server.py / any .py ──────────────
+
+def test_fastapi_detected_from_server_py(tmp_path: Path):
+    """FastAPI app living in server.py (not main.py) must be found."""
+    _write(tmp_path, "pyproject.toml", _pyproject(deps='"fastapi", "uvicorn"'))
+    _write(tmp_path, "server.py", "from fastapi import FastAPI\napp = FastAPI()\n")
+
+    spec = scan_project(tmp_path)
+    api_ifaces = [i for i in spec.interfaces if i.name == "api"]
+    assert len(api_ifaces) == 1
+    assert api_ifaces[0].framework == "fastapi"

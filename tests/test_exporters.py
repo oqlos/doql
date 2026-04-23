@@ -415,3 +415,22 @@ def test_markdown_export_real_example(example: str):
     assert f"# {spec.app_name}" in md
     for e in spec.entities:
         assert f"### Entity: {e.name}" in md
+
+
+def test_css_export_project_blocks():
+    """Render DoqlSpec with subprojects → verify nested project blocks."""
+    from doql.parsers.models import Subproject, DoqlSpec, Interface
+
+    root = DoqlSpec(app_name="root", version="1.0.0")
+    api = DoqlSpec(app_name="api", version="0.2.0")
+    api.interfaces.append(Interface(name="api", type="rest", framework="fastapi"))
+    root.subprojects.append(Subproject(name="api", spec=api, path="./api"))
+
+    buf = io.StringIO()
+    export_css(root, buf)
+    css = buf.getvalue()
+
+    assert 'project[name="api"][path="./api"] {' in css
+    assert 'name: "api";' in css
+    assert 'framework: fastapi;' in css
+    assert 'name: "root";' in css

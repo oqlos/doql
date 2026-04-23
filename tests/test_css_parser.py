@@ -274,3 +274,52 @@ def test_doql_vs_less_regression(example):
         f"interface_count mismatch: {classic_dict['interface_count']} vs {less_dict['interface_count']}"
     assert classic_dict["deploy_target"] == less_dict["deploy_target"], \
         f"deploy_target mismatch: {classic_dict['deploy_target']} vs {less_dict['deploy_target']}"
+
+
+# ─── project block (monorepo nesting) ─────────────────────────
+
+def test_css_parse_project_blocks():
+    src = '''
+app {
+  name: root-app;
+  version: 1.0.0;
+}
+
+project[name="api"][path="./api"] {
+  app {
+    name: api;
+    version: 0.2.0;
+  }
+  interface[type="api"] {
+    framework: fastapi;
+  }
+}
+
+project[name="frontend"][path="./frontend"] {
+  app {
+    name: frontend;
+    version: 0.1.0;
+  }
+  interface[type="web"] {
+    framework: react;
+  }
+}
+'''
+    spec = parse_css_text(src, format="css")
+    assert spec.app_name == "root-app"
+    assert spec.version == "1.0.0"
+    assert len(spec.subprojects) == 2
+
+    api = spec.subprojects[0]
+    assert api.name == "api"
+    assert api.path == "./api"
+    assert api.spec.app_name == "api"
+    assert len(api.spec.interfaces) == 1
+    assert api.spec.interfaces[0].framework == "fastapi"
+
+    fe = spec.subprojects[1]
+    assert fe.name == "frontend"
+    assert fe.path == "./frontend"
+    assert fe.spec.app_name == "frontend"
+    assert len(fe.spec.interfaces) == 1
+    assert fe.spec.interfaces[0].framework == "react"
