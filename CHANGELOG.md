@@ -4,6 +4,11 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [1.0.17] - 2026-04-23
+
+### Other
+- Update doql/exporters/css/__init__.py
+
 ## [1.0.16] - 2026-04-23
 
 ### Docs

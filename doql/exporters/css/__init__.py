@@ -105,6 +105,7 @@ def export_sass(spec: DoqlSpec, out: IO[str]) -> None:
 
 def export_css_file(spec: DoqlSpec, path: pathlib.Path, fmt: str = "css") -> None:
     """Write DoqlSpec to a CSS-like file. fmt is 'css', 'less', or 'sass'."""
+    path.parent.mkdir(parents=True, exist_ok=True)
     writer = {"css": export_css, "less": export_less, "sass": export_sass}[fmt]
     with open(path, "w", encoding="utf-8") as f:
         writer(spec, f)
