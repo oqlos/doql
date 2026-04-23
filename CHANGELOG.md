@@ -4,6 +4,14 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [1.0.19] - 2026-04-23
+
+### Test
+- Update tests/test_parser_benchmark.py
+
+### Other
+- Update doql/parsers/models.py
+
 ## [1.0.18] - 2026-04-23
 
 ### Other

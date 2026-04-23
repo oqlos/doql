@@ -223,6 +223,14 @@ class CiConfig:
 
 
 @dataclass
+class Subproject:
+    """A named sub-project inside a monorepo DOQL manifest."""
+    name: str
+    spec: "DoqlSpec" = field(default_factory=list)  # type: ignore[arg-type]
+    path: str = ""  # relative path from root manifest
+
+
+@dataclass
 class DoqlSpec:
     app_name: str = "Untitled"
     version: str = "0.1.0"
@@ -257,3 +265,4 @@ class DoqlSpec:
     ci_configs: list[CiConfig] = field(default_factory=list)
     env_refs: list[str] = field(default_factory=list)
     parse_errors: list[ValidationIssue] = field(default_factory=list)
+    subprojects: list[Subproject] = field(default_factory=list)
