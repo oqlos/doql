@@ -39,7 +39,6 @@ $VENV/bin/sumr .
 # Generate rich app.doql.less via doql adopt (supersedes sumd's basic template)
 echo "🔧 Installing doql itself for adopt/export..."
 $PIP install -e . --quiet
-$VENV/bin/doql adopt . --output app.doql.css --force
-echo "🎨 Exporting to LESS format..."
-$VENV/bin/doql export --format less -o app.doql.less
-echo "✅ Generated app.doql.css + app.doql.less"
+echo "🎨 Generating app.doql.less directly..."
+$VENV/bin/doql adopt . --format less --output app.doql.less --force
+echo "✅ Generated app.doql.less"
