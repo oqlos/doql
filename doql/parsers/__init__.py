@@ -33,6 +33,7 @@ from .models import (
     WorkflowStep,
     Role,
     Deploy,
+    Subproject,
 )
 from .extractors import collect_env_refs
 from .blocks import split_blocks, apply_block

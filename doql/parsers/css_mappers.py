@@ -471,3 +471,51 @@ def _map_ci(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") -> None:
         if k not in skip:
             ci.config[k] = v
     spec.ci_configs.append(ci)
+
+
+def _map_project(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") -> None:
+    """Map nested CSS project block to Subproject.
+
+    Children blocks (app, interface, workflow, deploy, etc.) are parsed
+    into a fresh DoqlSpec attached to the Subproject.
+    """
+    from .models import Subproject, DoqlSpec
+    from .css_utils import _parse_selector
+
+    sub_spec = DoqlSpec()
+    # Dispatch children to the same mappers used by _apply_css_block
+    child_route = {
+        'entity': _map_entity,
+        'data': _map_data_source,
+        'template': _map_template,
+        'document': _map_document,
+        'report': _map_report,
+        'integration': _map_integration,
+        'workflow': _map_workflow,
+        'role': _map_role,
+        'deploy': _map_deploy,
+        'database': _map_database,
+        'environment': _map_environment,
+        'infrastructure': _map_infrastructure,
+        'ingress': _map_ingress,
+        'ci': _map_ci,
+        'interface': _map_interface,
+    }
+
+    for child in block.children:
+        child_sel = _parse_selector(child.selector)
+        t = child_sel.type
+        if t == 'app':
+            sub_spec.app_name = child.declarations.get('name', sub_spec.app_name)
+            sub_spec.version = child.declarations.get('version', sub_spec.version)
+            sub_spec.description = child.declarations.get('description')
+            sub_spec.license = child.declarations.get('license')
+        elif t in child_route:
+            child_route[t](sub_spec, child_sel, child)
+        elif t == 'project':
+            # Nested project (depth > 1) — skip to avoid infinite recursion
+            continue
+
+    name = sel.attributes.get('name', '')
+    path = sel.attributes.get('path', '')
+    spec.subprojects.append(Subproject(name=name, spec=sub_spec, path=path))

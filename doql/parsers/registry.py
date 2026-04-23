@@ -68,6 +68,18 @@ def _handle_languages(spec: DoqlSpec, header: str, body: str) -> None:
     spec.languages = [v.strip().strip('"\'') for v in raw.strip("[]").split(",") if v.strip()]
 
 
+@register("AUTHOR")
+def _handle_author(spec: DoqlSpec, header: str, body: str) -> None:
+    author = header.strip(': "\'')
+    if author and author not in spec.authors:
+        spec.authors.append(author)
+
+
+@register("DEFAULT_LANGUAGE")
+def _handle_default_language(spec: DoqlSpec, header: str, body: str) -> None:
+    spec.default_language = header.strip(': "\'')
+
+
 @register("ENTITY")
 def _handle_entity(spec: DoqlSpec, header: str, body: str) -> None:
     name = header.split(":")[0].strip()
@@ -308,3 +320,12 @@ def _handle_ci(spec: DoqlSpec, header: str, body: str) -> None:
         stages=extract_list(body, "stages"),
     )
     spec.ci_configs.append(ci)
+
+
+@register("PROJECT")
+def _handle_project(spec: DoqlSpec, header: str, body: str) -> None:
+    from .models import Subproject, DoqlSpec
+    name = header.split(":")[0].strip() if ":" in header else ""
+    path = extract_val(body, "path") or ""
+    sub = Subproject(name=name, spec=DoqlSpec(), path=path)
+    spec.subprojects.append(sub)

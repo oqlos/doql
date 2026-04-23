@@ -66,7 +66,9 @@ def _parse_selector(selector: str) -> ParsedSelector:
         base_match = re.match(r'^([\w\-]+)', first)
         if base_match:
             result.type = base_match.group(1).lower()
-        for m in re.finditer(r'\[(\w+)=["\']?([^"\'\]]+)["\']?\]', first):
-            result.attributes[m.group(1)] = m.group(2)
+        # Collect attributes from ALL parts (e.g. project[name="x" path="y"])
+        for part in parts:
+            for m in re.finditer(r'\[(\w+)=["\']?([^"\'\]]+)["\']?\]', part):
+                result.attributes[m.group(1)] = m.group(2)
 
     return result

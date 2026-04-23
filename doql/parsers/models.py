@@ -226,7 +226,7 @@ class CiConfig:
 class Subproject:
     """A named sub-project inside a monorepo DOQL manifest."""
     name: str
-    spec: "DoqlSpec" = field(default_factory=list)  # type: ignore[arg-type]
+    spec: Optional["DoqlSpec"] = None
     path: str = ""  # relative path from root manifest
 
 
@@ -244,6 +244,7 @@ class DoqlSpec:
     dependencies: dict[str, str] = field(default_factory=dict)
     domain: Optional[str] = None
     languages: list[str] = field(default_factory=list)
+    default_language: Optional[str] = None
     entities: list[Entity] = field(default_factory=list)
     data_sources: list[DataSource] = field(default_factory=list)
     templates: list[Template] = field(default_factory=list)

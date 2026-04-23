@@ -12,7 +12,7 @@ from .renderers import (
     _render_app, _render_dependencies, _render_entity, _render_data_source, _render_template,
     _render_document, _render_report, _render_database, _render_api_client,
     _render_webhook, _render_interface, _render_integration, _render_workflow,
-    _render_role, _render_deploy, _render_environment,
+    _render_role, _render_deploy, _render_environment, _render_project,
 )
 from .format_convert import _css_to_less, _css_to_sass
 from .helpers import _indent, _prop, _field_line
@@ -83,6 +83,8 @@ def _render_css(spec: DoqlSpec) -> str:
         sections.append(_render_deploy(spec.deploy))
     for env in spec.environments:
         sections.append(_render_environment(env))
+    for sub in spec.subprojects:
+        sections.append(_render_project(sub))
     return "\n".join("".join(s) for s in sections)
 
 

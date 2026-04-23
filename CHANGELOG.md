@@ -4,6 +4,23 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [1.0.20] - 2026-04-23
+
+### Docs
+- Update README.md
+
+### Other
+- Update doql/cli/main.py
+- Update doql/exporters/css/__init__.py
+- Update doql/exporters/css/renderers.py
+- Update doql/parsers/__init__.py
+- Update doql/parsers/blocks.py
+- Update doql/parsers/css_mappers.py
+- Update doql/parsers/css_parser.py
+- Update doql/parsers/css_utils.py
+- Update doql/parsers/models.py
+- Update doql/parsers/registry.py
+
 ## [1.0.19] - 2026-04-23
 
 ### Test

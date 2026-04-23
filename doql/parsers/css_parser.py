@@ -20,14 +20,14 @@ import re
 
 from .models import DoqlSpec, DoqlParseError
 from .extractors import collect_env_refs
-from .css_utils import CssBlock, ParsedSelector, _strip_comments, _strip_quotes, _parse_list
+from .css_utils import CssBlock, ParsedSelector, _strip_comments, _strip_quotes, _parse_list, _parse_selector
 from .css_transformers import _resolve_less_vars, _sass_to_css
 from .css_tokenizer import _tokenise_css, _parse_declarations
 from .css_mappers import (
     _map_entity, _map_data_source, _map_template, _map_document,
     _map_report, _map_interface, _map_integration, _map_workflow,
     _map_role, _map_deploy, _map_database, _map_environment,
-    _map_infrastructure, _map_ingress, _map_ci,
+    _map_infrastructure, _map_ingress, _map_ci, _map_project,
 )
 
 # Re-export for backward compatibility
@@ -35,27 +35,6 @@ __all__ = [
     'CssBlock', 'ParsedSelector',
     'parse_css_file', 'parse_css_text',
 ]
-
-
-def _parse_selector(selector: str) -> ParsedSelector:
-    """Parse a CSS-like selector into structured form.
-
-    Examples:
-        "app" → type="app"
-        'entity[name="Node"]' → type="entity", attributes={"name": "Node"}
-    """
-    parts = selector.strip().split()
-    result = ParsedSelector(chain=parts)
-
-    if parts:
-        first = parts[0]
-        base_match = re.match(r'^([\w\-]+)', first)
-        if base_match:
-            result.type = base_match.group(1).lower()
-        for m in re.finditer(r'\[(\w+)=["\']?([^"\'\]]+)["\']?\]', first):
-            result.attributes[m.group(1)] = m.group(2)
-
-    return result
 
 
 def _map_to_spec(blocks: list[CssBlock]) -> DoqlSpec:
@@ -97,6 +76,7 @@ def _apply_css_block(spec: DoqlSpec, sel: ParsedSelector, block: CssBlock) -> No
         'infrastructure': _map_infrastructure,
         'ingress': _map_ingress,
         'ci': _map_ci,
+        'project': _map_project,
     }
 
     if t == 'app':

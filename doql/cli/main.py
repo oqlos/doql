@@ -133,6 +133,8 @@ def create_parser() -> argparse.ArgumentParser:
     s.add_argument("-f", "--format", choices=["css", "less", "sass"], default="less",
                    help="Output format (default: less)")
     s.add_argument("--force", action="store_true", help="Overwrite existing file")
+    s.add_argument("--recursive", action="store_true",
+                   help="Discover sub-projects and generate per-folder manifests + root with project blocks")
     s.add_argument("--from-device", dest="from_device", metavar="USER@HOST",
                    help="Scan a live device via SSH using op3 (requires doql[device-adopt])")
     s.add_argument("--ssh-key", dest="ssh_key",
