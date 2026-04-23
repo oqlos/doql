@@ -16,6 +16,7 @@ Supports:
 from __future__ import annotations
 
 import pathlib
+import re
 
 from .models import DoqlSpec, DoqlParseError
 from .extractors import collect_env_refs
@@ -43,7 +44,6 @@ def _parse_selector(selector: str) -> ParsedSelector:
         "app" → type="app"
         'entity[name="Node"]' → type="entity", attributes={"name": "Node"}
     """
-    import re
     parts = selector.strip().split()
     result = ParsedSelector(chain=parts)
 

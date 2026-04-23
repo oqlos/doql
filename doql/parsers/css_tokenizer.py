@@ -7,7 +7,10 @@ from __future__ import annotations
 
 import re
 
-from .css_utils import CssBlock, _strip_comments, _strip_quotes
+from .css_utils import CssBlock, _strip_quotes
+
+# Pre-compiled regex for declaration parsing
+_DECL_RE = re.compile(r'^([@\w\-]+)\s*:\s*(.+)$')
 
 
 def _make_css_block(selector: str, body: str, line_num: int) -> CssBlock:
@@ -23,25 +26,18 @@ def _make_css_block(selector: str, body: str, line_num: int) -> CssBlock:
 def _tokenise_css(text: str) -> list[CssBlock]:
     """Parse CSS-like text into flat CssBlock list.
 
-    Optimized: uses regex-based brace matching for O(n) performance.
+    Optimized: uses index-based brace matching for O(n) performance.
     """
-    text = _strip_comments(text)
     blocks: list[CssBlock] = []
-
-    # Fast path: find top-level {} blocks using regex
-    # Pattern matches: selector { body } at depth 0
-    import re
 
     pos = 0
     line_num = 0
 
     while pos < len(text):
         # Find next opening brace at depth 0
-        brace_match = re.search(r'\{', text[pos:])
-        if not brace_match:
+        brace_pos = text.find('{', pos)
+        if brace_pos == -1:
             break
-
-        brace_pos = pos + brace_match.start()
 
         # Extract selector (text between last closing brace or start and this brace)
         selector = text[pos:brace_pos].strip()
@@ -62,7 +58,7 @@ def _tokenise_css(text: str) -> list[CssBlock]:
             scan_pos += 1
 
         if depth == 0:
-            body = text[body_start:scan_pos-1]
+            body = text[body_start:scan_pos - 1]
             block = _make_css_block(selector, body, text[:brace_pos].count('\n'))
             blocks.append(block)
             pos = scan_pos
@@ -110,10 +106,6 @@ def _parse_declarations(body: str) -> dict[str, str]:
     pending_key: str | None = None
     pending_value: str = ""
 
-    # Pre-compile regex for speed
-    import re
-    decl_pattern = re.compile(r'^([@\w\-]+)\s*:\s*(.+)$')
-
     for line in body.splitlines():
         depth += line.count('{') - line.count('}')
         if depth != 0:
@@ -129,7 +121,7 @@ def _parse_declarations(body: str) -> dict[str, str]:
         statements = [s.strip() for s in stripped.split(';') if s.strip()]
 
         for stmt in statements:
-            m = decl_pattern.match(stmt)
+            m = _DECL_RE.match(stmt)
             if m:
                 key, val = m.group(1), m.group(2).strip()
                 decls[key] = _strip_quotes(val)

@@ -4,6 +4,12 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [1.0.18] - 2026-04-23
+
+### Other
+- Update doql/parsers/css_parser.py
+- Update doql/parsers/css_tokenizer.py
+
 ## [1.0.17] - 2026-04-23
 
 ### Other
