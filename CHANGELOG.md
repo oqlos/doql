@@ -4,6 +4,11 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [1.0.24] - 2026-04-23
+
+### Other
+- Update project.sh
+
 ## [1.0.23] - 2026-04-23
 
 ### Other
