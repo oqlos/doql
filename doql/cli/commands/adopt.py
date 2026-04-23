@@ -64,7 +64,110 @@ def cmd_adopt(args: argparse.Namespace) -> int:
     from_device = getattr(args, "from_device", None)
     if from_device:
         return _cmd_adopt_from_device(args, from_device)
+    if getattr(args, "recursive", False):
+        return _cmd_adopt_recursive(args)
     return _cmd_adopt_from_directory(args)
+
+
+# Markers that identify a real sub-project (not a docs/logs folder)
+_SUBPROJECT_MARKERS = (
+    "pyproject.toml", "package.json", "Dockerfile",
+    "setup.py", "Makefile", "Taskfile.yml",
+)
+
+_EXCLUDED_SUBDIRS = frozenset({
+    "venv", ".venv", "node_modules", "__pycache__", ".git",
+    ".idea", ".pytest_cache", ".ruff_cache", "dist", "build",
+    ".code2llm_cache", "logs", "iql-run-logs", "oql-run-logs",
+    "refactor_output",
+})
+
+
+def _discover_subprojects(root: Path) -> list[Path]:
+    """Find immediate subdirectories that look like separate projects."""
+    subs: list[Path] = []
+    for child in root.iterdir():
+        if not child.is_dir() or child.name.startswith(".") or child.name in _EXCLUDED_SUBDIRS:
+            continue
+        if any((child / m).exists() for m in _SUBPROJECT_MARKERS):
+            subs.append(child)
+    return sorted(subs)
+
+
+def _cmd_adopt_recursive(args: argparse.Namespace) -> int:
+    """Scan root + sub-projects, generate per-folder manifests + root with project blocks."""
+    from doql.adopt.scanner import scan_project
+    from doql.adopt.emitter import emit_spec
+    from doql.parsers.models import Subproject
+
+    if not args.target:
+        print(
+            "❌ adopt: either a target directory or --from-device USER@HOST is required.",
+            file=sys.stderr,
+        )
+        return 2
+
+    root = Path(args.target).resolve()
+    if not root.is_dir():
+        print(f"❌ Not a directory: {root}", file=sys.stderr)
+        return 1
+
+    fmt = getattr(args, "format", "less")
+    sub_dirs = _discover_subprojects(root)
+
+    if not sub_dirs:
+        print("⚠️  No sub-projects found. Falling back to single-project scan.")
+        return _cmd_adopt_from_directory(args)
+
+    # Scan each sub-project
+    root_spec = scan_project(root)
+    print(f"🔍 Scanning {root} (root) …")
+    _print_scan_summary(root_spec)
+
+    written: list[Path] = []
+    for sub in sub_dirs:
+        print(f"🔍 Scanning {sub.name} …")
+        sub_spec = scan_project(sub)
+        _print_scan_summary(sub_spec)
+
+        sub_output = sub / f"app.doql.{fmt}"
+        if sub_output.exists() and not args.force:
+            print(f"⚠️  {sub_output.name} already exists. Use --force to overwrite.")
+            continue
+
+        try:
+            emit_spec(sub_spec, sub_output, fmt=fmt)
+        except Exception as exc:
+            print(f"❌ Failed to render {sub_output.name}: {exc}", file=sys.stderr)
+            _cleanup_empty_output(sub_output)
+            continue
+
+        if _validate_output_written(sub_output):
+            written.append(sub_output)
+            # Attach as inline subproject to root spec
+            root_spec.subprojects.append(
+                Subproject(name=sub.name, spec=sub_spec, path=f"./{sub.name}")
+            )
+
+    # Write root manifest (includes deploy/orchestration + inline project blocks)
+    root_output = root / (args.output or f"app.doql.{fmt}")
+    if root_output.exists() and not args.force:
+        print(f"⚠️  {root_output.name} already exists. Use --force to overwrite.")
+    else:
+        try:
+            emit_spec(root_spec, root_output, fmt=fmt)
+        except Exception as exc:
+            print(f"❌ Failed to render {root_output.name}: {exc}", file=sys.stderr)
+            _cleanup_empty_output(root_output)
+            return 1
+
+        if _validate_output_written(root_output):
+            written.append(root_output)
+
+    print(f"\n✅ Generated {len(written)} manifest(s) under {root}")
+    for p in written:
+        print(f"   → {p.relative_to(root)}")
+    return 0
 
 
 def _cmd_adopt_from_directory(args: argparse.Namespace) -> int:

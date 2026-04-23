@@ -4,6 +4,14 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [1.0.21] - 2026-04-23
+
+### Docs
+- Update README.md
+
+### Other
+- Update doql/cli/commands/adopt.py
+
 ## [1.0.20] - 2026-04-23
 
 ### Docs

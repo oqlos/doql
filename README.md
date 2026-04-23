@@ -13,7 +13,7 @@ Generated on 2026-04-23 using [openrouter/qwen/qwen3-coder-next](https://openrou
 
 
 
-![Version](https://img.shields.io/badge/version-1.0.20-blue) ![Python](https://img.shields.io/badge/python-3.10+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green) ![Status](https://img.shields.io/badge/status-stable-green)
+![Version](https://img.shields.io/badge/version-1.0.21-blue) ![Python](https://img.shields.io/badge/python-3.10+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green) ![Status](https://img.shields.io/badge/status-stable-green)
 
 
 
@@ -255,6 +255,151 @@ doql deploy --env dev
 
 # Deploy do Podman Quadlet (rootless)
 doql quadlet --install
+```
+
+#### Synchronizacja zmian (merge-friendly)
+
+```bash
+# Re-generuj tylko zmienione części (bez nadpisywania ręcznych zmian)
+doql sync
+
+# Synchronizacja w innym katalogu
+doql -d examples/asset-management sync
+```
+
+#### Eksport do innych formatów
+
+```bash
+# Eksport specyfikacji do CSS
+doql export --format css -o spec.doql.css
+
+# Eksport do LESS ze zmiennymi
+doql export --format less -o spec.doql.less
+
+# Eksport do SASS
+doql export --format sass -o spec.doql.sass
+
+# Eksport OpenAPI spec
+doql export --format openapi -o openapi.yaml
+
+# Eksport Postman collection
+doql export --format postman -o collection.json
+
+# Eksport TypeScript SDK
+doql export --format typescript-sdk -o sdk/
+
+# Eksport dokumentacji Markdown
+doql export --format markdown -o docs/
+
+# Eksport YAML
+doql export --format yaml -o spec.yaml
+```
+
+#### Import z YAML
+
+```bash
+# Import YAML → .doql
+doql import spec.yaml --format css -o app.doql.css
+
+# Import z konwersją do LESS
+doql import spec.yaml --format less -o app.doql.less
+```
+
+#### Generowanie pojedynczych artefaktów
+
+```bash
+# Generuj pojedynczy dokument (nazwa musi pasować do DOCUMENT w pliku .doql)
+doql generate calibration_certificate
+
+# Generuj raport
+doql generate monthly_report
+```
+
+#### Renderowanie szablonów
+
+```bash
+# Renderuj szablon z danymi
+doql render templates/invoice.jinja2
+```
+
+#### Query — zapytania do źródeł danych
+
+```bash
+# Zapytaj źródło danych i zwróć JSON
+doql query customer_db
+
+# Z zapytaniem w kontekście innym niż CWD
+doql -d examples/asset-management query devices
+```
+
+#### Kiosk — zarządzanie urządzeniami kiosk
+
+```bash
+# Instalacja kiosk na obecnym urządzeniu (Raspberry Pi)
+doql kiosk --install
+
+# Zbuduj i zainstaluj
+cd examples/kiosk-station
+doql build && doql kiosk --install
+```
+
+#### Quadlet — Podman rootless
+
+```bash
+# Instalacja Quadlet do systemd (rootless)
+doql quadlet --install
+
+# Sprawdź status
+doql doctor --env local
+```
+
+#### Dokumentacja
+
+```bash
+# Generuj stronę dokumentacji z projektu
+doql docs
+
+# Zapisz do konkretnego folderu
+doql docs && cp -r build/docs /var/www/html/
+```
+
+#### Diagnostyka projektu
+
+```bash
+# Diagnostyka lokalnego projektu
+doql doctor
+
+# Diagnostyka zdalnego środowiska
+doql doctor --env staging
+
+# Napraw automatycznie wykryte problemy
+doql doctor --fix
+```
+
+#### Drift — porównanie z rzeczywistością
+
+```bash
+# Porównaj deklarację ze stanem zdalnego urządzenia
+doql drift --from-device pi@kiosk-01.local
+
+# Wyjście JSON (machine-readable)
+doql drift --from-device pi@kiosk-01.local --json
+
+# Porównanie z konkretnym plikiem
+doql drift --from-device pi@kiosk-01.local --file app.doql.less
+```
+
+#### Publikacja artefaktów
+
+```bash
+# Publikuj wszystko (PyPI, npm, Docker, GitHub)
+doql publish
+
+# Tylko wybrane targety
+doql publish --target pypi,docker
+
+# Symulacja (dry-run)
+doql publish --dry-run
 ```
 
 #### Uwaga: `doql run` vs `doql -d ... run`
