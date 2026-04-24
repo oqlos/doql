@@ -165,7 +165,7 @@ Language support for .doql, .doql.css, .doql.less, .doql.sass files: syntax high
 ### `project/map.toon.yaml`
 
 ```toon markpact:analysis path=project/map.toon.yaml
-# vscode-doql | 3f 135L | less:1,typescript:1,javascript:1 | 2026-04-23
+# vscode-doql | 3f 135L | less:1,typescript:1,javascript:1 | 2026-04-24
 # stats: 0 func | 0 cls | 3 mod | CC̄=1.0 | critical:0 | cycles:0
 # alerts[5]: none
 # hotspots[5]: none

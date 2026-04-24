@@ -1,7 +1,7 @@
-# doql | 193f 26569L | python:150,less:18,css:14,shell:6,javascript:4,typescript:1 | 2026-04-23
-# stats: 761 func | 42 cls | 193 mod | CC̄=3.9 | critical:38 | cycles:0
-# alerts[5]: CC test_build_produces_expected_targets=33; CC check_api=25; CC test_adopt_e2e_real_project_oqlos=22; CC _render_project=21; CC check_desktop=17
-# hotspots[5]: check_api fan=26; test_api_boot_and_health fan=26; cmd_build fan=23; main fan=21; _cmd_adopt_recursive fan=17
+# doql | 193f 26614L | python:150,less:18,css:14,shell:6,javascript:4,typescript:1 | 2026-04-24
+# stats: 781 func | 42 cls | 193 mod | CC̄=3.9 | critical:36 | cycles:0
+# alerts[5]: CC test_api_boot_and_health=17; CC _parse_pyproject=15; CC _cmd_adopt_recursive=15; CC _scan_python_cli=14; CC check_api=14
+# hotspots[5]: test_api_boot_and_health fan=26; cmd_build fan=23; main fan=21; check_api fan=20; _cmd_adopt_recursive fan=17
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
 M[193]:
@@ -55,7 +55,7 @@ M[193]:
   doql/exporters/css/__init__.py,114
   doql/exporters/css/format_convert.py,68
   doql/exporters/css/helpers.py,40
-  doql/exporters/css/renderers.py,375
+  doql/exporters/css/renderers.py,368
   doql/exporters/css_exporter.py,17
   doql/exporters/markdown/__init__.py,41
   doql/exporters/markdown/sections.py,122
@@ -173,7 +173,7 @@ M[193]:
   plugins/doql-plugin-shared/doql_plugin_shared/readme.py,38
   project.sh,44
   tests/__init__.py,1
-  tests/env_manager.py,468
+  tests/env_manager.py,500
   tests/integration/__init__.py,2
   tests/integration/test_adopt_from_device.py,356
   tests/integration/test_build_from_device.py,283
@@ -183,7 +183,7 @@ M[193]:
   tests/runtime_all_examples.sh,116
   tests/runtime_deploy.sh,66
   tests/runtime_smoke.py,92
-  tests/test_adopt.py,477
+  tests/test_adopt.py,489
   tests/test_css_parser.py,326
   tests/test_exporters.py,437
   tests/test_exporters_shims.py,93
@@ -192,7 +192,7 @@ M[193]:
   tests/test_parser.py,207
   tests/test_parser_benchmark.py,217
   tests/test_plugins.py,119
-  tests/test_runtime.py,237
+  tests/test_runtime.py,245
   tests/test_workspace.py,170
   tree.sh,2
   vscode-doql/app.doql.less,75
@@ -1066,16 +1066,25 @@ D:
     generate_readme(plugin_name;modules;description;usage_extra)
   tests/__init__.py:
   tests/env_manager.py:
-    e: _find_free_port,_has_module,_run,check_api,check_web,check_mobile,check_desktop,check_infra,process_example,render_text,render_json,main,CheckResult,TargetReport,ExampleReport
+    e: _find_free_port,_has_module,_run,_api_present_files,_api_compile_check,_check_postgres_skip,_wait_health,_check_api_openapi,check_api,check_web,check_mobile,_check_tauri_conf,_check_desktop_files,_check_main_rs,_check_cargo,check_desktop,check_infra,process_example,render_text,render_json,main,CheckResult,TargetReport,ExampleReport
     CheckResult: icon(0)
     TargetReport: ok(0)
     ExampleReport: ok(0)
     _find_free_port()
     _has_module(name)
     _run(cmd;cwd;timeout)
+    _api_present_files(api_dir)
+    _api_compile_check(api_dir;files)
+    _check_postgres_skip(api_dir)
+    _wait_health(port;proc)
+    _check_api_openapi(port)
     check_api(api_dir)
     check_web(web_dir)
     check_mobile(mob_dir)
+    _check_tauri_conf(src_tauri)
+    _check_desktop_files(src_tauri)
+    _check_main_rs(src_tauri)
+    _check_cargo(cargo_check;src_tauri)
     check_desktop(desk_dir)
     check_infra(infra_dir)
     process_example(doql_dir)
@@ -1152,7 +1161,7 @@ D:
     step(client;name;response;expected)
     main()
   tests/test_adopt.py:
-    e: _write,_pyproject,test_jwt_secret_does_not_crash_renderer,test_pydantic_dtos_are_excluded_from_entities,test_generic_db_service_name_is_normalised,test_fastapi_dependency_alone_does_not_create_api_interface,test_fastapi_with_main_py_creates_api,test_api_entry_point_in_scripts_creates_api,_make_args,test_cmd_adopt_returns_zero_on_success,test_cmd_adopt_returns_nonzero_on_render_failure,test_cmd_adopt_refuses_to_overwrite_without_force,test_cmd_adopt_rejects_non_directory,test_makefile_targets_become_workflows,test_makefile_workflows_round_trip_to_css,test_taskfile_yml_tasks_become_workflows,test_dependency_only_targets_emit_depend_steps,test_empty_target_without_deps_is_skipped,test_makefile_variable_assignments_are_not_workflows,test_workflows_are_deduplicated_across_makefile_and_taskfile,test_adopt_e2e_real_project_oqlos,test_discover_subprojects,test_click_not_inferred_from_comment_or_changelog,test_fastapi_detected_from_server_py
+    e: _write,_pyproject,test_jwt_secret_does_not_crash_renderer,test_pydantic_dtos_are_excluded_from_entities,test_generic_db_service_name_is_normalised,test_fastapi_dependency_alone_does_not_create_api_interface,test_fastapi_with_main_py_creates_api,test_api_entry_point_in_scripts_creates_api,_make_args,test_cmd_adopt_returns_zero_on_success,test_cmd_adopt_returns_nonzero_on_render_failure,test_cmd_adopt_refuses_to_overwrite_without_force,test_cmd_adopt_rejects_non_directory,test_makefile_targets_become_workflows,test_makefile_workflows_round_trip_to_css,test_taskfile_yml_tasks_become_workflows,test_dependency_only_targets_emit_depend_steps,test_empty_target_without_deps_is_skipped,test_makefile_variable_assignments_are_not_workflows,test_workflows_are_deduplicated_across_makefile_and_taskfile,_assert_oqlos_metadata,_assert_oqlos_interfaces,_assert_oqlos_deploy,_assert_oqlos_workflows,_assert_oqlos_entities,_assert_oqlos_environments,_assert_adopt_roundtrip,test_adopt_e2e_real_project_oqlos,test_discover_subprojects,test_click_not_inferred_from_comment_or_changelog,test_fastapi_detected_from_server_py
     _write(root;rel;body)
     _pyproject(name;deps)
     test_jwt_secret_does_not_crash_renderer(tmp_path)
@@ -1173,6 +1182,13 @@ D:
     test_empty_target_without_deps_is_skipped(tmp_path)
     test_makefile_variable_assignments_are_not_workflows(tmp_path)
     test_workflows_are_deduplicated_across_makefile_and_taskfile(tmp_path)
+    _assert_oqlos_metadata(spec)
+    _assert_oqlos_interfaces(spec)
+    _assert_oqlos_deploy(spec)
+    _assert_oqlos_workflows(spec)
+    _assert_oqlos_entities(spec)
+    _assert_oqlos_environments(spec)
+    _assert_adopt_roundtrip(tmp_path)
     test_adopt_e2e_real_project_oqlos(tmp_path)
     test_discover_subprojects(tmp_path)
     test_click_not_inferred_from_comment_or_changelog(tmp_path)
@@ -1269,10 +1285,14 @@ D:
     test_fleet_ota_canary_advances_on_success()
     test_gxp_audit_log_hash_is_deterministic()
   tests/test_runtime.py:
-    e: _free_port,_has_module,test_api_boot_and_health,test_build_produces_expected_targets
+    e: _free_port,_has_module,test_api_boot_and_health,_check_web_artifacts,_check_mobile_artifacts,_check_desktop_artifacts,_check_infra_artifacts,test_build_produces_expected_targets
     _free_port()
     _has_module(name)
     test_api_boot_and_health(example;tmp_path)
+    _check_web_artifacts(web)
+    _check_mobile_artifacts(mobile)
+    _check_desktop_artifacts(desktop)
+    _check_infra_artifacts(infra)
     test_build_produces_expected_targets(example;tmp_path)
   tests/test_workspace.py:
     e: _make_doql_project,TestParseDoql,TestDiscoverLocal,TestProjectMarkers

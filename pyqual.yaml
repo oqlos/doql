@@ -2,7 +2,7 @@ pipeline:
   name: doql-quality
 
   metrics:
-    cc_max: 15
+    cc_max: 12
     vallm_pass_min: 55   # current: 58% - 3 vallm errors
     # coverage disabled - pytest_cov reports null (no data collected)
 

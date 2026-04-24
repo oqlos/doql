@@ -320,9 +320,26 @@ def _render_environment(env: Environment) -> list[str]:
     return lines
 
 
+# (collection_attr, renderer_func) — ordered list for deterministic output
+_RENDERERS = [
+    ("entities", _render_entity),
+    ("data_sources", _render_data_source),
+    ("templates", _render_template),
+    ("documents", _render_document),
+    ("reports", _render_report),
+    ("databases", _render_database),
+    ("api_clients", _render_api_client),
+    ("webhooks", _render_webhook),
+    ("interfaces", _render_interface),
+    ("integrations", _render_integration),
+    ("workflows", _render_workflow),
+    ("roles", _render_role),
+    ("environments", _render_environment),
+]
+
+
 def _render_project(sub: "Subproject") -> list[str]:
     """Render a Subproject as nested CSS block."""
-    from ...parsers.models import DoqlSpec
     name = sub.name
     path_attr = f'[path="{sub.path}"]' if sub.path else ""
     lines = [f'project[name="{name}"]{path_attr} {{\n']
@@ -333,39 +350,15 @@ def _render_project(sub: "Subproject") -> list[str]:
         return lines
 
     # Inline child spec blocks
-    inner = []
-    inner.append(_render_app(spec))
+    inner = [_render_app(spec)]
     deps = _render_dependencies(spec)
     if deps:
         inner.append(deps)
-    for e in spec.entities:
-        inner.append(_render_entity(e))
-    for ds in spec.data_sources:
-        inner.append(_render_data_source(ds))
-    for t in spec.templates:
-        inner.append(_render_template(t))
-    for d in spec.documents:
-        inner.append(_render_document(d))
-    for r in spec.reports:
-        inner.append(_render_report(r))
-    for db in spec.databases:
-        inner.append(_render_database(db))
-    for ac in spec.api_clients:
-        inner.append(_render_api_client(ac))
-    for wh in spec.webhooks:
-        inner.append(_render_webhook(wh))
-    for iface in spec.interfaces:
-        inner.append(_render_interface(iface))
-    for integ in spec.integrations:
-        inner.append(_render_integration(integ))
-    for w in spec.workflows:
-        inner.append(_render_workflow(w))
-    for role in spec.roles:
-        inner.append(_render_role(role))
+    for attr, renderer in _RENDERERS:
+        for item in getattr(spec, attr, ()):
+            inner.append(renderer(item))
     if spec.deploy and spec.deploy.target:
         inner.append(_render_deploy(spec.deploy))
-    for env in spec.environments:
-        inner.append(_render_environment(env))
 
     for section in inner:
         for line in section:

@@ -1,16 +1,16 @@
-# redup/duplication | 13 groups | 129f 16261L | 2026-04-23
+# redup/duplication | 13 groups | 129f 16254L | 2026-04-24
 
 SUMMARY:
   files_scanned: 129
-  total_lines:   16261
+  total_lines:   16254
   dup_groups:    13
   dup_fragments: 56
   saved_lines:   847
-  scan_ms:       8423
+  scan_ms:       8047
 
 HOTSPOTS[7] (files with most duplication):
-  plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py  dup=382L  groups=2  frags=5  (2.3%)
-  plugins/doql-plugin-erp/doql_plugin_erp/__init__.py  dup=317L  groups=2  frags=5  (1.9%)
+  plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py  dup=382L  groups=2  frags=5  (2.4%)
+  plugins/doql-plugin-erp/doql_plugin_erp/__init__.py  dup=317L  groups=2  frags=5  (2.0%)
   doql/generators/mobile_gen.py  dup=148L  groups=1  frags=1  (0.9%)
   doql/generators/ci_gen.py  dup=132L  groups=1  frags=2  (0.8%)
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/certificate.py  dup=129L  groups=1  frags=1  (0.8%)

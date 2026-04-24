@@ -1,12 +1,10 @@
-# doql | 2117 func | 132f | 63745L | python | 2026-04-23
+# doql | 2143 func | 132f | 62348L | python | 2026-04-24
 
 HEALTH:
-  CC̄=1.1  critical=24 (limit:10)  dup=3  cycles=0
+  CC̄=1.0  critical=24 (limit:10)  dup=3  cycles=0
 
 ALERTS[20]:
-  !!  cc_exceeded      _render_project = 21 (limit:15)
   !!  high_fan_out     _cmd_adopt_recursive = 19 (limit:10)
-  !!  high_fan_out     _render_project = 18 (limit:10)
   !!  high_fan_out     _diagnostics_for = 17 (limit:10)
   !!  high_fan_out     cmd_doctor = 17 (limit:10)
   !!  high_fan_out     _extract_page_from_format2 = 16 (limit:10)
@@ -14,38 +12,40 @@ ALERTS[20]:
   !!  high_fan_out     _deploy_via_redeploy_api = 15 (limit:10)
   !!  high_fan_out     cmd_run = 15 (limit:10)
   !!  high_fan_out     _scan_python_cli = 15 (limit:10)
+  !   cc_exceeded      _cmd_adopt_recursive = 15 (limit:15)
+  !   cc_exceeded      _parse_pyproject = 15 (limit:15)
 
-MODULES[276] (top by size):
-  M[project/calls.yaml] 7042L C:0 F:0 CC↑0 D:0 (yaml)
-  M[project/map.toon.yaml] 2976L C:0 F:705 CC↑0 D:0 (yaml)
-  M[SUMD.md] 2464L C:1 F:705 CC↑0 D:42 (md)
-  M[SUMR.md] 2346L C:1 F:19 CC↑0 D:0 (md)
-  M[docs/README.md] 1542L C:0 F:1 CC↑0 D:0 (md)
+MODULES[275] (top by size):
+  M[project/calls.yaml] 7472L C:0 F:0 CC↑0 D:0 (yaml)
+  M[SUMD.md] 2505L C:1 F:718 CC↑0 D:2 (md)
+  M[SUMR.md] 2326L C:1 F:19 CC↑0 D:0 (md)
+  M[docs/README.md] 1550L C:0 F:1 CC↑0 D:0 (md)
+  M[project/map.toon.yaml] 1282L C:0 F:718 CC↑0 D:0 (yaml)
   M[SPEC.md] 983L C:0 F:0 CC↑0 D:0 (md)
-  M[CHANGELOG.md] 876L C:0 F:1 CC↑0 D:0 (md)
+  M[CHANGELOG.md] 904L C:0 F:1 CC↑0 D:0 (md)
   M[doql/generators/infra_gen.py] 647L C:0 F:10 CC↑12 D:0 (python)
   M[README.md] 597L C:0 F:0 CC↑0 D:0 (md)
   M[code2llm_output/plugins/context.md] 595L C:0 F:0 CC↑0 D:0 (md)
   M[docs/plugins/context.md] 593L C:0 F:0 CC↑0 D:0 (md)
   M[docs/doql_playground/context.md] 591L C:0 F:0 CC↑0 D:0 (md)
-  M[project/calls.toon.yaml] 590L C:0 F:0 CC↑0 D:0 (yaml)
   M[analysis-20260421/doql_playground/context.md] 589L C:0 F:0 CC↑0 D:0 (md)
   M[code2llm_output/doql_playground/context.md] 589L C:0 F:0 CC↑0 D:0 (md)
-  LANGS: python:124/md:63/yaml:31/json:15/yml:14/doql:13/toml:6/shell:4/javascript:3/typescript:1/other:1/txt:1
+  M[code2llm_output/doql_playground/flow.toon.yaml] 567L C:0 F:0 CC↑0 D:0 (yaml)
+  LANGS: python:124/md:63/yaml:31/yml:14/json:14/doql:13/toml:6/shell:4/javascript:3/typescript:1/other:1/txt:1
 
 HOTSPOTS[10]:
   ★ _cmd_adopt_recursive fan=19  // Scan root + sub-projects, generate per-folder manifests + root with project bloc
-  ★ _render_project fan=18  // Render a Subproject as nested CSS block.
   ★ _diagnostics_for fan=17  // Parse, validate and return LSP diagnostics.
   ★ cmd_doctor fan=17  // Run comprehensive project health check.
   ★ _extract_page_from_format2 fan=16  // 16-way dispatch
+  ★ _convert_indent_to_braces fan=16  // Convert indent-based SASS blocks to brace-delimited CSS.
 
 REFACTOR[15]:
   [1] H/H Split god module doql/generators/infra_gen.py (647L, 0 classes)
   [2] H/H Split god module doql/cli/commands/workspace.py (544L, 1 classes)
   [3] H/H Split god module doql/parsers/css_mappers.py (521L, 0 classes)
-  [4] H/H Split god module CHANGELOG.md (876L, 0 classes)
+  [4] H/H Split god module CHANGELOG.md (904L, 0 classes)
   [5] H/H Split god module README.md (597L, 0 classes)
 
 EVOLUTION:
-  2026-04-23 CC̄=1.1 crit=24 63745L // Automated analysis
+  2026-04-24 CC̄=1.0 crit=24 62348L // Automated analysis

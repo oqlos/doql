@@ -110,6 +110,58 @@ def _run(cmd: list[str], cwd: pathlib.Path | None = None, timeout: int = 60) -> 
 # Per-target checkers
 # ────────────────────────────────────────────────────────────────────
 
+def _api_present_files(api_dir: pathlib.Path) -> list[str]:
+    return [n for n in ("main.py", "routes.py", "models.py", "schemas.py") if (api_dir / n).exists()]
+
+
+def _api_compile_check(api_dir: pathlib.Path, files: list[str]) -> CheckResult:
+    py = str(RUNTIME_PY) if RUNTIME_PY.exists() else sys.executable
+    code, out = _run([py, "-m", "py_compile", *files], cwd=api_dir, timeout=30)
+    return CheckResult("compile", code == 0, "" if code == 0 else out[:200])
+
+
+def _check_postgres_skip(api_dir: pathlib.Path) -> CheckResult | None:
+    dbfile = api_dir / "database.py"
+    if not dbfile.exists():
+        return None
+    body = dbfile.read_text()
+    if "postgresql://" not in body and "postgres://" not in body:
+        return None
+    if _has_module("psycopg2"):
+        return None
+    return CheckResult(
+        "boot+health", True,
+        "(skipped: database.py hardcodes postgres and psycopg2 absent)",
+    )
+
+
+def _wait_health(port: int, proc: subprocess.Popen) -> tuple[bool, str]:
+    import urllib.request
+    err = ""
+    for _ in range(40):
+        time.sleep(0.25)
+        if proc.poll() is not None:
+            return False, f"server died: exit {proc.returncode}"
+        try:
+            with urllib.request.urlopen(f"http://127.0.0.1:{port}/health", timeout=1) as resp:
+                if resp.status == 200:
+                    return True, ""
+        except Exception as e:
+            err = str(e)
+    return False, err
+
+
+def _check_api_openapi(port: int) -> CheckResult:
+    import urllib.request
+    try:
+        with urllib.request.urlopen(f"http://127.0.0.1:{port}/openapi.json", timeout=2) as resp:
+            spec_ = json.loads(resp.read())
+            ep = len(spec_.get("paths", {}))
+            return CheckResult("openapi", ep > 0, f"{ep} endpoints")
+    except Exception as e:
+        return CheckResult("openapi", False, str(e)[:200])
+
+
 def check_api(api_dir: pathlib.Path, *, boot: bool, verbose: bool = False) -> TargetReport:
     # Treat stub directories (no main.py) as "absent" — these are examples that
     # intentionally don't generate an API (e.g. kiosk-station, document-generator).
@@ -118,22 +170,12 @@ def check_api(api_dir: pathlib.Path, *, boot: bool, verbose: bool = False) -> Ta
     if not r.present:
         return r
 
-    # File presence
-    present_files = []
+    present_files = _api_present_files(api_dir)
     for name in ("main.py", "routes.py", "models.py", "schemas.py"):
-        exists = (api_dir / name).exists()
-        if exists:
-            present_files.append(name)
-        r.checks.append(CheckResult(
-            f"files/{name}",
-            exists,
-            "" if exists else "missing",
-        ))
+        exists = name in present_files
+        r.checks.append(CheckResult(f"files/{name}", exists, "" if exists else "missing"))
 
-    # Compile check — only what actually exists
-    py = str(RUNTIME_PY) if RUNTIME_PY.exists() else sys.executable
-    code, out = _run([py, "-m", "py_compile", *present_files], cwd=api_dir, timeout=30)
-    r.checks.append(CheckResult("compile", code == 0, "" if code == 0 else out[:200]))
+    r.checks.append(_api_compile_check(api_dir, present_files))
 
     if not boot:
         r.checks.append(CheckResult("boot", True, "(skipped)"))
@@ -144,24 +186,19 @@ def check_api(api_dir: pathlib.Path, *, boot: bool, verbose: bool = False) -> Ta
         r.checks.append(CheckResult("boot", False, f"uvicorn not found at {RUNTIME_UVICORN} or PATH"))
         return r
 
-    # Detect hardcoded postgresql:// URL in generated database.py — runtime
-    # venv may not have psycopg2, so mark skipped instead of failing.
-    dbfile = api_dir / "database.py"
-    if dbfile.exists():
-        body = dbfile.read_text()
-        if 'postgresql://' in body or 'postgres://' in body:
-            if not _has_module("psycopg2"):
-                r.checks.append(CheckResult(
-                    "boot+health", True,
-                    "(skipped: database.py hardcodes postgres and psycopg2 absent)"))
-                return r
+    skip = _check_postgres_skip(api_dir)
+    if skip:
+        r.checks.append(skip)
+        return r
 
     # Clear DB and boot. Generated database.py hardcodes sqlite:///./data/app.db,
     # so make sure the data/ directory exists before launching uvicorn.
     (api_dir / "data").mkdir(exist_ok=True)
     for old in (api_dir / "data").glob("*.db"):
-        try: old.unlink()
-        except Exception: pass
+        try:
+            old.unlink()
+        except Exception:
+            pass
 
     port = _find_free_port()
     import os
@@ -178,31 +215,10 @@ def check_api(api_dir: pathlib.Path, *, boot: bool, verbose: bool = False) -> Ta
     )
 
     try:
-        import urllib.request
-        ok = False
-        err = ""
-        for _ in range(40):
-            time.sleep(0.25)
-            if proc.poll() is not None:
-                err = f"server died: exit {proc.returncode}"
-                break
-            try:
-                with urllib.request.urlopen(f"http://127.0.0.1:{port}/health", timeout=1) as resp:
-                    if resp.status == 200:
-                        ok = True
-                        break
-            except Exception as e:
-                err = str(e)
+        ok, err = _wait_health(port, proc)
         r.checks.append(CheckResult("boot+health", ok, err if not ok else f"port={port}"))
-
         if ok:
-            try:
-                with urllib.request.urlopen(f"http://127.0.0.1:{port}/openapi.json", timeout=2) as resp:
-                    spec_ = json.loads(resp.read())
-                    ep = len(spec_.get("paths", {}))
-                    r.checks.append(CheckResult("openapi", ep > 0, f"{ep} endpoints"))
-            except Exception as e:
-                r.checks.append(CheckResult("openapi", False, str(e)[:200]))
+            r.checks.append(_check_api_openapi(port))
     finally:
         proc.terminate()
         try:
@@ -265,6 +281,46 @@ def check_mobile(mob_dir: pathlib.Path) -> TargetReport:
     return r
 
 
+def _check_tauri_conf(src_tauri: pathlib.Path) -> CheckResult:
+    tconf = src_tauri / "tauri.conf.json"
+    try:
+        data = json.loads(tconf.read_text())
+        product = data.get("productName") or data.get("package", {}).get("productName")
+        schema = data.get("$schema", "")
+        version = "v2" if "/config/2" in schema or "productName" in data else "v1"
+        return CheckResult("tauri.conf.json", bool(product),
+                           f"{version} productName={product}")
+    except Exception as e:
+        return CheckResult("tauri.conf.json", False, str(e)[:200])
+
+
+def _check_desktop_files(src_tauri: pathlib.Path) -> list[CheckResult]:
+    return [CheckResult(f"src-tauri/{name}", (src_tauri / name).exists())
+            for name in ("Cargo.toml", "build.rs", "src/main.rs")]
+
+
+def _check_main_rs(src_tauri: pathlib.Path) -> CheckResult | None:
+    main_rs = src_tauri / "src" / "main.rs"
+    if not main_rs.exists():
+        return None
+    body = main_rs.read_text()
+    return CheckResult("main.rs/tauri_init",
+                       "tauri::Builder" in body,
+                       "" if "tauri::Builder" in body else "no tauri::Builder")
+
+
+def _check_cargo(cargo_check: bool, src_tauri: pathlib.Path) -> CheckResult | None:
+    if not cargo_check:
+        return None
+    if not shutil.which("cargo"):
+        return CheckResult("cargo check", False, "cargo not in PATH")
+    cargo_toml = src_tauri / "Cargo.toml"
+    code, out = _run(["cargo", "check", "--manifest-path", str(cargo_toml)], timeout=600)
+    ok = code == 0
+    tail = " | ".join(l.strip() for l in out.splitlines() if l.strip())[-300:]
+    return CheckResult("cargo check", ok, tail if not ok else "compiles")
+
+
 def check_desktop(desk_dir: pathlib.Path, *, cargo_check: bool = False) -> TargetReport:
     r = TargetReport("desktop", present=desk_dir.exists() and (desk_dir / "package.json").exists())
     if not r.present:
@@ -276,40 +332,16 @@ def check_desktop(desk_dir: pathlib.Path, *, cargo_check: bool = False) -> Targe
     if not ok:
         return r
 
-    tconf = src_tauri / "tauri.conf.json"
-    try:
-        data = json.loads(tconf.read_text())
-        # Tauri v2: productName at top level. v1: under "package".
-        product = data.get("productName") or data.get("package", {}).get("productName")
-        schema = data.get("$schema", "")
-        version = "v2" if "/config/2" in schema or "productName" in data else "v1"
-        r.checks.append(CheckResult("tauri.conf.json", bool(product),
-                                    f"{version} productName={product}"))
-    except Exception as e:
-        r.checks.append(CheckResult("tauri.conf.json", False, str(e)[:200]))
+    r.checks.append(_check_tauri_conf(src_tauri))
+    r.checks.extend(_check_desktop_files(src_tauri))
 
-    for name in ("Cargo.toml", "build.rs", "src/main.rs"):
-        p = src_tauri / name
-        r.checks.append(CheckResult(f"src-tauri/{name}", p.exists()))
+    main_check = _check_main_rs(src_tauri)
+    if main_check:
+        r.checks.append(main_check)
 
-    main_rs = src_tauri / "src" / "main.rs"
-    if main_rs.exists():
-        body = main_rs.read_text()
-        r.checks.append(CheckResult("main.rs/tauri_init",
-                                    "tauri::Builder" in body,
-                                    "" if "tauri::Builder" in body else "no tauri::Builder"))
-
-    # Optional: full `cargo check` — slow first time (~60s with cold cache),
-    # < 1 s with warm cache. Skipped by default; opt-in via --cargo-check.
-    if cargo_check and shutil.which("cargo"):
-        cargo_toml = src_tauri / "Cargo.toml"
-        code, out = _run(["cargo", "check", "--manifest-path", str(cargo_toml)], timeout=600)
-        ok = code == 0
-        # Capture last meaningful line (cargo prints "Finished" / "error[...]")
-        tail = " | ".join(l.strip() for l in out.splitlines() if l.strip())[-300:]
-        r.checks.append(CheckResult("cargo check", ok, tail if not ok else "compiles"))
-    elif cargo_check:
-        r.checks.append(CheckResult("cargo check", False, "cargo not in PATH"))
+    cargo = _check_cargo(cargo_check, src_tauri)
+    if cargo:
+        r.checks.append(cargo)
 
     return r
 

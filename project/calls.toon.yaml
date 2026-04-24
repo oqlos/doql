@@ -1,18 +1,14 @@
 # code2llm call graph | /home/tom/github/oqlos/doql
-# nodes: 528 | edges: 500 | modules: 71
-# CC̄=1.1
+# nodes: 480 | edges: 500 | modules: 89
+# CC̄=1.0
 
 HUBS[20]:
   doql.cli.main.create_parser
     CC=1  in:1  out:83  total:84
-  SUMD._prop
-    CC=0  in:80  out:0  total:80
-  SUMD.extract_val
-    CC=0  in:55  out:0  total:55
+  doql.parsers.extractors.extract_val
+    CC=6  in:62  out:10  total:72
   doql.cli.commands.adopt._cmd_adopt_recursive
     CC=15  in:1  out:35  total:36
-  doql.exporters.css.renderers._render_project
-    CC=21  in:1  out:35  total:36
   doql.adopt.scanner.metadata._parse_pyproject
     CC=15  in:1  out:33  total:34
   doql.cli.commands.deploy._deploy_via_redeploy_api
@@ -25,37 +21,41 @@ HUBS[20]:
     CC=2  in:24  out:3  total:27
   doql.cli.commands.workspace._output_table
     CC=10  in:1  out:26  total:27
-  doql.exporters.css.renderers._render_app
-    CC=9  in:1  out:26  total:27
   doql.lsp_server._diagnostics_for
     CC=10  in:1  out:26  total:27
-  doql.adopt.scanner.deploy._detect_deployment_indicators
-    CC=10  in:1  out:25  total:26
   doql.parsers.registry.register
     CC=1  in:26  out:0  total:26
+  doql.adopt.scanner.deploy._detect_deployment_indicators
+    CC=10  in:1  out:25  total:26
   doql.cli.commands.workspace._print_project_table
     CC=5  in:1  out:24  total:25
-  doql.cli.sync.cmd_sync
-    CC=6  in:0  out:23  total:23
   doql.cli.lockfile.spec_section_hashes
-    CC=9  in:1  out:22  total:23
+    CC=9  in:2  out:22  total:24
   doql.exporters.css._render_css
     CC=7  in:3  out:20  total:23
+  doql.cli.sync.cmd_sync
+    CC=6  in:0  out:23  total:23
+  doql.generators.infra_gen._gen_docker_compose
+    CC=8  in:2  out:20  total:22
+  doql.cli.commands.init.cmd_init
+    CC=8  in:0  out:22  total:22
   doql.parsers.extractors._extract_page_from_format2
     CC=6  in:1  out:21  total:22
+  doql.cli.commands.run.cmd_run
+    CC=9  in:0  out:22  total:22
 
 MODULES:
-  SUMD  [122 funcs]
-    _clean  CC=0  out:0
-    _css_to_less  CC=0  out:0
-    _css_to_sass  CC=0  out:0
-    _device_registry_module  CC=0  out:0
-    _field_line  CC=0  out:0
-    _gen_api_ts  CC=0  out:0
-    _gen_app  CC=0  out:0
-    _gen_dashboard  CC=0  out:0
-    _gen_entity_page  CC=0  out:0
-    _gen_index_css  CC=0  out:0
+  SUMD  [19 funcs]
+    _render_api_client  CC=0  out:0
+    _render_app  CC=0  out:0
+    _render_data_source  CC=0  out:0
+    _render_database  CC=0  out:0
+    _render_dependencies  CC=0  out:0
+    _render_document  CC=0  out:0
+    _render_entity  CC=0  out:0
+    _render_integration  CC=0  out:0
+    _render_interface  CC=0  out:0
+    _render_report  CC=0  out:0
   doql.adopt.device_scanner  [3 funcs]
     _header  CC=1  out:2
     adopt_from_device  CC=4  out:9
@@ -98,6 +98,8 @@ MODULES:
     _detect_local_env  CC=4  out:4
     _extract_env_refs  CC=7  out:7
     scan_environments  CC=1  out:3
+  doql.adopt.scanner.integrations  [1 funcs]
+    scan_integrations  CC=4  out:5
   doql.adopt.scanner.interfaces  [15 funcs]
     _detect_api_auth  CC=4  out:2
     _detect_framework_from_any_py  CC=8  out:4
@@ -117,6 +119,15 @@ MODULES:
   doql.adopt.scanner.roles  [2 funcs]
     _scan_sql_roles  CC=9  out:10
     scan_roles  CC=3  out:5
+  doql.adopt.scanner.utils  [8 funcs]
+    camel_to_kebab  CC=1  out:5
+    find_compose  CC=3  out:1
+    find_dockerfiles  CC=5  out:5
+    load_yaml  CC=3  out:2
+    normalize_python_type  CC=1  out:3
+    normalize_sql_type  CC=4  out:3
+    normalize_sqlalchemy_type  CC=1  out:2
+    snake_to_pascal  CC=2  out:3
   doql.adopt.scanner.workflows  [15 funcs]
     _build_steps_from_body  CC=7  out:8
     _build_taskfile_steps  CC=5  out:6
@@ -204,10 +215,15 @@ MODULES:
     _execute_single_project  CC=5  out:9
     _filter_projects  CC=7  out:0
     _is_project  CC=2  out:2
-  doql.cli.context  [1 funcs]
+  doql.cli.context  [4 funcs]
     build_context  CC=3  out:6
-  doql.cli.lockfile  [3 funcs]
+    estimate_file_count  CC=5  out:2
+    load_spec  CC=1  out:2
+    scaffold_from_template  CC=2  out:4
+  doql.cli.lockfile  [5 funcs]
     _simple_items_hash  CC=2  out:2
+    diff_sections  CC=8  out:0
+    read_lockfile  CC=3  out:3
     spec_section_hashes  CC=9  out:22
     write_lockfile  CC=1  out:5
   doql.cli.main  [2 funcs]
@@ -222,29 +238,20 @@ MODULES:
     detect_drift  CC=3  out:8
     find_intended_file  CC=4  out:2
     parse_intended  CC=3  out:9
-  doql.exporters.css  [8 funcs]
+  doql.exporters.css  [9 funcs]
     _render_css  CC=7  out:20
     _render_data_layer  CC=4  out:6
     _render_documentation_layer  CC=3  out:4
     _render_infrastructure_layer  CC=4  out:6
     _render_integration_layer  CC=5  out:8
     export_css  CC=1  out:2
+    export_css_file  CC=1  out:3
     export_less  CC=1  out:3
     export_sass  CC=1  out:3
-  doql.exporters.css.format_convert  [2 funcs]
+  doql.exporters.css.format_convert  [3 funcs]
     _css_to_less  CC=4  out:8
+    _css_to_sass  CC=9  out:18
     _unquote_simple_value  CC=8  out:4
-  doql.exporters.css.renderers  [19 funcs]
-    _build_interface_props  CC=10  out:17
-    _build_page_props  CC=6  out:12
-    _render_api_client  CC=8  out:18
-    _render_app  CC=9  out:26
-    _render_data_source  CC=9  out:21
-    _render_database  CC=5  out:12
-    _render_dependencies  CC=3  out:6
-    _render_deploy  CC=5  out:11
-    _render_document  CC=7  out:20
-    _render_entity  CC=4  out:10
   doql.exporters.markdown  [2 funcs]
     export_markdown  CC=1  out:10
     export_markdown_file  CC=1  out:2
@@ -278,9 +285,24 @@ MODULES:
     _write_api_readme  CC=3  out:6
     export_openapi  CC=2  out:2
     generate  CC=2  out:6
-  doql.generators.api_gen.alembic  [2 funcs]
+  doql.generators.api_gen.alembic  [4 funcs]
     _entity_table_columns  CC=10  out:11
+    gen_alembic_env  CC=1  out:0
+    gen_alembic_ini  CC=1  out:1
     gen_initial_migration  CC=3  out:12
+  doql.generators.api_gen.auth  [1 funcs]
+    gen_auth  CC=7  out:5
+  doql.generators.api_gen.common  [5 funcs]
+    py_default  CC=6  out:1
+    py_type  CC=4  out:1
+    sa_type  CC=1  out:1
+    safe_name  CC=2  out:1
+    snake  CC=1  out:3
+  doql.generators.api_gen.database  [1 funcs]
+    gen_database  CC=1  out:2
+  doql.generators.api_gen.main  [2 funcs]
+    gen_main  CC=1  out:1
+    gen_requirements  CC=2  out:1
   doql.generators.api_gen.models  [2 funcs]
     _gen_column_def  CC=10  out:10
     gen_models  CC=7  out:11
@@ -301,6 +323,8 @@ MODULES:
     _gen_github_action  CC=1  out:1
     _gen_gitlab_ci  CC=1  out:4
     generate  CC=7  out:14
+  doql.generators.desktop_gen  [1 funcs]
+    _gen_package_json  CC=1  out:2
   doql.generators.document_gen  [3 funcs]
     _gen_preview_html  CC=6  out:8
     _gen_render_script  CC=2  out:1
@@ -328,8 +352,9 @@ MODULES:
     _generate_webhooks  CC=2  out:3
     _setup_services_dir  CC=1  out:2
     generate  CC=6  out:6
-  doql.generators.mobile_gen  [5 funcs]
+  doql.generators.mobile_gen  [6 funcs]
     _gen_icons  CC=3  out:5
+    _gen_index_html  CC=4  out:2
     _gen_manifest  CC=1  out:2
     _gen_service_worker  CC=1  out:2
     _slug  CC=2  out:3
@@ -355,10 +380,24 @@ MODULES:
     _write_pwa_files  CC=3  out:9
     _write_readme  CC=3  out:3
     generate  CC=6  out:10
-  doql.generators.web_gen.pages  [3 funcs]
+  doql.generators.web_gen.components  [1 funcs]
+    _gen_layout  CC=2  out:5
+  doql.generators.web_gen.config  [2 funcs]
+    _gen_postcss_config  CC=1  out:1
+    _gen_tailwind_config  CC=1  out:1
+  doql.generators.web_gen.core  [3 funcs]
+    _gen_api_ts  CC=1  out:1
+    _gen_index_css  CC=1  out:1
+    _gen_main_tsx  CC=1  out:1
+  doql.generators.web_gen.pages  [4 funcs]
     _build_interface_body  CC=4  out:4
     _field_input  CC=7  out:0
+    _gen_dashboard  CC=3  out:8
     _gen_entity_page  CC=10  out:9
+  doql.generators.web_gen.pwa  [1 funcs]
+    _gen_sw_register  CC=1  out:1
+  doql.generators.web_gen.router  [1 funcs]
+    _gen_app  CC=3  out:9
   doql.generators.workflow_gen  [7 funcs]
     _extract_cron  CC=4  out:3
     _gen_engine  CC=1  out:1
@@ -378,6 +417,8 @@ MODULES:
     _import_metadata  CC=1  out:5
     import_yaml  CC=3  out:15
     import_yaml_file  CC=1  out:2
+  doql.integrations.op3_bridge  [1 funcs]
+    snapshot_to_less  CC=1  out:2
   doql.lsp_server  [14 funcs]
     _diagnostics_for  CC=10  out:26
     _find_line_col  CC=3  out:3
@@ -389,8 +430,15 @@ MODULES:
     completion  CC=5  out:12
     definition  CC=3  out:15
     did_change  CC=1  out:2
+  doql.parsers  [4 funcs]
+    _is_css_format  CC=2  out:3
+    detect_doql_file  CC=3  out:1
+    parse_file  CC=3  out:6
+    parse_text  CC=3  out:6
   doql.parsers.blocks  [1 funcs]
     apply_block  CC=2  out:3
+  doql.parsers.css_mappers  [1 funcs]
+    _map_interface  CC=4  out:6
   doql.parsers.css_parser  [5 funcs]
     _apply_css_block  CC=8  out:14
     _detect_format  CC=3  out:3
@@ -414,7 +462,12 @@ MODULES:
     _is_selector_line  CC=11  out:11
     _is_selector_starter  CC=8  out:9
     _is_step_line  CC=1  out:2
-  doql.parsers.extractors  [11 funcs]
+  doql.parsers.css_utils  [4 funcs]
+    _parse_list  CC=3  out:6
+    _parse_selector  CC=5  out:9
+    _strip_comments  CC=1  out:2
+    _strip_quotes  CC=4  out:1
+  doql.parsers.extractors  [13 funcs]
     _extract_page_from_format1  CC=5  out:15
     _extract_page_from_format2  CC=6  out:21
     _parse_field_default  CC=2  out:2
@@ -422,25 +475,27 @@ MODULES:
     _parse_field_ref  CC=2  out:2
     _parse_field_type  CC=1  out:1
     _should_skip_line  CC=4  out:1
+    collect_env_refs  CC=1  out:3
     extract_entity_fields  CC=5  out:14
     extract_list  CC=4  out:7
-    extract_pages  CC=2  out:2
-  doql.parsers.registry  [13 funcs]
+  doql.parsers.registry  [29 funcs]
+    _handle_api_client  CC=3  out:13
     _handle_app  CC=2  out:4
     _handle_author  CC=3  out:3
+    _handle_ci  CC=3  out:8
     _handle_data  CC=2  out:14
     _handle_database  CC=2  out:10
     _handle_default_language  CC=1  out:2
+    _handle_deploy  CC=6  out:7
     _handle_document  CC=4  out:11
     _handle_domain  CC=1  out:2
-    _handle_entity  CC=1  out:8
-    _handle_languages  CC=3  out:7
-    _handle_report  CC=2  out:9
   doql.plugins  [4 funcs]
     _discover_entry_points  CC=5  out:9
     _discover_local  CC=8  out:12
     discover_plugins  CC=1  out:2
     run_plugins  CC=4  out:8
+  doql.utils.clean  [1 funcs]
+    _clean  CC=9  out:5
   doql.utils.naming  [2 funcs]
     kebab  CC=1  out:2
     snake  CC=1  out:4
@@ -471,6 +526,12 @@ MODULES:
     _sync_module  CC=1  out:1
     _webhook_module  CC=1  out:1
     generate  CC=2  out:8
+  plugins.doql-plugin-fleet.SUMD  [5 funcs]
+    _device_registry_module  CC=0  out:0
+    _metrics_module  CC=0  out:0
+    _migration_module  CC=0  out:0
+    _ota_module  CC=0  out:0
+    _tenant_module  CC=0  out:0
   plugins.doql-plugin-fleet.doql_plugin_fleet  [2 funcs]
     _readme  CC=1  out:1
     generate  CC=2  out:9
@@ -483,13 +544,16 @@ MODULES:
     generate  CC=2  out:8
   plugins.doql-plugin-iso17025.doql_plugin_iso17025  [1 funcs]
     generate  CC=1  out:2
+  plugins.doql-plugin-shared.SUMD  [2 funcs]
+    generate_readme  CC=0  out:0
+    plugin_generate  CC=0  out:0
 
 EDGES:
-  plugins.doql-plugin-fleet.doql_plugin_fleet.generate → SUMD._tenant_module
-  plugins.doql-plugin-fleet.doql_plugin_fleet.generate → SUMD._device_registry_module
-  plugins.doql-plugin-fleet.doql_plugin_fleet.generate → SUMD._metrics_module
-  plugins.doql-plugin-fleet.doql_plugin_fleet.generate → SUMD._ota_module
-  plugins.doql-plugin-fleet.doql_plugin_fleet.generate → SUMD._migration_module
+  plugins.doql-plugin-fleet.doql_plugin_fleet.generate → plugins.doql-plugin-fleet.SUMD._tenant_module
+  plugins.doql-plugin-fleet.doql_plugin_fleet.generate → plugins.doql-plugin-fleet.SUMD._device_registry_module
+  plugins.doql-plugin-fleet.doql_plugin_fleet.generate → plugins.doql-plugin-fleet.SUMD._metrics_module
+  plugins.doql-plugin-fleet.doql_plugin_fleet.generate → plugins.doql-plugin-fleet.SUMD._ota_module
+  plugins.doql-plugin-fleet.doql_plugin_fleet.generate → plugins.doql-plugin-fleet.SUMD._migration_module
   plugins.doql-plugin-fleet.doql_plugin_fleet.generate → plugins.doql-plugin-fleet.doql_plugin_fleet._readme
   plugins.doql-plugin-gxp.doql_plugin_gxp.generate → plugins.doql-plugin-gxp.doql_plugin_gxp._audit_log_module
   plugins.doql-plugin-gxp.doql_plugin_gxp.generate → plugins.doql-plugin-gxp.doql_plugin_gxp._e_signature_module
@@ -501,8 +565,8 @@ EDGES:
   plugins.doql-plugin-erp.doql_plugin_erp.generate → plugins.doql-plugin-erp.doql_plugin_erp._sync_module
   plugins.doql-plugin-erp.doql_plugin_erp.generate → plugins.doql-plugin-erp.doql_plugin_erp._webhook_module
   plugins.doql-plugin-erp.doql_plugin_erp.generate → plugins.doql-plugin-erp.doql_plugin_erp._readme
-  plugins.doql-plugin-iso17025.doql_plugin_iso17025.generate → SUMD.generate_readme
-  plugins.doql-plugin-iso17025.doql_plugin_iso17025.generate → SUMD.plugin_generate
+  plugins.doql-plugin-iso17025.doql_plugin_iso17025.generate → plugins.doql-plugin-shared.SUMD.generate_readme
+  plugins.doql-plugin-iso17025.doql_plugin_iso17025.generate → plugins.doql-plugin-shared.SUMD.plugin_generate
   playground.pyodide-bridge.executeBuild → playground.pyodide-bridge.buildFn
   playground.pyodide-bridge.bootPyodide → playground.pyodide-bridge._loadPyodide
   playground.pyodide-bridge.bootPyodide → playground.pyodide-bridge._installDoql
@@ -532,6 +596,6 @@ EDGES:
   doql.lsp_server.document_symbols → doql.lsp_server._parse_doc
   doql.lsp_server.document_symbols → doql.lsp_server._find_line_col
   doql.drift.detector.detect_drift → doql.drift.detector.parse_intended
-  doql.drift.detector.detect_drift → SUMD.adopt_from_device_to_snapshot
+  doql.drift.detector.detect_drift → doql.adopt.device_scanner.adopt_from_device_to_snapshot
   doql.drift.detector.detect_drift → doql.drift.detector.find_intended_file
   doql.importers.yaml_importer._build_entity → doql.importers.yaml_importer._build_entity_field

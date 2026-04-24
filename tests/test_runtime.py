@@ -165,6 +165,58 @@ FULL_STACK_EXAMPLES = [
 ]
 
 
+def _check_web_artifacts(web: pathlib.Path) -> None:
+    if not web.exists() or not (web / "package.json").exists():
+        return
+    pkg = json.loads((web / "package.json").read_text())
+    assert pkg.get("name"), "package.json missing name"
+    assert (web / "vite.config.ts").exists(), "missing vite.config.ts"
+    assert (web / "tsconfig.json").exists(), "missing tsconfig.json"
+    assert (web / "index.html").exists(), "missing index.html"
+
+
+def _check_mobile_artifacts(mobile: pathlib.Path) -> None:
+    if not mobile.exists() or not (mobile / "manifest.json").exists():
+        return
+    manifest = json.loads((mobile / "manifest.json").read_text())
+    assert manifest.get("name"), "manifest.json missing name"
+    assert manifest.get("icons"), "manifest.json missing icons"
+    assert (mobile / "service-worker.js").exists()
+    sw = (mobile / "service-worker.js").read_text()
+    assert "addEventListener" in sw, "service-worker.js invalid"
+    assert (mobile / "app.js").exists()
+    assert (mobile / "style.css").exists()
+
+
+def _check_desktop_artifacts(desktop: pathlib.Path) -> None:
+    if not desktop.exists() or not (desktop / "package.json").exists():
+        return
+    tauri = desktop / "src-tauri"
+    assert tauri.is_dir(), "missing src-tauri/"
+    tconf = tauri / "tauri.conf.json"
+    assert tconf.exists(), "missing tauri.conf.json"
+    data = json.loads(tconf.read_text())
+    product = data.get("productName") or data.get("package", {}).get("productName")
+    assert product, "tauri.conf.json missing productName"
+    assert (tauri / "Cargo.toml").exists()
+    main_rs = tauri / "src" / "main.rs"
+    assert main_rs.exists()
+    assert "tauri::Builder" in main_rs.read_text()
+
+
+def _check_infra_artifacts(infra: pathlib.Path) -> None:
+    if not infra.exists() or not (infra / "docker-compose.yml").exists():
+        return
+    import yaml
+    compose = yaml.safe_load((infra / "docker-compose.yml").read_text())
+    services = list((compose or {}).get("services", {}).keys())
+    assert len(services) > 0, "docker-compose.yml has no services"
+    dockerfile = infra / "Dockerfile"
+    if dockerfile.exists():
+        body = dockerfile.read_text()
+        assert "FROM" in body, "Dockerfile missing FROM"
+
+
 @pytest.mark.parametrize("example", FULL_STACK_EXAMPLES)
 def test_build_produces_expected_targets(example, tmp_path):
     """Verify each example produces the correct set of build targets."""
@@ -186,51 +238,7 @@ def test_build_produces_expected_targets(example, tmp_path):
     assert result.returncode == 0, f"build failed: {result.stderr}"
 
     build = work / "build"
-
-    # Check web artifacts when present
-    web = build / "web"
-    if web.exists() and (web / "package.json").exists():
-        pkg = json.loads((web / "package.json").read_text())
-        assert pkg.get("name"), "package.json missing name"
-        assert (web / "vite.config.ts").exists(), "missing vite.config.ts"
-        assert (web / "tsconfig.json").exists(), "missing tsconfig.json"
-        assert (web / "index.html").exists(), "missing index.html"
-
-    # Check mobile artifacts when present
-    mobile = build / "mobile"
-    if mobile.exists() and (mobile / "manifest.json").exists():
-        manifest = json.loads((mobile / "manifest.json").read_text())
-        assert manifest.get("name"), "manifest.json missing name"
-        assert manifest.get("icons"), "manifest.json missing icons"
-        assert (mobile / "service-worker.js").exists()
-        sw = (mobile / "service-worker.js").read_text()
-        assert "addEventListener" in sw, "service-worker.js invalid"
-        assert (mobile / "app.js").exists()
-        assert (mobile / "style.css").exists()
-
-    # Check desktop artifacts when present
-    desktop = build / "desktop"
-    if desktop.exists() and (desktop / "package.json").exists():
-        tauri = desktop / "src-tauri"
-        assert tauri.is_dir(), "missing src-tauri/"
-        tconf = tauri / "tauri.conf.json"
-        assert tconf.exists(), "missing tauri.conf.json"
-        data = json.loads(tconf.read_text())
-        product = data.get("productName") or data.get("package", {}).get("productName")
-        assert product, "tauri.conf.json missing productName"
-        assert (tauri / "Cargo.toml").exists()
-        main_rs = tauri / "src" / "main.rs"
-        assert main_rs.exists()
-        assert "tauri::Builder" in main_rs.read_text()
-
-    # Check infra artifacts when present
-    infra = build / "infra"
-    if infra.exists() and (infra / "docker-compose.yml").exists():
-        import yaml
-        compose = yaml.safe_load((infra / "docker-compose.yml").read_text())
-        services = list((compose or {}).get("services", {}).keys())
-        assert len(services) > 0, "docker-compose.yml has no services"
-        dockerfile = infra / "Dockerfile"
-        if dockerfile.exists():
-            body = dockerfile.read_text()
-            assert "FROM" in body, "Dockerfile missing FROM"
+    _check_web_artifacts(build / "web")
+    _check_mobile_artifacts(build / "mobile")
+    _check_desktop_artifacts(build / "desktop")
+    _check_infra_artifacts(build / "infra")

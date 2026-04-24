@@ -4,6 +4,36 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [1.0.27] - 2026-04-24
+
+### Docs
+- Update README.md
+- Update SUMD.md
+- Update SUMR.md
+- Update docs/README.md
+- Update examples/SUMD.md
+- Update project/README.md
+- Update project/context.md
+- Update vscode-doql/SUMD.md
+
+### Test
+- Update tests/env_manager.py
+- Update tests/test_adopt.py
+- Update tests/test_runtime.py
+
+### Other
+- Update app.doql.less
+- Update doql/exporters/css/renderers.py
+- Update examples/project/map.toon.yaml
+- Update project/analysis.toon.yaml
+- Update project/calls.mmd
+- Update project/calls.png
+- Update project/calls.toon.yaml
+- Update project/calls.yaml
+- Update project/compact_flow.mmd
+- Update project/compact_flow.png
+- ... and 12 more files
+
 ## [1.0.26] - 2026-04-23
 
 ### Docs
