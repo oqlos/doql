@@ -28,6 +28,39 @@ def scan_metadata(root: Path, spec: DoqlSpec) -> None:
             spec.version = v
 
 
+def _extract_authors(project: dict, spec: DoqlSpec) -> None:
+    authors = project.get("authors", [])
+    if not authors:
+        return
+    spec.authors = [
+        f'{a.get("name", "")} <{a.get("email", "")}>' if a.get("email") else a.get("name", "")
+        for a in authors
+        if isinstance(a, dict) and a.get("name")
+    ]
+
+
+def _extract_keywords(project: dict, spec: DoqlSpec) -> None:
+    keywords = project.get("keywords", [])
+    if keywords:
+        spec.keywords = keywords if isinstance(keywords, list) else [keywords]
+
+
+def _extract_urls(project: dict, spec: DoqlSpec) -> None:
+    urls = project.get("urls", {})
+    spec.homepage = urls.get("Homepage", spec.homepage)
+    spec.repository = urls.get("Repository", urls.get("Source", spec.repository))
+
+
+def _extract_dependencies(project: dict, spec: DoqlSpec) -> None:
+    deps = project.get("dependencies", [])
+    if deps:
+        spec.dependencies["runtime"] = ", ".join(deps)
+    opt_deps = project.get("optional-dependencies", {})
+    dev_deps = opt_deps.get("dev", opt_deps.get("test", []))
+    if dev_deps:
+        spec.dependencies["dev"] = ", ".join(dev_deps)
+
+
 def _parse_pyproject(path: Path, spec: DoqlSpec) -> None:
     """Extract metadata from pyproject.toml (stdlib tomllib)."""
     try:
@@ -42,47 +75,17 @@ def _parse_pyproject(path: Path, spec: DoqlSpec) -> None:
     spec.app_name = project.get("name", spec.app_name)
     spec.version = project.get("version", spec.version)
     spec.description = project.get("description", spec.description)
-    spec.license = project.get("license", {}).get("text") if isinstance(project.get("license"), dict) else project.get("license", spec.license)
+    spec.license = (
+        project.get("license", {}).get("text")
+        if isinstance(project.get("license"), dict)
+        else project.get("license", spec.license)
+    )
 
-    # Authors
-    authors = project.get("authors", [])
-    if authors:
-        spec.authors = [
-            f'{a.get("name", "")} <{a.get("email", "")}>' if a.get("email") else a.get("name", "")
-            for a in authors
-            if isinstance(a, dict) and a.get("name")
-        ]
-
-    # Keywords
-    keywords = project.get("keywords", [])
-    if keywords:
-        spec.keywords = keywords if isinstance(keywords, list) else [keywords]
-
-    # URLs
-    urls = project.get("urls", {})
-    spec.homepage = urls.get("Homepage", spec.homepage)
-    spec.repository = urls.get("Repository", urls.get("Source", spec.repository))
-
-    # Python requires
+    _extract_authors(project, spec)
+    _extract_keywords(project, spec)
+    _extract_urls(project, spec)
     spec.python_requires = project.get("requires-python", spec.python_requires)
-
-    # Dependencies
-    deps = project.get("dependencies", [])
-    if deps:
-        spec.dependencies["runtime"] = ", ".join(deps)
-
-    # Optional dev dependencies
-    opt_deps = project.get("optional-dependencies", {})
-    dev_deps = opt_deps.get("dev", opt_deps.get("test", []))
-    if dev_deps:
-        spec.dependencies["dev"] = ", ".join(dev_deps)
-
-    # Detect entry points (CLI scripts)
-    scripts = project.get("scripts", {})
-    for name, ep in scripts.items():
-        if "api" in name or "server" in name:
-            # Likely an API service entry point
-            pass  # handled by interface scan
+    _extract_dependencies(project, spec)
 
 
 def _parse_package_json(path: Path, spec: DoqlSpec) -> None:

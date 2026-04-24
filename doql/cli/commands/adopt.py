@@ -94,11 +94,63 @@ def _discover_subprojects(root: Path) -> list[Path]:
     return sorted(subs)
 
 
-def _cmd_adopt_recursive(args: argparse.Namespace) -> int:
-    """Scan root + sub-projects, generate per-folder manifests + root with project blocks."""
+def _scan_and_emit_subproject(
+    sub: Path, fmt: str, args: argparse.Namespace, root_spec: DoqlSpec, written: list[Path]
+) -> None:
+    """Scan a single sub-project, emit its manifest, and append to root_spec."""
     from doql.adopt.scanner import scan_project
     from doql.adopt.emitter import emit_spec
     from doql.parsers.models import Subproject
+
+    print(f"🔍 Scanning {sub.name} …")
+    sub_spec = scan_project(sub)
+    _print_scan_summary(sub_spec)
+
+    sub_output = sub / f"app.doql.{fmt}"
+    if sub_output.exists() and not args.force:
+        print(f"⚠️  {sub_output.name} already exists. Use --force to overwrite.")
+        return
+
+    try:
+        emit_spec(sub_spec, sub_output, fmt=fmt)
+    except Exception as exc:
+        print(f"❌ Failed to render {sub_output.name}: {exc}", file=sys.stderr)
+        _cleanup_empty_output(sub_output)
+        return
+
+    if _validate_output_written(sub_output):
+        written.append(sub_output)
+        root_spec.subprojects.append(
+            Subproject(name=sub.name, spec=sub_spec, path=f"./{sub.name}")
+        )
+
+
+def _write_root_manifest(
+    root: Path, args: argparse.Namespace, fmt: str, root_spec: DoqlSpec, written: list[Path]
+) -> int:
+    """Emit the root manifest and return 0 on success, 1 on failure."""
+    from doql.adopt.emitter import emit_spec
+
+    root_output = root / (args.output or f"app.doql.{fmt}")
+    if root_output.exists() and not args.force:
+        print(f"⚠️  {root_output.name} already exists. Use --force to overwrite.")
+        return 0
+
+    try:
+        emit_spec(root_spec, root_output, fmt=fmt)
+    except Exception as exc:
+        print(f"❌ Failed to render {root_output.name}: {exc}", file=sys.stderr)
+        _cleanup_empty_output(root_output)
+        return 1
+
+    if _validate_output_written(root_output):
+        written.append(root_output)
+    return 0
+
+
+def _cmd_adopt_recursive(args: argparse.Namespace) -> int:
+    """Scan root + sub-projects, generate per-folder manifests + root with project blocks."""
+    from doql.adopt.scanner import scan_project
 
     if not args.target:
         print(
@@ -119,50 +171,16 @@ def _cmd_adopt_recursive(args: argparse.Namespace) -> int:
         print("⚠️  No sub-projects found. Falling back to single-project scan.")
         return _cmd_adopt_from_directory(args)
 
-    # Scan each sub-project
     root_spec = scan_project(root)
     print(f"🔍 Scanning {root} (root) …")
     _print_scan_summary(root_spec)
 
     written: list[Path] = []
     for sub in sub_dirs:
-        print(f"🔍 Scanning {sub.name} …")
-        sub_spec = scan_project(sub)
-        _print_scan_summary(sub_spec)
+        _scan_and_emit_subproject(sub, fmt, args, root_spec, written)
 
-        sub_output = sub / f"app.doql.{fmt}"
-        if sub_output.exists() and not args.force:
-            print(f"⚠️  {sub_output.name} already exists. Use --force to overwrite.")
-            continue
-
-        try:
-            emit_spec(sub_spec, sub_output, fmt=fmt)
-        except Exception as exc:
-            print(f"❌ Failed to render {sub_output.name}: {exc}", file=sys.stderr)
-            _cleanup_empty_output(sub_output)
-            continue
-
-        if _validate_output_written(sub_output):
-            written.append(sub_output)
-            # Attach as inline subproject to root spec
-            root_spec.subprojects.append(
-                Subproject(name=sub.name, spec=sub_spec, path=f"./{sub.name}")
-            )
-
-    # Write root manifest (includes deploy/orchestration + inline project blocks)
-    root_output = root / (args.output or f"app.doql.{fmt}")
-    if root_output.exists() and not args.force:
-        print(f"⚠️  {root_output.name} already exists. Use --force to overwrite.")
-    else:
-        try:
-            emit_spec(root_spec, root_output, fmt=fmt)
-        except Exception as exc:
-            print(f"❌ Failed to render {root_output.name}: {exc}", file=sys.stderr)
-            _cleanup_empty_output(root_output)
-            return 1
-
-        if _validate_output_written(root_output):
-            written.append(root_output)
+    if _write_root_manifest(root, args, fmt, root_spec, written) != 0:
+        return 1
 
     print(f"\n✅ Generated {len(written)} manifest(s) under {root}")
     for p in written:
