@@ -4,6 +4,14 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [1.0.32] - 2026-04-25
+
+### Docs
+- Update README.md
+
+### Test
+- Update tests/test_deploy.py
+
 ## [1.0.31] - 2026-04-25
 
 ### Docs
