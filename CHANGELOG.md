@@ -4,6 +4,11 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [1.0.35] - 2026-04-25
+
+### Docs
+- Update README.md
+
 ## [1.0.34] - 2026-04-25
 
 ### Docs
