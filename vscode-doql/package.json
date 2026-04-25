@@ -60,12 +60,12 @@
       {
         "language": "doql-less",
         "scopeName": "source.doql.less",
-        "path": "./syntaxes/doql-css.tmLanguage.json"
+        "path": "./syntaxes/doql-less.tmLanguage.json"
       },
       {
         "language": "doql-sass",
         "scopeName": "source.doql.sass",
-        "path": "./syntaxes/doql-css.tmLanguage.json"
+        "path": "./syntaxes/doql-sass.tmLanguage.json"
       }
     ],
     "configuration": {

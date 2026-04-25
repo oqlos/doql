@@ -95,15 +95,46 @@ def _publish_docker(root: pathlib.Path, spec, dry_run: bool) -> int:
     return subprocess.call([runtime, "push", tag], cwd=root)
 
 
+def _extract_changelog_notes(root: pathlib.Path, version: str) -> str | None:
+    """Extract release notes for *version* from CHANGELOG.md."""
+    changelog = root / "CHANGELOG.md"
+    if not changelog.exists():
+        return None
+
+    text = changelog.read_text(encoding="utf-8")
+    header = f"## [{version}]"
+    start = text.find(header)
+    if start == -1:
+        return None
+
+    start += len(header)
+    # Skip date part if present, e.g. " - 2026-04-24"
+    while start < len(text) and text[start] != "\n":
+        start += 1
+    start += 1  # Skip newline
+
+    end = text.find("\n## [", start)
+    if end == -1:
+        end = len(text)
+
+    notes = text[start:end].strip()
+    return notes if notes else None
+
+
 def _publish_github(root: pathlib.Path, spec, dry_run: bool) -> int:
-    """Create GitHub release via gh CLI."""
+    """Create GitHub release via gh CLI with notes from CHANGELOG.md."""
     if not shutil.which("gh"):
         print("  ⏭️  gh CLI not found — skipping GitHub release")
         return 0
 
     tag = f"v{spec.version}"
-    cmd = ["gh", "release", "create", tag, "--title", f"{spec.app_name} {spec.version}",
-           "--notes", f"Release {spec.version}"]
+    notes = _extract_changelog_notes(root, spec.version)
+    if notes:
+        title = f"{spec.app_name} {spec.version}"
+        cmd = ["gh", "release", "create", tag, "--title", title, "--notes", notes]
+    else:
+        cmd = ["gh", "release", "create", tag, "--title", f"{spec.app_name} {spec.version}",
+               "--notes", f"Release {spec.version}"]
     if dry_run:
         print(f"  ⏭️  Dry-run: would create release {tag}")
         return 0

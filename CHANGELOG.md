@@ -4,6 +4,30 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [1.0.30] - 2026-04-25
+
+### Docs
+- Update README.md
+- Update SUMD.md
+- Update SUMR.md
+- Update TODO.md
+- Update docs/README.md
+- Update project/README.md
+- Update project/context.md
+
+### Other
+- Update VERSION
+- Update app.doql.less
+- Update doql/__init__.py
+- Update doql/adopt/scanner/interfaces.py
+- Update doql/adopt/scanner/interfaces/__init__.py
+- Update doql/adopt/scanner/interfaces/api.py
+- Update doql/adopt/scanner/interfaces/cli.py
+- Update doql/adopt/scanner/interfaces/desktop.py
+- Update doql/adopt/scanner/interfaces/mobile.py
+- Update doql/adopt/scanner/interfaces/web.py
+- ... and 76 more files
+
 ## [1.0.28] - 2026-04-24
 
 ### Docs

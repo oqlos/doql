@@ -23,7 +23,7 @@ Declarative OQL — build complete applications from a single .doql file
 ## Metadata
 
 - **name**: `doql`
-- **version**: `1.0.26`
+- **version**: `1.0.28`
 - **python_requires**: `>=3.10`
 - **license**: Apache-2.0
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
@@ -43,7 +43,7 @@ SUMD (description) → DOQL/source (code) → taskfile (automation) → testql (
 
 app {
   name: doql;
-  version: 1.0.26;
+  version: 1.0.28;
 }
 
 dependencies {
@@ -518,7 +518,7 @@ pipeline:
 ```yaml
 project:
   name: doql
-  version: 1.0.26
+  version: 1.0.28
   env: local
 ```
 
@@ -591,10 +591,10 @@ pip install -e .[dev]
 ### `project/map.toon.yaml`
 
 ```toon markpact:analysis path=project/map.toon.yaml
-# doql | 193f 26614L | python:150,less:18,css:14,shell:6,javascript:4,typescript:1 | 2026-04-24
-# stats: 781 func | 42 cls | 193 mod | CC̄=3.9 | critical:36 | cycles:0
-# alerts[5]: CC test_api_boot_and_health=17; CC _parse_pyproject=15; CC _cmd_adopt_recursive=15; CC _scan_python_cli=14; CC check_api=14
-# hotspots[5]: test_api_boot_and_health fan=26; cmd_build fan=23; main fan=21; check_api fan=20; _cmd_adopt_recursive fan=17
+# doql | 193f 26635L | python:150,less:18,css:14,shell:6,javascript:4,typescript:1 | 2026-04-24
+# stats: 787 func | 42 cls | 193 mod | CC̄=3.8 | critical:34 | cycles:0
+# alerts[5]: CC test_api_boot_and_health=17; CC _scan_python_cli=14; CC check_api=14; CC test_css_parse_project_blocks=14; CC render_text=13
+# hotspots[5]: test_api_boot_and_health fan=26; cmd_build fan=23; main fan=21; check_api fan=20; cmd_doctor fan=17
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
 M[193]:
@@ -610,7 +610,7 @@ M[193]:
   doql/adopt/scanner/environments.py,89
   doql/adopt/scanner/integrations.py,27
   doql/adopt/scanner/interfaces.py,364
-  doql/adopt/scanner/metadata.py,104
+  doql/adopt/scanner/metadata.py,107
   doql/adopt/scanner/roles.py,33
   doql/adopt/scanner/utils.py,101
   doql/adopt/scanner/workflows.py,264
@@ -619,7 +619,7 @@ M[193]:
   doql/cli/__main__.py,10
   doql/cli/build.py,292
   doql/cli/commands/__init__.py,56
-  doql/cli/commands/adopt.py,270
+  doql/cli/commands/adopt.py,288
   doql/cli/commands/deploy.py,143
   doql/cli/commands/docs.py,22
   doql/cli/commands/doctor.py,408
@@ -866,8 +866,12 @@ D:
     _scan_mobile(root;spec)
     _scan_desktop(root;spec)
   doql/adopt/scanner/metadata.py:
-    e: scan_metadata,_parse_pyproject,_parse_package_json,_parse_goal_yaml
+    e: scan_metadata,_extract_authors,_extract_keywords,_extract_urls,_extract_dependencies,_parse_pyproject,_parse_package_json,_parse_goal_yaml
     scan_metadata(root;spec)
+    _extract_authors(project;spec)
+    _extract_keywords(project;spec)
+    _extract_urls(project;spec)
+    _extract_dependencies(project;spec)
     _parse_pyproject(path;spec)
     _parse_package_json(path;spec)
     _parse_goal_yaml(path;spec)
@@ -923,13 +927,15 @@ D:
     _merge_no_overwrite(src;dst)
   doql/cli/commands/__init__.py:
   doql/cli/commands/adopt.py:
-    e: _print_item,_print_scan_summary,_cleanup_empty_output,_validate_output_written,cmd_adopt,_discover_subprojects,_cmd_adopt_recursive,_cmd_adopt_from_directory,_cmd_adopt_from_device
+    e: _print_item,_print_scan_summary,_cleanup_empty_output,_validate_output_written,cmd_adopt,_discover_subprojects,_scan_and_emit_subproject,_write_root_manifest,_cmd_adopt_recursive,_cmd_adopt_from_directory,_cmd_adopt_from_device
     _print_item(label;count;items;display_names)
     _print_scan_summary(spec)
     _cleanup_empty_output(output)
     _validate_output_written(output)
     cmd_adopt(args)
     _discover_subprojects(root)
+    _scan_and_emit_subproject(sub;fmt;args;root_spec;written)
+    _write_root_manifest(root;args;fmt;root_spec;written)
     _cmd_adopt_recursive(args)
     _cmd_adopt_from_directory(args)
     _cmd_adopt_from_device(args;device)
@@ -1931,51 +1937,51 @@ class Plugin:
 
 ## Call Graph
 
-*480 nodes · 500 edges · 89 modules · CC̄=1.0*
+*466 nodes · 500 edges · 89 modules · CC̄=1.0*
 
 ### Hubs (by degree)
 
 | Function | CC | in | out | total |
 |----------|----|----|-----|-------|
+| `_prop` *(in doql.exporters.css.helpers)* | 8 | 80 | 6 | **86** |
 | `create_parser` *(in doql.cli.main)* | 1 | 1 | 83 | **84** |
 | `extract_val` *(in doql.parsers.extractors)* | 6 | 62 | 10 | **72** |
-| `_cmd_adopt_recursive` *(in doql.cli.commands.adopt)* | 15 ⚠ | 1 | 35 | **36** |
-| `_parse_pyproject` *(in doql.adopt.scanner.metadata)* | 15 ⚠ | 1 | 33 | **34** |
 | `_deploy_via_redeploy_api` *(in doql.cli.commands.deploy)* | 12 ⚠ | 1 | 31 | **32** |
 | `_render_rich` *(in doql.cli.commands.drift)* | 7 | 1 | 29 | **30** |
+| `_render_app` *(in doql.exporters.css.renderers)* | 9 | 2 | 26 | **28** |
 | `_convert_indent_to_braces` *(in doql.parsers.css_transformers)* | 9 | 1 | 27 | **28** |
 | `_print` *(in doql.cli.commands.workspace)* | 2 | 24 | 3 | **27** |
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/oqlos/doql
-# nodes: 480 | edges: 500 | modules: 89
+# nodes: 466 | edges: 500 | modules: 89
 # CC̄=1.0
 
 HUBS[20]:
+  doql.exporters.css.helpers._prop
+    CC=8  in:80  out:6  total:86
   doql.cli.main.create_parser
     CC=1  in:1  out:83  total:84
   doql.parsers.extractors.extract_val
     CC=6  in:62  out:10  total:72
-  doql.cli.commands.adopt._cmd_adopt_recursive
-    CC=15  in:1  out:35  total:36
-  doql.adopt.scanner.metadata._parse_pyproject
-    CC=15  in:1  out:33  total:34
   doql.cli.commands.deploy._deploy_via_redeploy_api
     CC=12  in:1  out:31  total:32
   doql.cli.commands.drift._render_rich
     CC=7  in:1  out:29  total:30
+  doql.exporters.css.renderers._render_app
+    CC=9  in:2  out:26  total:28
   doql.parsers.css_transformers._convert_indent_to_braces
     CC=9  in:1  out:27  total:28
   doql.cli.commands.workspace._print
     CC=2  in:24  out:3  total:27
-  doql.cli.commands.workspace._output_table
-    CC=10  in:1  out:26  total:27
   doql.lsp_server._diagnostics_for
     CC=10  in:1  out:26  total:27
-  doql.parsers.registry.register
-    CC=1  in:26  out:0  total:26
+  doql.cli.commands.workspace._output_table
+    CC=10  in:1  out:26  total:27
   doql.adopt.scanner.deploy._detect_deployment_indicators
     CC=10  in:1  out:25  total:26
+  doql.parsers.registry.register
+    CC=1  in:26  out:0  total:26
   doql.cli.commands.workspace._print_project_table
     CC=5  in:1  out:24  total:25
   doql.cli.lockfile.spec_section_hashes
@@ -1984,27 +1990,16 @@ HUBS[20]:
     CC=7  in:3  out:20  total:23
   doql.cli.sync.cmd_sync
     CC=6  in:0  out:23  total:23
-  doql.generators.infra_gen._gen_docker_compose
-    CC=8  in:2  out:20  total:22
-  doql.cli.commands.init.cmd_init
-    CC=8  in:0  out:22  total:22
-  doql.parsers.extractors._extract_page_from_format2
-    CC=6  in:1  out:21  total:22
   doql.cli.commands.run.cmd_run
     CC=9  in:0  out:22  total:22
+  doql.parsers.extractors._extract_page_from_format2
+    CC=6  in:1  out:21  total:22
+  doql.cli.commands.init.cmd_init
+    CC=8  in:0  out:22  total:22
+  doql.generators.infra_gen._gen_docker_compose
+    CC=8  in:2  out:20  total:22
 
 MODULES:
-  SUMD  [19 funcs]
-    _render_api_client  CC=0  out:0
-    _render_app  CC=0  out:0
-    _render_data_source  CC=0  out:0
-    _render_database  CC=0  out:0
-    _render_dependencies  CC=0  out:0
-    _render_document  CC=0  out:0
-    _render_entity  CC=0  out:0
-    _render_integration  CC=0  out:0
-    _render_interface  CC=0  out:0
-    _render_report  CC=0  out:0
   doql.adopt.device_scanner  [3 funcs]
     _header  CC=1  out:2
     adopt_from_device  CC=4  out:9
@@ -2060,11 +2055,6 @@ MODULES:
     _has_api_entry_point  CC=7  out:6
     _scan_desktop  CC=7  out:14
     _scan_mobile  CC=6  out:11
-  doql.adopt.scanner.metadata  [4 funcs]
-    _parse_goal_yaml  CC=4  out:2
-    _parse_package_json  CC=1  out:4
-    _parse_pyproject  CC=15  out:33
-    scan_metadata  CC=6  out:9
   doql.adopt.scanner.roles  [2 funcs]
     _scan_sql_roles  CC=9  out:10
     scan_roles  CC=3  out:5
@@ -2088,15 +2078,6 @@ MODULES:
     _extract_python_cli_workflows  CC=3  out:3
     _extract_taskfile_schedule  CC=2  out:2
     _extract_taskfile_workflows  CC=9  out:9
-  doql.cli.commands.adopt  [8 funcs]
-    _cmd_adopt_from_device  CC=10  out:16
-    _cmd_adopt_from_directory  CC=8  out:15
-    _cmd_adopt_recursive  CC=15  out:35
-    _discover_subprojects  CC=7  out:7
-    _print_item  CC=5  out:5
-    _print_scan_summary  CC=7  out:19
-    _validate_output_written  CC=3  out:4
-    cmd_adopt  CC=3  out:5
   doql.cli.commands.deploy  [3 funcs]
     _deploy_via_redeploy_api  CC=12  out:31
     _deploy_via_redeploy_cli  CC=4  out:7
@@ -2201,6 +2182,21 @@ MODULES:
     _css_to_less  CC=4  out:8
     _css_to_sass  CC=9  out:18
     _unquote_simple_value  CC=8  out:4
+  doql.exporters.css.helpers  [3 funcs]
+    _field_line  CC=7  out:6
+    _indent  CC=2  out:1
+    _prop  CC=8  out:6
+  doql.exporters.css.renderers  [19 funcs]
+    _build_interface_props  CC=10  out:17
+    _build_page_props  CC=6  out:12
+    _render_api_client  CC=8  out:18
+    _render_app  CC=9  out:26
+    _render_data_source  CC=9  out:21
+    _render_database  CC=5  out:12
+    _render_dependencies  CC=3  out:6
+    _render_deploy  CC=5  out:11
+    _render_document  CC=7  out:20
+    _render_entity  CC=4  out:10
   doql.exporters.markdown  [2 funcs]
     export_markdown  CC=1  out:10
     export_markdown_file  CC=1  out:2
@@ -2379,11 +2375,8 @@ MODULES:
     completion  CC=5  out:12
     definition  CC=3  out:15
     did_change  CC=1  out:2
-  doql.parsers  [4 funcs]
-    _is_css_format  CC=2  out:3
+  doql.parsers  [1 funcs]
     detect_doql_file  CC=3  out:1
-    parse_file  CC=3  out:6
-    parse_text  CC=3  out:6
   doql.parsers.blocks  [1 funcs]
     apply_block  CC=2  out:3
   doql.parsers.css_mappers  [1 funcs]
@@ -2427,17 +2420,17 @@ MODULES:
     collect_env_refs  CC=1  out:3
     extract_entity_fields  CC=5  out:14
     extract_list  CC=4  out:7
-  doql.parsers.registry  [29 funcs]
+  doql.parsers.registry  [21 funcs]
     _handle_api_client  CC=3  out:13
     _handle_app  CC=2  out:4
     _handle_author  CC=3  out:3
-    _handle_ci  CC=3  out:8
     _handle_data  CC=2  out:14
     _handle_database  CC=2  out:10
     _handle_default_language  CC=1  out:2
-    _handle_deploy  CC=6  out:7
     _handle_document  CC=4  out:11
     _handle_domain  CC=1  out:2
+    _handle_entity  CC=1  out:8
+    _handle_integration  CC=1  out:5
   doql.plugins  [4 funcs]
     _discover_entry_points  CC=5  out:9
     _discover_local  CC=8  out:12
@@ -2496,6 +2489,13 @@ MODULES:
   plugins.doql-plugin-shared.SUMD  [2 funcs]
     generate_readme  CC=0  out:0
     plugin_generate  CC=0  out:0
+  project.map.toon  [6 funcs]
+    run_document_generators  CC=0  out:0
+    run_i18n_generators  CC=0  out:0
+    run_integration_generators  CC=0  out:0
+    run_report_generators  CC=0  out:0
+    scan_metadata  CC=0  out:0
+    should_generate_interface  CC=0  out:0
 
 EDGES:
   plugins.doql-plugin-fleet.doql_plugin_fleet.generate → plugins.doql-plugin-fleet.SUMD._tenant_module

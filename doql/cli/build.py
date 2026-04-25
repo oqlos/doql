@@ -4,9 +4,11 @@ This module handles complete rebuilds by running all applicable generators.
 """
 from __future__ import annotations
 
+import os
 import shutil
 import sys
 import tempfile
+import time
 from typing import Callable
 
 from pathlib import Path
@@ -16,6 +18,74 @@ from ..generators import api_gen, web_gen, mobile_gen, desktop_gen, infra_gen, d
 from .. import plugins as _plugins
 from .context import BuildContext, build_context, load_spec
 from .lockfile import write_lockfile
+
+
+def _watch_files(paths: list[Path], callback: Callable[[], None]) -> None:
+    """Watch *paths* for changes and invoke *callback*.
+
+    Prefers ``watchfiles`` or ``watchdog`` when installed, otherwise falls
+    back to a simple polling loop.
+    """
+    # 1. Try watchfiles (modern, rust-based, lowest CPU)
+    try:
+        from watchfiles import watch
+        print("👀 Watching (watchfiles) — Ctrl-C to stop")
+        for changes in watch(*paths, recursive=False):
+            callback()
+        return
+    except ImportError:
+        pass
+
+    # 2. Try watchdog (pure Python, stable)
+    try:
+        from watchdog.observers import Observer
+        from watchdog.events import FileSystemEventHandler
+
+        class _Handler(FileSystemEventHandler):
+            def __init__(self, cb: Callable[[], None]) -> None:
+                self._cb = cb
+                self._last = 0.0
+
+            def on_modified(self, event) -> None:
+                if event.is_directory:
+                    return
+                now = time.time()
+                if now - self._last < 0.5:
+                    return
+                self._last = now
+                self._cb()
+
+        print("👀 Watching (watchdog) — Ctrl-C to stop")
+        observer = Observer()
+        for p in paths:
+            observer.schedule(_Handler(callback), str(p.parent), recursive=False)
+        observer.start()
+        try:
+            while True:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            observer.stop()
+        observer.join()
+        return
+    except ImportError:
+        pass
+
+    # 3. Polling fallback (no deps)
+    print("👀 Watching (polling) — Ctrl-C to stop")
+    mtimes = {str(p): p.stat().st_mtime for p in paths if p.exists()}
+    while True:
+        time.sleep(1)
+        changed = False
+        for p in paths:
+            if not p.exists():
+                continue
+            m = p.stat().st_mtime
+            key = str(p)
+            if key not in mtimes or mtimes[key] != m:
+                mtimes[key] = m
+                changed = True
+        if changed:
+            callback()
 
 
 def should_generate_interface(name: str, spec) -> bool:
@@ -205,22 +275,10 @@ def _scan_device_for_build(ctx: BuildContext, args) -> BuildContext:
     )
 
 
-def cmd_build(args: argparse.Namespace) -> int:
-    """Generate all code for the project.
-    
-    This command runs all applicable generators to create a complete build.
-    Validation is performed first unless --force is specified.
-    """
-    ctx = build_context(args)
-
-    if getattr(args, "from_device", None):
-        try:
-            ctx = _scan_device_for_build(ctx, args)
-        except SystemExit as exc:
-            return int(exc.code) if exc.code is not None else 1
-
+def _do_build(args: argparse.Namespace, ctx: BuildContext) -> int:
+    """Inner build routine — returns exit code."""
     spec, env_vars = load_spec(ctx)
-    
+
     # Validate unless --force
     issues = doql_parser.validate(spec, env_vars)
     errors = [i for i in issues if i.severity == "error"]
@@ -229,7 +287,7 @@ def cmd_build(args: argparse.Namespace) -> int:
         for e in errors:
             print(f"   {e.path}: {e.message}", file=sys.stderr)
         return 1
-    
+
     no_overwrite = getattr(args, "no_overwrite", False)
     real_build_dir = ctx.build_dir
 
@@ -244,7 +302,7 @@ def cmd_build(args: argparse.Namespace) -> int:
         )
 
     ctx.build_dir.mkdir(parents=True, exist_ok=True)
-    
+
     # Run all generators in order
     run_core_generators(spec, env_vars, ctx)
     run_document_generators(spec, env_vars, ctx)
@@ -255,7 +313,7 @@ def cmd_build(args: argparse.Namespace) -> int:
     run_ci_generator(spec, env_vars, ctx)
     run_vite_generator(spec, env_vars, ctx)
     run_plugins(spec, env_vars, ctx)
-    
+
     if no_overwrite:
         skipped = _merge_no_overwrite(ctx.build_dir, real_build_dir)
         shutil.rmtree(ctx.build_dir)
@@ -271,6 +329,48 @@ def cmd_build(args: argparse.Namespace) -> int:
 
     write_lockfile(spec, ctx)
     print(f"\n✅ Build complete — see {real_build_dir}/")
+    return 0
+
+
+def cmd_build(args: argparse.Namespace) -> int:
+    """Generate all code for the project.
+
+    This command runs all applicable generators to create a complete build.
+    Validation is performed first unless --force is specified.
+    With --watch, rebuilds automatically when the .doql or .env file changes.
+    """
+    ctx = build_context(args)
+
+    if getattr(args, "from_device", None):
+        try:
+            ctx = _scan_device_for_build(ctx, args)
+        except SystemExit as exc:
+            return int(exc.code) if exc.code is not None else 1
+
+    # Initial build
+    rc = _do_build(args, ctx)
+    if rc != 0:
+        return rc
+
+    if not getattr(args, "watch", False):
+        return 0
+
+    # --watch mode
+    watch_paths = [ctx.doql_file]
+    if ctx.env_file.exists():
+        watch_paths.append(ctx.env_file)
+
+    def _rebuild() -> None:
+        print("\n🔄 File changed — rebuilding...")
+        try:
+            _do_build(args, ctx)
+        except Exception as exc:
+            print(f"⚠️  Build failed: {exc}", file=sys.stderr)
+
+    try:
+        _watch_files(watch_paths, _rebuild)
+    except KeyboardInterrupt:
+        print("\n👋 Watch stopped.")
     return 0
 
 

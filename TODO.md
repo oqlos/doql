@@ -28,12 +28,12 @@
   - associated files (PDFs, drivers, reports, certs, invoices)
   - tag/feature filtering + bulk actions
   - tag ID → SQLite ID remapping logic
-- [ ] VS Code extension: `.doql.css` / `.doql.less` / `.doql.sass` syntax highlighting
+- [x] VS Code extension: `.doql.css` / `.doql.less` / `.doql.sass` syntax highlighting ✅ v1.0.29
 
 ### CLI improvements
-- [ ] `doql build --watch` — file watcher for dev loop
+- [x] `doql build --watch` — file watcher for dev loop ✅ v1.0.29
 - [ ] `doql deploy` — `@local`/`@push`/`@remote`: add rollback support
-- [ ] `doql publish --target github` — automated GitHub Release notes from CHANGELOG
+- [x] `doql publish --target github` — automated GitHub Release notes from CHANGELOG ✅ v1.0.29
 
 ## Tests
 

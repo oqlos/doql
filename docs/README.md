@@ -1,7 +1,7 @@
 <!-- code2docs:start --># doql
 
-![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.10-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-2204-green)
-> **2204** functions | **46** classes | **288** files | CC̄ = 3.7
+![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.10-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-2256-green)
+> **2256** functions | **46** classes | **288** files | CC̄ = 3.6
 
 > Auto-generated project documentation from source code analysis.
 
@@ -342,11 +342,11 @@ doql/
     ├── 01-oqlos-status-2026-q2
     ├── README
     ├── prompt
+        ├── toon
+        ├── toon
     ├── context
+        ├── toon
     ├── README
-        ├── toon
-        ├── toon
-        ├── toon
         ├── toon
     ├── calls
         ├── toon
@@ -905,8 +905,6 @@ doql/
 - `validate(spec, env_vars, project_root)` — Validate a parsed DoqlSpec against env vars and internal consistency.
 - `build_layer_tree(layer_ids)` — Build an :class:`opstree.LayerTree` populated with the given layers.
 - `snapshot_to_less(snapshot, scope)` — Render an op3 :class:`Snapshot` as ``.doql.less`` text.
-- `cmd_adopt()` — —
-- `scan_metadata()` — —
 - `scan_interfaces()` — —
 - `cmd_drift()` — —
 - `cmd_deploy()` — —
@@ -931,6 +929,7 @@ doql/
 - `gen_schemas()` — —
 - `gen_models()` — —
 - `scan_deploy()` — —
+- `cmd_adopt()` — —
 - `spec_section_hashes()` — —
 - `read_lockfile()` — —
 - `diff_sections()` — —
@@ -999,6 +998,7 @@ doql/
 - `parse_text()` — —
 - `parse_env()` — —
 - `validate()` — —
+- `scan_metadata()` — —
 - `TAB_NAMES()` — —
 - `activateTab()` — —
 - `tabFromHash()` — —
@@ -1076,12 +1076,12 @@ doql/
 - `extract_blocks()` — —
 - `less_to_yaml()` — —
 - `yaml_to_less()` — —
-- `tests()` — —
 - `stage()` — —
 - `dir()` — —
 - `cleanWs()` — —
 - `test_doql_vs_less_regression()` — —
 - `Pyodide()` — —
+- `tests()` — —
 - `should_generate_interface()` — —
 - `run_core_generators()` — —
 - `run_document_generators()` — —
@@ -1245,7 +1245,7 @@ doql/
 📄 `README`
 📄 `ROADMAP`
 📄 `SPEC`
-📄 `SUMD` (780 functions, 1 classes)
+📄 `SUMD` (800 functions, 1 classes)
 📄 `SUMR` (19 functions, 1 classes)
 📄 `TODO` (11 functions, 4 classes)
 📄 `TODO.01-doql-format-migration-analysis`
@@ -1290,14 +1290,14 @@ doql/
 📄 `doql.adopt.scanner.environments` (6 functions)
 📄 `doql.adopt.scanner.integrations` (1 functions)
 📄 `doql.adopt.scanner.interfaces` (16 functions)
-📄 `doql.adopt.scanner.metadata` (4 functions)
+📄 `doql.adopt.scanner.metadata` (8 functions)
 📄 `doql.adopt.scanner.roles` (2 functions)
 📄 `doql.adopt.scanner.utils` (8 functions)
 📄 `doql.adopt.scanner.workflows` (15 functions)
 📦 `doql.cli`
 📄 `doql.cli.__main__`
 📦 `doql.cli.commands`
-📄 `doql.cli.commands.adopt` (9 functions)
+📄 `doql.cli.commands.adopt` (11 functions)
 📄 `doql.cli.commands.deploy` (4 functions)
 📄 `doql.cli.commands.docs` (1 functions)
 📄 `doql.cli.commands.doctor` (20 functions, 2 classes)
@@ -1487,7 +1487,7 @@ doql/
 📄 `project.context`
 📄 `project.duplication.toon`
 📄 `project.evolution.toon`
-📄 `project.map.toon` (2261 functions)
+📄 `project.map.toon` (2307 functions)
 📄 `project.project.toon`
 📄 `project.prompt`
 📄 `project.validation.toon`

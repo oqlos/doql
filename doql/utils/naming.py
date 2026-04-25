@@ -35,3 +35,20 @@ def kebab(name: str) -> str:
     """
     # First convert to snake, then replace underscores with hyphens
     return snake(name).replace("_", "-")
+
+
+def slug(name: str) -> str:
+    """Convert a name to a URL-friendly slug (kebab-case).
+
+    Replaces spaces and underscores with hyphens, lowercases.
+    Unlike ``kebab()``, this does NOT handle CamelCase — use
+    ``kebab()`` for mixed-case identifiers and ``slug()`` for
+    already-human-readable names.
+
+    Examples:
+        >>> slug("My App Name")
+        'my-app-name'
+        >>> slug("my_app_name")
+        'my-app-name'
+    """
+    return name.lower().replace(" ", "-").replace("_", "-")

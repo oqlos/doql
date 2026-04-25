@@ -1,51 +1,54 @@
-# doql | 2143 func | 132f | 62348L | python | 2026-04-24
+# doql | 1430 func | 152f | 62845L | python | 2026-04-25
 
 HEALTH:
-  CC̄=1.0  critical=24 (limit:10)  dup=3  cycles=0
+  CC̄=1.6  critical=21 (limit:10)  dup=0  cycles=0
 
 ALERTS[20]:
-  !!  high_fan_out     _cmd_adopt_recursive = 19 (limit:10)
   !!  high_fan_out     _diagnostics_for = 17 (limit:10)
   !!  high_fan_out     cmd_doctor = 17 (limit:10)
   !!  high_fan_out     _extract_page_from_format2 = 16 (limit:10)
   !!  high_fan_out     _convert_indent_to_braces = 16 (limit:10)
   !!  high_fan_out     _deploy_via_redeploy_api = 15 (limit:10)
   !!  high_fan_out     cmd_run = 15 (limit:10)
-  !!  high_fan_out     _scan_python_cli = 15 (limit:10)
-  !   cc_exceeded      _cmd_adopt_recursive = 15 (limit:15)
-  !   cc_exceeded      _parse_pyproject = 15 (limit:15)
+  !!  high_fan_out     scan_python_cli = 15 (limit:10)
+  !   high_fan_out     definition = 14 (limit:10)
+  !   high_fan_out     cmd_sync = 14 (limit:10)
+  !   high_fan_out     _render_rich = 14 (limit:10)
 
-MODULES[275] (top by size):
-  M[project/calls.yaml] 7472L C:0 F:0 CC↑0 D:0 (yaml)
-  M[SUMD.md] 2505L C:1 F:718 CC↑0 D:2 (md)
-  M[SUMR.md] 2326L C:1 F:19 CC↑0 D:0 (md)
-  M[docs/README.md] 1550L C:0 F:1 CC↑0 D:0 (md)
-  M[project/map.toon.yaml] 1282L C:0 F:718 CC↑0 D:0 (yaml)
-  M[SPEC.md] 983L C:0 F:0 CC↑0 D:0 (md)
-  M[CHANGELOG.md] 904L C:0 F:1 CC↑0 D:0 (md)
-  M[doql/generators/infra_gen.py] 647L C:0 F:10 CC↑12 D:0 (python)
-  M[README.md] 597L C:0 F:0 CC↑0 D:0 (md)
-  M[code2llm_output/plugins/context.md] 595L C:0 F:0 CC↑0 D:0 (md)
-  M[docs/plugins/context.md] 593L C:0 F:0 CC↑0 D:0 (md)
-  M[docs/doql_playground/context.md] 591L C:0 F:0 CC↑0 D:0 (md)
-  M[analysis-20260421/doql_playground/context.md] 589L C:0 F:0 CC↑0 D:0 (md)
-  M[code2llm_output/doql_playground/context.md] 589L C:0 F:0 CC↑0 D:0 (md)
+MODULES[248] (top by size):
+  M[project/calls.yaml] 6304L C:0 F:0 CC↑0 D:0 (yaml)
+  M[project/map.toon.yaml] 2022L C:0 F:785 CC↑0 D:13 (yaml)
+  M[project/calls.toon.yaml] 613L C:0 F:0 CC↑0 D:0 (yaml)
   M[code2llm_output/doql_playground/flow.toon.yaml] 567L C:0 F:0 CC↑0 D:0 (yaml)
-  LANGS: python:124/md:63/yaml:31/yml:14/json:14/doql:13/toml:6/shell:4/javascript:3/typescript:1/other:1/txt:1
+  M[code2llm_output/plugins/flow.toon.yaml] 567L C:0 F:0 CC↑0 D:0 (yaml)
+  M[goal.yaml] 511L C:0 F:0 CC↑0 D:0 (yaml)
+  M[doql/generators/mobile_gen.py] 462L C:0 F:8 CC↑5 D:1 (python)
+  M[examples/asset-management/app.doql] 433L C:0 F:0 CC↑0 D:0 (doql)
+  M[plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py] 427L C:0 F:6 CC↑2 D:0 (python)
+  M[doql/exporters/css/renderers.py] 367L C:0 F:19 CC↑10 D:1 (python)
+  M[plugins/doql-plugin-erp/doql_plugin_erp/__init__.py] 357L C:0 F:6 CC↑2 D:0 (python)
+  M[examples/kiosk-station/app.doql] 350L C:0 F:0 CC↑0 D:0 (doql)
+  M[doql/generators/integrations_gen.py] 336L C:0 F:11 CC↑8 D:0 (python)
+  M[doql/parsers/registry.py] 331L C:0 F:30 CC↑6 D:1 (python)
+  LANGS: python:163/yaml:32/json:16/yml:14/doql:13/toml:6/shell:4/javascript:3/typescript:1/other:1/txt:1
 
 HOTSPOTS[10]:
-  ★ _cmd_adopt_recursive fan=19  // Scan root + sub-projects, generate per-folder manifests + root with project bloc
   ★ _diagnostics_for fan=17  // Parse, validate and return LSP diagnostics.
   ★ cmd_doctor fan=17  // Run comprehensive project health check.
   ★ _extract_page_from_format2 fan=16  // 16-way dispatch
   ★ _convert_indent_to_braces fan=16  // Convert indent-based SASS blocks to brace-delimited CSS.
+  ★ _deploy_via_redeploy_api fan=15  // Deploy using redeploy Python API (doql[deploy] installed).
 
-REFACTOR[15]:
-  [1] H/H Split god module doql/generators/infra_gen.py (647L, 0 classes)
-  [2] H/H Split god module doql/cli/commands/workspace.py (544L, 1 classes)
-  [3] H/H Split god module doql/parsers/css_mappers.py (521L, 0 classes)
-  [4] H/H Split god module CHANGELOG.md (904L, 0 classes)
-  [5] H/H Split god module README.md (597L, 0 classes)
+Returns exit code: 0
+
+REFACTOR[9]:
+  [1] H/H Split god module code2llm_output/doql_playground/flow.toon.yaml (567L, 0 classes)
+  [2] H/H Split god module code2llm_output/plugins/flow.toon.yaml (567L, 0 classes)
+  [3] H/H Split god module goal.yaml (511L, 0 classes)
+  [4] H/H Split god module project/calls.toon.yaml (613L, 0 classes)
+  [5] H/H Split god module project/calls.yaml (6304L, 0 classes)
 
 EVOLUTION:
-  2026-04-24 CC̄=1.0 crit=24 62348L // Automated analysis
+  2026-04-25 CC̄=1.6 crit=21 62845L // Automated analysis
+  2026-04-25 DONE Deduplicate slug() into doql/utils/naming.py (vite_gen, mobile_gen, ci_gen)
+  2026-04-25 DONE Split doql/lsp_server.py → lsp_server/ package (7 modules)

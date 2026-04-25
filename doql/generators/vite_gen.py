@@ -11,15 +11,12 @@ import pathlib
 import textwrap
 
 from ..parser import DoqlSpec
-
-
-def _slug(name: str) -> str:
-    return name.lower().replace(" ", "-").replace("_", "-")
+from ..utils.naming import slug
 
 
 def _gen_vite_config(spec: DoqlSpec, env_vars: dict[str, str], out: pathlib.Path) -> None:
     """Generate vite.config.ts for a Vite-based SPA."""
-    slug = _slug(spec.app_name)
+    slug = slug(spec.app_name)
     port = env_vars.get("VITE_PORT", "5173")
     api_proxy = env_vars.get("VITE_API_PROXY", "/api")
     api_target = env_vars.get("VITE_API_TARGET", "http://localhost:8000")
@@ -97,7 +94,7 @@ def _gen_tsconfig(spec: DoqlSpec, out: pathlib.Path) -> None:
 
 def _gen_index_html(spec: DoqlSpec, out: pathlib.Path) -> None:
     """Generate index.html SPA entry point."""
-    slug = _slug(spec.app_name)
+    slug = slug(spec.app_name)
     html = textwrap.dedent(f'''\
         <!DOCTYPE html>
         <html lang="en">

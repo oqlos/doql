@@ -58,6 +58,8 @@ def create_parser() -> argparse.ArgumentParser:
     s.add_argument("--layers", action="append", default=None,
                    help="Op3 layer ids to probe (repeatable). Only used with "
                         "--from-device; see `doql adopt --help` for defaults")
+    s.add_argument("--watch", action="store_true",
+                   help="Watch .doql file and rebuild on changes (requires watchfiles or watchdog)")
     s.set_defaults(func=cmd_build)
     
     # run

@@ -1,20 +1,20 @@
-# redup/duplication | 13 groups | 129f 16254L | 2026-04-24
+# redup/duplication | 13 groups | 162f 16658L | 2026-04-25
 
 SUMMARY:
-  files_scanned: 129
-  total_lines:   16254
+  files_scanned: 162
+  total_lines:   16658
   dup_groups:    13
   dup_fragments: 56
   saved_lines:   847
-  scan_ms:       8047
+  scan_ms:       8635
 
 HOTSPOTS[7] (files with most duplication):
-  plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py  dup=382L  groups=2  frags=5  (2.4%)
-  plugins/doql-plugin-erp/doql_plugin_erp/__init__.py  dup=317L  groups=2  frags=5  (2.0%)
+  plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py  dup=382L  groups=2  frags=5  (2.3%)
+  plugins/doql-plugin-erp/doql_plugin_erp/__init__.py  dup=317L  groups=2  frags=5  (1.9%)
   doql/generators/mobile_gen.py  dup=148L  groups=1  frags=1  (0.9%)
   doql/generators/ci_gen.py  dup=132L  groups=1  frags=2  (0.8%)
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/certificate.py  dup=129L  groups=1  frags=1  (0.8%)
-  plugins/doql-plugin-fleet/doql_plugin_fleet/device_registry.py  dup=124L  groups=1  frags=1  (0.8%)
+  plugins/doql-plugin-fleet/doql_plugin_fleet/device_registry.py  dup=124L  groups=1  frags=1  (0.7%)
   plugins/doql-plugin-iso17025/doql_plugin_iso17025/uncertainty.py  dup=120L  groups=1  frags=1  (0.7%)
 
 DUPLICATES[13] (ranked by impact):
@@ -63,15 +63,15 @@ DUPLICATES[13] (ranked by impact):
       doql/exporters/css/__init__.py:23-32  (_render_data_layer)
       doql/exporters/css/__init__.py:45-54  (_render_infrastructure_layer)
   [5f48ca70777b1005]   STRU  _map_template  L=10 N=2 saved=10 sim=1.00
-      doql/parsers/css_mappers.py:153-162  (_map_template)
-      doql/parsers/css_mappers.py:165-174  (_map_document)
+      doql/parsers/css_mappers/config.py:47-56  (_map_template)
+      doql/parsers/css_mappers/config.py:59-68  (_map_document)
   [30f08c1670d767e9]   STRU  _document_section  L=7 N=2 saved=7 sim=1.00
       doql/exporters/markdown/sections.py:106-112  (_document_section)
       doql/exporters/markdown/sections.py:115-121  (_report_section)
   [9c0032ea2b7c1d5e]   STRU  run_report_generators  L=3 N=3 saved=6 sim=1.00
-      doql/cli/build.py:88-90  (run_report_generators)
-      doql/cli/build.py:93-95  (run_i18n_generators)
-      doql/cli/build.py:104-106  (run_workflow_generators)
+      doql/cli/build.py:158-160  (run_report_generators)
+      doql/cli/build.py:163-165  (run_i18n_generators)
+      doql/cli/build.py:174-176  (run_workflow_generators)
   [785017c94366e6c6]   STRU  _validate_document_templates  L=6 N=2 saved=6 sim=1.00
       doql/parsers/validators.py:91-96  (_validate_document_templates)
       doql/parsers/validators.py:99-104  (_validate_template_files)
@@ -85,8 +85,8 @@ DUPLICATES[13] (ranked by impact):
       doql/exporters/css/__init__.py:98-100  (export_less)
       doql/exporters/css/__init__.py:103-105  (export_sass)
   [b1191467b99382f4]   STRU  _resolve_less_vars  L=3 N=2 saved=3 sim=1.00
-      doql/parsers/css_transformers.py:45-47  (_resolve_less_vars)
-      doql/parsers/css_transformers.py:50-52  (_resolve_sass_vars)
+      doql/parsers/css_transformers/variables.py:38-40  (_resolve_less_vars)
+      doql/parsers/css_transformers/variables.py:43-45  (_resolve_sass_vars)
 
 REFACTOR[13] (ranked by priority):
   [1] ◐ extract_function   → utils/gen_alembic_ini.py
@@ -104,9 +104,9 @@ REFACTOR[13] (ranked by priority):
   [5] ○ extract_function   → doql/exporters/css/utils/_render_data_layer.py
       WHY: 2 occurrences of 10-line block across 1 files — saves 10 lines
       FILES: doql/exporters/css/__init__.py
-  [6] ○ extract_function   → doql/parsers/utils/_map_template.py
+  [6] ○ extract_function   → doql/parsers/css_mappers/utils/_map_template.py
       WHY: 2 occurrences of 10-line block across 1 files — saves 10 lines
-      FILES: doql/parsers/css_mappers.py
+      FILES: doql/parsers/css_mappers/config.py
   [7] ○ extract_function   → doql/exporters/markdown/utils/_document_section.py
       WHY: 2 occurrences of 7-line block across 1 files — saves 7 lines
       FILES: doql/exporters/markdown/sections.py
@@ -125,9 +125,9 @@ REFACTOR[13] (ranked by priority):
   [12] ○ extract_function   → doql/exporters/css/utils/export_less.py
       WHY: 2 occurrences of 3-line block across 1 files — saves 3 lines
       FILES: doql/exporters/css/__init__.py
-  [13] ○ extract_function   → doql/parsers/utils/_resolve_less_vars.py
+  [13] ○ extract_function   → doql/parsers/css_transformers/utils/_resolve_less_vars.py
       WHY: 2 occurrences of 3-line block across 1 files — saves 3 lines
-      FILES: doql/parsers/css_transformers.py
+      FILES: doql/parsers/css_transformers/variables.py
 
 QUICK_WINS[7] (low risk, high savings — do first):
   [3] extract_function   saved=108L  → utils/_gen_build_rs.py
@@ -136,8 +136,8 @@ QUICK_WINS[7] (low risk, high savings — do first):
       FILES: ci_gen.py
   [5] extract_function   saved=10L  → doql/exporters/css/utils/_render_data_layer.py
       FILES: __init__.py
-  [6] extract_function   saved=10L  → doql/parsers/utils/_map_template.py
-      FILES: css_mappers.py
+  [6] extract_function   saved=10L  → doql/parsers/css_mappers/utils/_map_template.py
+      FILES: config.py
   [7] extract_function   saved=7L  → doql/exporters/markdown/utils/_document_section.py
       FILES: sections.py
   [8] extract_function   saved=6L  → doql/cli/utils/run_report_generators.py
