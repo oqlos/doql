@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "doql"
-version = "1.0.41"
+version = "1.0.42"
 description = "Declarative OQL — build complete applications from a single .doql file"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -51,6 +51,9 @@ dev = [
   "doql-plugin-fleet",
   "doql-plugin-erp",
   "doql-plugin-shared",
+  "mcp2doql",
+  "cli2doql",
+  "dsl2doql",
   "nlp2doql",
   "uri2doql",
 ]
@@ -69,6 +72,13 @@ deploy = [
 device-adopt = [
   "op3>=0.1.8",
 ]
+tooling = [
+  "mcp2doql",
+  "cli2doql",
+  "dsl2doql",
+  "nlp2doql",
+  "uri2doql",
+]
 
 [dependency-groups]
 dev = [
@@ -85,6 +95,9 @@ dev = [
   "doql-plugin-fleet",
   "doql-plugin-erp",
   "doql-plugin-shared",
+  "mcp2doql",
+  "cli2doql",
+  "dsl2doql",
   "nlp2doql",
   "uri2doql",
 ]
@@ -121,6 +134,9 @@ members = [
   "plugins/doql-plugin-shared",
   "packages/nlp2doql",
   "packages/uri2doql",
+  "packages/mcp2doql",
+  "packages/cli2doql",
+  "packages/dsl2doql",
 ]
 
 [tool.uv.sources]
@@ -132,6 +148,9 @@ doql-plugin-erp = { workspace = true }
 doql-plugin-shared = { workspace = true }
 nlp2doql = { workspace = true }
 uri2doql = { workspace = true }
+mcp2doql = { workspace = true }
+cli2doql = { workspace = true }
+dsl2doql = { workspace = true }
 
 [tool.ruff]
 line-length = 100

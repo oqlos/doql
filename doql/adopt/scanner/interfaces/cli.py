@@ -1,4 +1,4 @@
-"""Python CLI interface detection (click, argparse entry points)."""
+"""Python CLI interface detection for doql adopt."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -59,5 +59,5 @@ def scan_python_cli(root: Path, spec: DoqlSpec) -> None:
         return
 
     spec.interfaces.append(
-        Interface(name="cli", type="cli", framework=framework, pages=pages)
+        Interface(name="cli", type="cli", framework=framework, pages=pages),
     )

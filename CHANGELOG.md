@@ -4,6 +4,36 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [1.0.42] - 2026-06-08
+
+### Docs
+- Update README.md
+- Update TODO.md
+- Update packages/CONTROL_LAYER_PROMPT.template.md
+- Update packages/README.md
+- Update packages/cli2doql/README.md
+- Update packages/dsl2doql/README.md
+- Update packages/mcp2doql/README.md
+- Update packages/nlp2doql/README.md
+- Update packages/uri2doql/README.md
+
+### Test
+- Update tests/test_oql_converter.py
+- Update tests/test_tooling_packages.py
+
+### Other
+- Update app.doql.less
+- Update doql/adopt/scanner/interfaces/cli.py
+- Update doql/adopt/scanner/interfaces/mcp.py
+- Update doql/importers/__init__.py
+- Update doql/importers/oql_converter.py
+- Update packages/cli2doql/pyproject.toml
+- Update packages/cli2doql/src/cli2doql/__init__.py
+- Update packages/cli2doql/src/cli2doql/cli.py
+- Update packages/cli2doql/src/cli2doql/scanner.py
+- Update packages/cli2doql/tests/test_cli2doql.py
+- ... and 23 more files
+
 ## [1.0.41] - 2026-06-08
 
 ### Docs

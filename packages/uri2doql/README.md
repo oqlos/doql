@@ -1,24 +1,36 @@
 # uri2doql
 
-Address and materialize DOQL specifications via `doql://` URIs.
+Sterowanie manifestami DOQL przez schemat URI **`doql://`** — odczyt, zapis, edycja, patch.
 
-## URI scheme
+Powiązane: [indeks paczek](../README.md) · [README główne doql](../../README.md) · [nlp2uri](src/uri2doql/nlp2uri.py)
 
-| URI | Opis |
-|-----|------|
-| `doql://file/{path}` | Pełny plik DOQL |
-| `doql://block/app?file=app.doql.less` | Metadane `app{}` |
-| `doql://block/entity/Contact?file=...` | Blok encji |
-| `doql://block/workflow/install?file=...` | Workflow |
-| `doql://block/interface/cli/page/doql?file=...` | Zagnieżdżona strona CLI |
-| `doql://generate?prompt=CRM+with+contacts` | Generacja przez nlp2doql |
+## Do czego służy
+
+- **query** — wyciąga blok jako JSON/YAML/LESS
+- **materialize** — zapisuje fragment do pliku
+- **patch / update** — podmienia blok w pliku źródłowym
+- **append** — dopisuje bloki do manifestu
+- **apply** — unified: materialize | patch | append
+- **resolve / nlp2uri** — NL → sugerowany URI
 
 ## CLI
 
 ```bash
-pip install -e ../.. -e .
 uri2doql query --uri 'doql://block/app?file=app.doql.less'
-uri2doql query --uri 'doql://block/workflow/test?file=app.doql.less' --format less
-uri2doql materialize --uri 'doql://block/workflow/test?file=app.doql.less' --dest /tmp/test.less
-uri2doql resolve "pokaż workflow install z app.doql" --file app.doql.less
+uri2doql patch --uri 'doql://block/entity/Contact?file=app.doql.less' --with contact.less
+uri2doql append --file app.doql.less --with workflow.less
+uri2doql apply --uri 'doql://block/workflow/install?file=app.doql.less' --mode materialize --dest /tmp/w.less
+uri2doql resolve "pokaż workflow install" --file app.doql.less
+```
+
+## Python API
+
+```python
+from uri2doql import query_uri, patch_uri, nlp2uri, apply_uri
+```
+
+## Testy
+
+```bash
+pytest packages/uri2doql/tests -q
 ```

@@ -17,7 +17,7 @@ def test_query_app_block():
     result = query_uri(uri, file=str(APP_DOQL))
     assert result.ok
     assert result.data["name"] == "doql"
-    assert result.data["version"] == "1.0.35"
+    assert result.data["version"]  # version tracks app.doql.less release
 
 
 def test_query_workflow_install():

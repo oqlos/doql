@@ -1,21 +1,28 @@
 # nlp2doql
 
-Natural language → DOQL (`.doql.less`) generator.
+Sterowanie manifestami DOQL przez **język naturalny** — generacja, walidacja, edycja (via nlp2uri → uri2doql).
+
+Powiązane: [indeks paczek](../README.md) · [README główne doql](../../README.md) · [uri2doql](../uri2doql/README.md)
+
+## Do czego służy
+
+- **generate** — NL → pełny `.doql.less` (reguły lub LLM)
+- **validate** — walidacja pliku DOQL
+- **apply** — NL → intent (query/patch/materialize/generate) + wykonanie
+- **edit** — NL + plik fragmentu → patch bloku
 
 ## CLI
 
 ```bash
-pip install -e ../.. -e .
-nlp2doql generate "CRM with contacts" --out app.doql.less --validate
+nlp2doql generate "CRM z kontaktami" --out app.doql.less --validate
 nlp2doql validate app.doql.less
-nlp2doql doctor
+nlp2doql apply "pokaż app metadata" --file app.doql.less
+nlp2doql edit "update entity Contact" --file app.doql.less --with contact.patch.less
+nlp2doql apply "validate app.doql.less"
 ```
 
-## Python API
+## Testy
 
-```python
-from nlp2doql import generate_spec
-
-result = generate_spec("todo PWA", out_path="app.doql.less", validate=True)
-print(result.doql)
+```bash
+pytest packages/nlp2doql/tests -q
 ```

@@ -1,4 +1,4 @@
-"""CLI: nlp2doql generate | validate | doctor."""
+"""CLI: nlp2doql generate | validate | apply | edit | doctor."""
 
 from __future__ import annotations
 
@@ -7,12 +7,13 @@ import json
 import shutil
 import sys
 
+from nlp2doql.apply import apply_nl, edit_nl
 from nlp2doql.pipeline import generate_spec
 from nlp2doql.validate import validate_doql, validate_doql_file
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Natural language → DOQL (.doql.less)")
+    parser = argparse.ArgumentParser(description="Natural language control of DOQL manifests")
     sub = parser.add_subparsers(dest="cmd", required=True)
 
     gen = sub.add_parser("generate", help="Generate DOQL spec from NL")
@@ -26,6 +27,19 @@ def main(argv: list[str] | None = None) -> int:
     val = sub.add_parser("validate", help="Validate existing DOQL file")
     val.add_argument("path", help="Path to .doql.less/.doql.css file")
     val.add_argument("--json", action="store_true")
+
+    apply = sub.add_parser("apply", help="Apply NL control (query/patch/materialize/generate)")
+    apply.add_argument("prompt", help="Natural language command")
+    apply.add_argument("--file", help="Target DOQL manifest")
+    apply.add_argument("--dest", help="Destination for materialize/generate")
+    apply.add_argument("--with", dest="with_file", help="Content file for patch/append")
+    apply.add_argument("--json", action="store_true")
+
+    edit = sub.add_parser("edit", help="Edit DOQL block via NL + replacement content")
+    edit.add_argument("prompt", help="Natural language edit intent")
+    edit.add_argument("--file", help="Target DOQL manifest")
+    edit.add_argument("--with", dest="with_file", required=True, help="Replacement block file")
+    edit.add_argument("--json", action="store_true")
 
     doctor = sub.add_parser("doctor", help="Check doql dependency availability")
     doctor.add_argument("--json", action="store_true")
@@ -66,6 +80,30 @@ def main(argv: list[str] | None = None) -> int:
                 if result.get("error"):
                     print(f"error: {result['error']}", file=sys.stderr)
         return 0 if result.get("ok") else 1
+
+    if args.cmd == "apply":
+        content = open(args.with_file, encoding="utf-8").read() if args.with_file else None
+        result = apply_nl(args.prompt, file=args.file, content=content, dest=args.dest)
+        if args.json:
+            print(json.dumps(result.to_dict(), indent=2))
+        else:
+            if result.error:
+                print(f"error: {result.error}", file=sys.stderr)
+            if result.output:
+                print(result.output.rstrip())
+        return 0 if result.ok else 1
+
+    if args.cmd == "edit":
+        content = open(args.with_file, encoding="utf-8").read()
+        result = edit_nl(args.prompt, file=args.file, content=content)
+        if args.json:
+            print(json.dumps(result.to_dict(), indent=2))
+        else:
+            if result.error:
+                print(f"error: {result.error}", file=sys.stderr)
+            if result.output:
+                print(result.output.rstrip())
+        return 0 if result.ok else 1
 
     if args.cmd == "generate":
         result = generate_spec(

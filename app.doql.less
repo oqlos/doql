@@ -13,7 +13,7 @@ app {
 
 dependencies {
   runtime: "click>=8.1, pydantic>=2.0, pyyaml>=6.0, jinja2>=3.1, rich>=13.0, httpx>=0.25, goal>=2.1.0, costs>=0.1.20, pfix>=0.1.60, testql>=0.1.1";
-  dev: "pytest>=7.4, pytest-asyncio, pytest-cov>=4.0, ruff, mypy, goal>=2.1.0, costs>=0.1.20, pfix>=0.1.60, doql-plugin-gxp, doql-plugin-iso17025, doql-plugin-fleet, doql-plugin-erp, doql-plugin-shared, nlp2doql, uri2doql";
+  dev: "pytest>=7.4, pytest-asyncio, pytest-cov>=4.0, ruff, mypy, goal>=2.1.0, costs>=0.1.20, pfix>=0.1.60, doql-plugin-gxp, doql-plugin-iso17025, doql-plugin-fleet, doql-plugin-erp, doql-plugin-shared, mcp2doql, cli2doql, dsl2doql, nlp2doql, uri2doql";
   api: "fastapi>=0.104, sqlalchemy>=2.0, alembic>=1.13";
   lsp: "pygls>=1.3, lsprotocol>=2023.0.1";
   deploy: "redeploy>=0.2.1,<0.3.0";
@@ -32,9 +32,37 @@ interface[type="cli"] page[name="doql"] {
   entry: doql.cli:main;
 }
 
+interface[type="cli"] page[name="mcp2doql"] {
+  entry: mcp2doql.cli:main;
+}
+
+interface[type="mcp"] {
+  name: doql;
+  framework: stdio;
+  page[name="mcp2doql"] {
+    entry: mcp2doql.server:run_server;
+  }
+}
+
+interface[type="cli"] page[name="cli2doql"] {
+  entry: cli2doql.cli:main;
+}
+
+interface[type="cli"] page[name="dsl2doql"] {
+  entry: dsl2doql.cli:main;
+}
+
+interface[type="cli"] page[name="nlp2doql"] {
+  entry: nlp2doql.cli:main;
+}
+
+interface[type="cli"] page[name="uri2doql"] {
+  entry: uri2doql.cli:main;
+}
+
 workflow[name="install"] {
   trigger: manual;
-  step-1: run cmd=pip install -e plugins/doql-plugin-shared -e plugins/doql-plugin-gxp -e plugins/doql-plugin-iso17025 -e plugins/doql-plugin-fleet -e plugins/doql-plugin-erp -e .[dev];
+  step-1: run cmd=pip install -e plugins/doql-plugin-shared -e plugins/doql-plugin-gxp -e plugins/doql-plugin-iso17025 -e plugins/doql-plugin-fleet -e plugins/doql-plugin-erp -e packages/mcp2doql -e packages/cli2doql -e packages/dsl2doql -e packages/nlp2doql -e packages/uri2doql -e .[dev];
 }
 
 workflow[name="deps:update"] {

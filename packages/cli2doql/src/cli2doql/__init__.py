@@ -1,5 +1,5 @@
-from .scanner import scan_python_cli
+"""cli2doql — interactive DOQL control shell."""
 
-__all__ = [
-    "scan_python_cli",
-]
+from cli2doql.cli import main, run_shell
+
+__all__ = ["main", "run_shell"]

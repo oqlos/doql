@@ -5,12 +5,16 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "mcp2doql"
 version = "0.1.0"
-description = "Extract and convert MCP servers/tools metadata to DOQL page/interface blocks"
+description = "MCP server for DOQL control (query, patch, validate, DSL)"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"
 dependencies = [
     "doql>=1.0.0",
+    "dsl2doql>=0.1.0",
+    "uri2doql>=0.1.0",
+    "nlp2doql>=0.1.0",
+    "mcp>=1.0",
 ]
 
 [project.optional-dependencies]
@@ -18,6 +22,7 @@ dev = ["pytest>=8.0"]
 
 [project.scripts]
 mcp2doql = "mcp2doql.cli:main"
+mcp2doql-mcp = "mcp2doql.server:run_server"
 
 [tool.setuptools.packages.find]
 where = ["src"]

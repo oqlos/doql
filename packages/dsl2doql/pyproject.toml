@@ -5,12 +5,14 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "dsl2doql"
 version = "0.1.0"
-description = "Convert OQL/CQL scenario DSL files to DOQL workflow blocks"
+description = "DOQL control DSL — query, patch, validate and adopt manifests"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"
 dependencies = [
     "doql>=1.0.0",
+    "uri2doql>=0.1.0",
+    "nlp2doql>=0.1.0",
 ]
 
 [project.optional-dependencies]

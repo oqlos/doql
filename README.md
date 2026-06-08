@@ -3,17 +3,17 @@
 
 ## AI Cost Tracking
 
-![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-1.0.41-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
-![AI Cost](https://img.shields.io/badge/AI%20Cost-$9.76-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-44.4h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
+![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-1.0.42-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![AI Cost](https://img.shields.io/badge/AI%20Cost-$9.58-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-44.4h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
 
-- 🤖 **LLM usage:** $9.7550 (57 commits)
+- 🤖 **LLM usage:** $9.5836 (58 commits)
 - 👤 **Human dev:** ~$4441 (44.4h @ $100/h, 30min dedup)
 
 Generated on 2026-06-08 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
 
 ---
 
-![Version](https://img.shields.io/badge/version-1.0.41-blue) ![Python](https://img.shields.io/badge/python-3.10+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green) ![Status](https://img.shields.io/badge/status-stable-green)
+![Version](https://img.shields.io/badge/version-1.0.42-blue) ![Python](https://img.shields.io/badge/python-3.10+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green) ![Status](https://img.shields.io/badge/status-stable-green)
 
 
 
@@ -105,6 +105,25 @@ Kompletny projekt **doql** — warstwa deklaratywna nad `oqlos`, która z jedneg
 - `doql/scaffolds/minimal/` — szablon dla `doql init` 
 - `LICENSE` (Apache 2.0)
 - `.gitignore` 
+
+**Paczki tooling (`packages/*2doql`)** — mosty wejścia → DOQL (`.doql.less`). Pełny indeks: [`packages/README.md`](packages/README.md).
+
+| Pakiet | Do czego służy | README |
+|--------|----------------|--------|
+| **mcp2doql** | Serwer MCP (stdio) — query/patch/validate/DSL przez narzędzia MCP | [`packages/mcp2doql/README.md`](packages/mcp2doql/README.md) |
+| **cli2doql** | Shell CLI (REPL) sterujący DOQL przez DSL (`dsl2doql`) | [`packages/cli2doql/README.md`](packages/cli2doql/README.md) |
+| **dsl2doql** | DSL sterowania DOQL (QUERY, PATCH, VALIDATE, ADOPT, …) | [`packages/dsl2doql/README.md`](packages/dsl2doql/README.md) |
+| **nlp2doql** | Sterowanie DOQL przez NL (generate, apply, edit) | [`packages/nlp2doql/README.md`](packages/nlp2doql/README.md) |
+| **uri2doql** | `doql://` URI — query, patch, apply, nlp2uri | [`packages/uri2doql/README.md`](packages/uri2doql/README.md) |
+
+Skanowanie MCP/CLI (adopt) i konwersja OQL→workflow są w **`doql/`**: `doql/adopt/scanner/interfaces/{mcp,cli}.py`, `doql/importers/oql_converter.py`.
+
+Instalacja dev (wszystkie paczki workspace):
+
+```bash
+uv sync --extra deploy
+# lub: pip install -e ".[dev]" -e packages/mcp2doql -e packages/cli2doql ...
+```
 
 ### `articles/` — artykuły WordPress
 Sześć artykułów markdown z YAML front-matter gotowych do publikacji (kompatybilne z `wp-cli` i WordPress REST API). Każdy artykuł to jeden projekt / jedna nowość.

@@ -1,4 +1,4 @@
-"""MCP server interface detection (FastMCP, *-mcp entry points)."""
+"""MCP server interface detection for doql adopt."""
 from __future__ import annotations
 
 import re
@@ -6,8 +6,8 @@ from pathlib import Path
 
 from ....parsers.models import DoqlSpec, Interface, Page
 
-_MCP_TOOL_RE = re.compile(r'@mcp\.tool\(\)\s*\n\s*def\s+(\w+)')
-_FASTMCP_RE = re.compile(r'\bFastMCP\s*\(')
+_MCP_TOOL_RE = re.compile(r"@mcp\.tool\(\)\s*\n\s*def\s+(\w+)")
+_FASTMCP_RE = re.compile(r"\bFastMCP\s*\(")
 
 
 def _load_pyproject_scripts(root: Path) -> dict[str, str]:
@@ -45,7 +45,7 @@ def _discover_mcp_tools(root: Path) -> list[str]:
 
 
 def scan_python_mcp(root: Path, spec: DoqlSpec) -> None:
-    """Detect MCP stdio servers and tool surfaces."""
+    """Detect MCP stdio servers and tool surfaces and append to spec."""
     scripts = _load_pyproject_scripts(root)
     entry_pages: list[Page] = []
     for name, target in scripts.items():

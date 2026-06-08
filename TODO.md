@@ -189,3 +189,12 @@ Plus round-trip test: `yaml_to_less(less_to_yaml(x)) == x` modulo whitespace. To
 | Pt | Scan + porównanie trendu. Cel: `CC̄ 3.5→3.2`, żaden fan-out > 12 |
 
 ---
+
+
+w packages powinny by? nastepuj?ce paczki, zrob refaktoryzacje, jesli brakuje i jest np zaimplementowana w glonwej paczce:
+mcp2[nazwa paczki] - server mcp dla paczki w celu kontroli
+rest2[nazwa paczki]  - rest api w  celu kotnroli paczki
+nlp2[nazwa paczki] - pnaturalny jezyk zamieniany na komendy DSL obslugiwane przez CQRS ES w celu kontroli
+dsl2[nazwa paczki] - standaryzowany jezyk dsl w oparciu o CQRS ES używany w cli i uri z uzyciem schema i protobuff 
+uri2[nazwa paczki] - adresowanie komend DSL
+cli2[nazwa paczki] - klient shell uzywajacy DSL

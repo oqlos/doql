@@ -1,6 +1,5 @@
-from .scanner import scan_python_mcp, discover_mcp_tools
+"""mcp2doql — DOQL control MCP server."""
 
-__all__ = [
-    "scan_python_mcp",
-    "discover_mcp_tools",
-]
+from mcp2doql.server import DoqlMCPServer, create_server, run_server
+
+__all__ = ["DoqlMCPServer", "create_server", "run_server"]

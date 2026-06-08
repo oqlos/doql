@@ -1,5 +1,5 @@
-from .converter import convert_dsl_to_doql
+"""DOQL control DSL — query, patch, validate and adopt manifests."""
 
-__all__ = [
-    "convert_dsl_to_doql",
-]
+from dsl2doql.engine import DslResult, execute_dsl, execute_dsl_line
+
+__all__ = ["DslResult", "execute_dsl", "execute_dsl_line"]
