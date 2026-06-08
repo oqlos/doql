@@ -20,10 +20,11 @@ from .databases import scan_databases
 from .interfaces import scan_interfaces
 from .entities import scan_entities
 from .deploy import scan_deploy
-from .environments import scan_environments
+from .environments import scan_environments, finalize_environment_runtimes
 from .integrations import scan_integrations
 from .roles import scan_roles
 from .workflows import scan_workflows
+from .tests import scan_tests
 
 __all__ = [
     "scan_project",
@@ -34,9 +35,11 @@ __all__ = [
     "scan_entities",
     "scan_deploy",
     "scan_environments",
+    "finalize_environment_runtimes",
     "scan_integrations",
     "scan_roles",
     "scan_workflows",
+    "scan_tests",
 ]
 
 
@@ -54,5 +57,7 @@ def scan_project(root: str | Path) -> DoqlSpec:
     scan_entities(root, spec)
     scan_roles(root, spec)
     scan_workflows(root, spec)
+    scan_tests(root, spec)
+    finalize_environment_runtimes(root, spec)
 
     return spec

@@ -2,17 +2,11 @@
 
 app {
   name: doql;
-  version: 1.0.28;
-  description: "Declarative OQL — build complete applications from a single .doql file";
-  license: Apache-2.0;
-  authors: "Softreck <hello@softreck.dev>, Tom Sapletta <tom@sapletta.com>";
-  keywords: "dsl, code-generation, oqlos, low-code, saas, asset-management";
-  homepage: https://github.com/softreck/doql;
-  repository: https://github.com/softreck/doql;
+  version: 1.0.35;
 }
 
 dependencies {
-  runtime: "click>=8.1, pydantic>=2.0, pyyaml>=6.0, jinja2>=3.1, rich>=13.0, httpx>=0.25, goal>=2.1.0, costs>=0.1.20, pfix>=0.1.60, tomli>=2.0; python_version < '3.11', testql>=0.1.1";
+  runtime: "click>=8.1, pydantic>=2.0, pyyaml>=6.0, jinja2>=3.1, rich>=13.0, httpx>=0.25, goal>=2.1.0, costs>=0.1.20, pfix>=0.1.60, tomli>=2.0; python_version < '3.11', testql>=0.1.1, nlp2doql>=0.1.0, uri2doql>=0.1.0";
   dev: "pytest>=7.4, pytest-asyncio, pytest-cov>=4.0, ruff, mypy, goal>=2.1.0, costs>=0.1.20, pfix>=0.1.60";
 }
 
@@ -25,12 +19,20 @@ interface[type="cli"] {
   framework: click;
 }
 interface[type="cli"] page[name="doql"] {
+  entry: doql.cli:main;
+}
 
+interface[type="cli"] page[name="nlp2doql"] {
+  entry: nlp2doql.cli:main;
+}
+
+interface[type="cli"] page[name="uri2doql"] {
+  entry: uri2doql.cli:main;
 }
 
 workflow[name="install"] {
   trigger: manual;
-  step-1: run cmd=pip install -e plugins/doql-plugin-shared -e plugins/doql-plugin-gxp -e plugins/doql-plugin-iso17025 -e plugins/doql-plugin-fleet -e plugins/doql-plugin-erp -e .[dev];
+  step-1: run cmd=pip install -e plugins/doql-plugin-shared -e plugins/doql-plugin-gxp -e plugins/doql-plugin-iso17025 -e plugins/doql-plugin-fleet -e plugins/doql-plugin-erp -e packages/nlp2doql -e packages/uri2doql -e .[dev];
 }
 
 workflow[name="deps:update"] {
@@ -152,5 +154,5 @@ deploy {
 environment[name="local"] {
   runtime: docker-compose;
   env_file: .env;
-  python_version: >=3.10;
+  python_version: >=3.11;
 }

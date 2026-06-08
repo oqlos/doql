@@ -65,15 +65,32 @@ def _is_valid_target(name: str, deps_raw: str, seen: set[str]) -> bool:
     return True
 
 
+_HEREDOC_START_RE = re.compile(r"<<-?\s*['\"]?(\w+)['\"]?")
+
+
 def _build_steps_from_body(body: str, deps_raw: str) -> list[WorkflowStep]:
     """Build workflow steps from Makefile command body and dependencies."""
     steps: list[WorkflowStep] = []
+    in_heredoc = False
+    heredoc_marker: str | None = None
     for line in body.splitlines():
         cmd = line.strip()
         if cmd.startswith("@"):
             cmd = cmd[1:]
-        if cmd:
+        if not cmd:
+            continue
+        if not in_heredoc and "<<" in cmd:
+            match = _HEREDOC_START_RE.search(cmd)
+            heredoc_marker = match.group(1) if match else "EOF"
+            in_heredoc = True
             steps.append(WorkflowStep(action="run", params={"cmd": cmd}))
+            continue
+        if in_heredoc:
+            if cmd.rstrip(";") == heredoc_marker or cmd == heredoc_marker:
+                in_heredoc = False
+                heredoc_marker = None
+            continue
+        steps.append(WorkflowStep(action="run", params={"cmd": cmd}))
     # Promote prerequisites to explicit depend steps
     deps = _parse_makefile_deps(deps_raw)
     if deps and not steps:

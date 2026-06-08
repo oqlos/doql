@@ -212,6 +212,8 @@ def _build_interface_props(iface: Interface) -> list[str]:
             props.append(_prop(f"hardware-{k}", v, quote_str=False))
     if iface.target:
         props.append(_prop("target", iface.target))
+    for k, v in iface.config.items():
+        props.append(_prop(k, v, quote_str=False))
     return props
 
 
@@ -222,6 +224,8 @@ def _build_page_props(p) -> list[str]:
         pprops.append(_prop("layout", p.layout))
     if getattr(p, 'from_entity', None):
         pprops.append(_prop("from", p.from_entity))
+    if getattr(p, "entry", None):
+        pprops.append(_prop("entry", p.entry, quote_str=False))
     if p.path:
         pprops.append(_prop("path", p.path))
     if p.public:
@@ -239,8 +243,11 @@ def _render_interface(iface: Interface) -> list[str]:
     lines.append("}\n")
 
     for p in iface.pages:
+        pprops = _build_page_props(p)
+        if not pprops:
+            continue
         lines.append(f'{selector} page[name="{p.name}"] {{\n')
-        lines.append(_indent(_build_page_props(p)))
+        lines.append(_indent(pprops))
         lines.append("}\n")
     return lines
 
@@ -279,6 +286,8 @@ def _render_workflow(w: Workflow) -> list[str]:
 
 
 def _render_role(role: Role) -> list[str]:
+    if not role.permissions:
+        return []
     lines = [f'role[name="{role.name}"] {{\n']
     props = []
     for perm in role.permissions:
@@ -306,7 +315,9 @@ def _render_deploy(deploy: Deploy) -> list[str]:
 
 def _render_environment(env: Environment) -> list[str]:
     lines = [f'environment[name="{env.name}"] {{\n']
-    props = [_prop("runtime", env.runtime, quote_str=False)]
+    props = []
+    if env.runtime:
+        props.append(_prop("runtime", env.runtime, quote_str=False))
     if env.env_file:
         props.append(_prop("env_file", env.env_file))
     if env.ssh_host:
@@ -315,6 +326,37 @@ def _render_environment(env: Environment) -> list[str]:
         props.append(_prop("replicas", env.replicas))
     for k, v in env.config.items():
         props.append(_prop(k, v, quote_str=False))
+    lines.append(_indent(props))
+    lines.append("}\n")
+    return lines
+
+
+def _render_tests(spec: DoqlSpec) -> list[str]:
+    if not spec.tests:
+        return []
+    lines = ["tests {\n"]
+    props = [_prop("import", imp, quote_str=False) for imp in spec.tests]
+    lines.append(_indent(props))
+    lines.append("}\n")
+    return lines
+
+
+def _render_env_vars(spec: DoqlSpec) -> list[str]:
+    if not spec.env_refs:
+        return []
+    lines = ["env_vars {\n"]
+    props = [_prop("keys", ", ".join(spec.env_refs), quote_str=False)]
+    grouped: dict[str, list[str]] = {}
+    for key in spec.env_refs:
+        for prefix, profile_name in (
+            ("SMTP", "profile_smtp"),
+            ("NLP2ENV", "runtime_nlp2env"),
+        ):
+            if key.startswith(prefix):
+                grouped.setdefault(profile_name, []).append(key)
+                break
+    for profile_name, keys in sorted(grouped.items()):
+        props.append(_prop(profile_name, ", ".join(sorted(set(keys))), quote_str=False))
     lines.append(_indent(props))
     lines.append("}\n")
     return lines

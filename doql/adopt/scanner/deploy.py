@@ -143,8 +143,9 @@ def scan_deploy(root: Path, spec: DoqlSpec) -> None:
 
     spec.deploy = deploy
 
-    # Override environment runtime for Python pip-deployed projects
-    if deploy.target == "pip":
+    # Override environment runtime for Python pip/makefile projects without compose
+    compose_file = deploy.config.get("compose_file")
+    if deploy.target in {"pip", "makefile"} and not compose_file:
         for env in spec.environments:
-            if env.runtime == "docker-compose":
+            if env.runtime in {"", "docker-compose"}:
                 env.runtime = "python"

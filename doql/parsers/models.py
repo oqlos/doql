@@ -129,6 +129,7 @@ class Page:
     layout: Optional[str] = None
     features: list[str] = field(default_factory=list)
     path: Optional[str] = None
+    entry: Optional[str] = None
     public: bool = False
 
 
@@ -143,6 +144,7 @@ class Interface:
     hardware: dict[str, Any] = field(default_factory=dict)
     framework: Optional[str] = None
     pwa: bool = False
+    config: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass

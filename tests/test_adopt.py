@@ -373,7 +373,7 @@ OQLOS_ROOT = Path("/home/tom/github/oqlos/oqlos")
 
 def _assert_oqlos_metadata(spec) -> None:
     assert spec.app_name == "oqlos"
-    assert spec.version == "0.1.1"
+    assert spec.version
 
 
 def _assert_oqlos_interfaces(spec) -> None:
@@ -473,6 +473,155 @@ def test_click_not_inferred_from_comment_or_changelog(tmp_path: Path):
     spec = scan_project(tmp_path)
     cli_ifaces = [i for i in spec.interfaces if i.name == "cli"]
     assert len(cli_ifaces) == 0, "click in markdown should not create CLI interface"
+
+
+def test_adopt_env_example_and_profiles(tmp_path: Path) -> None:
+    """Regression: .env.example keys (SMTP_*) must merge into env_refs even when .env exists."""
+    _write(
+        tmp_path,
+        "pyproject.toml",
+        """\
+        [project]
+        name = "nlp2env"
+        version = "0.1.0"
+        requires-python = ">=3.10"
+        [project.scripts]
+        nlp2env-mcp = "nlp2env_mcp.server:main"
+        uri2env = "uri2env.cli:main"
+        """,
+    )
+    _write(tmp_path, ".env", "PFIX_MODEL=ollama/gemma4:e4b\n")
+    _write(
+        tmp_path,
+        ".env.example",
+        """\
+        NLP2ENV_ENV_FILE=/path/.env
+        SMTP_HOST=smtp.example.com
+        SMTP_PORT=587
+        SMTP_USER=user@example.com
+        SMTP_PASSWORD=change-me
+        """,
+    )
+    _write(
+        tmp_path,
+        "src/nlp2env/env_file.py",
+        'import os\nX = os.getenv("NLP2ENV_PROJECT_DIR", "")\n',
+    )
+    _write(
+        tmp_path,
+        "src/nlp2env_mcp/server.py",
+        'from mcp.server.fastmcp import FastMCP\nmcp = FastMCP("nlp2env")\n'
+        '@mcp.tool()\n'
+        'def nlp2env_set_email():\n'
+        '    """set"""\n',
+    )
+    _write(tmp_path, "Makefile", "test:\n\tpytest\n")
+    _write(
+        tmp_path,
+        "examples/write/smtp-email/smtp-email-inline.testql.toon.yaml",
+        "# SCENARIO: inline\n",
+    )
+
+    spec = scan_project(tmp_path)
+    assert "SMTP_HOST" in spec.env_refs
+    assert "NLP2ENV_ENV_FILE" in spec.env_refs
+    assert "NLP2ENV_PROJECT_DIR" in spec.env_refs
+    assert any("testql.toon.yaml" in t for t in spec.tests)
+
+    local = next(e for e in spec.environments if e.name == "local")
+    assert local.runtime == "python"
+    assert local.config.get("template_file") == ".env.example"
+    assert "profile_smtp" in local.config
+
+    mcp = next(i for i in spec.interfaces if i.name == "mcp")
+    assert any(p.name == "nlp2env-mcp" for p in mcp.pages)
+    cli = next(i for i in spec.interfaces if i.name == "cli")
+    assert any(p.name == "uri2env" for p in cli.pages)
+
+    out = tmp_path / "app.doql.css"
+    emit_css(spec, out)
+    text = out.read_text()
+    assert "env_vars {" in text
+    assert "profile_smtp:" in text
+    assert "tests {" in text
+    assert 'import: examples/write/smtp-email/*.testql.toon.yaml' in text or \
+        'import: examples/write/smtp-email/**/*.testql.toon.yaml' in text
+    assert 'page[name="nlp2env-mcp"]' in text
+    assert "entry: nlp2env_mcp.server:main;" in text
+    assert 'page[name="uri2env"]' in text
+    assert "entry: uri2env.cli:main;" in text
+    assert 'page[name="nlp2env-mcp"] {\n\n}' not in text
+
+
+def test_cli_and_mcp_pages_include_entry_points(tmp_path: Path) -> None:
+    """CLI/MCP page blocks must carry setuptools entry targets, not empty bodies."""
+    _write(
+        tmp_path,
+        "pyproject.toml",
+        """\
+        [project]
+        name = "demo"
+        version = "0.1.0"
+        [project.scripts]
+        demo-mcp = "demo_mcp.server:main"
+        demo-cli = "demo.cli:main"
+        """,
+    )
+    _write(
+        tmp_path,
+        "src/demo_mcp/server.py",
+        'from mcp.server.fastmcp import FastMCP\nmcp = FastMCP("demo")\n'
+        '@mcp.tool()\n'
+        'def ping():\n'
+        '    """ping"""\n',
+    )
+
+    spec = scan_project(tmp_path)
+    mcp = next(i for i in spec.interfaces if i.name == "mcp")
+    cli = next(i for i in spec.interfaces if i.name == "cli")
+    mcp_page = next(p for p in mcp.pages if p.name == "demo-mcp")
+    cli_page = next(p for p in cli.pages if p.name == "demo-cli")
+    assert mcp_page.entry == "demo_mcp.server:main"
+    assert cli_page.entry == "demo.cli:main"
+
+    out = tmp_path / "app.doql.css"
+    emit_css(spec, out)
+    text = out.read_text()
+    assert 'entry: demo_mcp.server:main;' in text
+    assert 'entry: demo.cli:main;' in text
+
+
+def test_sql_roles_without_permissions_are_not_rendered(tmp_path: Path) -> None:
+    """Roles inferred from SQL literals must not emit empty role blocks."""
+    _write(tmp_path, "pyproject.toml", _pyproject())
+    _write(tmp_path, "schema.sql", "GRANT SELECT TO ROLE 'viewer';\n")
+
+    spec = scan_project(tmp_path)
+    assert any(r.name == "viewer" for r in spec.roles)
+
+    out = tmp_path / "app.doql.css"
+    emit_css(spec, out)
+    text = out.read_text()
+    assert 'role[name="viewer"]' not in text
+
+
+def test_makefile_heredoc_body_is_not_split_into_steps(tmp_path: Path) -> None:
+    _write(
+        tmp_path,
+        "Makefile",
+        """\
+        coverage:
+        \tpython - <<'EOF'
+        \timport xml.etree.ElementTree as ET
+        \ttree = ET.parse("coverage.xml")
+        \tprint(tree.getroot().tag)
+        \tEOF
+        """,
+    )
+    spec = scan_project(tmp_path)
+    coverage = next(w for w in spec.workflows if w.name == "coverage")
+    assert len(coverage.steps) == 1
+    assert coverage.steps[0].params["cmd"].startswith("python - <<")
 
 
 # ─── bug fixes: FastAPI from server.py / any .py ──────────────

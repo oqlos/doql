@@ -56,9 +56,9 @@ def _extract_dependencies(project: dict, spec: DoqlSpec) -> None:
     if deps:
         spec.dependencies["runtime"] = ", ".join(deps)
     opt_deps = project.get("optional-dependencies", {})
-    dev_deps = opt_deps.get("dev", opt_deps.get("test", []))
-    if dev_deps:
-        spec.dependencies["dev"] = ", ".join(dev_deps)
+    for group, group_deps in opt_deps.items():
+        if group_deps:
+            spec.dependencies[group] = ", ".join(group_deps)
 
 
 def _parse_pyproject(path: Path, spec: DoqlSpec) -> None:

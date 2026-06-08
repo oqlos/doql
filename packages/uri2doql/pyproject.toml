@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "uri2doql"
+version = "0.1.0"
+description = "doql:// URI addressing, query and materialization for DOQL specs"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+dependencies = [
+    "doql>=1.0.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+nlp = ["nlp2doql>=0.1.0"]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+uri2doql = "uri2doql.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

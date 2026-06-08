@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "doql"
-version = "1.0.35"
+version = "1.0.36"
 description = "Declarative OQL — build complete applications from a single .doql file"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = "Apache-2.0"
 authors = [
     { name = "Softreck", email = "hello@softreck.dev" },
@@ -18,9 +18,9 @@ classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Topic :: Software Development :: Code Generators",
 ]
 dependencies = [
@@ -33,7 +33,6 @@ dependencies = [
   "goal>=2.1.0",
   "costs>=0.1.20",
   "pfix>=0.1.60",
-  "tomli>=2.0; python_version < '3.11'",
   "testql>=0.1.1",
 ]
 
@@ -47,6 +46,13 @@ dev = [
   "goal>=2.1.0",
   "costs>=0.1.20",
   "pfix>=0.1.60",
+  "doql-plugin-gxp",
+  "doql-plugin-iso17025",
+  "doql-plugin-fleet",
+  "doql-plugin-erp",
+  "doql-plugin-shared",
+  "nlp2doql",
+  "uri2doql",
 ]
 api = [
   "fastapi>=0.104",
@@ -58,10 +64,29 @@ lsp = [
   "lsprotocol>=2023.0.1",
 ]
 deploy = [
-  "redeploy>=0.2.0,<0.3.0",
+  "redeploy>=0.2.1,<0.3.0",
 ]
 device-adopt = [
   "op3>=0.1.8",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=7.4",
+  "pytest-asyncio",
+  "pytest-cov>=4.0",
+  "ruff",
+  "mypy",
+  "goal>=2.1.0",
+  "costs>=0.1.20",
+  "pfix>=0.1.60",
+  "doql-plugin-gxp",
+  "doql-plugin-iso17025",
+  "doql-plugin-fleet",
+  "doql-plugin-erp",
+  "doql-plugin-shared",
+  "nlp2doql",
+  "uri2doql",
 ]
 
 [project.scripts]
@@ -86,12 +111,34 @@ doql = [
   "scaffolds/**/.*",
 ]
 
+[tool.uv.workspace]
+members = [
+  ".",
+  "plugins/doql-plugin-gxp",
+  "plugins/doql-plugin-iso17025",
+  "plugins/doql-plugin-fleet",
+  "plugins/doql-plugin-erp",
+  "plugins/doql-plugin-shared",
+  "packages/nlp2doql",
+  "packages/uri2doql",
+]
+
+[tool.uv.sources]
+doql = { workspace = true }
+doql-plugin-gxp = { workspace = true }
+doql-plugin-iso17025 = { workspace = true }
+doql-plugin-fleet = { workspace = true }
+doql-plugin-erp = { workspace = true }
+doql-plugin-shared = { workspace = true }
+nlp2doql = { workspace = true }
+uri2doql = { workspace = true }
+
 [tool.ruff]
 line-length = 100
-target-version = "py310"
+target-version = "py311"
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.11"
 strict = true
 
 [tool.pytest.ini_options]

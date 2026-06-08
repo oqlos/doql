@@ -1,0 +1,10 @@
+# SCENARIO: uri2doql-resolution
+# TYPE: uri2doql
+# VERSION: 1.0
+
+PROMPTS[5]{id, source, nl, expect_uri}:
+  app-meta, rules, "read app metadata", "doql://block/app"
+  crm-entity, rules, "read contact entity block", "doql://block/entity/Contact"
+  install-wf, rules, "read install workflow block", "doql://block/workflow/install"
+  gen-crm, rules, "generate crm app", "doql://generate?prompt=generate%20crm%20app"
+  file-manifest, rules, "read app.doql.less manifest file", "doql://file/app.doql.less"

@@ -36,6 +36,8 @@ def _print_scan_summary(spec: DoqlSpec) -> None:
     _print_item("environments", len(spec.environments), spec.environments,
                 [e.name for e in spec.environments])
     _print_item("env vars", len(spec.env_refs), spec.env_refs)
+    if spec.tests:
+        _print_item("tests", len(spec.tests), spec.tests, spec.tests)
     deploy_target = spec.deploy.target if spec.deploy else "none"
     print(f"   deploy:       {deploy_target}")
     print()

@@ -94,3 +94,7 @@ def _add_interface_page(
         page.layout = block.declarations['layout']
     if 'from' in block.declarations:
         page.from_entity = block.declarations['from']
+    if 'entry' in block.declarations:
+        page.entry = block.declarations['entry']
+    if 'path' in block.declarations:
+        page.path = block.declarations['path']

@@ -9,6 +9,8 @@ from __future__ import annotations
 
 import pytest
 
+pytest.importorskip("opstree")
+
 from doql.integrations.op3_bridge import (
     DEFAULT_ADOPT_LAYERS,
     OP3_ENABLED_ENV,
@@ -21,8 +23,6 @@ from doql.integrations.op3_bridge import (
     should_use_op3,
     snapshot_to_less,
 )
-
-op3 = pytest.importorskip("opstree")
 
 
 # ── feature-detect ────────────────────────────────────────────────────────

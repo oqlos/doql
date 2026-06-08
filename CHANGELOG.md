@@ -4,6 +4,34 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [1.0.36] - 2026-06-08
+
+### Docs
+- Update README.md
+- Update SUMD.md
+- Update SUMR.md
+- Update packages/nlp2doql/README.md
+- Update packages/uri2doql/README.md
+- Update project/README.md
+- Update project/context.md
+
+### Test
+- Update tests/integration/test_op3_bridge.py
+- Update tests/test_adopt.py
+
+### Other
+- Update app.doql.less
+- Update doql/adopt/scanner/__init__.py
+- Update doql/adopt/scanner/deploy.py
+- Update doql/adopt/scanner/environments.py
+- Update doql/adopt/scanner/interfaces/__init__.py
+- Update doql/adopt/scanner/interfaces/cli.py
+- Update doql/adopt/scanner/interfaces/mcp.py
+- Update doql/adopt/scanner/metadata.py
+- Update doql/adopt/scanner/tests.py
+- Update doql/adopt/scanner/workflows.py
+- ... and 46 more files
+
 ## [1.0.35] - 2026-04-25
 
 ### Docs

@@ -1,4 +1,5 @@
 flowchart TD
+%% generated in 0.04s
 
     %% Entry points (blue)
     classDef entry fill:#4dabf7,stroke:#1971c2,color:#fff
@@ -9,17 +10,17 @@ flowchart TD
         doql__cli__lockfile__read_lockfile["read_lockfile"]
         doql__cli__lockfile__diff_sections["diff_sections"]
         doql__cli__lockfile__write_lockfile["write_lockfile"]
-        doql__cli__context__build_context["build_context"]
-        doql__cli__context__load_spec["load_spec"]
-        doql__cli__context__scaffold_from_template["scaffold_from_template"]
-        doql__cli__context__estimate_file_count["estimate_file_count"]
+        doql__cli__commands__render__cmd_render["cmd_render"]
+        doql__cli__commands__validate___print_issues["_print_issues"]
+        doql__cli__commands__validate__cmd_validate["cmd_validate"]
+        doql__cli__commands__init__cmd_init["cmd_init"]
         doql__cli__sync__determine_regeneration_set["determine_regeneration_set"]
         doql__cli__sync___run_interface_generators["_run_interface_generators"]
         doql__cli__sync__run_generators["run_generators"]
         doql__cli__sync__cmd_sync["cmd_sync"]
-        doql__cli__commands__render__cmd_render["cmd_render"]
-        doql__cli__commands__plan___print_header["_print_header"]
-        ...["+101 more"]
+        doql__cli__commands__query__cmd_query["cmd_query"]
+        doql__cli__commands__kiosk__cmd_kiosk["cmd_kiosk"]
+        ...["+117 more"]
     end
 
     subgraph Core
@@ -27,37 +28,34 @@ flowchart TD
         Jenkinsfile__stage["stage"]
         Jenkinsfile__dir["dir"]
         Jenkinsfile__cleanWs["cleanWs"]
-        plugins__doql_plugin_shared__doql_plugin_shared__readme__generate_readme["generate_readme"]
-        plugins__doql_plugin_shared__doql_plugin_shared__base__plugin_generate["plugin_generate"]
-        plugins__doql_plugin_fleet__project__map__toon___readme["_readme"]
-        plugins__doql_plugin_fleet__project__map__toon__generate["generate"]
-        plugins__doql_plugin_fleet__doql_plugin_fleet__generate["generate"]
-        plugins__doql_plugin_fleet__doql_plugin_fleet__metrics___metrics_module["_metrics_module"]
-        plugins__doql_plugin_fleet__doql_plugin_fleet__device_registry___device_registry_module["_device_registry_module"]
-        plugins__doql_plugin_fleet__doql_plugin_fleet__ota___ota_module["_ota_module"]
-        plugins__doql_plugin_fleet__doql_plugin_fleet__migration___migration_module["_migration_module"]
-        plugins__doql_plugin_fleet__doql_plugin_fleet__tenant___tenant_module["_tenant_module"]
-        plugins__doql_plugin_gxp__doql_plugin_gxp__generate["generate"]
-        ...["+900 more"]
+        plugins__doql_plugin_iso17025__doql_plugin_iso17025__certificate__generate["generate"]
+        plugins__doql_plugin_iso17025__doql_plugin_iso17025__drift_monitor__generate["generate"]
+        plugins__doql_plugin_erp__doql_plugin_erp___odoo_client_module["_odoo_client_module"]
+        plugins__doql_plugin_erp__doql_plugin_erp__generate["generate"]
+        playground__doql_build__build["build"]
+        playground__pyodide_bridge__pyodide["pyodide"]
+        playground__pyodide_bridge__debounceTimer["debounceTimer"]
+        playground__pyodide_bridge__initElements["initElements"]
+        playground__pyodide_bridge__isReady["isReady"]
+        playground__pyodide_bridge__debouncedBuild["debouncedBuild"]
+        playground__pyodide_bridge__r["r"]
+        ...["+139 more"]
     end
 
     subgraph Exporters
-        doql__exporters__css__renderers___render_api_client["_render_api_client"]
+        doql__exporters__markdown__export_markdown_file["export_markdown_file"]
         doql__exporters__css__export_css["export_css"]
         doql__exporters__css__export_less["export_less"]
         doql__exporters__css__export_sass["export_sass"]
-        doql__exporters__markdown__export_markdown_file["export_markdown_file"]
+        doql__generators__export_ts_sdk__run["run"]
+        doql__generators__export_postman__run["run"]
         doql__exporters__markdown__sections___entity_section["_entity_section"]
         doql__exporters__markdown__sections___interface_section["_interface_section"]
         doql__exporters__markdown__sections___workflow_section["_workflow_section"]
         doql__exporters__markdown__sections___document_section["_document_section"]
         doql__exporters__markdown__sections___report_section["_report_section"]
-        doql__generators__export_postman__run["run"]
-        doql__generators__export_ts_sdk__run["run"]
+        doql__exporters__css__renderers___render_api_client["_render_api_client"]
         doql__generators__api_gen__export_openapi["export_openapi"]
-        project__map__toon__cmd_export["cmd_export"]
-        project__map__toon__export_css["export_css"]
-        ...["+17 more"]
     end
 
-    class doql__usage,Jenkinsfile__stage,Jenkinsfile__dir,Jenkinsfile__cleanWs,plugins__doql_plugin_shared__doql_plugin_shared__readme__generate_readme,plugins__doql_plugin_shared__doql_plugin_shared__base__plugin_generate,plugins__doql_plugin_fleet__project__map__toon___readme,plugins__doql_plugin_fleet__project__map__toon__generate,plugins__doql_plugin_fleet__doql_plugin_fleet__generate,plugins__doql_plugin_fleet__doql_plugin_fleet__metrics___metrics_module entry
+    class doql__usage,Jenkinsfile__stage,Jenkinsfile__dir,Jenkinsfile__cleanWs,plugins__doql_plugin_iso17025__doql_plugin_iso17025__certificate__generate,plugins__doql_plugin_iso17025__doql_plugin_iso17025__drift_monitor__generate,plugins__doql_plugin_erp__doql_plugin_erp___odoo_client_module,plugins__doql_plugin_erp__doql_plugin_erp__generate,playground__doql_build__build,playground__pyodide_bridge__pyodide entry

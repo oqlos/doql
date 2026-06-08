@@ -1,12 +1,12 @@
-# redup/duplication | 13 groups | 162f 16658L | 2026-04-25
+# redup/duplication | 13 groups | 168f 16762L | 2026-06-05
 
 SUMMARY:
-  files_scanned: 162
-  total_lines:   16658
+  files_scanned: 168
+  total_lines:   16762
   dup_groups:    13
   dup_fragments: 56
   saved_lines:   847
-  scan_ms:       8635
+  scan_ms:       6610
 
 HOTSPOTS[7] (files with most duplication):
   plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py  dup=382L  groups=2  frags=5  (2.3%)
@@ -41,7 +41,7 @@ DUPLICATES[13] (ranked by impact):
       doql/generators/integrations_gen.py:20-55  (_gen_email_service)
       doql/generators/integrations_gen.py:58-87  (_gen_slack_service)
       doql/generators/integrations_gen.py:90-136  (_gen_storage_service)
-      doql/generators/mobile_gen.py:250-397  (_gen_style_css)
+      doql/generators/mobile_gen.py:246-393  (_gen_style_css)
       doql/generators/workflow_gen.py:19-120  (_gen_engine)
       plugins/doql-plugin-erp/doql_plugin_erp/__init__.py:17-96  (_odoo_client_module)
       plugins/doql-plugin-erp/doql_plugin_erp/__init__.py:99-158  (_mapping_module)
@@ -57,8 +57,8 @@ DUPLICATES[13] (ranked by impact):
       plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py:254-312  (_audit_middleware)
       plugins/doql-plugin-gxp/doql_plugin_gxp/__init__.py:315-366  (_migration_audit)
   [5f642514e6b6222c] ! STRU  _gen_github_action  L=90 N=2 saved=90 sim=1.00
-      doql/generators/ci_gen.py:14-103  (_gen_github_action)
-      doql/generators/ci_gen.py:171-212  (_gen_jenkinsfile)
+      doql/generators/ci_gen.py:15-104  (_gen_github_action)
+      doql/generators/ci_gen.py:172-213  (_gen_jenkinsfile)
   [dcc2f8e70f6321a7]   STRU  _render_data_layer  L=10 N=2 saved=10 sim=1.00
       doql/exporters/css/__init__.py:23-32  (_render_data_layer)
       doql/exporters/css/__init__.py:45-54  (_render_infrastructure_layer)
