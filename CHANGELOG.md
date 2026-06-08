@@ -4,6 +4,18 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [1.0.38] - 2026-06-08
+
+### Docs
+- Update README.md
+- Update packages/mcp2doql/README.md
+
+### Other
+- Update packages/mcp2doql/pyproject.toml
+- Update packages/mcp2doql/src/mcp2doql/__init__.py
+- Update packages/mcp2doql/src/mcp2doql/cli.py
+- Update packages/mcp2doql/src/mcp2doql/scanner.py
+
 ## [1.0.37] - 2026-06-08
 
 ### Docs
