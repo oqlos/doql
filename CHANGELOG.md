@@ -4,6 +4,15 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [1.0.41] - 2026-06-08
+
+### Docs
+- Update README.md
+
+### Other
+- Update packages/dsl2doql/src/dsl2doql/cli.py
+- Update packages/dsl2doql/tests/test_dsl2doql.py
+
 ## [1.0.40] - 2026-06-08
 
 ### Docs
