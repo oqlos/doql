@@ -5925,5 +5925,21 @@ tickets:
   files:
   - tests/test_generators.py
   dedupe_key: test-optimization:tests.test_generators:test_init_and_build_template[iot-fleet]
+- signal: slow_test_warning
+  title: 'Address slow test: tests.test_generators.test_init_and_build_template[saas-multi-tenant]'
+  description: 'Test `tests.test_generators.test_init_and_build_template[saas-multi-tenant]`
+    took 0.52s to run.
+
+
+    Optimize its setup, mock slow external dependencies, or refactor its logic to
+    reduce overall test suite execution time.'
+  priority: medium
+  labels:
+  - llm-ready
+  - test-optimization
+  - slow-test
+  files:
+  - tests/test_generators.py
+  dedupe_key: test-optimization:tests.test_generators:test_init_and_build_template[saas-multi-tenant]
 applied: []
 skipped: []

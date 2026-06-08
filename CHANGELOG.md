@@ -4,6 +4,14 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+## [1.0.39] - 2026-06-08
+
+### Docs
+- Update README.md
+
+### Other
+- Update project/planfile-tickets.yaml
+
 ## [1.0.38] - 2026-06-08
 
 ### Docs

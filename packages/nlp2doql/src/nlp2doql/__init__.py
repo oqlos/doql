@@ -3,7 +3,7 @@
 from nlp2doql.models import BlockPlan, DoqlPlan, GenerateResult
 from nlp2doql.pipeline import generate_spec
 
-__version__ = "1.0.38"
+__version__ = "1.0.39"
 __all__ = [
     "BlockPlan",
     "DoqlPlan",
