@@ -1,5 +1,4 @@
 source: code2llm
-# generated in 0.41s
 schema: code2llm.planfile_tickets.v1
 project_root: /home/tom/github/oqlos/doql
 tickets:
@@ -5846,5 +5845,85 @@ tickets:
   files:
   - doql/parsers/models.py
   dedupe_key: 'code2llm:smell:god_function:doql/parsers/models.py:1:God Module: doql.parsers.models'
+- signal: slow_test_warning
+  title: 'Address slow test: tests.test_adopt.test_adopt_e2e_real_project_oqlos'
+  description: 'Test `tests.test_adopt.test_adopt_e2e_real_project_oqlos` took 7.55s
+    to run.
+
+
+    Optimize its setup, mock slow external dependencies, or refactor its logic to
+    reduce overall test suite execution time.'
+  priority: medium
+  labels:
+  - llm-ready
+  - test-optimization
+  - slow-test
+  files:
+  - tests/test_adopt.py
+  dedupe_key: test-optimization:tests.test_adopt:test_adopt_e2e_real_project_oqlos
+- signal: slow_test_warning
+  title: 'Address slow test: tests.test_generators.test_sync_no_changes_is_noop'
+  description: 'Test `tests.test_generators.test_sync_no_changes_is_noop` took 1.01s
+    to run.
+
+
+    Optimize its setup, mock slow external dependencies, or refactor its logic to
+    reduce overall test suite execution time.'
+  priority: medium
+  labels:
+  - llm-ready
+  - test-optimization
+  - slow-test
+  files:
+  - tests/test_generators.py
+  dedupe_key: test-optimization:tests.test_generators:test_sync_no_changes_is_noop
+- signal: slow_test_warning
+  title: 'Address slow test: tests.test_generators.test_init_and_build_template[minimal]'
+  description: 'Test `tests.test_generators.test_init_and_build_template[minimal]`
+    took 0.70s to run.
+
+
+    Optimize its setup, mock slow external dependencies, or refactor its logic to
+    reduce overall test suite execution time.'
+  priority: medium
+  labels:
+  - llm-ready
+  - test-optimization
+  - slow-test
+  files:
+  - tests/test_generators.py
+  dedupe_key: test-optimization:tests.test_generators:test_init_and_build_template[minimal]
+- signal: slow_test_warning
+  title: 'Address slow test: tests.test_generators.test_init_and_build_template[calibration-lab]'
+  description: 'Test `tests.test_generators.test_init_and_build_template[calibration-lab]`
+    took 0.56s to run.
+
+
+    Optimize its setup, mock slow external dependencies, or refactor its logic to
+    reduce overall test suite execution time.'
+  priority: medium
+  labels:
+  - llm-ready
+  - test-optimization
+  - slow-test
+  files:
+  - tests/test_generators.py
+  dedupe_key: test-optimization:tests.test_generators:test_init_and_build_template[calibration-lab]
+- signal: slow_test_warning
+  title: 'Address slow test: tests.test_generators.test_init_and_build_template[iot-fleet]'
+  description: 'Test `tests.test_generators.test_init_and_build_template[iot-fleet]`
+    took 0.53s to run.
+
+
+    Optimize its setup, mock slow external dependencies, or refactor its logic to
+    reduce overall test suite execution time.'
+  priority: medium
+  labels:
+  - llm-ready
+  - test-optimization
+  - slow-test
+  files:
+  - tests/test_generators.py
+  dedupe_key: test-optimization:tests.test_generators:test_init_and_build_template[iot-fleet]
 applied: []
 skipped: []
