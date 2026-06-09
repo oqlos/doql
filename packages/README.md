@@ -13,6 +13,7 @@ Powrót: [README główne doql](../README.md)
 | **dsl2doql** | DSL sterowania DOQL (QUERY, PATCH, ADOPT, …) | [dsl2doql/README.md](dsl2doql/README.md) |
 | **uri2doql** | `doql://` URI — query, patch, apply, nlp2uri | [uri2doql/README.md](uri2doql/README.md) |
 | **nlp2doql** | NL — generate, validate, apply, edit | [nlp2doql/README.md](nlp2doql/README.md) |
+| **rest2doql** | REST API (FastAPI) — POST `/v1/dsl` | [rest2doql/README.md](rest2doql/README.md) |
 
 ## Logika w `doql/` (core)
 
@@ -29,6 +30,7 @@ NL ──► nlp2doql apply ──► nlp2uri ──► uri2doql patch/query
 DSL ──► dsl2doql ──► uri2doql / nlp2doql / doql adopt
 CLI ──► cli2doql shell ──► dsl2doql
 MCP ──► mcp2doql serve ──► dsl2doql + uri2doql + nlp2doql
+REST ──► rest2doql serve ──► dsl2doql.dispatch()
 adopt ──► doql/adopt (skanery MCP/CLI in-core)
 ```
 

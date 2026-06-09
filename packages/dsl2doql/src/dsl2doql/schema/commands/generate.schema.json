@@ -1,0 +1,11 @@
+{
+  "$id": "dsl2doql/commands/generate",
+  "type": "object",
+  "required": ["verb", "text"],
+  "properties": {
+    "verb": { "const": "GENERATE" },
+    "text": { "type": "string", "minLength": 1 },
+    "out": { "type": "string" }
+  },
+  "additionalProperties": false
+}

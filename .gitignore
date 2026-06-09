@@ -3,6 +3,7 @@
 .coveragerc
 build/
 .pyqual
+app.doql.events.pb
 build
 .doql
 .env.example

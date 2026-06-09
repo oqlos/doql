@@ -76,7 +76,7 @@ def write_lockfile(spec, ctx: BuildContext) -> None:
     hashes = spec_section_hashes(spec, ctx)
     content = {
         "version": "2",
-        "generated_at": datetime.datetime.utcnow().isoformat() + "Z",
+        "generated_at": datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z"),
         "doql_version": __version__,
         "sections": hashes,
     }

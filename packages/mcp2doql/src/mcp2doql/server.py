@@ -29,7 +29,8 @@ class DoqlMCPServer:
         self._register_tools()
 
     def _register_tools(self) -> None:
-        from dsl2doql.engine import execute_dsl, execute_dsl_line
+        from dsl2doql import dispatch, execute_dsl, execute_dsl_line
+        from dsl2doql.pb_codec import encode_result_protobuf
         from nlp2doql.apply import apply_nl
         from uri2doql.materialize import materialize_uri
         from uri2doql.nlp2uri import nlp2uri
@@ -66,6 +67,25 @@ class DoqlMCPServer:
             """Execute a single DOQL control DSL command."""
             result = execute_dsl_line(command, default_file=default_file or None)
             return result.to_dict()
+
+        @self.app.tool()
+        def doql_run_command_pb(envelope_bytes: bytes, default_file: str = "") -> bytes:
+            """Execute protobuf DslEnvelope; returns DslResult protobuf."""
+            result = dispatch(envelope_bytes, default_file=default_file or None)
+            return encode_result_protobuf(result)
+
+        @self.app.tool()
+        def doql_to_dsl(prompt: str) -> str:
+            """Convert NL hint to DSL line (no side effects)."""
+            from nlp2doql.apply import _intent
+            from dsl2doql.grammar import to_text
+
+            intent = _intent(prompt)
+            if intent == "validate":
+                return to_text({"verb": "VALIDATE", "path": "app.doql.less"})
+            if intent == "generate":
+                return to_text({"verb": "GENERATE", "text": prompt})
+            return to_text({"verb": "RESOLVE", "text": prompt})
 
         @self.app.tool()
         def doql_resolve(prompt: str, file: str = "") -> list[dict[str, Any]]:

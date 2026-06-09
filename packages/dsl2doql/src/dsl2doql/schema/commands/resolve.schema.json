@@ -1,0 +1,11 @@
+{
+  "$id": "dsl2doql/commands/resolve",
+  "type": "object",
+  "required": ["verb", "text"],
+  "properties": {
+    "verb": { "const": "RESOLVE" },
+    "text": { "type": "string", "minLength": 1 },
+    "file": { "type": "string" }
+  },
+  "additionalProperties": false
+}
