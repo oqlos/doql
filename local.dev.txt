@@ -1,0 +1,24 @@
+# local.dev.txt — locally developed dependencies of this project (generated 2026-07-04)
+# by ~/github/local.dev.sh — DO NOT EDIT; see ~/github/local.dev.md
+# project: doql 1.0.43 (python) at /home/tom/github/oqlos/doql
+# deps declared: 32 | with local source: 16
+
+## LOCAL DEPS  (dep | required | local source (version) | installed | status)
+cli2doql | * | /home/tom/github/oqlos/doql/packages/cli2doql (0.1.0) | 0.1.0 editable | OK-EDITABLE  [pyproject.toml[dev]]
+costs | >=0.1.20 | /home/tom/github/semcod/costs (0.1.53) | 0.1.51 non-editable | STALE-INSTALL (local 0.1.53) -> fix: pip install -e /home/tom/github/semcod/costs  [pyproject.toml]
+doql-plugin-erp | * | /home/tom/github/oqlos/doql/plugins/doql-plugin-erp (0.1.0) | 0.1.0 editable | OK-EDITABLE  [pyproject.toml[dev]]
+doql-plugin-fleet | * | /home/tom/github/oqlos/doql/plugins/doql-plugin-fleet (0.1.0) | 0.1.0 editable | OK-EDITABLE  [pyproject.toml[dev]]
+doql-plugin-gxp | * | /home/tom/github/oqlos/doql/plugins/doql-plugin-gxp (0.1.0) | 0.1.0 editable | OK-EDITABLE  [pyproject.toml[dev]]
+doql-plugin-iso17025 | * | /home/tom/github/oqlos/doql/plugins/doql-plugin-iso17025 (0.1.0) | 0.1.0 editable | OK-EDITABLE  [pyproject.toml[dev]]
+doql-plugin-shared | * | /home/tom/github/oqlos/doql/plugins/doql-plugin-shared (0.1.0) | 0.1.0 editable | OK-EDITABLE  [pyproject.toml[dev]]
+dsl2doql | * | /home/tom/github/oqlos/doql/packages/dsl2doql (0.1.0) | 0.1.0 editable | OK-EDITABLE  [pyproject.toml[dev]]
+goal | >=2.1.0 | /home/tom/github/semcod/goal (2.1.266) | 2.1.241 non-editable | STALE-INSTALL (local 2.1.266) -> fix: pip install -e /home/tom/github/semcod/goal  [pyproject.toml]
+mcp2doql | * | /home/tom/github/oqlos/doql/packages/mcp2doql (0.1.0) | 0.1.0 editable | OK-EDITABLE  [pyproject.toml[dev]]
+nlp2doql | * | /home/tom/github/oqlos/doql/packages/nlp2doql (0.1.0) | 0.1.0 editable | OK-EDITABLE  [pyproject.toml[dev]]
+op3 | >=0.1.8 | /home/tom/github/semcod/op3 (0.2.6) | - | NOT-INSTALLED  [pyproject.toml[device-adopt]]
+pfix | >=0.1.60 | /home/tom/github/semcod/pfix (0.1.76) | 0.1.73 non-editable | STALE-INSTALL (local 0.1.76) -> fix: pip install -e /home/tom/github/semcod/pfix  [pyproject.toml]
+redeploy | >=0.2.1,<0.3.0 | /home/tom/github/maskservice/redeploy (0.2.79) | - | NOT-INSTALLED  [pyproject.toml[deploy]]
+testql | >=0.1.1 | /home/tom/github/oqlos/testql (1.2.60) | 1.2.59 non-editable | STALE-INSTALL (local 1.2.60) -> fix: pip install -e /home/tom/github/oqlos/testql  [pyproject.toml]
+uri2doql | * | /home/tom/github/oqlos/doql/packages/uri2doql (0.1.0) | 0.1.0 editable | OK-EDITABLE  [pyproject.toml[dev]]
+
+## EXTERNAL DEPS (no local source, 16): alembic, click, fastapi, httpx, jinja2, lsprotocol, mypy, pydantic, pygls, pytest, pytest-asyncio, pytest-cov, pyyaml, rich, ruff, sqlalchemy

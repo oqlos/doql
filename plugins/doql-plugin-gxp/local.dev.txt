@@ -1,0 +1,9 @@
+# local.dev.txt — locally developed dependencies of this project (generated 2026-07-04)
+# by ~/github/local.dev.sh — DO NOT EDIT; see ~/github/local.dev.md
+# project: doql-plugin-gxp 0.1.0 (python) at /home/tom/github/oqlos/doql/plugins/doql-plugin-gxp
+# deps declared: 1 | with local source: 1
+
+## LOCAL DEPS  (dep | required | local source (version) | installed | status)
+doql | >=0.1.0a1 | /home/tom/github/oqlos/doql (1.0.43) | 1.0.42 editable | OK-EDITABLE  [pyproject.toml]
+
+## EXTERNAL DEPS (no local source, 0): -
