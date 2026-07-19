@@ -8,6 +8,8 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 - Subject-bound, audited `digital-twin` declarations, CSS/YAML round-trip,
   validation and a domain-independent safe projection helper.
+- Digital-twin projection now fails closed without explicit AQL evidence and
+  an audit sink, recursively redacts nested secrets and bounds input graphs.
 
 ## [1.0.43] - 2026-06-09
 

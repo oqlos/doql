@@ -7,6 +7,10 @@ DOQL może deklarować odczytową projekcję
 rolowymi. W Subactor należy używać `authorization: aql+subject`: DOQL opisuje
 widok, a zweryfikowana tożsamość i AQL wymuszają odczyt wyłącznie własnego
 podmiotu. Przykład znajduje się w `examples/digital-twin-self.doql.css`.
+Helper `project_self_view()` dla `authorization: aql+subject` wymaga jawnego
+`aql_authorized=True` oraz `audit_sink`. Projekcja kopiuje wyłącznie pola z
+allowlisty, rekursywnie usuwa sekretne klucze i odrzuca cykle, wartości
+nieserializowalne oraz zbyt duże struktury.
 
 
 ## AI Cost Tracking

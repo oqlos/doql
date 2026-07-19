@@ -931,6 +931,12 @@ podmiotu musi pochodzić z uwierzytelnionego kontekstu, nigdy z parametru
 `subject: self`, widok read-only i audyt dostępu. `roles: [*]` oznacza każdą
 uwierzytelnioną rolę, nie dostęp publiczny.
 
+Wykonanie `authorization: aql+subject` wymaga pozytywnej, jawnie przekazanej
+decyzji AQL. Udana projekcja wymaga również odbiornika audytu; zdarzenie
+`doql.digital-twin.access/v1` zawiera podmiot, role, pola projekcji i ścieżki
+redakcji, ale nie zawiera wartości danych. Redakcja obowiązuje rekursywnie,
+również wewnątrz zagnieżdżonych obiektów i list.
+
 ---
 
 ## 20. Eksport i import

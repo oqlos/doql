@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import pathlib
+import re
 from typing import Any, Optional
 
 from .models import DoqlSpec, ValidationIssue
@@ -165,9 +166,24 @@ def _validate_digital_twins(spec: DoqlSpec) -> list[ValidationIssue]:
             issues.append(ValidationIssue(path, "Digital twin access must be audited", "error"))
         if not twin.fields:
             issues.append(ValidationIssue(path, "Explicit fields allowlist is required", "error"))
+        if len(twin.fields) > 200 or len(twin.redact) > 200:
+            issues.append(ValidationIssue(path, "Digital twin field lists cannot exceed 200 entries", "error"))
+        if len(twin.fields) != len(set(twin.fields)):
+            issues.append(ValidationIssue(path, "Digital twin fields must be unique", "error"))
+        if len(twin.redact) != len(set(twin.redact)):
+            issues.append(ValidationIssue(path, "Digital twin redaction paths must be unique", "error"))
+        if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_-]*", twin.subject_field):
+            issues.append(ValidationIssue(path, "subject-field must be a safe field name", "error"))
+        if not twin.route.startswith("/") or ".." in twin.route:
+            issues.append(ValidationIssue(path, "route must be an absolute safe path", "error"))
         for field in twin.fields:
+            if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_-]*", field):
+                issues.append(ValidationIssue(path, f"Invalid field name '{field}'", "error"))
             if any(fragment in field.lower() for fragment in forbidden):
                 issues.append(ValidationIssue(path, f"Sensitive field '{field}' cannot be exposed", "error"))
+        for field in twin.redact:
+            if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_-]*(?:\.[A-Za-z_][A-Za-z0-9_-]*)*", field):
+                issues.append(ValidationIssue(path, f"Invalid redaction path '{field}'", "error"))
     return issues
 
 
