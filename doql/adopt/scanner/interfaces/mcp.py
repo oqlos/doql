@@ -1,13 +1,14 @@
 """MCP server interface detection (FastMCP, *-mcp entry points)."""
 from __future__ import annotations
 
+import tomllib
 from pathlib import Path
 from ....parsers.models import DoqlSpec
 
 __all__ = ["scan_python_mcp"]
 
 try:
-    from mcp2doql.scanner import scan_python_mcp
+    from mcp2doql.scanner import scan_python_mcp  # type: ignore[import-untyped]
 except ImportError:
     # Fallback to local implementation if package not installed
     import re
@@ -20,10 +21,6 @@ except ImportError:
         pyproj = root / "pyproject.toml"
         if not pyproj.exists():
             return {}
-        try:
-            import tomllib
-        except ImportError:
-            import tomli as tomllib  # type: ignore[no-redef]
         try:
             with open(pyproj, "rb") as fh:
                 data = tomllib.load(fh)

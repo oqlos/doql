@@ -160,6 +160,21 @@ target-version = "py311"
 python_version = "3.11"
 strict = true
 
+[[tool.mypy.overrides]]
+module = [
+  "lsprotocol.*",
+  "opstree.*",
+  "pygls.*",
+  "redeploy.*",
+  "taskfile.*",
+]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["doql.lsp_server.*"]
+# pygls feature decorators are untyped when the optional LSP extra is absent.
+disallow_untyped_decorators = false
+
 [tool.pytest.ini_options]
 minversion = "7.0"
 testpaths = ["tests"]

@@ -3,14 +3,17 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 
 def load_yaml(path: Path) -> dict[str, Any] | None:
     """Safely load a YAML file."""
     try:
-        import yaml
-        return yaml.safe_load(path.read_text()) or {}
+        import yaml  # type: ignore[import-untyped]
+        data: Any = yaml.safe_load(path.read_text()) or {}
+        if not isinstance(data, dict) or not all(isinstance(key, str) for key in data):
+            return None
+        return cast(dict[str, Any], data)
     except Exception:
         return None
 

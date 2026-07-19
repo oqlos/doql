@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from .common import snake
 
 if TYPE_CHECKING:
-    from ...parsers.models import DoqlSpec
+    from ...parsers.models import DoqlSpec, Entity
 
 
 def gen_routes(spec: DoqlSpec) -> str:
@@ -29,7 +29,7 @@ def gen_routes(spec: DoqlSpec) -> str:
     return "\n".join(lines)
 
 
-def _gen_entity_routes(ent) -> list[str]:
+def _gen_entity_routes(ent: Entity) -> list[str]:
     """Generate all CRUD routes for a single entity."""
     name = ent.name
     lower = snake(name)

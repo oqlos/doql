@@ -4,11 +4,9 @@ from __future__ import annotations
 import argparse
 import pathlib
 from dataclasses import dataclass
-from typing import Optional
 
-from .. import __version__
 from .. import parser as doql_parser
-from ..parsers import detect_doql_file
+from ..parsers import DoqlSpec, Interface, detect_doql_file
 
 
 @dataclass
@@ -37,7 +35,7 @@ def build_context(args: argparse.Namespace) -> BuildContext:
     )
 
 
-def load_spec(ctx: BuildContext) -> tuple:
+def load_spec(ctx: BuildContext) -> tuple[DoqlSpec, dict[str, str]]:
     """Parse spec and env, return (spec, env_vars)."""
     spec = doql_parser.parse_file(ctx.doql_file)
     env_vars = doql_parser.parse_env(ctx.env_file)
@@ -53,7 +51,7 @@ def scaffold_from_template(template: str, target: pathlib.Path) -> None:
     shutil.copytree(templates_dir, target)
 
 
-def estimate_file_count(iface) -> int:
+def estimate_file_count(iface: Interface) -> int:
     """Rough estimate of file count per interface type."""
     if iface.type == "rest":
         return len(iface.entities) * 4 + 10  # model + schema + route + test + config

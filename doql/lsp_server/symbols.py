@@ -17,7 +17,10 @@ from .utils import _parse_doc, _find_line_col
 
 
 @server.feature(lsp.TEXT_DOCUMENT_DOCUMENT_SYMBOL)
-def document_symbols(ls: LanguageServer, params: lsp.DocumentSymbolParams):
+def document_symbols(
+    ls: LanguageServer,
+    params: lsp.DocumentSymbolParams,
+) -> list[lsp.DocumentSymbol]:
     doc = ls.workspace.get_text_document(params.text_document.uri)
     spec = _parse_doc(doc.source)
     if not spec:

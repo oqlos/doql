@@ -1,6 +1,7 @@
 """Python API interface detection (FastAPI, Flask, Django)."""
 from __future__ import annotations
 
+import tomllib
 from pathlib import Path
 
 from ....parsers.models import DoqlSpec, Interface
@@ -76,10 +77,6 @@ def _has_api_entry_point(pyproj: Path) -> bool:
     """Check if pyproject.toml has api/server entry point."""
     if not pyproj.exists():
         return False
-    try:
-        import tomllib
-    except ImportError:
-        import tomli as tomllib  # type: ignore[no-redef]
     try:
         with open(pyproj, "rb") as f:
             data = tomllib.load(f)

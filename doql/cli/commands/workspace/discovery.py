@@ -4,6 +4,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import TypedDict
 
 
 EXCLUDED_FOLDERS = frozenset({
@@ -34,11 +35,20 @@ class DoqlProject:
     doql_app_version: str = ""
 
 
+class ParsedDoql(TypedDict):
+    workflows: list[str]
+    entities: list[str]
+    databases: list[str]
+    interfaces: list[str]
+    app_name: str
+    app_version: str
+
+
 def _is_project(d: Path) -> bool:
     return any((d / m).exists() for m in PROJECT_MARKERS)
 
 
-def _parse_doql(content: str) -> dict:
+def _parse_doql(content: str) -> ParsedDoql:
     return {
         "workflows": re.findall(r'workflow\[name="([^"]+)"\]', content),
         "entities": re.findall(r'entity\[name="([^"]+)"\]', content),
@@ -70,7 +80,7 @@ def _load_project_doql(proj: "DoqlProject") -> None:
 
 
 def _walk_projects(
-    current: Path, projects: list, max_depth: int, depth: int
+    current: Path, projects: list[DoqlProject], max_depth: int, depth: int
 ) -> None:
     """Recursively collect DoQL projects under *current*."""
     if depth > max_depth:

@@ -6,7 +6,7 @@ import pathlib
 import shutil
 
 from .... import parser as doql_parser
-from ....parsers.models import DoqlSpec
+from ....parsers.models import DoqlSpec, Interface
 from .report import DoctorReport
 
 
@@ -27,7 +27,7 @@ def _check_parse(root: pathlib.Path, doql_file: pathlib.Path, report: DoctorRepo
     return spec
 
 
-def _find_missing_env_refs(spec, env_vars: dict) -> list[str]:
+def _find_missing_env_refs(spec: DoqlSpec, env_vars: dict[str, str]) -> list[str]:
     """Return list of env var names referenced in spec but not resolved."""
     missing = []
     for ref in spec.env_refs:
@@ -101,7 +101,11 @@ def _check_databases(spec: DoqlSpec, report: DoctorReport) -> None:
             report.add(f"db:{db.name}", "warn", f"{db.type} has no url configured")
 
 
-def _warn_unknown_entity_refs(iface, entity_names: set, report: DoctorReport) -> None:
+def _warn_unknown_entity_refs(
+    iface: Interface,
+    entity_names: set[str],
+    report: DoctorReport,
+) -> None:
     """Warn if interface references entities that don't exist in the spec."""
     for ename in iface.entities:
         if ename not in entity_names:
@@ -126,7 +130,7 @@ def _check_interfaces(spec: DoqlSpec, report: DoctorReport) -> None:
         report.add("interfaces", "ok", f"{len(spec.interfaces)} interface(s) configured")
 
 
-def _collect_required_tools(spec) -> list[tuple[str, str]]:
+def _collect_required_tools(spec: DoqlSpec) -> list[tuple[str, str]]:
     """Return list of (binary, reason) pairs for tools required by this spec."""
     tools: list[tuple[str, str]] = []
     # Support both canonical names (v1.0+) and legacy aliases

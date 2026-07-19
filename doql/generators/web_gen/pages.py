@@ -78,7 +78,7 @@ def _field_input(f: EntityField) -> str:
     )
 
 
-def _build_interface_body(visible_fields: list) -> str:
+def _build_interface_body(visible_fields: list[EntityField]) -> str:
     """Return TypeScript interface field list, ensuring `id` is always present."""
     fields = []
     if not any(f.name == "id" for f in visible_fields):

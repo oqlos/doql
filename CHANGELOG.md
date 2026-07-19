@@ -15,6 +15,15 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
   are represented explicitly instead of being attached dynamically.
 - Strict CI coverage now includes YAML/CSS/Markdown import and export
   boundaries, including lossless page `entry` and `from_entity` metadata.
+- All application, API, workflow, web, integration, i18n and infrastructure
+  generators now pass strict mypy checks and are part of the CI type gate.
+- The complete 154-file DOQL runtime now passes strict mypy, including CLI,
+  plugins, adoption scanners and the optional OP3/redeploy/LSP boundaries.
+- Fixed `workspace fix --dry-run` using `_tf_validate` without importing it.
+- Restored LSP helper compatibility exports and added diagnostic publishing
+  compatible with both pygls 1.x and 2.x.
+- CI now installs the device-adoption extra, so OP3 adoption and drift tests
+  execute instead of being silently skipped.
 
 ## [1.0.43] - 2026-06-09
 

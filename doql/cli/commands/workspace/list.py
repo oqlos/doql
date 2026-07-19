@@ -3,17 +3,17 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+from typing import Any
 
 from .discovery import DoqlProject, _discover_local, _filter_projects
 from .output import _HAS_RICH, _print
 
+console: Any = None
 if _HAS_RICH:
     from rich import box
     from rich.table import Table
     from rich.console import Console
     console = Console()
-else:
-    console = None
 
 
 def _print_project_table(projects: list[DoqlProject], root: Path) -> None:

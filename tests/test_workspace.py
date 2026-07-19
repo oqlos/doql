@@ -2,14 +2,11 @@
 
 from __future__ import annotations
 
-import io
-import sys
 from pathlib import Path
+from types import SimpleNamespace
 
-import pytest
-
+from doql.cli.commands.workspace import analyze, output
 from doql.cli.commands.workspace import (
-    DoqlProject,
     _discover_local,
     _parse_doql,
     PROJECT_MARKERS,
@@ -150,7 +147,7 @@ class TestDiscoverLocal:
 
     def test_does_not_dive_into_project(self, tmp_path):
         outer = _make_doql_project(tmp_path, "outer")
-        inner = _make_doql_project(outer, "inner")
+        _make_doql_project(outer, "inner")
 
         projects = _discover_local(tmp_path, max_depth=3)
         names = {p.name for p in projects}
@@ -167,3 +164,38 @@ class TestProjectMarkers:
         assert "iql-run-logs" in EXCLUDED_FOLDERS
         assert "oql-run-logs" in EXCLUDED_FOLDERS
         assert "venv" in EXCLUDED_FOLDERS
+
+
+def test_fix_dry_run_validates_without_mutating(tmp_path, monkeypatch):
+    """The dry-run path must use validation and never invoke the fixer."""
+    project = SimpleNamespace(name="example")
+    fix_called = False
+
+    def fake_fix(_project):
+        nonlocal fix_called
+        fix_called = True
+
+    monkeypatch.setattr(analyze, "_HAS_TASKFILE", True)
+    monkeypatch.setattr(
+        output,
+        "_tf_discover",
+        lambda *_args, **_kwargs: [project],
+        raising=False,
+    )
+    monkeypatch.setattr(
+        output,
+        "_tf_filter",
+        lambda projects, **_kwargs: projects,
+        raising=False,
+    )
+    monkeypatch.setattr(
+        output,
+        "_tf_validate",
+        lambda _project: ["missing section"],
+        raising=False,
+    )
+    monkeypatch.setattr(output, "_tf_fix", fake_fix, raising=False)
+
+    args = SimpleNamespace(root=str(tmp_path), depth=2, name=None, dry_run=True)
+    assert analyze._cmd_fix(args) == 0
+    assert fix_called is False

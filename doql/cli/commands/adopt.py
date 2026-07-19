@@ -3,12 +3,18 @@ from __future__ import annotations
 
 import argparse
 import sys
+from collections.abc import Sequence
 from pathlib import Path
 
 from ...parsers.models import DoqlSpec
 
 
-def _print_item(label: str, count: int, items: list, display_names: list[str] | None = None) -> None:
+def _print_item(
+    label: str,
+    count: int,
+    items: Sequence[object],
+    display_names: list[str] | None = None,
+) -> None:
     """Print a summary line with optional item names."""
     if count and display_names:
         names_str = ", ".join(display_names[:5])

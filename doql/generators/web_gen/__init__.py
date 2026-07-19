@@ -40,12 +40,13 @@ from .config import (
 )
 from .core import _gen_main_tsx, _gen_index_css, _gen_api_ts
 from .components import _gen_layout
-from .pages import _gen_dashboard, _gen_entity_page
+from .common import _kebab, _snake
+from .pages import _field_input, _gen_dashboard, _gen_entity_page
 from .router import _gen_app
 from .pwa import _gen_manifest, _gen_service_worker, _gen_sw_register
 
 if TYPE_CHECKING:
-    from ...parsers import DoqlSpec
+    from ...parsers import DoqlSpec, Page
 
 
 def _setup_web_directories(out: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path, pathlib.Path]:
@@ -79,28 +80,32 @@ def _write_core_files(src: pathlib.Path, spec: DoqlSpec) -> None:
     (src / "index.css").write_text(_gen_index_css(), encoding="utf-8")
     (src / "api.ts").write_text(_gen_api_ts(), encoding="utf-8")
     (src / "App.tsx").write_text(_gen_app(spec), encoding="utf-8")
-    print(f"    → web/src/main.tsx, App.tsx, api.ts, index.css")
+    print("    → web/src/main.tsx, App.tsx, api.ts, index.css")
 
 
-def _write_component_files(components: pathlib.Path, spec: DoqlSpec, web_pages: list) -> None:
+def _write_component_files(
+    components: pathlib.Path,
+    spec: DoqlSpec,
+    web_pages: list[Page],
+) -> None:
     """Write component files."""
     (components / "Layout.tsx").write_text(
         _gen_layout(spec, web_pages, spec.entities), encoding="utf-8",
     )
-    print(f"    → web/src/components/Layout.tsx")
+    print("    → web/src/components/Layout.tsx")
 
 
 def _write_page_files(pages: pathlib.Path, spec: DoqlSpec) -> None:
     """Write page files (dashboard and entity pages)."""
     (pages / "Dashboard.tsx").write_text(_gen_dashboard(spec), encoding="utf-8")
-    print(f"    → web/src/pages/Dashboard.tsx")
+    print("    → web/src/pages/Dashboard.tsx")
 
     for ent in spec.entities:
         (pages / f"{ent.name}Page.tsx").write_text(_gen_entity_page(ent), encoding="utf-8")
         print(f"    → web/src/pages/{ent.name}Page.tsx")
 
 
-def _write_pwa_files(out: pathlib.Path, src: pathlib.Path, spec: DoqlSpec) -> None:
+def _write_pwa_files(out: pathlib.Path, src: pathlib.Path, spec: DoqlSpec) -> bool:
     """Write PWA support files if PWA interface is present."""
     is_pwa = any(i.type == "pwa" for i in spec.interfaces)
     if is_pwa:
@@ -109,7 +114,7 @@ def _write_pwa_files(out: pathlib.Path, src: pathlib.Path, spec: DoqlSpec) -> No
         (public / "manifest.webmanifest").write_text(_gen_manifest(spec), encoding="utf-8")
         (public / "sw.js").write_text(_gen_service_worker(spec), encoding="utf-8")
         (src / "sw-register.ts").write_text(_gen_sw_register(), encoding="utf-8")
-        print(f"    → web/public/manifest.webmanifest, sw.js, src/sw-register.ts")
+        print("    → web/public/manifest.webmanifest, sw.js, src/sw-register.ts")
     return is_pwa
 
 
@@ -128,7 +133,7 @@ def _write_readme(out: pathlib.Path, spec: DoqlSpec, is_pwa: bool) -> None:
         + "\n",
         encoding="utf-8",
     )
-    print(f"    → web/README.md")
+    print("    → web/README.md")
 
 
 def generate(spec: DoqlSpec, env_vars: dict[str, str], out: pathlib.Path) -> None:
@@ -139,7 +144,7 @@ def generate(spec: DoqlSpec, env_vars: dict[str, str], out: pathlib.Path) -> Non
             f"# {spec.app_name} — Web\n\nNo web interface or entities defined.\n",
             encoding="utf-8",
         )
-        print(f"    → web/ (no web interface, skipped)")
+        print("    → web/ (no web interface, skipped)")
         return
 
     src, components, pages = _setup_web_directories(out)
@@ -152,22 +157,6 @@ def generate(spec: DoqlSpec, env_vars: dict[str, str], out: pathlib.Path) -> Non
     is_pwa = _write_pwa_files(out, src, spec)
     _write_readme(out, spec, is_pwa)
 
-
-# Re-export from submodules for backward compatibility
-from .common import _snake, _kebab
-from .config import (
-    _gen_package_json,
-    _gen_vite_config,
-    _gen_tailwind_config,
-    _gen_postcss_config,
-    _gen_tsconfig,
-    _gen_index_html,
-)
-from .core import _gen_main_tsx, _gen_index_css, _gen_api_ts
-from .components import _gen_layout
-from .pages import _gen_dashboard, _gen_entity_page, _field_input
-from .router import _gen_app
-from .pwa import _gen_manifest, _gen_service_worker, _gen_sw_register
 
 __all__ = [
     "generate",

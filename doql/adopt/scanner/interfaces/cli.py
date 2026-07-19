@@ -1,13 +1,14 @@
 """Python CLI interface detection for doql adopt."""
 from __future__ import annotations
 
+import tomllib
 from pathlib import Path
 from ....parsers.models import DoqlSpec
 
 __all__ = ["scan_python_cli"]
 
 try:
-    from cli2doql.scanner import scan_python_cli
+    from cli2doql.scanner import scan_python_cli  # type: ignore[import-untyped]
 except ImportError:
     # Fallback to local implementation if package not installed
     from ....parsers.models import Interface, Page
@@ -25,11 +26,6 @@ except ImportError:
         pyproj = root / "pyproject.toml"
         if not pyproj.exists():
             return
-
-        try:
-            import tomllib
-        except ImportError:
-            import tomli as tomllib  # type: ignore[no-redef]
 
         try:
             with open(pyproj, "rb") as f:

@@ -4,16 +4,18 @@ This module handles complete rebuilds by running all applicable generators.
 """
 from __future__ import annotations
 
-import os
+import argparse
 import shutil
 import sys
 import tempfile
 import time
-from typing import Callable
+from collections.abc import Callable
+from typing import Any
 
 from pathlib import Path
 
 from .. import parser as doql_parser
+from ..parsers.models import DoqlSpec
 from ..generators import api_gen, web_gen, mobile_gen, desktop_gen, infra_gen, document_gen, report_gen, i18n_gen, integrations_gen, workflow_gen, ci_gen, vite_gen
 from .. import plugins as _plugins
 from .context import BuildContext, build_context, load_spec
@@ -28,7 +30,7 @@ def _watch_files(paths: list[Path], callback: Callable[[], None]) -> None:
     """
     # 1. Try watchfiles (modern, rust-based, lowest CPU)
     try:
-        from watchfiles import watch
+        from watchfiles import watch  # type: ignore[import-not-found]
         print("👀 Watching (watchfiles) — Ctrl-C to stop")
         for changes in watch(*paths, recursive=False):
             callback()
@@ -38,15 +40,15 @@ def _watch_files(paths: list[Path], callback: Callable[[], None]) -> None:
 
     # 2. Try watchdog (pure Python, stable)
     try:
-        from watchdog.observers import Observer
-        from watchdog.events import FileSystemEventHandler
+        from watchdog.observers import Observer  # type: ignore[import-not-found]
+        from watchdog.events import FileSystemEventHandler  # type: ignore[import-not-found]
 
-        class _Handler(FileSystemEventHandler):
+        class _Handler(FileSystemEventHandler):  # type: ignore[misc]
             def __init__(self, cb: Callable[[], None]) -> None:
                 self._cb = cb
                 self._last = 0.0
 
-            def on_modified(self, event) -> None:
+            def on_modified(self, event: Any) -> None:
                 if event.is_directory:
                     return
                 now = time.time()
@@ -88,7 +90,7 @@ def _watch_files(paths: list[Path], callback: Callable[[], None]) -> None:
             callback()
 
 
-def should_generate_interface(name: str, spec) -> bool:
+def should_generate_interface(name: str, spec: DoqlSpec) -> bool:
     """Check if interface should be generated.
     
     Args:
@@ -103,9 +105,14 @@ def should_generate_interface(name: str, spec) -> bool:
     return any(i.name == name for i in spec.interfaces)
 
 
-def run_core_generators(spec, env_vars, ctx: BuildContext, no_overwrite: bool = False) -> None:
+def run_core_generators(
+    spec: DoqlSpec,
+    env_vars: dict[str, str],
+    ctx: BuildContext,
+    no_overwrite: bool = False,
+) -> None:
     """Run core interface generators (api, web, mobile, desktop, infra)."""
-    generators = {
+    generators: dict[str, Callable[[DoqlSpec, dict[str, str], Path], None]] = {
         "api": api_gen.generate,
         "web": web_gen.generate,
         "mobile": mobile_gen.generate,
@@ -126,7 +133,11 @@ def run_core_generators(spec, env_vars, ctx: BuildContext, no_overwrite: bool = 
         fn(spec, env_vars, target_dir)
 
 
-def run_document_generators(spec, env_vars, ctx: BuildContext) -> None:
+def run_document_generators(
+    spec: DoqlSpec,
+    env_vars: dict[str, str],
+    ctx: BuildContext,
+) -> None:
     """Run document generators if documents are defined."""
     if not spec.documents:
         return
@@ -139,12 +150,12 @@ def run_document_generators(spec, env_vars, ctx: BuildContext) -> None:
 
 def _run_conditional_generator(
     ctx: BuildContext,
-    condition: bool,
+    condition: object,
     label: str,
     output_path: str,
-    generate_fn: Callable,
-    spec,
-    env_vars,
+    generate_fn: Callable[[DoqlSpec, dict[str, str], Path], None],
+    spec: DoqlSpec,
+    env_vars: dict[str, str],
 ) -> None:
     """Generic generator runner — reduces duplication across report/i18n/integration/workflow gens."""
     if not condition:
@@ -155,34 +166,42 @@ def _run_conditional_generator(
     generate_fn(spec, env_vars, out_dir)
 
 
-def run_report_generators(spec, env_vars, ctx: BuildContext) -> None:
+def run_report_generators(spec: DoqlSpec, env_vars: dict[str, str], ctx: BuildContext) -> None:
     """Run report generators if reports are defined."""
     _run_conditional_generator(ctx, spec.reports, "reports", "reports", report_gen.generate, spec, env_vars)
 
 
-def run_i18n_generators(spec, env_vars, ctx: BuildContext) -> None:
+def run_i18n_generators(spec: DoqlSpec, env_vars: dict[str, str], ctx: BuildContext) -> None:
     """Run i18n generators if languages are defined."""
     _run_conditional_generator(ctx, spec.languages, "i18n", "i18n", i18n_gen.generate, spec, env_vars)
 
 
-def run_integration_generators(spec, env_vars, ctx: BuildContext) -> None:
+def run_integration_generators(
+    spec: DoqlSpec,
+    env_vars: dict[str, str],
+    ctx: BuildContext,
+) -> None:
     """Run integration generators if integrations are defined."""
     has_integrations = bool(spec.integrations or spec.api_clients or spec.webhooks)
     _run_conditional_generator(ctx, has_integrations, "integrations", "api/services", integrations_gen.generate, spec, env_vars)
 
 
-def run_workflow_generators(spec, env_vars, ctx: BuildContext) -> None:
+def run_workflow_generators(
+    spec: DoqlSpec,
+    env_vars: dict[str, str],
+    ctx: BuildContext,
+) -> None:
     """Run workflow generators if workflows are defined."""
     _run_conditional_generator(ctx, spec.workflows, "workflows", "api/workflows", workflow_gen.generate, spec, env_vars)
 
 
-def run_ci_generator(spec, env_vars, ctx: BuildContext) -> None:
+def run_ci_generator(spec: DoqlSpec, env_vars: dict[str, str], ctx: BuildContext) -> None:
     """Run CI/CD generator (always into project root)."""
     print("🛠  Generating CI...")
     ci_gen.generate(spec, env_vars, ctx.root)
 
 
-def run_vite_generator(spec, env_vars, ctx: BuildContext) -> None:
+def run_vite_generator(spec: DoqlSpec, env_vars: dict[str, str], ctx: BuildContext) -> None:
     """Run Vite config generator when a vite framework interface is present."""
     has_vite = any(
         getattr(i, "framework", None) == "vite" or getattr(i, "type", None) == "vite"
@@ -196,12 +215,12 @@ def run_vite_generator(spec, env_vars, ctx: BuildContext) -> None:
     vite_gen.generate(spec, env_vars, out)
 
 
-def run_plugins(spec, env_vars, ctx: BuildContext) -> None:
+def run_plugins(spec: DoqlSpec, env_vars: dict[str, str], ctx: BuildContext) -> None:
     """Run plugin generators."""
     _plugins.run_plugins(spec, env_vars, ctx.build_dir, ctx.root)
 
 
-def _scan_device_for_build(ctx: BuildContext, args) -> BuildContext:
+def _scan_device_for_build(ctx: BuildContext, args: argparse.Namespace) -> BuildContext:
     """Scan a live device via op3 and rewrite the build context.
 
     Writes the resulting ``.doql.less`` to ``<root>/app.doql.less`` (or
@@ -293,12 +312,11 @@ def _do_build(args: argparse.Namespace, ctx: BuildContext) -> int:
 
     if no_overwrite:
         tmp = tempfile.mkdtemp(prefix="doql-build-")
-        import pathlib
         ctx = BuildContext(
             root=ctx.root,
             doql_file=ctx.doql_file,
             env_file=ctx.env_file,
-            build_dir=pathlib.Path(tmp),
+            build_dir=Path(tmp),
         )
 
     ctx.build_dir.mkdir(parents=True, exist_ok=True)
@@ -317,7 +335,6 @@ def _do_build(args: argparse.Namespace, ctx: BuildContext) -> int:
     if no_overwrite:
         skipped = _merge_no_overwrite(ctx.build_dir, real_build_dir)
         shutil.rmtree(ctx.build_dir)
-        import pathlib
         ctx = BuildContext(
             root=ctx.root,
             doql_file=ctx.doql_file,
@@ -374,7 +391,7 @@ def cmd_build(args: argparse.Namespace) -> int:
     return 0
 
 
-def _merge_no_overwrite(src, dst) -> int:
+def _merge_no_overwrite(src: Path, dst: Path) -> int:
     """Copy files from *src* to *dst*, skipping existing files. Returns skip count."""
     skipped = 0
     dst.mkdir(parents=True, exist_ok=True)

@@ -4,17 +4,17 @@ from __future__ import annotations
 import argparse
 import csv
 from pathlib import Path
+from typing import Any
 
-from .discovery import DoqlProject, _discover_local, _load_project_doql
+from .discovery import DoqlProject, _discover_local
 from .output import _HAS_RICH, _HAS_TASKFILE, _print
 
+console: Any = None
 if _HAS_RICH:
     from rich import box
     from rich.table import Table
     from rich.console import Console
     console = Console()
-else:
-    console = None
 
 
 def _analyze_workflow_issues(content: str) -> list[str]:
@@ -49,7 +49,7 @@ def _analyze_content_recs(content: str, project: DoqlProject) -> list[str]:
     return recs
 
 
-def _analyze_project(project: DoqlProject) -> dict:
+def _analyze_project(project: DoqlProject) -> dict[str, Any]:
     """Analyze a single project and return analysis row."""
     issues = []
     recs = []
@@ -80,7 +80,7 @@ def _analyze_project(project: DoqlProject) -> dict:
     }
 
 
-def _output_csv(rows: list[dict], output_path: str) -> None:
+def _output_csv(rows: list[dict[str, Any]], output_path: str) -> None:
     """Write analysis results to CSV file."""
     fieldnames = [
         'path', 'name', 'app_name', 'app_version',
@@ -98,7 +98,7 @@ def _output_csv(rows: list[dict], output_path: str) -> None:
     _print(f"[green]Wrote CSV:[/] {output_path}  ({len(rows)} rows)")
 
 
-def _output_table(rows: list[dict]) -> None:
+def _output_table(rows: list[dict[str, Any]]) -> None:
     """Print analysis results as formatted table."""
     if _HAS_RICH:
         table = Table(title=f"doql analysis — {len(rows)} projects", box=box.ROUNDED)
@@ -184,7 +184,7 @@ def _cmd_fix(args: argparse.Namespace) -> int:
         _print("[dim]Install with: pip install taskfile[/]")
         return 1
 
-    from .output import _tf_discover, _tf_filter, _tf_fix
+    from .output import _tf_discover, _tf_filter, _tf_fix, _tf_validate
     root = Path(args.root).expanduser().resolve()
     projects = _tf_discover(root, max_depth=args.depth)
     if args.name:

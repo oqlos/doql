@@ -20,7 +20,7 @@ from .utils import _parse_doc
     lsp.TEXT_DOCUMENT_COMPLETION,
     lsp.CompletionOptions(trigger_characters=[" ", ":", "."]),
 )
-def completion(ls: LanguageServer, params: lsp.CompletionParams):
+def completion(ls: LanguageServer, params: lsp.CompletionParams) -> lsp.CompletionList:
     doc = ls.workspace.get_text_document(params.text_document.uri)
     spec = _parse_doc(doc.source)
 

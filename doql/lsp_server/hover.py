@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from lsprotocol import types as lsp
     from pygls.lsp.server import LanguageServer
+    from ..parsers.models import DoqlSpec, Entity, EntityField
 
 try:
     from lsprotocol import types as lsp
@@ -16,7 +17,7 @@ from . import server, KEYWORDS
 from .utils import _parse_doc, _word_at
 
 
-def _hover_field(ent, f) -> lsp.Hover:
+def _hover_field(ent: Entity, f: EntityField) -> lsp.Hover:
     """Return hover info for a field."""
     details = [f"**{ent.name}.{f.name}**", f"type: `{f.type}`"]
     if f.ref:
@@ -35,7 +36,7 @@ def _hover_field(ent, f) -> lsp.Hover:
     )
 
 
-def _hover_entity(spec, word) -> lsp.Hover | None:
+def _hover_entity(spec: DoqlSpec, word: str) -> lsp.Hover | None:
     """Return hover info if *word* matches an entity name or field."""
     for ent in spec.entities:
         if ent.name == word:
@@ -56,7 +57,7 @@ def _hover_entity(spec, word) -> lsp.Hover | None:
 
 
 @server.feature(lsp.TEXT_DOCUMENT_HOVER)
-def hover(ls: LanguageServer, params: lsp.HoverParams):
+def hover(ls: LanguageServer, params: lsp.HoverParams) -> lsp.Hover | None:
     doc = ls.workspace.get_text_document(params.text_document.uri)
     word = _word_at(doc.source, params.position)
     if not word:

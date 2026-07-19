@@ -33,9 +33,9 @@ def _detect_web_framework(root: Path) -> str | None:
     return None
 
 
-def _scan_pages_dir(pdir, page_seen: set) -> list:
+def _scan_pages_dir(pdir: Path, page_seen: set[str]) -> list[Page]:
     """Yield Page objects from a directory of page components."""
-    pages = []
+    pages: list[Page] = []
     for entry in sorted(pdir.iterdir()):
         name = entry.stem
         if entry.is_file() and entry.suffix in (".jsx", ".tsx", ".vue", ".svelte", ".js"):

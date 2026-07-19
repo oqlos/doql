@@ -17,13 +17,9 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING
-
-from .render import _render_rich, _render_plain, _fmt_value
+from .render import _fmt_value as _fmt_value
+from .render import _render_plain, _render_rich
 from .export import _report_to_json
-
-if TYPE_CHECKING:  # pragma: no cover
-    from opstree.drift.detector import DriftReport
 
 
 # Exit codes — exported so tests can reference them symbolically.
@@ -54,8 +50,8 @@ def cmd_drift(args: argparse.Namespace) -> int:
     else:
         # Auto-detect intended file
         from ....drift.detector import find_intended_file, _has_unsupported_intended
-        intended_file = find_intended_file()
-        if intended_file is None:
+        detected_file = find_intended_file()
+        if detected_file is None:
             # Check if there's an unsupported format file to give better error
             unsupported = _has_unsupported_intended(Path.cwd())
             if unsupported:
@@ -71,6 +67,7 @@ def cmd_drift(args: argparse.Namespace) -> int:
                 file=sys.stderr,
             )
             return EXIT_ENV
+        intended_file = detected_file
 
     try:
         from ....drift.detector import detect_drift

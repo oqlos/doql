@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import re
+import tomllib
 from pathlib import Path
+from typing import Any
 
 from ...parsers.models import DoqlSpec, Workflow, WorkflowStep
 from .utils import load_yaml
@@ -142,7 +144,7 @@ def _parse_makefile_deps(deps_raw: str) -> list[str]:
     ]
 
 
-def _build_taskfile_steps(task: dict) -> list[WorkflowStep]:
+def _build_taskfile_steps(task: dict[str, Any]) -> list[WorkflowStep]:
     """Build workflow steps from Taskfile task commands."""
     steps: list[WorkflowStep] = []
     for cmd in task.get("cmds") or []:
@@ -151,13 +153,13 @@ def _build_taskfile_steps(task: dict) -> list[WorkflowStep]:
     return steps
 
 
-def _extract_taskfile_schedule(task: dict) -> str | None:
+def _extract_taskfile_schedule(task: dict[str, Any]) -> str | None:
     """Extract schedule from Taskfile task if present."""
     schedule = task.get("schedule")
     return schedule if isinstance(schedule, str) else None
 
 
-def _build_workflow_from_task(task_name: str, task: dict) -> "Workflow | None":
+def _build_workflow_from_task(task_name: str, task: dict[str, Any]) -> Workflow | None:
     """Build a Workflow from a Taskfile task dict, or return None if no steps/schedule."""
     steps = _build_taskfile_steps(task)
     schedule = _extract_taskfile_schedule(task)
@@ -222,15 +224,11 @@ def _detect_cli_command_name(root: Path) -> str:
     pyproj = root / "pyproject.toml"
     if pyproj.exists():
         try:
-            import tomllib
-        except ImportError:
-            import tomli as tomllib  # type: ignore[no-redef]
-        try:
             with open(pyproj, "rb") as f:
                 data = tomllib.load(f)
             for name in data.get("project", {}).get("scripts", {}).keys():
                 if name not in ("api", "server"):
-                    return name
+                    return str(name)
         except Exception:
             pass
     return root.name

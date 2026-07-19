@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import pathlib
+from types import SimpleNamespace
 
 import pytest
 
@@ -9,6 +10,7 @@ pytest.importorskip("pygls")
 pytest.importorskip("lsprotocol")
 
 from doql import lsp_server as ls
+from doql.lsp_server import diagnostics
 
 
 EXAMPLE = pathlib.Path(__file__).parent.parent / "examples" / "asset-management" / "app.doql"
@@ -57,3 +59,17 @@ def test_diagnostics_on_asset_management_example():
 def test_keyword_completion_includes_common_top_level():
     expected_top_level = {"APP", "ENTITY", "INTERFACE", "WORKFLOW", "DEPLOY"}
     assert expected_top_level.issubset(set(ls.KEYWORDS))
+
+
+def test_document_event_uses_pygls_v2_diagnostics_api():
+    published = []
+    document = SimpleNamespace(uri="file:///example.doql", source='APP: "Test"\n')
+    server = SimpleNamespace(
+        workspace=SimpleNamespace(get_text_document=lambda _uri: document),
+        text_document_publish_diagnostics=published.append,
+    )
+
+    diagnostics._on_text_document_event(server, document.uri)
+
+    assert len(published) == 1
+    assert published[0].uri == document.uri

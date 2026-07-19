@@ -12,7 +12,7 @@ from __future__ import annotations
 import pathlib
 import textwrap
 
-from ..parser import DoqlSpec, Workflow, WorkflowStep
+from ..parser import DoqlSpec, Workflow
 from ..utils.naming import snake as _snake
 
 
@@ -197,11 +197,11 @@ def _extract_cron(sched: str) -> str:
 
 def _gen_scheduler(spec: DoqlSpec) -> str:
     """Generate a scheduler that triggers workflows on cron schedules."""
-    scheduled = [
-        (wf.name, wf.schedule or wf.trigger)
-        for wf in spec.workflows
-        if wf.schedule or (wf.trigger and wf.trigger.startswith("schedule"))
-    ]
+    scheduled: list[tuple[str, str]] = []
+    for wf in spec.workflows:
+        schedule = wf.schedule or wf.trigger
+        if schedule and (wf.schedule or schedule.startswith("schedule")):
+            scheduled.append((wf.name, schedule))
     imports = [f"import workflows.wf_{_snake(wf.name)}  # noqa: F401" for wf in spec.workflows]
     schedule_entries = [f'    ("{name}", "{_extract_cron(sched)}"),\n' for name, sched in scheduled]
 
@@ -304,7 +304,7 @@ def generate(spec: DoqlSpec, env_vars: dict[str, str], out: pathlib.Path) -> Non
 
     (wf_dir / "__init__.py").write_text(_gen_init(spec), encoding="utf-8")
     (wf_dir / "engine.py").write_text(_gen_engine(), encoding="utf-8")
-    print(f"    → workflows/engine.py")
+    print("    → workflows/engine.py")
 
     for wf in spec.workflows:
         fname = f"wf_{_snake(wf.name)}.py"
@@ -312,7 +312,7 @@ def generate(spec: DoqlSpec, env_vars: dict[str, str], out: pathlib.Path) -> Non
         print(f"    → workflows/{fname}")
 
     (wf_dir / "scheduler.py").write_text(_gen_scheduler(spec), encoding="utf-8")
-    print(f"    → workflows/scheduler.py")
+    print("    → workflows/scheduler.py")
 
     (wf_dir / "routes.py").write_text(_gen_routes(spec), encoding="utf-8")
-    print(f"    → workflows/routes.py")
+    print("    → workflows/routes.py")

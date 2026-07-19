@@ -7,6 +7,8 @@ from __future__ import annotations
 
 import argparse
 import sys
+from collections.abc import Callable
+from typing import cast
 
 from .. import __version__
 from .commands import (
@@ -197,7 +199,8 @@ def main() -> int:
     """
     p = create_parser()
     args = p.parse_args()
-    return args.func(args)
+    handler = cast(Callable[[argparse.Namespace], int], args.func)
+    return handler(args)
 
 
 if __name__ == "__main__":

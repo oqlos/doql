@@ -10,6 +10,8 @@ import shutil
 import subprocess
 import sys
 
+from ...parsers.models import DoqlSpec
+
 from ..context import build_context, load_spec
 
 
@@ -63,7 +65,7 @@ def _publish_npm(root: pathlib.Path, dry_run: bool) -> int:
     return subprocess.call(cmd, cwd=cwd)
 
 
-def _publish_docker(root: pathlib.Path, spec, dry_run: bool) -> int:
+def _publish_docker(root: pathlib.Path, spec: DoqlSpec, dry_run: bool) -> int:
     """Build and push Docker/Podman image."""
     dockerfile = root / "Dockerfile"
     if not dockerfile.exists():
@@ -74,7 +76,7 @@ def _publish_docker(root: pathlib.Path, spec, dry_run: bool) -> int:
 
     runtime = "podman" if shutil.which("podman") else "docker"
     if not shutil.which(runtime):
-        print(f"  ❌ Neither podman nor docker found", file=sys.stderr)
+        print("  ❌ Neither podman nor docker found", file=sys.stderr)
         return 1
 
     tag = f"{spec.app_name.lower().replace(' ', '-')}:{spec.version}"
@@ -121,7 +123,7 @@ def _extract_changelog_notes(root: pathlib.Path, version: str) -> str | None:
     return notes if notes else None
 
 
-def _publish_github(root: pathlib.Path, spec, dry_run: bool) -> int:
+def _publish_github(root: pathlib.Path, spec: DoqlSpec, dry_run: bool) -> int:
     """Create GitHub release via gh CLI with notes from CHANGELOG.md."""
     if not shutil.which("gh"):
         print("  ⏭️  gh CLI not found — skipping GitHub release")

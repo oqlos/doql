@@ -2,13 +2,17 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:  # pragma: no cover
     from opstree.drift.detector import DriftReport
 
 
-def _report_to_json(report: "DriftReport", intended_file: Path, target: str) -> dict:
+def _report_to_json(
+    report: "DriftReport",
+    intended_file: Path,
+    target: str,
+) -> dict[str, Any]:
     """Serialise a :class:`DriftReport` to plain dicts.
 
     ``DriftReport`` is a ``@dataclass``; ``Change`` is a frozen dataclass.

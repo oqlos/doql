@@ -3,9 +3,18 @@ from __future__ import annotations
 
 import subprocess
 import sys
+from pathlib import Path
+from typing import Protocol
 
 
-def run(ctx, target_env: str = "prod") -> int:
+class DeployContext(Protocol):
+    """Minimum build context required by the deploy generator."""
+
+    build_dir: Path
+    root: Path
+
+
+def run(ctx: DeployContext, target_env: str = "prod") -> int:
     """Deploy the built application."""
     compose = ctx.build_dir / "infra" / "docker-compose.yml"
     if not compose.exists():

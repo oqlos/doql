@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from .common import sa_type, safe_name, snake
 
 if TYPE_CHECKING:
-    from ...parsers.models import DoqlSpec
+    from ...parsers.models import DoqlSpec, EntityField
 
 
 def gen_models(spec: DoqlSpec) -> str:
@@ -35,7 +35,7 @@ def gen_models(spec: DoqlSpec) -> str:
         # Auto-inject a primary key column when the entity has no `id` field
         has_id = any(f.name == "id" for f in ent.fields)
         if not has_id:
-            lines.append(f'    id = Column(String(36), primary_key=True)')
+            lines.append('    id = Column(String(36), primary_key=True)')
 
         # Generate field columns using helper to reduce per-field complexity
         for f in ent.fields:
@@ -49,14 +49,11 @@ def gen_models(spec: DoqlSpec) -> str:
     return "\n".join(lines)
 
 
-def _gen_column_def(f, known_entities: set[str]) -> str:
+def _gen_column_def(f: EntityField, known_entities: set[str]) -> str:
     """Generate a single SQLAlchemy Column definition.
 
     Isolated to reduce cyclomatic complexity of the main loop.
     """
-    from ...parsers.models import EntityField
-    f: EntityField
-
     # Positional args first, then keyword args
     pos_args = [sa_type(f)]
     if f.ref and f.ref in known_entities:
@@ -73,9 +70,9 @@ def _gen_column_def(f, known_entities: set[str]) -> str:
     if not f.required and f.name != "id":
         kw_args.append("nullable=True")
     if f.default and f.type in ("int", "float", "bool"):
-        val = f.default
+        val: str | bool = f.default
         if f.type == "bool":
-            val = val.lower() in ("true", "1", "yes")
+            val = f.default.lower() in ("true", "1", "yes")
         kw_args.append(f"default={val}")
 
     all_args = pos_args + kw_args

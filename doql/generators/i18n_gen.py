@@ -18,7 +18,7 @@ from __future__ import annotations
 import json
 import pathlib
 
-from ..parser import DoqlSpec, Entity
+from ..parser import DoqlSpec
 from ..utils.naming import snake as _snake
 
 
@@ -82,7 +82,7 @@ _COMMON: dict[str, dict[str, str]] = {
 }
 
 
-def _gen_translations(spec: DoqlSpec, lang: str) -> dict:
+def _gen_translations(spec: DoqlSpec, lang: str) -> dict[str, str]:
     """Generate translation dict for a given language."""
     t: dict[str, str] = {}
 
@@ -154,7 +154,7 @@ def generate(spec: DoqlSpec, env_vars: dict[str, str], out: pathlib.Path) -> Non
         f'export const AVAILABLE_LANGUAGES = {json.dumps(languages)};\n'
     )
     (out / "useTranslation.tsx").write_text(hook, encoding="utf-8")
-    print(f"    → i18n/useTranslation.tsx")
+    print("    → i18n/useTranslation.tsx")
 
     (out / "README.md").write_text(
         f"# {spec.app_name} — i18n\n\n"
@@ -165,4 +165,4 @@ def generate(spec: DoqlSpec, env_vars: dict[str, str], out: pathlib.Path) -> Non
         f"<h1>{{t('app.dashboard')}}</h1>\n```\n",
         encoding="utf-8",
     )
-    print(f"    → i18n/README.md")
+    print("    → i18n/README.md")

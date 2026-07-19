@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import pytest
 
-pytest.importorskip("opstree")
+op3 = pytest.importorskip("opstree")
 
-from doql.integrations.op3_bridge import (
+from doql.integrations.op3_bridge import (  # noqa: E402
     DEFAULT_ADOPT_LAYERS,
     OP3_ENABLED_ENV,
     build_layer_tree,

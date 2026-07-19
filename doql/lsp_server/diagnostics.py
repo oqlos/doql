@@ -74,19 +74,26 @@ def _diagnostics_for(source: str, uri: str) -> list[lsp.Diagnostic]:
 def _on_text_document_event(ls: LanguageServer, uri: str) -> None:
     """Unified handler for text document open/change/save events."""
     doc = ls.workspace.get_text_document(uri)
-    ls.publish_diagnostics(doc.uri, _diagnostics_for(doc.source, doc.uri))
+    diagnostics = _diagnostics_for(doc.source, doc.uri)
+    legacy_publish = getattr(ls, "publish_diagnostics", None)
+    if callable(legacy_publish):
+        legacy_publish(doc.uri, diagnostics)
+        return
+    ls.text_document_publish_diagnostics(
+        lsp.PublishDiagnosticsParams(uri=doc.uri, diagnostics=diagnostics)
+    )
 
 
 @server.feature(lsp.TEXT_DOCUMENT_DID_OPEN)
-def did_open(ls: LanguageServer, params: lsp.DidOpenTextDocumentParams):
+def did_open(ls: LanguageServer, params: lsp.DidOpenTextDocumentParams) -> None:
     _on_text_document_event(ls, params.text_document.uri)
 
 
 @server.feature(lsp.TEXT_DOCUMENT_DID_CHANGE)
-def did_change(ls: LanguageServer, params: lsp.DidChangeTextDocumentParams):
+def did_change(ls: LanguageServer, params: lsp.DidChangeTextDocumentParams) -> None:
     _on_text_document_event(ls, params.text_document.uri)
 
 
 @server.feature(lsp.TEXT_DOCUMENT_DID_SAVE)
-def did_save(ls: LanguageServer, params: lsp.DidSaveTextDocumentParams):
+def did_save(ls: LanguageServer, params: lsp.DidSaveTextDocumentParams) -> None:
     _on_text_document_event(ls, params.text_document.uri)

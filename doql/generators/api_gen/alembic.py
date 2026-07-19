@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from .common import sa_type, safe_name, snake
 
 if TYPE_CHECKING:
-    from ...parsers.models import DoqlSpec
+    from ...parsers.models import DoqlSpec, Entity
 
 
 def gen_alembic_ini() -> str:
@@ -98,7 +98,7 @@ def gen_alembic_env() -> str:
     )
 
 
-def _entity_table_columns(ent) -> list[str]:
+def _entity_table_columns(ent: Entity) -> list[str]:
     """Return the sa.Column(...) lines for one entity table."""
     cols = []
     if not any(f.name == "id" for f in ent.fields):
@@ -138,10 +138,10 @@ def gen_initial_migration(spec: DoqlSpec) -> str:
 
     for ent in spec.entities:
         table = snake(ent.name) + "s"
-        lines.append(f'    op.create_table(')
+        lines.append('    op.create_table(')
         lines.append(f'        "{table}",')
         lines.extend(_entity_table_columns(ent))
-        lines.append(f'    )')
+        lines.append('    )')
 
     lines.extend(['', '', 'def downgrade():'])
     for ent in reversed(spec.entities):

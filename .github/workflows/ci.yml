@@ -22,20 +22,15 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install doql (editable) + plugins + dev deps
         run: |
-          pip install -e ".[dev,api,lsp]"
+          pip install -e ".[dev,api,lsp,device-adopt]"
           pip install -e ./plugins/doql-plugin-gxp
           pip install -e ./plugins/doql-plugin-iso17025
           pip install -e ./plugins/doql-plugin-fleet
           pip install -e ./plugins/doql-plugin-erp
       - name: Run pytest
         run: pytest -v
-      - name: Type-check canonical parser, projections and format boundaries
-        run: >-
-          mypy
-          -p doql.parsers
-          -p doql.digital_twin
-          -p doql.exporters
-          -p doql.importers
+      - name: Type-check the complete DOQL runtime
+        run: mypy doql
 
   # ─── End-to-end runtime smoke test ──────────────────────────────────────
   runtime-smoke:

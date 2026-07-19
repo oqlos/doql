@@ -12,7 +12,7 @@ duplicate what ``redeploy`` already uses.  Only the doql-specific
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from opstree.integrations import make_compat_helpers
 
@@ -51,7 +51,7 @@ make_mock_context = _H.make_mock_context
 make_scanner = _H.make_scanner
 
 
-def build_layer_tree(layer_ids: "list[str] | tuple[str, ...] | None" = None):
+def build_layer_tree(layer_ids: list[str] | tuple[str, ...] | None = None) -> Any:
     """Build an :class:`opstree.LayerTree` populated with the given layers."""
     from opstree.scanner.build import build_layer_tree as _op3_build_tree
 
@@ -71,4 +71,7 @@ def snapshot_to_less(snapshot: "Snapshot", scope: "list[str] | None" = None) -> 
     """
     from opstree.formats.less import LessAdapter
 
-    return LessAdapter().render(snapshot, scope=scope)
+    rendered = LessAdapter().render(snapshot, scope=scope)
+    if not isinstance(rendered, str):
+        raise TypeError("op3 LessAdapter returned a non-string result")
+    return rendered

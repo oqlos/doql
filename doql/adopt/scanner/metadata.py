@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import json
+import tomllib
 from pathlib import Path
+from typing import Any
 
 from ...parsers.models import DoqlSpec
 
@@ -28,7 +30,7 @@ def scan_metadata(root: Path, spec: DoqlSpec) -> None:
             spec.version = v
 
 
-def _extract_authors(project: dict, spec: DoqlSpec) -> None:
+def _extract_authors(project: dict[str, Any], spec: DoqlSpec) -> None:
     authors = project.get("authors", [])
     if not authors:
         return
@@ -39,19 +41,19 @@ def _extract_authors(project: dict, spec: DoqlSpec) -> None:
     ]
 
 
-def _extract_keywords(project: dict, spec: DoqlSpec) -> None:
+def _extract_keywords(project: dict[str, Any], spec: DoqlSpec) -> None:
     keywords = project.get("keywords", [])
     if keywords:
         spec.keywords = keywords if isinstance(keywords, list) else [keywords]
 
 
-def _extract_urls(project: dict, spec: DoqlSpec) -> None:
+def _extract_urls(project: dict[str, Any], spec: DoqlSpec) -> None:
     urls = project.get("urls", {})
     spec.homepage = urls.get("Homepage", spec.homepage)
     spec.repository = urls.get("Repository", urls.get("Source", spec.repository))
 
 
-def _extract_dependencies(project: dict, spec: DoqlSpec) -> None:
+def _extract_dependencies(project: dict[str, Any], spec: DoqlSpec) -> None:
     deps = project.get("dependencies", [])
     if deps:
         spec.dependencies["runtime"] = ", ".join(deps)
@@ -63,11 +65,6 @@ def _extract_dependencies(project: dict, spec: DoqlSpec) -> None:
 
 def _parse_pyproject(path: Path, spec: DoqlSpec) -> None:
     """Extract metadata from pyproject.toml (stdlib tomllib)."""
-    try:
-        import tomllib
-    except ImportError:
-        import tomli as tomllib  # type: ignore[no-redef]
-
     with open(path, "rb") as f:
         data = tomllib.load(f)
 
@@ -98,7 +95,7 @@ def _parse_package_json(path: Path, spec: DoqlSpec) -> None:
 def _parse_goal_yaml(path: Path, spec: DoqlSpec) -> None:
     """Extract metadata from goal.yaml if present."""
     try:
-        import yaml
+        import yaml  # type: ignore[import-untyped]
         data = yaml.safe_load(path.read_text()) or {}
         if "name" in data:
             spec.app_name = data["name"]

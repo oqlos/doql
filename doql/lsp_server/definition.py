@@ -18,7 +18,7 @@ from .utils import _word_at
 
 
 @server.feature(lsp.TEXT_DOCUMENT_DEFINITION)
-def definition(ls: LanguageServer, params: lsp.DefinitionParams):
+def definition(ls: LanguageServer, params: lsp.DefinitionParams) -> lsp.Location | None:
     doc = ls.workspace.get_text_document(params.text_document.uri)
     word = _word_at(doc.source, params.position)
     if not word:

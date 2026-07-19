@@ -4,19 +4,25 @@ from __future__ import annotations
 import hashlib
 import json
 import datetime
-import pathlib
-from typing import Optional
+from collections.abc import Callable, Iterable
+from typing import Any, cast
 
 from .. import __version__
+from ..parsers.models import DoqlSpec
 from .context import BuildContext
 
 
-def _simple_items_hash(items, key_prefix: str, val_fn, h_fn) -> dict:
+def _simple_items_hash(
+    items: Iterable[Any],
+    key_prefix: str,
+    val_fn: Callable[[Any], str],
+    h_fn: Callable[[str], str],
+) -> dict[str, str]:
     """Hash a flat list of spec items into {key_prefix:name -> hash} entries."""
     return {f"{key_prefix}:{item.name}": h_fn(val_fn(item)) for item in items}
 
 
-def spec_section_hashes(spec, ctx: BuildContext) -> dict:
+def spec_section_hashes(spec: DoqlSpec, ctx: BuildContext) -> dict[str, str]:
     """Compute per-section hashes for diff detection."""
     def _h(data: str) -> str:
         return hashlib.sha256(data.encode()).hexdigest()[:16]
@@ -50,18 +56,24 @@ def spec_section_hashes(spec, ctx: BuildContext) -> dict:
     return hashes
 
 
-def read_lockfile(ctx: BuildContext) -> Optional[dict]:
+def read_lockfile(ctx: BuildContext) -> dict[str, Any] | None:
     """Read and parse lockfile if it exists."""
     lockfile = ctx.root / "doql.lock"
     if not lockfile.exists():
         return None
     try:
-        return json.loads(lockfile.read_text())
+        data = json.loads(lockfile.read_text(encoding="utf-8"))
+        if not isinstance(data, dict) or not all(isinstance(key, str) for key in data):
+            return None
+        return cast(dict[str, Any], data)
     except (json.JSONDecodeError, OSError):
         return None
 
 
-def diff_sections(old_hashes: dict, new_hashes: dict) -> dict:
+def diff_sections(
+    old_hashes: dict[str, str],
+    new_hashes: dict[str, str],
+) -> dict[str, dict[str, str]]:
     """Return dict of changed/added/removed section keys."""
     added = {k: new_hashes[k] for k in new_hashes if k not in old_hashes}
     removed = {k: old_hashes[k] for k in old_hashes if k not in new_hashes}
@@ -69,9 +81,8 @@ def diff_sections(old_hashes: dict, new_hashes: dict) -> dict:
     return {"added": added, "removed": removed, "changed": changed}
 
 
-def write_lockfile(spec, ctx: BuildContext) -> None:
+def write_lockfile(spec: DoqlSpec, ctx: BuildContext) -> None:
     """Write current spec hashes to lockfile."""
-    from .lockfile import spec_section_hashes
     lockfile = ctx.root / "doql.lock"
     hashes = spec_section_hashes(spec, ctx)
     content = {

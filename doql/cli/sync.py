@@ -5,28 +5,26 @@ with the previous lockfile and regenerating only changed sections.
 """
 from __future__ import annotations
 
-import sys
 import argparse
-from typing import Set
+from typing import Any, cast
 
-from .. import parser as doql_parser
-from .context import build_context, load_spec
+from ..parsers.models import DoqlSpec
+from .context import BuildContext, build_context, load_spec
 from .lockfile import read_lockfile, write_lockfile, diff_sections, spec_section_hashes
 from .build import (
-    run_core_generators,
     run_document_generators,
     run_report_generators,
     run_i18n_generators,
     run_integration_generators,
-    run_workflow_generators,
-    run_plugins,
 )
 
+DiffResult = dict[str, dict[str, str]]
 
-def determine_regeneration_set(diff_result: dict, spec) -> Set[str]:
+
+def determine_regeneration_set(diff_result: DiffResult, spec: DoqlSpec) -> set[str]:
     """Determine which generators need to re-run based on diff."""
     all_changes = {**diff_result["added"], **diff_result["changed"]}
-    regen: Set[str] = set()
+    regen: set[str] = set()
 
     for key in list(all_changes.keys()) + list(diff_result["removed"].keys()):
         if key.startswith("entity:") or key == "roles":
@@ -48,7 +46,12 @@ def determine_regeneration_set(diff_result: dict, spec) -> Set[str]:
     return regen
 
 
-def _run_interface_generators(regen: Set[str], spec, env_vars, ctx) -> int:
+def _run_interface_generators(
+    regen: set[str],
+    spec: DoqlSpec,
+    env_vars: dict[str, str],
+    ctx: BuildContext,
+) -> int:
     """Run api/web/infra generators for any of those that are in *regen*. Returns count."""
     targets = regen & {"api", "web", "infra"}
     if not targets:
@@ -67,7 +70,12 @@ def _run_interface_generators(regen: Set[str], spec, env_vars, ctx) -> int:
     return count
 
 
-def run_generators(regen: Set[str], spec, env_vars, ctx) -> int:
+def run_generators(
+    regen: set[str],
+    spec: DoqlSpec,
+    env_vars: dict[str, str],
+    ctx: BuildContext,
+) -> int:
     """Run selected generators based on regen set. Returns count of generators run."""
     count = _run_interface_generators(regen, spec, env_vars, ctx)
 
@@ -97,11 +105,16 @@ def cmd_sync(args: argparse.Namespace) -> int:
     old_lock = read_lockfile(ctx)
     new_hashes = spec_section_hashes(spec, ctx)
 
-    if not old_lock or "sections" not in old_lock:
+    old_sections: Any = old_lock.get("sections") if old_lock else None
+    if (
+        not isinstance(old_sections, dict)
+        or not all(isinstance(key, str) and isinstance(value, str)
+                   for key, value in old_sections.items())
+    ):
         print("🔄 No previous lockfile — doing full build...")
         return cmd_build(args)
 
-    diff = diff_sections(old_lock["sections"], new_hashes)
+    diff = diff_sections(cast(dict[str, str], old_sections), new_hashes)
     all_changes = {**diff["added"], **diff["changed"]}
 
     if not all_changes and not diff["removed"]:

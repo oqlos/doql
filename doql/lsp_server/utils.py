@@ -29,11 +29,13 @@ def _find_line_col(source: str, needle: str) -> tuple[int, int]:
 def _word_at(source: str, position: lsp.Position) -> str:
     """Extract the word under the cursor."""
     lines = source.splitlines()
-    if position.line >= len(lines):
+    line_index = int(position.line)
+    character = int(position.character)
+    if line_index >= len(lines):
         return ""
-    line = lines[position.line]
-    start = position.character
-    end = position.character
+    line = lines[line_index]
+    start = character
+    end = character
     while start > 0 and (line[start - 1].isalnum() or line[start - 1] == "_"):
         start -= 1
     while end < len(line) and (line[end].isalnum() or line[end] == "_"):

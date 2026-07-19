@@ -19,31 +19,38 @@ import importlib
 import importlib.util
 import pathlib
 import sys
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable
+from typing import cast
+
+from .parsers.models import DoqlSpec
+
+PluginGenerate = Callable[[DoqlSpec, dict[str, str], pathlib.Path, pathlib.Path], None]
 
 
 @dataclass
 class Plugin:
     name: str
-    generate: Callable
+    generate: PluginGenerate
     source: str  # "entry-point" or "local"
 
 
 def _discover_entry_points() -> list[Plugin]:
     """Discover plugins registered via Python entry points."""
-    plugins = []
+    plugins: list[Plugin] = []
     try:
         from importlib.metadata import entry_points
-        eps = entry_points()
-        if hasattr(eps, "select"):
-            group = eps.select(group="doql_plugins")
-        else:
-            group = eps.get("doql_plugins", [])
+        group = entry_points(group="doql_plugins")
         for ep in group:
             try:
                 fn = ep.load()
-                plugins.append(Plugin(name=ep.name, generate=fn, source="entry-point"))
+                if not callable(fn):
+                    raise TypeError("plugin entry point is not callable")
+                plugins.append(Plugin(
+                    name=ep.name,
+                    generate=cast(PluginGenerate, fn),
+                    source="entry-point",
+                ))
             except Exception as e:
                 print(f"⚠️  Failed to load plugin '{ep.name}': {e}", file=sys.stderr)
     except Exception as e:
@@ -53,7 +60,7 @@ def _discover_entry_points() -> list[Plugin]:
 
 def _discover_local(project_root: pathlib.Path) -> list[Plugin]:
     """Discover plugins in `.doql-plugins/` directory of the project."""
-    plugins = []
+    plugins: list[Plugin] = []
     plugins_dir = project_root / ".doql-plugins"
     if not plugins_dir.is_dir():
         return plugins
@@ -68,8 +75,13 @@ def _discover_local(project_root: pathlib.Path) -> list[Plugin]:
         try:
             mod = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(mod)
-            if hasattr(mod, "generate"):
-                plugins.append(Plugin(name=name, generate=mod.generate, source="local"))
+            generate = getattr(mod, "generate", None)
+            if callable(generate):
+                plugins.append(Plugin(
+                    name=name,
+                    generate=cast(PluginGenerate, generate),
+                    source="local",
+                ))
             else:
                 print(f"⚠️  Plugin '{name}' has no generate() function", file=sys.stderr)
         except Exception as e:
@@ -82,7 +94,12 @@ def discover_plugins(project_root: pathlib.Path) -> list[Plugin]:
     return _discover_entry_points() + _discover_local(project_root)
 
 
-def run_plugins(spec, env_vars: dict[str, str], build_dir: pathlib.Path, project_root: pathlib.Path) -> int:
+def run_plugins(
+    spec: DoqlSpec,
+    env_vars: dict[str, str],
+    build_dir: pathlib.Path,
+    project_root: pathlib.Path,
+) -> int:
     """Run all discovered plugins. Returns count of plugins executed."""
     plugins = discover_plugins(project_root)
     if not plugins:

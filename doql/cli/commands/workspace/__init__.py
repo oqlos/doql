@@ -54,7 +54,7 @@ def cmd_workspace(args: argparse.Namespace) -> int:
     return handler(args)
 
 
-def register_parser(sub: argparse._SubParsersAction) -> None:
+def register_parser(sub: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
     """Register `workspace` subcommands on the main doql parser."""
     ws = sub.add_parser(
         "workspace",

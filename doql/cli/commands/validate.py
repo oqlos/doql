@@ -6,10 +6,10 @@ import argparse
 import pathlib
 
 from ... import parser as doql_parser
-from ...parsers import detect_doql_file
+from ...parsers import ValidationIssue, detect_doql_file
 
 
-def _print_issues(issues: list) -> int:
+def _print_issues(issues: list[ValidationIssue]) -> int:
     """Print issues and return 1 if any errors, else 0."""
     errors = sum(1 for i in issues if i.severity == "error")
     warnings = sum(1 for i in issues if i.severity == "warning")
