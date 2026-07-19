@@ -9,7 +9,7 @@ def _indent(lines: list[str], level: int = 1) -> str:
     return "\n".join(f"{prefix}{line}" for line in lines) + "\n"
 
 
-def _prop(key: str, value, quote_str: bool = True) -> str:
+def _prop(key: str, value: object, quote_str: bool = True) -> str:
     """Format a CSS property line."""
     if isinstance(value, bool):
         return f"{key}: {'true' if value else 'false'};"

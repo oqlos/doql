@@ -1,10 +1,13 @@
 """CSS block renderers — one function per DoqlSpec model type."""
 from __future__ import annotations
 
+from collections.abc import Callable
+from typing import Any, TypeAlias
+
 from ...parsers.models import (
     DoqlSpec, Entity, DataSource, Template, Document,
     Report, Database, ApiClient, Webhook, Interface,
-    Integration, Workflow, Role, DigitalTwinView, Deploy, Environment,
+    Integration, Workflow, Role, DigitalTwinView, Deploy, Environment, Page, Subproject,
 )
 from .helpers import _indent, _prop, _field_line
 
@@ -217,14 +220,14 @@ def _build_interface_props(iface: Interface) -> list[str]:
     return props
 
 
-def _build_page_props(p) -> list[str]:
+def _build_page_props(p: Page) -> list[str]:
     """Build property lines for page block."""
     pprops = []
     if p.layout:
         pprops.append(_prop("layout", p.layout))
-    if getattr(p, 'from_entity', None):
+    if p.from_entity:
         pprops.append(_prop("from", p.from_entity))
-    if getattr(p, "entry", None):
+    if p.entry:
         pprops.append(_prop("entry", p.entry, quote_str=False))
     if p.path:
         pprops.append(_prop("path", p.path))
@@ -385,7 +388,9 @@ def _render_env_vars(spec: DoqlSpec) -> list[str]:
 
 
 # (collection_attr, renderer_func) — ordered list for deterministic output
-_RENDERERS = [
+Renderer: TypeAlias = Callable[[Any], list[str]]
+
+_RENDERERS: list[tuple[str, Renderer]] = [
     ("entities", _render_entity),
     ("data_sources", _render_data_source),
     ("templates", _render_template),
@@ -403,7 +408,7 @@ _RENDERERS = [
 ]
 
 
-def _render_project(sub: "Subproject") -> list[str]:
+def _render_project(sub: Subproject) -> list[str]:
     """Render a Subproject as nested CSS block."""
     name = sub.name
     path_attr = f'[path="{sub.path}"]' if sub.path else ""

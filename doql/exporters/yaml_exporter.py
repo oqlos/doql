@@ -2,10 +2,10 @@
 from __future__ import annotations
 
 import pathlib
-from dataclasses import asdict, fields
-from typing import IO, Any
+from dataclasses import asdict
+from typing import IO, Any, cast
 
-import yaml
+import yaml  # type: ignore[import-untyped]
 
 from ..parsers.models import DoqlSpec
 from ..utils.clean import _clean
@@ -14,7 +14,7 @@ from ..utils.clean import _clean
 def spec_to_dict(spec: DoqlSpec) -> dict[str, Any]:
     """Convert DoqlSpec to a cleaned dictionary suitable for YAML/JSON."""
     raw = asdict(spec)
-    return _clean(raw)
+    return cast(dict[str, Any], _clean(raw))
 
 
 def export_yaml(spec: DoqlSpec, out: IO[str]) -> None:

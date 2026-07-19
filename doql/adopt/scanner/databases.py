@@ -18,7 +18,7 @@ def _db_name(svc_name: str, db_type: str) -> str:
     return svc_name
 
 
-_IMAGE_DB_MAP: list[tuple[str, str, str]] = [
+_IMAGE_DB_MAP: list[tuple[str, str, str, str]] = [
     ("postgres", "postgres",  "postgresql", "env.DATABASE_URL"),
     ("mysql",    "mysql",      "mysql",       "env.DATABASE_URL"),
     ("mariadb",  "mysql",      "mysql",       "env.DATABASE_URL"),

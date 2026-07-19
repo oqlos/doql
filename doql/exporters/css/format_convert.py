@@ -23,10 +23,10 @@ def _css_to_less(css_text: str) -> str:
     """
     header = "// LESS format — define @variables here as needed\n\n"
 
-    def _sub(match):
+    def _sub(match: re.Match[str]) -> str:
         return _unquote_simple_value(match.group(1), match.group(2))
 
-    lines = []
+    lines: list[str] = []
     for line in css_text.splitlines():
         if not lines and not line.strip():
             continue

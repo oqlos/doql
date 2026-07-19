@@ -3,14 +3,14 @@ from __future__ import annotations
 
 from typing import Any
 
-from ...parsers.models import Entity, Interface, Workflow, Document, Report
+from ...parsers.models import Document, Entity, EntityField, Interface, Report, Workflow
 
 
 def _h(level: int, text: str) -> str:
     return f"{'#' * level} {text}\n\n"
 
 
-def _field_type_str(f) -> str:
+def _field_type_str(f: EntityField) -> str:
     """Build human-readable field type string."""
     parts = [f.type]
     if f.required:

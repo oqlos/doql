@@ -2,9 +2,10 @@
 from __future__ import annotations
 
 import pathlib
-from typing import Any
+from collections.abc import Callable
+from typing import Any, cast
 
-import yaml
+import yaml  # type: ignore[import-untyped]
 
 from ..parsers.models import (
     DoqlSpec, Entity, EntityField, DataSource, Template, Document,
@@ -12,13 +13,11 @@ from ..parsers.models import (
     Integration, Workflow, WorkflowStep, Role, DigitalTwinView, Deploy,
 )
 
-
-def _get(d: dict, key: str, default=None):
-    """Retrieve *key* from *d*, returning *default* if missing."""
-    return d.get(key, default)
+YamlMapping = dict[str, Any]
+CollectionBuilder = Callable[[YamlMapping], Any]
 
 
-def _build_entity_field(data: dict) -> EntityField:
+def _build_entity_field(data: YamlMapping) -> EntityField:
     """Build an EntityField from a raw YAML dict."""
     return EntityField(
         name=data["name"],
@@ -32,7 +31,7 @@ def _build_entity_field(data: dict) -> EntityField:
     )
 
 
-def _build_entity(data: dict) -> Entity:
+def _build_entity(data: YamlMapping) -> Entity:
     """Build an Entity (with nested fields) from a raw YAML dict."""
     fields = [_build_entity_field(f) for f in data.get("fields", [])]
     return Entity(
@@ -43,7 +42,7 @@ def _build_entity(data: dict) -> Entity:
     )
 
 
-def _build_data_source(data: dict) -> DataSource:
+def _build_data_source(data: YamlMapping) -> DataSource:
     """Build a DataSource from a raw YAML dict."""
     return DataSource(
         name=data["name"],
@@ -59,7 +58,7 @@ def _build_data_source(data: dict) -> DataSource:
     )
 
 
-def _build_template(data: dict) -> Template:
+def _build_template(data: YamlMapping) -> Template:
     """Build a Template from a raw YAML dict."""
     return Template(
         name=data["name"],
@@ -71,7 +70,7 @@ def _build_template(data: dict) -> Template:
     )
 
 
-def _build_document(data: dict) -> Document:
+def _build_document(data: YamlMapping) -> Document:
     """Build a Document from a raw YAML dict."""
     return Document(
         name=data["name"],
@@ -87,7 +86,7 @@ def _build_document(data: dict) -> Document:
     )
 
 
-def _build_report(data: dict) -> Report:
+def _build_report(data: YamlMapping) -> Report:
     """Build a Report from a raw YAML dict."""
     return Report(
         name=data["name"],
@@ -100,7 +99,7 @@ def _build_report(data: dict) -> Report:
     )
 
 
-def _build_database(data: dict) -> Database:
+def _build_database(data: YamlMapping) -> Database:
     """Build a Database from a raw YAML dict."""
     return Database(
         name=data["name"],
@@ -112,7 +111,7 @@ def _build_database(data: dict) -> Database:
     )
 
 
-def _build_api_client(data: dict) -> ApiClient:
+def _build_api_client(data: YamlMapping) -> ApiClient:
     """Build an ApiClient from a raw YAML dict."""
     return ApiClient(
         name=data["name"],
@@ -126,7 +125,7 @@ def _build_api_client(data: dict) -> ApiClient:
     )
 
 
-def _build_webhook(data: dict) -> Webhook:
+def _build_webhook(data: YamlMapping) -> Webhook:
     """Build a Webhook from a raw YAML dict."""
     return Webhook(
         name=data["name"],
@@ -137,18 +136,20 @@ def _build_webhook(data: dict) -> Webhook:
     )
 
 
-def _build_page(data: dict) -> Page:
+def _build_page(data: YamlMapping) -> Page:
     """Build a Page from a raw YAML dict."""
     return Page(
         name=data["name"],
         layout=data.get("layout"),
         features=data.get("features", []),
         path=data.get("path"),
+        entry=data.get("entry"),
         public=data.get("public", False),
+        from_entity=data.get("from_entity"),
     )
 
 
-def _build_interface(data: dict) -> Interface:
+def _build_interface(data: YamlMapping) -> Interface:
     """Build an Interface (with nested pages) from a raw YAML dict."""
     pages = [_build_page(p) for p in data.get("pages", [])]
     return Interface(
@@ -164,7 +165,7 @@ def _build_interface(data: dict) -> Interface:
     )
 
 
-def _build_integration(data: dict) -> Integration:
+def _build_integration(data: YamlMapping) -> Integration:
     """Build an Integration from a raw YAML dict."""
     return Integration(
         name=data["name"],
@@ -173,7 +174,7 @@ def _build_integration(data: dict) -> Integration:
     )
 
 
-def _build_workflow_step(data: dict) -> WorkflowStep:
+def _build_workflow_step(data: YamlMapping) -> WorkflowStep:
     """Build a single WorkflowStep from a raw YAML dict."""
     return WorkflowStep(
         action=data["action"],
@@ -182,7 +183,7 @@ def _build_workflow_step(data: dict) -> WorkflowStep:
     )
 
 
-def _build_workflow(data: dict) -> Workflow:
+def _build_workflow(data: YamlMapping) -> Workflow:
     """Build a Workflow (with nested steps) from a raw YAML dict."""
     steps = [_build_workflow_step(s) for s in data.get("steps", [])]
     return Workflow(
@@ -194,7 +195,7 @@ def _build_workflow(data: dict) -> Workflow:
     )
 
 
-def _build_role(data: dict) -> Role:
+def _build_role(data: YamlMapping) -> Role:
     """Build a Role from a raw YAML dict."""
     return Role(
         name=data["name"],
@@ -202,7 +203,7 @@ def _build_role(data: dict) -> Role:
     )
 
 
-def _build_digital_twin(data: dict) -> DigitalTwinView:
+def _build_digital_twin(data: YamlMapping) -> DigitalTwinView:
     return DigitalTwinView(
         name=data["name"],
         source=data.get("source"),
@@ -219,7 +220,7 @@ def _build_digital_twin(data: dict) -> DigitalTwinView:
     )
 
 
-def _build_deploy(data: dict) -> Deploy:
+def _build_deploy(data: YamlMapping) -> Deploy:
     """Build a Deploy config from a raw YAML dict."""
     return Deploy(
         target=data.get("target", "docker-compose"),
@@ -238,7 +239,12 @@ def _import_metadata(data: dict[str, Any], spec: DoqlSpec) -> None:
     spec.env_refs = data.get("env_refs", [])
 
 
-def _import_collection(data: dict, spec: DoqlSpec, key: str, builder) -> None:
+def _import_collection(
+    data: YamlMapping,
+    spec: DoqlSpec,
+    key: str,
+    builder: CollectionBuilder,
+) -> None:
     """Generic helper to import a collection of items into spec."""
     for item in data.get(key, []):
         getattr(spec, key).append(builder(item))
@@ -276,7 +282,9 @@ def import_yaml_text(text: str) -> DoqlSpec:
     data = yaml.safe_load(text)
     if not isinstance(data, dict):
         raise ValueError("YAML root must be a mapping")
-    return import_yaml(data)
+    if not all(isinstance(key, str) for key in data):
+        raise ValueError("YAML root keys must be strings")
+    return import_yaml(cast(YamlMapping, data))
 
 
 def import_yaml_file(path: pathlib.Path) -> DoqlSpec:

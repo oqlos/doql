@@ -8,7 +8,7 @@ import textwrap
 import pytest
 import yaml
 
-from doql.parsers import parse_text, parse_file, detect_doql_file
+from doql.parsers import parse_file
 from doql.parsers.models import (
     DoqlSpec, Entity, EntityField, Interface, Page,
     Workflow, WorkflowStep, Role, Deploy, Integration,
@@ -292,11 +292,15 @@ class TestYamlImporter:
               - name: home
                 layout: grid
                 path: /
+                entry: src/pages/home.tsx
+                from_entity: Employee
                 public: true
         """)
         spec = import_yaml_text(yaml_text)
         assert len(spec.interfaces) == 1
         assert spec.interfaces[0].pages[0].name == "home"
+        assert spec.interfaces[0].pages[0].entry == "src/pages/home.tsx"
+        assert spec.interfaces[0].pages[0].from_entity == "Employee"
         assert spec.interfaces[0].pages[0].public is True
 
     def test_import_workflows(self):
