@@ -29,8 +29,13 @@ jobs:
           pip install -e ./plugins/doql-plugin-erp
       - name: Run pytest
         run: pytest -v
-      - name: Type-check canonical parser and digital-twin runtime
-        run: mypy -p doql.parsers -p doql.digital_twin
+      - name: Type-check canonical parser, projections and format boundaries
+        run: >-
+          mypy
+          -p doql.parsers
+          -p doql.digital_twin
+          -p doql.exporters
+          -p doql.importers
 
   # ─── End-to-end runtime smoke test ──────────────────────────────────────
   runtime-smoke:

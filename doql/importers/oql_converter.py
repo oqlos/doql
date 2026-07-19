@@ -5,7 +5,7 @@ from __future__ import annotations
 __all__ = ["clean_value", "convert_dsl_to_doql"]
 
 try:
-    from dsl2doql.converter import clean_value, convert_dsl_to_doql
+    from dsl2doql.converter import clean_value, convert_dsl_to_doql  # type: ignore[import-untyped]
 except ImportError:
     # Fallback to local implementation if package not installed
     import re

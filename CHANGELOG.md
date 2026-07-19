@@ -13,6 +13,8 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 - The canonical parser and digital-twin runtime now pass strict mypy checks in
   CI; CSS workflow helpers are fully typed and interface page entity sources
   are represented explicitly instead of being attached dynamically.
+- Strict CI coverage now includes YAML/CSS/Markdown import and export
+  boundaries, including lossless page `entry` and `from_entity` metadata.
 
 ## [1.0.43] - 2026-06-09
 
