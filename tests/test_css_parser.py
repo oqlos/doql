@@ -75,6 +75,22 @@ deploy {
     assert spec.deploy.target == "kubernetes"
 
 
+def test_css_parse_site_topology():
+    src = '''
+site[domain="docs.example.com"] {
+  source: "projects/docs";
+  remote_path: "/docs.example.com";
+  is_main: false;
+}
+'''
+    spec = parse_css_text(src, format="css")
+    assert len(spec.sites) == 1
+    assert spec.sites[0].domain == "docs.example.com"
+    assert spec.sites[0].source == "projects/docs"
+    assert spec.sites[0].remote_path == "/docs.example.com"
+    assert spec.parse_errors == []
+
+
 # ─── LESS format ───────────────────────────────────────────────
 
 def test_less_variable_expansion():

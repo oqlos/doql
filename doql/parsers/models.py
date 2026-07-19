@@ -199,6 +199,15 @@ class DigitalTwinView:
 
 
 @dataclass
+class Site:
+    """A deployable site in a hosting/subscription topology."""
+    domain: str
+    source: Optional[str] = None
+    remote_path: Optional[str] = None
+    is_main: bool = False
+
+
+@dataclass
 class Deploy:
     target: str = "docker-compose"
     rootless: bool = False
@@ -284,6 +293,7 @@ class DoqlSpec:
     workflows: list[Workflow] = field(default_factory=list)
     roles: list[Role] = field(default_factory=list)
     digital_twins: list[DigitalTwinView] = field(default_factory=list)
+    sites: list[Site] = field(default_factory=list)
     deploy: Deploy = field(default_factory=Deploy)
     environments: list[Environment] = field(default_factory=list)
     infrastructures: list[Infrastructure] = field(default_factory=list)
