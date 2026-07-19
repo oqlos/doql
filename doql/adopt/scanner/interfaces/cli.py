@@ -4,6 +4,8 @@ from __future__ import annotations
 from pathlib import Path
 from ....parsers.models import DoqlSpec
 
+__all__ = ["scan_python_cli"]
+
 try:
     from cli2doql.scanner import scan_python_cli
 except ImportError:
@@ -63,4 +65,3 @@ except ImportError:
         spec.interfaces.append(
             Interface(name="cli", type="cli", framework=framework, pages=pages),
         )
-

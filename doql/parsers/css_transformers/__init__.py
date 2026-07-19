@@ -11,6 +11,16 @@ from .variables import _resolve_vars, _resolve_less_vars, _resolve_sass_vars
 from .mixins import _extract_mixins, _expand_includes
 from .indent import _convert_indent_to_braces
 
+__all__ = [
+    "_convert_indent_to_braces",
+    "_expand_includes",
+    "_extract_mixins",
+    "_resolve_less_vars",
+    "_resolve_sass_vars",
+    "_resolve_vars",
+    "_sass_to_css",
+]
+
 
 def _sass_to_css(text: str) -> str:
     """Convert indent-based SASS to brace-delimited CSS for unified parsing.

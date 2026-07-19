@@ -31,7 +31,6 @@ def _tokenise_css(text: str) -> list[CssBlock]:
     blocks: list[CssBlock] = []
 
     pos = 0
-    line_num = 0
 
     while pos < len(text):
         # Find next opening brace at depth 0
@@ -69,14 +68,19 @@ def _tokenise_css(text: str) -> list[CssBlock]:
     return blocks
 
 
-def _consume_pending(decls: dict, pending_key: str, pending_value: str) -> tuple[str | None, str]:
+def _consume_pending(
+    decls: dict[str, str], pending_key: str, pending_value: str
+) -> tuple[str | None, str]:
     """Flush a completed multi-line declaration into *decls*. Returns (None, '')."""
     decls[pending_key] = _strip_quotes(pending_value.rstrip(';').strip())
     return None, ""
 
 
 def _process_decl_line(
-    stripped: str, pending_key: str | None, pending_value: str, decls: dict
+    stripped: str,
+    pending_key: str | None,
+    pending_value: str,
+    decls: dict[str, str],
 ) -> tuple[str | None, str]:
     """Process one stripped declaration line; return updated (pending_key, pending_value)."""
     m = re.match(r'^(@?[\w\-]+)\s*:\s*(.+)$', stripped)

@@ -53,8 +53,7 @@ from .parsers import (  # noqa: F401
 )
 
 # For compatibility with code that imported internal functions
-from .parsers.blocks import split_blocks as _split_blocks
-from .parsers.extractors import (
+from .parsers.extractors import (  # noqa: F401
     extract_val as _extract_val,
     extract_list as _extract_list,
     extract_yaml_list as _extract_yaml_list,
@@ -63,12 +62,38 @@ from .parsers.extractors import (
     collect_env_refs as _collect_env_refs,
 )
 
+__all__ = [
+    "ApiClient",
+    "DataSource",
+    "Database",
+    "Deploy",
+    "Document",
+    "DoqlParseError",
+    "DoqlSpec",
+    "Entity",
+    "EntityField",
+    "Integration",
+    "Interface",
+    "Page",
+    "Report",
+    "Role",
+    "Template",
+    "ValidationIssue",
+    "Webhook",
+    "Workflow",
+    "WorkflowStep",
+    "apply_block",
+    "collect_env_refs",
+    "detect_doql_file",
+    "parse_css_file",
+    "parse_css_text",
+    "parse_env",
+    "parse_file",
+    "parse_text",
+    "split_blocks",
+    "validate",
+]
+
 # Provide legacy aliases with underscore prefixes
 _split_blocks = split_blocks
 _apply_block = apply_block
-_extract_val = _extract_val
-_extract_list = _extract_list
-_extract_yaml_list = _extract_yaml_list
-_extract_pages = _extract_pages
-_extract_entity_fields = _extract_entity_fields
-_collect_env_refs = _collect_env_refs

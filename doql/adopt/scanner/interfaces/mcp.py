@@ -4,6 +4,8 @@ from __future__ import annotations
 from pathlib import Path
 from ....parsers.models import DoqlSpec
 
+__all__ = ["scan_python_mcp"]
+
 try:
     from mcp2doql.scanner import scan_python_mcp
 except ImportError:

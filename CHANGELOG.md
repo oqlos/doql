@@ -10,6 +10,9 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
   validation and a domain-independent safe projection helper.
 - Digital-twin projection now fails closed without explicit AQL evidence and
   an audit sink, recursively redacts nested secrets and bounds input graphs.
+- The canonical parser and digital-twin runtime now pass strict mypy checks in
+  CI; CSS workflow helpers are fully typed and interface page entity sources
+  are represented explicitly instead of being attached dynamically.
 
 ## [1.0.43] - 2026-06-09
 

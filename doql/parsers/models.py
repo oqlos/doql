@@ -131,6 +131,7 @@ class Page:
     path: Optional[str] = None
     entry: Optional[str] = None
     public: bool = False
+    from_entity: Optional[str] = None
 
 
 @dataclass

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+__all__ = ["clean_value", "convert_dsl_to_doql"]
+
 try:
     from dsl2doql.converter import clean_value, convert_dsl_to_doql
 except ImportError:
@@ -80,4 +82,3 @@ except ImportError:
             out.append(f"  step-{idx}: {step};")
         out.append("}")
         return "\n".join(out) + "\n"
-

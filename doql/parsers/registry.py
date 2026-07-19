@@ -6,27 +6,44 @@ registry pattern, reducing cyclomatic complexity from 49 to ~5.
 from __future__ import annotations
 
 import re
-from typing import Callable, TYPE_CHECKING
+from collections.abc import Callable
+from typing import TypeAlias
 
 from .extractors import extract_val, extract_list, extract_yaml_list, extract_pages, extract_entity_fields
 
-if TYPE_CHECKING:
-    from .models import DoqlSpec
+from .models import (
+    ApiClient,
+    DataSource,
+    Database,
+    Deploy,
+    DigitalTwinView,
+    Document,
+    DoqlSpec,
+    Entity,
+    Integration,
+    Interface,
+    Report,
+    Role,
+    Template,
+    Webhook,
+    Workflow,
+)
 
+BlockHandler: TypeAlias = Callable[[DoqlSpec, str, str], None]
 
 # Registry: keyword -> handler function
-_block_handlers: dict[str, Callable[[DoqlSpec, str, str], None]] = {}
+_block_handlers: dict[str, BlockHandler] = {}
 
 
-def register(keyword: str) -> Callable:
+def register(keyword: str) -> Callable[[BlockHandler], BlockHandler]:
     """Decorator to register a block handler for a keyword."""
-    def decorator(fn: Callable[[DoqlSpec, str, str], None]) -> Callable:
+    def decorator(fn: BlockHandler) -> BlockHandler:
         _block_handlers[keyword] = fn
         return fn
     return decorator
 
 
-def get_handler(keyword: str) -> Callable[[DoqlSpec, str, str], None] | None:
+def get_handler(keyword: str) -> BlockHandler | None:
     """Get the handler for a keyword, or None if not registered."""
     return _block_handlers.get(keyword)
 
@@ -39,12 +56,6 @@ def list_registered() -> list[str]:
 # ═══════════════════════════════════════════════════════════
 # Block Handlers
 # ═══════════════════════════════════════════════════════════
-
-from .models import (
-    Entity, DataSource, Template, Document, Report, Database,
-    ApiClient, Webhook, Interface, Integration, Workflow, Role, DigitalTwinView, Deploy
-)
-
 
 @register("APP")
 def _handle_app(spec: DoqlSpec, header: str, body: str) -> None:

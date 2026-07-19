@@ -52,6 +52,22 @@ interface[type="api"] {
     assert spec.interfaces[0].type == "rest"
 
 
+def test_css_parse_interface_page_entity_source():
+    src = '''
+interface[type="web"] page[name="employees"] {
+  from: Employee;
+  layout: table;
+  path: /employees;
+}
+'''
+    spec = parse_css_text(src, format="css")
+    page = spec.interfaces[0].pages[0]
+    assert page.name == "employees"
+    assert page.from_entity == "Employee"
+    assert page.layout == "table"
+    assert page.path == "/employees"
+
+
 def test_css_parse_role():
     src = '''
 role[name="admin"] {
@@ -202,8 +218,9 @@ entity[name="Bad"] {
 }
 '''
     spec = parse_css_text(src, format="css")
-    # Should have parse_errors with line information
-    # Note: Current parser is lenient, but we track errors in mappers
+    # The lenient parser recovers the valid top-level and entity blocks.
+    assert spec.app_name == "Test"
+    assert [entity.name for entity in spec.entities] == ["Bad"]
 
 
 def test_css_unknown_selector_gives_warning():
@@ -218,7 +235,10 @@ unknownblock[name="X"] {
 }
 '''
     spec = parse_css_text(src, format="css")
-    # Unknown blocks are currently skipped; could add warning
+    assert len(spec.parse_errors) == 1
+    assert spec.parse_errors[0].severity == "warning"
+    assert spec.parse_errors[0].path == 'unknownblock[name="X"]'
+    assert spec.parse_errors[0].line == 5
 
 
 def test_less_syntax_error_recovery():
@@ -266,7 +286,7 @@ def test_doql_vs_less_regression(example):
     if not classic_path.exists() or not less_path.exists():
         pytest.skip(f"Need both app.doql and app.doql.less in {example}")
 
-    from doql.parsers import parse_file, parse_text
+    from doql.parsers import parse_file
 
     classic_spec = parse_file(classic_path)
     less_spec = parse_file(less_path)
