@@ -917,9 +917,19 @@ doql import spec.yaml -o app.doql
 | `workflow[name="X"]` | WORKFLOW X |
 | `deploy` | DEPLOY |
 | `roles role[name="X"]` | ROLE X |
+| `digital-twin[name="self"]` | Odczytowa, związana z podmiotem projekcja digital twin |
 | `infrastructure[type="X"]` | INFRASTRUCTURE X |
 | `ingress[type="X"]` | INGRESS X |
 | `ci[type="X"]` | CI X |
+
+### 19.6 Własny obraz Digital Twin
+
+`digital-twin` deklaruje wyłącznie widok i allowlistę danych. Tożsamość
+podmiotu musi pochodzić z uwierzytelnionego kontekstu, nigdy z parametru
+żądania. Dla Subactor używaj `authorization: aql+subject`; AQL pozostaje
+źródłem uprawnień, a DOQL odpowiada za prezentację. Wersja v1 dopuszcza tylko
+`subject: self`, widok read-only i audyt dostępu. `roles: [*]` oznacza każdą
+uwierzytelnioną rolę, nie dostęp publiczny.
 
 ---
 

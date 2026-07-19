@@ -4,6 +4,11 @@ Wszystkie istotne zmiany w projekcie `doql`. Format oparty na [Keep a Changelog]
 
 ## [Unreleased]
 
+### Added
+
+- Subject-bound, audited `digital-twin` declarations, CSS/YAML round-trip,
+  validation and a domain-independent safe projection helper.
+
 ## [1.0.43] - 2026-06-09
 
 ### Docs

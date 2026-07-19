@@ -4,7 +4,7 @@ from __future__ import annotations
 from ...parsers.models import (
     DoqlSpec, Entity, DataSource, Template, Document,
     Report, Database, ApiClient, Webhook, Interface,
-    Integration, Workflow, Role, Deploy, Environment,
+    Integration, Workflow, Role, DigitalTwinView, Deploy, Environment,
 )
 from .helpers import _indent, _prop, _field_line
 
@@ -297,6 +297,28 @@ def _render_role(role: Role) -> list[str]:
     return lines
 
 
+def _render_digital_twin(twin: DigitalTwinView) -> list[str]:
+    lines = [f'digital-twin[name="{twin.name}"] {{\n']
+    props = []
+    if twin.source:
+        props.append(_prop("source", twin.source))
+    props.extend([
+        _prop("subject", twin.subject, quote_str=False),
+        _prop("subject-field", twin.subject_field, quote_str=False),
+        _prop("route", twin.route),
+        _prop("roles", ", ".join(twin.roles), quote_str=False),
+        _prop("fields", ", ".join(twin.fields), quote_str=False),
+        _prop("redact", ", ".join(twin.redact), quote_str=False),
+        _prop("renderer", twin.renderer, quote_str=False),
+        _prop("authorization", twin.authorization, quote_str=False),
+        _prop("read-only", twin.read_only),
+        _prop("audit", twin.audit),
+    ])
+    lines.append(_indent(props))
+    lines.append("}\n")
+    return lines
+
+
 def _render_deploy(deploy: Deploy) -> list[str]:
     lines = ["deploy {\n"]
     props = [_prop("target", deploy.target, quote_str=False)]
@@ -376,6 +398,7 @@ _RENDERERS = [
     ("integrations", _render_integration),
     ("workflows", _render_workflow),
     ("roles", _render_role),
+    ("digital_twins", _render_digital_twin),
     ("environments", _render_environment),
 ]
 

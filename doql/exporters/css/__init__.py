@@ -12,7 +12,7 @@ from .renderers import (
     _render_app, _render_dependencies, _render_entity, _render_data_source, _render_template,
     _render_document, _render_report, _render_database, _render_api_client,
     _render_webhook, _render_interface, _render_integration, _render_workflow,
-    _render_role, _render_deploy, _render_environment, _render_project,
+    _render_role, _render_digital_twin, _render_deploy, _render_environment, _render_project,
     _render_tests, _render_env_vars,
 )
 from .format_convert import _css_to_less, _css_to_sass
@@ -66,6 +66,8 @@ def _render_integration_layer(spec: DoqlSpec) -> list[list[str]]:
         sections.append(_render_workflow(w))
     for role in spec.roles:
         sections.append(_render_role(role))
+    for twin in spec.digital_twins:
+        sections.append(_render_digital_twin(twin))
     return sections
 
 

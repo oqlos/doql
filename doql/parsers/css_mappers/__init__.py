@@ -48,6 +48,7 @@ from .infra import (
     _map_ci,
 )
 from .integration import _map_integration
+from .digital_twin import _map_digital_twin
 
 
 def _map_project(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") -> None:

@@ -177,6 +177,28 @@ class Role:
 
 
 @dataclass
+class DigitalTwinView:
+    """Read-only, subject-bound projection of an actor's digital twin.
+
+    DOQL describes presentation and the field allowlist. Runtime identity and
+    authority remain the responsibility of the configured authorization layer
+    (normally AQL plus a subject equality check).
+    """
+    name: str
+    source: Optional[str] = None
+    subject: str = "self"
+    subject_field: str = "principal"
+    route: str = "/me/digital-twin"
+    roles: list[str] = field(default_factory=lambda: ["*"])
+    fields: list[str] = field(default_factory=list)
+    redact: list[str] = field(default_factory=list)
+    renderer: str = "profile"
+    authorization: str = "aql+subject"
+    read_only: bool = True
+    audit: bool = True
+
+
+@dataclass
 class Deploy:
     target: str = "docker-compose"
     rootless: bool = False
@@ -261,6 +283,7 @@ class DoqlSpec:
     integrations: list[Integration] = field(default_factory=list)
     workflows: list[Workflow] = field(default_factory=list)
     roles: list[Role] = field(default_factory=list)
+    digital_twins: list[DigitalTwinView] = field(default_factory=list)
     deploy: Deploy = field(default_factory=Deploy)
     environments: list[Environment] = field(default_factory=list)
     infrastructures: list[Infrastructure] = field(default_factory=list)

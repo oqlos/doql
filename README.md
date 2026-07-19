@@ -1,5 +1,13 @@
 # Rodzina OQL — paczka kompletna
 
+## Digital twin — własny obraz aktora
+
+DOQL może deklarować odczytową projekcję
+`digital-twin[name="self"]` z allowlistą pól, redakcją, rendererem i odbiorcami
+rolowymi. W Subactor należy używać `authorization: aql+subject`: DOQL opisuje
+widok, a zweryfikowana tożsamość i AQL wymuszają odczyt wyłącznie własnego
+podmiotu. Przykład znajduje się w `examples/digital-twin-self.doql.css`.
+
 
 ## AI Cost Tracking
 

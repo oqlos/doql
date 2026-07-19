@@ -9,7 +9,7 @@ import yaml
 from ..parsers.models import (
     DoqlSpec, Entity, EntityField, DataSource, Template, Document,
     Report, Database, ApiClient, Webhook, Interface, Page,
-    Integration, Workflow, WorkflowStep, Role, Deploy,
+    Integration, Workflow, WorkflowStep, Role, DigitalTwinView, Deploy,
 )
 
 
@@ -202,6 +202,23 @@ def _build_role(data: dict) -> Role:
     )
 
 
+def _build_digital_twin(data: dict) -> DigitalTwinView:
+    return DigitalTwinView(
+        name=data["name"],
+        source=data.get("source"),
+        subject=data.get("subject", "self"),
+        subject_field=data.get("subject_field", "principal"),
+        route=data.get("route", "/me/digital-twin"),
+        roles=data.get("roles", ["*"]),
+        fields=data.get("fields", []),
+        redact=data.get("redact", []),
+        renderer=data.get("renderer", "profile"),
+        authorization=data.get("authorization", "aql+subject"),
+        read_only=data.get("read_only", True),
+        audit=data.get("audit", True),
+    )
+
+
 def _build_deploy(data: dict) -> Deploy:
     """Build a Deploy config from a raw YAML dict."""
     return Deploy(
@@ -245,6 +262,7 @@ def import_yaml(data: dict[str, Any]) -> DoqlSpec:
     _import_collection(data, spec, "integrations", _build_integration)
     _import_collection(data, spec, "workflows", _build_workflow)
     _import_collection(data, spec, "roles", _build_role)
+    _import_collection(data, spec, "digital_twins", _build_digital_twin)
 
     # Handle deploy separately (single object, not list)
     if "deploy" in data and data["deploy"]:

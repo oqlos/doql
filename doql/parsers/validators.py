@@ -147,6 +147,30 @@ def _validate_interfaces(spec: DoqlSpec) -> list[ValidationIssue]:
     return issues
 
 
+def _validate_digital_twins(spec: DoqlSpec) -> list[ValidationIssue]:
+    """Digital-twin views must be self-bound, read-only and field-allowlisted."""
+    issues: list[ValidationIssue] = []
+    forbidden = ("password", "secret", "token", "credential", "private_key")
+    for twin in spec.digital_twins:
+        path = f"DIGITAL_TWIN {twin.name}"
+        if not twin.source:
+            issues.append(ValidationIssue(path, "source is required", "error"))
+        if twin.subject != "self":
+            issues.append(ValidationIssue(path, "Only subject=self is safe in v1", "error"))
+        if twin.authorization not in {"aql+subject", "subject"}:
+            issues.append(ValidationIssue(path, "authorization must be aql+subject or subject", "error"))
+        if not twin.read_only:
+            issues.append(ValidationIssue(path, "Digital twin self view must be read-only", "error"))
+        if not twin.audit:
+            issues.append(ValidationIssue(path, "Digital twin access must be audited", "error"))
+        if not twin.fields:
+            issues.append(ValidationIssue(path, "Explicit fields allowlist is required", "error"))
+        for field in twin.fields:
+            if any(fragment in field.lower() for fragment in forbidden):
+                issues.append(ValidationIssue(path, f"Sensitive field '{field}' cannot be exposed", "error"))
+    return issues
+
+
 def _validate_deploy_strategy(spec: DoqlSpec) -> list[ValidationIssue]:
     """Warn on deprecated deploy strategy names, suggest canonical ones.
 
@@ -190,6 +214,7 @@ def validate(
     issues.extend(_validate_document_partials(spec))
     issues.extend(_validate_entity_refs(spec))
     issues.extend(_validate_interfaces(spec))
+    issues.extend(_validate_digital_twins(spec))
     issues.extend(_validate_deploy_strategy(spec))
 
     if project_root:

@@ -1,0 +1,22 @@
+app {
+  name: "Digital Twin Self View";
+  version: "1.0.0";
+}
+
+role[name="founder"] { can: [digital_twin.self.read]; }
+role[name="employee"] { can: [digital_twin.self.read]; }
+role[name="contractor"] { can: [digital_twin.self.read]; }
+
+digital-twin[name="self"] {
+  source: "identity://actor/digital-twin/query/self";
+  subject: self;
+  subject-field: principal;
+  route: "/me/digital-twin";
+  roles: [*];
+  fields: [principal, display_name, roles, capabilities, contracts, tasks, status, avatar_url];
+  redact: [personal_email, home_address, compensation, health_data];
+  renderer: profile;
+  authorization: aql+subject;
+  read-only: true;
+  audit: true;
+}

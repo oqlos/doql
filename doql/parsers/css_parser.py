@@ -28,6 +28,7 @@ from .css_mappers import (
     _map_report, _map_interface, _map_integration, _map_workflow,
     _map_role, _map_deploy, _map_database, _map_environment,
     _map_infrastructure, _map_ingress, _map_ci, _map_project,
+    _map_digital_twin,
 )
 
 # Re-export for backward compatibility
@@ -70,6 +71,7 @@ def _apply_css_block(spec: DoqlSpec, sel: ParsedSelector, block: CssBlock) -> No
         'integration': _map_integration,
         'workflow': _map_workflow,
         'role': _map_role,
+        'digital-twin': _map_digital_twin,
         'deploy': _map_deploy,
         'database': _map_database,
         'environment': _map_environment,

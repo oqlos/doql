@@ -42,7 +42,7 @@ def list_registered() -> list[str]:
 
 from .models import (
     Entity, DataSource, Template, Document, Report, Database,
-    ApiClient, Webhook, Interface, Integration, Workflow, Role, Deploy
+    ApiClient, Webhook, Interface, Integration, Workflow, Role, DigitalTwinView, Deploy
 )
 
 
@@ -241,6 +241,25 @@ def _handle_role(spec: DoqlSpec, header: str, body: str) -> None:
     seen = {r.name for r in spec.roles}
     if name and name not in seen:
         spec.roles.append(Role(name=name))
+
+
+@register("DIGITAL_TWIN")
+def _handle_digital_twin(spec: DoqlSpec, header: str, body: str) -> None:
+    name = header.split(":")[0].strip()
+    spec.digital_twins.append(DigitalTwinView(
+        name=name,
+        source=extract_val(body, "source"),
+        subject=extract_val(body, "subject") or "self",
+        subject_field=extract_val(body, "subject_field") or "principal",
+        route=extract_val(body, "route") or "/me/digital-twin",
+        roles=extract_list(body, "roles") or ["*"],
+        fields=extract_list(body, "fields"),
+        redact=extract_list(body, "redact"),
+        renderer=extract_val(body, "renderer") or "profile",
+        authorization=extract_val(body, "authorization") or "aql+subject",
+        read_only=extract_val(body, "read_only") != "false",
+        audit=extract_val(body, "audit") != "false",
+    ))
 
 
 def _handle_import_block(spec: DoqlSpec, body: str, target_attr: str) -> None:

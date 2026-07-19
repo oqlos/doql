@@ -32,6 +32,7 @@ from .models import (
     Workflow,
     WorkflowStep,
     Role,
+    DigitalTwinView,
     Deploy,
     Subproject,
 )
@@ -139,6 +140,7 @@ __all__ = [
     "Workflow",
     "WorkflowStep",
     "Role",
+    "DigitalTwinView",
     "Deploy",
     # Internal utilities (for advanced use)
     "split_blocks",
