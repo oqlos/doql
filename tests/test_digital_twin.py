@@ -11,7 +11,7 @@ from doql.parsers import parse_css_text, validate
 SOURCE = '''
 app { name: "Twin"; version: "1.0.0"; }
 digital-twin[name="self"] {
-  source: "identity://actor/digital-twin/query/self";
+  source: "twin://actor/digital-twin/query/self";
   subject: self;
   subject-field: principal;
   roles: [*];

@@ -8,7 +8,7 @@ role[name="employee"] { can: [digital_twin.self.read]; }
 role[name="contractor"] { can: [digital_twin.self.read]; }
 
 digital-twin[name="self"] {
-  source: "identity://actor/digital-twin/query/self";
+  source: "twin://actor/digital-twin/query/self";
   subject: self;
   subject-field: principal;
   route: "/me/digital-twin";
