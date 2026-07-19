@@ -18,6 +18,7 @@ from .export import cmd_export
 from .generate import cmd_generate
 from .render import cmd_render
 from .query import cmd_query
+from .topology import cmd_topology
 from .kiosk import cmd_kiosk
 from .quadlet import cmd_quadlet
 from .docs import cmd_docs
@@ -47,6 +48,7 @@ __all__ = [
     "cmd_generate",
     "cmd_render",
     "cmd_query",
+    "cmd_topology",
     "cmd_kiosk",
     "cmd_quadlet",
     "cmd_docs",

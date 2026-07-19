@@ -13,6 +13,7 @@ from .commands import (
     cmd_adopt, cmd_build, cmd_doctor, cmd_drift, cmd_publish, cmd_init, cmd_validate,
     cmd_plan, cmd_run, cmd_sync, cmd_deploy,
     cmd_export, cmd_import, cmd_generate, cmd_render, cmd_query,
+    cmd_topology,
     cmd_kiosk, cmd_quadlet, cmd_docs,
     register_workspace_parser,
 )
@@ -112,6 +113,11 @@ def create_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("query", help="Query a DATA source → JSON")
     s.add_argument("data", help="DATA source name")
     s.set_defaults(func=cmd_query)
+
+    # topology
+    s = sub.add_parser("topology", help="Emit canonical site topology as JSON")
+    s.add_argument("--main-domain", help="Mark the subscription's main domain")
+    s.set_defaults(func=cmd_topology)
     
     # kiosk
     s = sub.add_parser("kiosk", help="Kiosk appliance management")
