@@ -10,8 +10,13 @@ from dataclasses import dataclass, field
 from typing import Any, Optional
 
 
-class DoqlParseError(Exception):
-    """Raised when a .doql file cannot be parsed."""
+class DoqlParseError(ValueError):
+    """Raised when a .doql file cannot be parsed.
+
+    Subclasses ValueError so callers that already guard parsing with the
+    standard `except (OSError, ValueError)` around file handling cannot be taken
+    down by a malformed declaration they merely happened to read.
+    """
 
 
 @dataclass

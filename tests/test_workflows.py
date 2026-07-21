@@ -90,3 +90,21 @@ def test_workflows_neither_side_shares_are_ignored(project: pathlib.Path) -> Non
     declared = workflow_commands(project)
 
     assert command_drift({"deploy": [("./deploy.sh",)]}, declared) == ()
+
+
+def test_parse_errors_are_value_errors() -> None:
+    """Callers guarding file handling with `except ValueError` stay protected."""
+    from doql.parsers import DoqlParseError
+
+    assert issubclass(DoqlParseError, ValueError)
+
+
+def test_a_malformed_declaration_does_not_escape_as_an_unexpected_type(
+    tmp_path: pathlib.Path,
+) -> None:
+    (tmp_path / "app.doql.less").write_text('workflow[name="broken" { cmd=unterminated \'', encoding="utf-8")
+
+    try:
+        workflow_commands(tmp_path)
+    except ValueError:
+        pass
