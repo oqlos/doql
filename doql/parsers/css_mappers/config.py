@@ -79,3 +79,14 @@ def _map_report(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") -> N
         output=block.declarations.get('output', 'pdf'),
     )
     spec.reports.append(report)
+
+
+def _map_dependencies(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") -> None:
+    """Map a `dependencies { runtime: ...; test: ... }` block onto the spec.
+
+    The block appears in every repository of the fleets that use DOQL, but had
+    no mapper, so `DoqlSpec.dependencies` was always empty. Groups are kept
+    verbatim; callers split them (see `doql.workflows.declared_dependencies`).
+    """
+    for group, value in block.declarations.items():
+        spec.dependencies[group] = value

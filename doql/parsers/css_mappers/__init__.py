@@ -23,6 +23,7 @@ from .config import (
     _map_template,
     _map_document,
     _map_report,
+    _map_dependencies,
 )
 from .interface import (
     _find_or_create_interface,
@@ -104,6 +105,7 @@ def _map_project(spec: "DoqlSpec", sel: "ParsedSelector", block: "CssBlock") -> 
         'report': _map_report,
         'integration': _map_integration,
         'workflow': _map_workflow,
+        'dependencies': _map_dependencies,
         'role': _map_role,
         'deploy': _map_deploy,
         'database': _map_database,

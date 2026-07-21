@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from .init import cmd_init
 from .validate import cmd_validate
+from .workflows import cmd_workflows
 from .plan import cmd_plan
 from .run import cmd_run
 from .deploy import cmd_deploy
@@ -39,6 +40,7 @@ __all__ = [
     "cmd_publish",
     "cmd_init",
     "cmd_validate",
+    "cmd_workflows",
     "cmd_plan",
     "cmd_run",
     "cmd_sync",

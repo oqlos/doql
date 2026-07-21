@@ -13,6 +13,7 @@ from typing import cast
 from .. import __version__
 from .commands import (
     cmd_adopt, cmd_build, cmd_doctor, cmd_drift, cmd_publish, cmd_init, cmd_validate,
+    cmd_workflows,
     cmd_plan, cmd_run, cmd_sync, cmd_deploy,
     cmd_export, cmd_import, cmd_generate, cmd_render, cmd_query,
     cmd_topology,
@@ -43,6 +44,10 @@ def create_parser() -> argparse.ArgumentParser:
     # validate
     s = sub.add_parser("validate", help="Validate .doql + .env")
     s.set_defaults(func=cmd_validate)
+
+    s = sub.add_parser("workflows", help="Print declared workflows and dependencies (no device scan)")
+    s.add_argument("--format", choices=("text", "json"), default="text")
+    s.set_defaults(func=cmd_workflows)
     
     # plan
     s = sub.add_parser("plan", help="Dry-run: show what would be generated")
